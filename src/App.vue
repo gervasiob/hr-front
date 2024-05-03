@@ -1,21 +1,70 @@
-<script setup>
-import HelloWorld from './components/HelloWorld.vue'
-import TheWelcome from './components/TheWelcome.vue'
-</script>
-
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+    <a-layout style="height: 100vh; width: 100vw;">
+      <a-layout-header :style="headerStyle">
+        <nav>
+          <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" @select="handleMenuSelect" />
+        </nav>
+      </a-layout-header>
+      <a-layout-content :style="contentStyle">
+        <RouterView />
+      </a-layout-content>
+      <a-layout-footer :style="footerStyle">Footer</a-layout-footer>
+    </a-layout>
 
-    <div class="wrapper">
-      <HelloWorld msg="You did it!" />
-    </div>
-  </header>
-
-  <main>
-    <TheWelcome />
-  </main>
 </template>
+
+<script>
+import { ref } from 'vue';
+import { menuList } from '@/config/menu'
+import { useRouter } from 'vue-router';
+
+
+export default {
+  name: 'Daytona-App',
+  components: {},
+  setup() {
+    const current = ref(['mail']);
+    const items = menuList;
+    const router = useRouter(); // Importar el router
+    const handleMenuSelect = (key) => {
+      // current.value = key; // Actualizar el valor actual del menú
+      console.log(key.item.path);
+      router.push({ path: key.item.path }); // Navegar a la ruta seleccionada
+    };
+    const headerStyle = {
+      textAlign: 'center',
+      height: 64,
+      lineHeight: '64px',
+      'background-color': 'transparent',
+    };
+    const contentStyle = {
+      textAlign: 'center',
+      minHeight: 'calc(100vh- 128px)',
+      lineHeight: '120px',
+    };
+    const siderStyle = {
+      textAlign: 'center',
+      lineHeight: '120px',
+    };
+    const footerStyle = {
+      textAlign: 'center',
+      lineHeight: '64px',
+    };
+    return {
+      current,
+      items,
+      handleMenuSelect,
+      headerStyle,
+      contentStyle,
+      siderStyle,
+      footerStyle,
+    }
+
+  }
+
+  
+};
+</script>
 
 <style scoped>
 header {
