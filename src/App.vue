@@ -1,5 +1,5 @@
 <template>
-    <a-layout style="height: 100vh; width: 100vw;">
+    <a-layout style="height: 100vh;">
       <a-layout-header :style="headerStyle">
         <nav>
           <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" @select="handleMenuSelect" />
