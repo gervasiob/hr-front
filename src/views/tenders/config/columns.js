@@ -2,13 +2,13 @@ export const tableColumns = [
     {
         title: '#',
         dataIndex: 'id',
-        key: 'id',
+        claim_id: 'id',
 
     },
     {
         title: 'Aseguradora',
-        dataIndex: 'aseguradora',
-        key: 'aseguradora',
+        dataIndex: 'company',
+        key: 'company',
       
     },
     {
@@ -25,7 +25,7 @@ export const tableColumns = [
     },
     {
         title: 'Estado',
-        key: 'estado',
-        dataIndex: 'estado',
+        key: 'claim_state',
+        dataIndex: 'claim_state',
            },
 ];

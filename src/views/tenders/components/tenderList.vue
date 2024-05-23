@@ -39,7 +39,7 @@
     </div>
 
     <!-- Table -->
-    <a-table :columns="columns" :data-source="data">
+    <a-table :columns="columns" :data-source="dataSource">
         <template #headerCell="{ column }">
             <template v-if="column.key === 'id'">
                 <span>
@@ -55,10 +55,10 @@
                     {{ record.key }}
                 </a>
             </template>
-            <template v-else-if="column.key === 'estado'">
+            <template v-else-if="column.key === 'claim_state'">
                 <span>
-                    <a-tag v-for="tag in record.estado" :key="tag"
-                        :color="tag === 'cancelado' ? 'volcano' : tag === 'pendiente' ? 'geekblue' : 'green'">
+                    <a-tag v-for="tag in record.claim_state" :key="tag"
+                        :color="tag === 'N' ? 'volcano' : tag === 'V' ? 'geekblue' : 'green'">
                         {{ tag.toUpperCase() }}
                     </a-tag>
                 </span>
@@ -79,14 +79,17 @@
 </template>
 
 <script>
-import { reactive, ref } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
 import { tableColumns } from '../config/columns.js';
 import { Form } from 'ant-design-vue';
+import { getTendersIndex } from '@/api/tenders/tenders.js';
+
 export default {
     name: 'TenderList',
     setup() {
         const expand = ref(false);
         const formRef = ref();
+        const dataSource = ref([]);
         const rulesRef = reactive({
             name: [
                 {
@@ -144,10 +147,7 @@ export default {
             },
 
         ];
-        const onSearch = () => {
-            //api
-            resetFields();
-        };
+
         // const columns = [
         //     {
         //         name: 'Id',
@@ -175,36 +175,59 @@ export default {
         //         dataIndex: 'estado',
         //     },
         // ];
-        const data = [
-            {
-                key: '1',
-                aseguradora: 'Federación Patronal',
-                cotizacion: '$1.000.000',
-                rentabilidad: '10%',
-                estado: ['licitado'],
-            },
-            {
-                key: '2',
-                aseguradora: 'La Caja',
-                cotizacion: '$5.000.000',
-                rentabilidad: '30%',
-                estado: ['pendiente'],
-            },
-            {
-                key: '3',
-                aseguradora: 'Federación Patronal',
-                cotizacion: '$300.000',
-                rentabilidad: '-10%',
-                estado: ['cancelado'],
-            },
-        ];
+        const fetchData = async (params = {}) => {
+            try {
+                const response = await getTendersIndex(params);
+                dataSource.value = response;
+                console.log(response)
+            } catch (error) {
+                console.error("Error fetching tenders:", error);
+            }
+        };
+
+        const onSearch = () => {
+            fetchData(filterInputs.value);
+        };
+        const resetFilters = () => {
+            formRef.value.resetFields();
+            filterInputs.value = {};
+            fetchData();
+        };
+
+        onMounted(() => {
+            fetchData();
+        });
+        // const data = [
+        //     {
+        //         key: '1',
+        //         aseguradora: 'Federación Patronal',
+        //         cotizacion: '$1.000.000',
+        //         rentabilidad: '10%',
+        //         estado: ['licitado'],
+        //     },
+        //     {
+        //         key: '2',
+        //         aseguradora: 'La Caja',
+        //         cotizacion: '$5.000.000',
+        //         rentabilidad: '30%',
+        //         estado: ['pendiente'],
+        //     },
+        //     {
+        //         key: '3',
+        //         aseguradora: 'Federación Patronal',
+        //         cotizacion: '$300.000',
+        //         rentabilidad: '-10%',
+        //         estado: ['cancelado'],
+        //     },
+        // ];
         return {
             expand,
             formRef,
             filters,
             formState,
             columns,
-            data,
+            dataSource,
+            onSearch,
             filterInputs,
             aseguradoraList,
             estadoList,
