@@ -81,6 +81,8 @@
 <script>
 import { reactive, ref, onMounted } from 'vue';
 import { tableColumns } from '../config/columns.js';
+import { filterList } from '../config/filters.js';
+import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 
@@ -103,50 +105,10 @@ export default {
         const useForm = Form.useForm;
         const { resetFields, validate, validateInfos } = useForm(formRef, rulesRef);
 
-        const filters = [
-            {
-                name: 'aseguradora',
-                label: 'Aseguradora',
-                state: 1,
-            },
-            {
-                name: 'estado',
-                label: 'Estado',
-                state: 1,
-            },
-            {
-                name: 'rentabilidad',
-                label: 'Rentabilidad',
-                state: 1,
-            },
-        ]
+        const filters = filterList;
         const columns = tableColumns;
-        const aseguradoraList = [
-            {
-                label: 'La Caja',
-                value: 1,
-            },
-            {
-                label: 'Federación Patronal',
-                value: 2,
-            },
-
-        ];
-        const estadoList = [
-            {
-                label: 'Pendiente',
-                value: 1,
-            },
-            {
-                label: 'Licitado',
-                value: 2,
-            },
-            {
-                label: 'Cancelado',
-                value: 3,
-            },
-
-        ];
+        const aseguradoraList = ASEGURADORAS;
+        const estadoList = TENDER_STATES;
 
         // const columns = [
         //     {
