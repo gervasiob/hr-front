@@ -1,6 +1,6 @@
 export const filterList = [
     {
-        name: 'company',
+        name: 'company_id',
         label: 'Aseguradora',
         state: 1,
     },

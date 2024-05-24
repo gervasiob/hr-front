@@ -2,18 +2,18 @@
     <div class="filters">
         <a-form layout="horizontal" ref="formRef" :model="filterInputs">
             <a-row :gutter="24">
-                <a-col :span="8">
+                <a-col :span="12">
                     <a-form-item label="Aseguradora" name="aseguradora">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company" allowClear
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
-                                :value="aseguradora.label" :label="aseguradora.label">
+                                :value="aseguradora.value" :label="aseguradora.label">
                                 {{ aseguradora.label }}
                             </a-select-option>
                         </a-select>
                     </a-form-item>
                 </a-col>
-                <a-col :span="8">
+                <a-col :span="12">
                     <a-form-item label="Estado" name="estado">
                         <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.claim_state" allowClear
                             show-search :filter-option="filterOption">
@@ -25,7 +25,7 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item label="InputNumber" name="rentabilidad">
+                    <a-form-item label="Rentabilidad" name="rentabilidad">
                         <a-input-number v-model:value="filterInputs.rentabilidad" />
                     </a-form-item>
                 </a-col>
@@ -52,9 +52,11 @@
 
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'id'">
-                <a>
-                    {{ record.key }}
-                </a>
+                 <a-button type="primary" shape="circle">
+                      <router-link :to="{ name: 'TenderDetail', params: { id: record.id }}">
+                    {{ record.id }}
+                </router-link>
+                </a-button>
             </template>
             <template v-else-if="column.key === 'claim_state'">
                 <span>

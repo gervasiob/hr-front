@@ -2,7 +2,7 @@ export const tableColumns = [
     {
         title: '#',
         dataIndex: 'id',
-        claim_id: 'id',
+        key: 'id',
 
     },
     {

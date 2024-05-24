@@ -51,10 +51,23 @@ export const menuList = {
             title: 'Licitaciones',
         }
 }
+const otherRoutes = [
+    {
+        key: 'TenderDetail',
+        name: 'TenderDetail',
+        path: '/Licitaciones/:id',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitacion Detalle',
+            title: 'Licitacion Detalle',
+        }
+    }
+]
 export const basicRoutes = [
     LoginRoute,
     RootRoute,
     menuList,
+    ...otherRoutes,
 ]
 
 // application router
