@@ -4,10 +4,10 @@
             <a-row :gutter="24">
                 <a-col :span="8">
                     <a-form-item label="Aseguradora" name="aseguradora">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.aseguradora"
-                            allowClear="true">
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company" allowClear
+                            show-search :filter-option="filterOption">
                             <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
-                                :value="aseguradora.value">
+                                :value="aseguradora.label" :label="aseguradora.label">
                                 {{ aseguradora.label }}
                             </a-select-option>
                         </a-select>
@@ -15,9 +15,10 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="Estado" name="estado">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.estado"
-                            allowClear="true">
-                            <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value">
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.claim_state" allowClear
+                            show-search :filter-option="filterOption">
+                            <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
+                                :label="item.label">
                                 {{ item.label }}
                             </a-select-option>
                         </a-select>
@@ -155,6 +156,9 @@ export default {
             filterInputs.value = {};
             fetchData();
         };
+        const filterOption = (input, option) => {
+            return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        };
 
         onMounted(() => {
             fetchData();
@@ -195,6 +199,8 @@ export default {
             estadoList,
             rulesRef,
             onSearch,
+            filterOption,
+            resetFilters,
         }
     }
 }

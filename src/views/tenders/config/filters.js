@@ -1,11 +1,11 @@
 export const filterList = [
     {
-        name: 'aseguradora',
+        name: 'company',
         label: 'Aseguradora',
         state: 1,
     },
     {
-        name: 'estado',
+        name: 'claim_state',
         label: 'Estado',
         state: 1,
     },

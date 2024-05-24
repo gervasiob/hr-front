@@ -1,1 +1,1 @@
-export const BASE_URL = 'http://127.0.0.1:8000/';
+export const BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
