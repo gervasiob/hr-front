@@ -56,7 +56,7 @@ const otherRoutes = [
         key: 'TenderDetail',
         name: 'TenderDetail',
         path: '/Licitaciones/:id',
-        component: () => import('@/views/tenders/index.vue'),
+        component: () => import('@/views/tenders/components/tenderDetail.vue'),
         meta: {
             label: 'Licitacion Detalle',
             title: 'Licitacion Detalle',

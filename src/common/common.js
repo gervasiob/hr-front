@@ -1,5 +1,5 @@
 export const ASEGURADORAS = [
-    { "value": "30", "label": "ATM" },
+    { value: 30, label: "ATM" },
     { "value": "46", "label": "CHUBB" },
     { "value": "50", "label": "DIGNA" },
     { "value": "33", "label": "EXPERTA" },
@@ -26,14 +26,17 @@ export const ASEGURADORAS = [
 export const TENDER_STATES = [
     {
         label: 'Pendiente',
-        value: 1,
+        value: 'N',
+        color: 'volcano'
     },
     {
         label: 'Licitado',
-        value: 2,
+        value: 'V',
+        color: 'geekblue'
     },
     {
         label: 'Cancelado',
-        value: 3,
+        value: 'C',
+        color: 'default'
     },
 ];

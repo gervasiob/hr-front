@@ -24,16 +24,28 @@
                         </a-select>
                     </a-form-item>
                 </a-col>
+            </a-row>
+            <a-row :gutter="24">
+                <a-col :span="8">
+                    <a-form-item label="Claim id" name="claim_id">
+                        <a-input v-model:value="filterInputs.claim_id" allowClear />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="8">
+                    <a-form-item label="Licitación id" name="tender_id">
+                        <a-input v-model:value="filterInputs.id" allowClear />
+                    </a-form-item>
+                </a-col>
                 <a-col :span="8">
                     <a-form-item label="Rentabilidad" name="rentabilidad">
-                        <a-input-number v-model:value="filterInputs.rentabilidad" />
+                        <a-input v-model:value="filterInputs.rentabilidad" allowClear/>
                     </a-form-item>
                 </a-col>
             </a-row>
             <a-row>
                 <a-col :span="24" style="text-align: right">
                     <a-button type="primary" @click="onSearch">Buscar</a-button>
-                    <a-button style="margin: 0 8px" @click="() => formRef.resetFields()">Borrar Filtros</a-button>
+                    <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
                 </a-col>
             </a-row>
         </a-form>
@@ -53,7 +65,7 @@
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'id'">
                  <a-button type="primary" shape="circle">
-                      <router-link :to="{ name: 'TenderDetail', params: { id: record.id }}">
+                      <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id }}">
                     {{ record.id }}
                 </router-link>
                 </a-button>
@@ -82,7 +94,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, computed } from 'vue';
 import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
