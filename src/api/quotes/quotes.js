@@ -1,8 +1,8 @@
 import axios from 'axios';
 import { BASE_URL } from '../apiUrls.js';
 
-export function getTendersIndex(params) {
-    const endpoint = 'tenders/';
+export function getQuotes(params) {
+    const endpoint = 'quotes/';
     const path = BASE_URL + endpoint;
     return axios.get(path, {
         params: params,
@@ -11,7 +11,7 @@ export function getTendersIndex(params) {
             return response.data;
         })
         .catch((error) => {
-            console.error("Error fetching tenders:", error);
+            console.error("Error fetching quotes:", error);
             throw error;
         });
 }

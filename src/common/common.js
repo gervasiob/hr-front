@@ -27,16 +27,26 @@ export const TENDER_STATES = [
     {
         label: 'Pendiente',
         value: 'N',
-        color: 'volcano'
+        color: 'gold'
     },
     {
         label: 'Licitado',
         value: 'V',
-        color: 'geekblue'
+        color: 'blue'
+    },
+    {
+        label: 'Evaluado',
+        value: 'E',
+        color: 'lime'
+    },
+    {
+        label: 'Rechazado',
+        value: 'R',
+        color: 'default'
     },
     {
         label: 'Cancelado',
         value: 'C',
-        color: 'default'
+        color: 'red'
     },
 ];

@@ -9,11 +9,11 @@ export const tableColumns = [
     },
     {
         title: 'Aseguradora',
-        dataIndex: 'company',
-        key: 'company',
-        sorter: (a, b) => a.company.localeCompare(b.company),
+        dataIndex: 'company_name', // Usamos la nueva propiedad company_name
+        key: 'company_name',
+        sorter: (a, b) => a.company_name.localeCompare(b.company_name),
         filters: ASEGURADORAS.map((item) => ({ text: item.label, value: item.label })),
-        onFilter: (value, record) => record.company === value,
+        onFilter: (value, record) => record.company_name === value,
     },
     {
         title: 'Cotización',
@@ -31,8 +31,8 @@ export const tableColumns = [
     },
     {
         title: 'Estado',
-        key: 'claim_state',
-        dataIndex: 'claim_state',
+        key: 'quote_state',
+        dataIndex: 'quote_state',
         sorter: (a, b) => a.claim_state.localeCompare(b.claim_state),
         filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
         onFilter: (value, record) => record.claim_state === value,
