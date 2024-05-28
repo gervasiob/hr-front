@@ -45,6 +45,7 @@ export default {
       // Aquí puedes manejar la lógica del clic de la tarjeta, por ejemplo, redireccionar a otra página
     };
 
+
     return {
       handleCardClick,
     }
