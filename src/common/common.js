@@ -50,3 +50,63 @@ export const TENDER_STATES = [
         color: 'red'
     },
 ];
+export const DELIVERY_TIMES = [
+    {
+        label: 'Inmediata',
+        value: 1,
+    },
+    {
+        label: 'Máximo 48hs',
+        value: 2,
+    },
+    {
+        label: 'Máximo 7 días',
+        value: 3,
+    },
+    {
+        label: 'Máximo 15 días',
+        value: 4,
+    },
+    {
+        label: '30 días o más',
+        value: 5,
+    },
+];
+export const BRANDS = [
+    {
+        label: 'Bridgeton',
+        value: 1,
+    },
+    {
+        label: 'Continental',
+        value: 2,
+    },
+    {
+        label: 'Otro',
+        value: 3,
+    },
+];
+export const MODELS = [
+    {
+        label: 'm1',
+        value: 1,
+    },
+    {
+        label: 'm2',
+        value: 2,
+    },
+    {
+        label: 'Otro',
+        value: 3,
+    },
+];
+export const LLANTA_TYPES = [
+    {
+        label: 'Llanta de chapa',
+        value: 1,
+    },
+    {
+        label: 'Llanta de aleación',
+        value: 2,
+    },
+];

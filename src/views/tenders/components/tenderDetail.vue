@@ -2,21 +2,25 @@
     <div class="header">
         <h1>Detalle Cotización</h1>
     </div>
-    <a-descriptions title="Información de la Licitación" bordered
+    <a-descriptions title="Datos del Siniestro" class="description-group" bordered
         :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }"
         :labelStyle="{ fontWeight: 'bold', color: 'white', backgroundColor: '#583BDC' }" :style="{ padding: '1%' }">
-        <a-descriptions-item label="Nro Siniestro">{{ tenderData.claim_id }}</a-descriptions-item>
-        <a-descriptions-item label="Compañía">{{ tenderData.company }}</a-descriptions-item>
-        <a-descriptions-item label="Dominio">{{ tenderData.domain }}</a-descriptions-item>
-        <a-descriptions-item label="Chasis">{{ tenderData.chasis }}</a-descriptions-item>
-        <a-descriptions-item label="Marca">{{ tenderData.brand }}</a-descriptions-item>
-        <a-descriptions-item label="Modelo">{{ tenderData.model }}</a-descriptions-item>
-        <a-descriptions-item label="Fecha">{{ tenderData.claim_date }}</a-descriptions-item>
-        <a-descriptions-item label="Estado">
-            <a-tag :color="getStateColor(tenderData.claim_state)">
+        <a-descriptions-item label="Nro Siniestro" class="a-descriptions-item">{{ tenderData.claim_id
+            }}</a-descriptions-item>
+        <a-descriptions-item label="Compañía" class="a-descriptions-item">{{ tenderData.company }}</a-descriptions-item>
+        <a-descriptions-item label="Estado" class="a-descriptions-item">
+            <a-badge status="processing" :color="getStateColor(tenderData.claim_state)"
+                :text="getStateLabel(tenderData.claim_state)" />
+            <!-- <a-tag :color="getStateColor(tenderData.claim_state)" class="large-tag">
                 {{ getStateLabel(tenderData.claim_state) }}
-            </a-tag>
+            </a-tag> -->
         </a-descriptions-item>
+        <a-descriptions-item label="Dominio" class="a-descriptions-item">{{ tenderData.domain }}</a-descriptions-item>
+        <a-descriptions-item label="Chasis" class="a-descriptions-item">{{ tenderData.chasis }}</a-descriptions-item>
+        <a-descriptions-item label="Marca" class="a-descriptions-item">{{ tenderData.brand }}</a-descriptions-item>
+        <a-descriptions-item label="Modelo" class="a-descriptions-item">{{ tenderData.model }}</a-descriptions-item>
+        <a-descriptions-item label="Fecha" class="a-descriptions-item">{{ tenderData.claim_date }}</a-descriptions-item>
+
     </a-descriptions>
     <a-collapse>
         <a-collapse-panel key="1" header="Información Extra">
@@ -82,6 +86,50 @@
                     </template>
                 </template>
             </a-table>
+
+            <a-divider>Formulario de Cotización</a-divider>
+            <a-form layout="horizontal" :model="formTenderDetail">
+                <a-form-item label="No cotizar">
+                    <a-switch v-model:checked="formTenderDetail.not_quote" />
+                </a-form-item>
+                <a-form-item label="Tiempo de Entrega">
+                    <a-select v-model:value="formTenderDetail.delivery_time" style="width: 100%" placeholder="..."
+                        :options="optionsDeliveryTime" @change="handleChangeDeliveryTime" allow-clear></a-select>
+                </a-form-item>
+                <a-form-item :label="formTenderDetail.tire_type_name">
+                    <a-input v-model:value="formTenderDetail.tire_quoted" placeholder="0" />
+                </a-form-item>
+                <a-form-item label="Marca">
+                    <a-select v-model:value="formTenderDetail.brand" style="width: 100%" placeholder="..."
+                        :options="optionsBrand" allow-clear></a-select>
+                </a-form-item>
+                <a-form-item label="Modelo Neumatico">
+                    <a-select v-model:value="formTenderDetail.model" style="width: 100%" placeholder="..."
+                        :options="optionsModel" allow-clear></a-select>
+                </a-form-item>
+                <a-form-item label="Tipo de Llanta">
+                    <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
+                        :options="optionsLlantaType" allow-clear></a-select>
+                </a-form-item>
+            </a-form>
+            <a-form layout="inline" :model="formTenderDetail">
+                <a-form-item label="Tipo de Llanta">
+                    <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
+                        :options="optionsLlantaType" allow-clear></a-select>
+                </a-form-item>
+                <a-form-item label="Tipo de Llanta">
+                    <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
+                        :options="optionsLlantaType" allow-clear></a-select>
+                </a-form-item>
+                <a-form-item label="Tipo de Llanta">
+                    <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
+                        :options="optionsLlantaType" allow-clear></a-select>
+                </a-form-item>
+            </a-form>
+
+            <a-form-item>
+                <a-button type="primary">Guardar</a-button>
+            </a-form-item>
         </a-collapse-panel>
     </a-collapse>
 
@@ -99,7 +147,7 @@ import { useRoute } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes } from '@/api/quotes/quotes.js';
 import { tableColumns } from '../config/columnsDetail.js';
-import { TENDER_STATES } from '@/common/common';
+import { TENDER_STATES, DELIVERY_TIMES, BRANDS, MODELS, LLANTA_TYPES } from '@/common/common';
 import { dataTable } from './data';
 
 export default {
@@ -111,20 +159,25 @@ export default {
         const quoteData = ref({});
         const dataSource = ref();
         const columns = tableColumns;
+        const optionsDeliveryTime = DELIVERY_TIMES;
+        const optionsBrand = BRANDS;
+        const optionsModel = MODELS;
+        const optionsLlantaType = LLANTA_TYPES;
         const formTenderDetail = reactive({
-            type: '',
-            sku: '',
+            not_quote: false,
+            delivery_time: '',
+            original_parts: '',
+            spare_tire_amount: '',
+            brand: '',
+            tire_model: '',
             llanta_type: '',
-            vendor: '',
-            po: '',
-            price: '',
-            quantity: '',
-            total: '',
-            fee: '',
-            freight: '',
-            aditional: '',
+            tire_width: '',
+            tire_height: '',
+            tire_tread: '',
             obs: '',
-            internal: '',
+            tire_type_name: 'Auxilio',
+            tire_quoted: '',
+            daytona_ids: '',
         });
         const editableData = reactive({});
         const edit = key => {
@@ -177,6 +230,9 @@ export default {
         const onCancel = () => {
             console.log('cancel!', toRaw(formTenderDetail));
         };
+        const handleChangeDeliveryTime = () => {
+            console.log('handle dT');
+        }
         onMounted(() => {
             fetchTenderData(tenderId.value);
         });
@@ -195,9 +251,27 @@ export default {
             edit,
             save,
             cancel,
+            optionsDeliveryTime,
+            handleChangeDeliveryTime,
+            optionsBrand,
+            optionsModel,
+            optionsLlantaType,
         }
     }
 }
 </script>
 
-<style scoped></style>
+<style scoped>
+.large-tag {
+    font-size: 18px;
+    /* Ajusta el tamaño según tus necesidades */
+    padding: 5px 10px;
+    /* Puedes ajustar el padding también */
+}
+
+.description-group {
+    border: 3px solid #563CCA;
+    border-radius: 20px;
+    /* Esto hace que los bordes sean redondeados */
+}
+</style>
