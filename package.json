@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview",
-    "start": "serve -s dist"
+    "start": "vite"
   },
   "dependencies": {
     "ant-design-vue": "^4.2.1",
