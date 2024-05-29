@@ -4,12 +4,10 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "install": "npm install",
     "dev": "vite",
     "build": "vite build",
-    "start": "vite preview",
-    "preview": "vite preview",
-    "postinstall": "vite build",
-    "serve": "vite preview"
+    "start": "npm run dev"
   },
   "dependencies": {
     "ant-design-vue": "^4.2.1",
