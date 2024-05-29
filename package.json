@@ -6,11 +6,12 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "start": "vite preview --port $PORT"
+    "start": "serve -s dist -l $PORT"
   },
   "dependencies": {
     "ant-design-vue": "^4.2.1",
     "axios": "^1.7.2",
+    "serve": "^14.2.3",
     "vue": "^3.4.21",
     "vue-router": "^4.3.2"
   },
@@ -18,7 +19,6 @@
     "@vitejs/plugin-vue": "^5.0.4",
     "eslint": "^9.1.1",
     "eslint-plugin-vue": "^9.25.0",
-    "serve": "^14.2.3",
     "vite": "^5.2.8"
   },
   "engines": {
