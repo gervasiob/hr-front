@@ -157,13 +157,11 @@ export default {
                 const dataWithCompanyName = response.map(item => {
                     return {
                         ...item,
-                        company_name: item.tender_data ? item.tender_data.company : null,
                         total: item.price * item.quantity,
                     };
                 });
 
                 dataSource.value = dataWithCompanyName;
-                console.log(dataSource)
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }

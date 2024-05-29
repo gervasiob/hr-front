@@ -88,56 +88,80 @@
             </a-table>
 
             <a-divider>Formulario de Cotización</a-divider>
-            <a-form layout="horizontal" :model="formTenderDetail">
+            <a-form layout="horizontal" :model="formTenderDetail" :label-col="{ span: 4 }" :wrapper-col="{ span: 6 }">
                 <a-form-item label="No cotizar">
                     <a-switch v-model:checked="formTenderDetail.not_quote" />
                 </a-form-item>
-                <a-form-item label="Tiempo de Entrega">
-                    <a-select v-model:value="formTenderDetail.delivery_time" style="width: 100%" placeholder="..."
-                        :options="optionsDeliveryTime" @change="handleChangeDeliveryTime" allow-clear></a-select>
-                </a-form-item>
-                <a-form-item :label="formTenderDetail.tire_type_name">
-                    <a-input v-model:value="formTenderDetail.tire_quoted" placeholder="0" />
-                </a-form-item>
-                <a-form-item label="Marca">
-                    <a-select v-model:value="formTenderDetail.brand" style="width: 100%" placeholder="..."
-                        :options="optionsBrand" allow-clear></a-select>
-                </a-form-item>
-                <a-form-item label="Modelo Neumatico">
-                    <a-select v-model:value="formTenderDetail.model" style="width: 100%" placeholder="..."
-                        :options="optionsModel" allow-clear></a-select>
-                </a-form-item>
-                <a-form-item label="Tipo de Llanta">
-                    <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
-                        :options="optionsLlantaType" allow-clear></a-select>
-                </a-form-item>
+                <div v-show="!formTenderDetail.not_quote">
+                    <a-form-item label="Tiempo de Entrega">
+                        <a-select v-model:value="formTenderDetail.delivery_time" style="width: 100%" placeholder="..."
+                            :options="optionsDeliveryTime" @change="handleChangeDeliveryTime" allow-clear show-search
+                            :filter-option="filterOption"></a-select>
+                    </a-form-item>
+                    <a-form-item>
+                        <span class="ant-form-text">{{ formTenderDetail.tire_type_name }}</span>
+                    </a-form-item>
+                    <a-form-item label="Llanta $">
+                        <a-input v-model:value="formTenderDetail.tire_quoted" placeholder="0" />
+                    </a-form-item>
+                    <a-form-item label="Neumático $">
+                        <a-input v-model:value="formTenderDetail.tire_quoted" placeholder="0" />
+                    </a-form-item>
+                    <a-form-item label="Marca">
+                        <a-select v-model:value="formTenderDetail.brand" style="width: 100%" placeholder="..."
+                            :options="optionsBrand" allow-clear></a-select>
+                    </a-form-item>
+                    <a-form-item label="Modelo Neumatico">
+                        <a-select v-model:value="formTenderDetail.model" style="width: 100%" placeholder="..."
+                            :options="optionsModel" allow-clear show-search :filter-option="filterOption"></a-select>
+                    </a-form-item>
+                    <a-form-item label="Tipo de Llanta">
+                        <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
+                            :options="optionsLlantaType" allow-clear show-search
+                            :filter-option="filterOption"></a-select>
+                    </a-form-item>
+                </div>
             </a-form>
-            <a-form layout="inline" :model="formTenderDetail">
-                <a-form-item label="Tipo de Llanta">
-                    <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
-                        :options="optionsLlantaType" allow-clear></a-select>
-                </a-form-item>
-                <a-form-item label="Tipo de Llanta">
-                    <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
-                        :options="optionsLlantaType" allow-clear></a-select>
-                </a-form-item>
-                <a-form-item label="Tipo de Llanta">
-                    <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%" placeholder="..."
-                        :options="optionsLlantaType" allow-clear></a-select>
-                </a-form-item>
-            </a-form>
-
+            <div v-show="!formTenderDetail.not_quote">
+                <a-form layout="inline" :model="formTenderDetail" :wrapper-col="{ span: 16 }">
+                    <a-form-item label="Ancho">
+                        <a-select v-model:value="formTenderDetail.tire_width" style="width: 100%"
+                            placeholder="Seleccione un valor" :options="optionsTireWidth" allow-clear show-search
+                            :filter-option="filterOption"></a-select>
+                    </a-form-item>
+                    <a-form-item label="Alto">
+                        <a-select v-model:value="formTenderDetail.tire_height" style="width: 100%" placeholder="..."
+                            :options="optionsTireHeight" allow-clear show-search
+                            :filter-option="filterOption"></a-select>
+                    </a-form-item>
+                    <a-form-item label="Rodado">
+                        <a-select v-model:value="formTenderDetail.tire_tread" style="width: 100%" placeholder="..."
+                            :options="optionsTireTread" allow-clear show-search
+                            :filter-option="filterOption"></a-select>
+                    </a-form-item>
+                </a-form>
+                <a-form layout="horizontal" :label-col="{ span: 4 }" :wrapper-col="{ span: 6 }">
+                    <a-form-item label="Observaciones">
+                        <a-textarea v-model:value="formTenderDetail.obs" :rows="4" />
+                    </a-form-item>
+                    <a-form-item label="Estoy Cotizando">
+                        <a-select v-model:value="formTenderDetail.quote_detail" style="width: 100%" placeholder="..."
+                            :options="optionsQuoteDetails" allow-clear show-search
+                            :filter-option="filterOption"></a-select>
+                    </a-form-item>
+                    <a-form-item label="Proveedor">
+                        <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%" mode="multiple"
+                            placeholder="Please select" :options="optionsDaytonas" allow-clear show-search
+                            :filter-option="filterOption"></a-select>
+                    </a-form-item>
+                </a-form>
+            </div>
             <a-form-item>
                 <a-button type="primary">Guardar</a-button>
             </a-form-item>
+
         </a-collapse-panel>
     </a-collapse>
-
-
-    <div>
-        <p>{{ tenderData }}</p>
-        <p>{{ quoteData }}</p>
-    </div>
 </template>
 
 <script>
@@ -147,7 +171,10 @@ import { useRoute } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes } from '@/api/quotes/quotes.js';
 import { tableColumns } from '../config/columnsDetail.js';
-import { TENDER_STATES, DELIVERY_TIMES, BRANDS, MODELS, LLANTA_TYPES } from '@/common/common';
+import {
+    TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
+    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, DAYTONAS, QUOTE_DETAILS
+} from '@/common/common';
 import { dataTable } from './data';
 
 export default {
@@ -160,9 +187,17 @@ export default {
         const dataSource = ref();
         const columns = tableColumns;
         const optionsDeliveryTime = DELIVERY_TIMES;
-        const optionsBrand = BRANDS;
+        const optionsBrand = TIRE_BRANDS;
         const optionsModel = MODELS;
         const optionsLlantaType = LLANTA_TYPES;
+        const optionsTireWidth = TIRE_WIDTH;
+        const optionsTireHeight = TIRE_HEIGHT;
+        const optionsTireTread = TIRE_TREAD;
+        const optionsQuoteDetails = QUOTE_DETAILS;
+        const optionsDaytonas = DAYTONAS.map(daytona => ({
+            label: `${daytona.businessName} - ${daytona.completeAddress}`,
+            value: daytona.idClaimsProvider
+        }));
         const formTenderDetail = reactive({
             not_quote: false,
             delivery_time: '',
@@ -177,7 +212,8 @@ export default {
             obs: '',
             tire_type_name: 'Auxilio',
             tire_quoted: '',
-            daytona_ids: '',
+            daytona_ids: [],
+            quote_detail: '',
         });
         const editableData = reactive({});
         const edit = key => {
@@ -224,6 +260,9 @@ export default {
             const state = TENDER_STATES.find(s => s.value === stateValue);
             return state ? state.label : stateValue;
         };
+        const filterOption = (input, option) => {
+            return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        };
         const onSave = () => {
             console.log('save!', toRaw(formTenderDetail));
         };
@@ -256,6 +295,12 @@ export default {
             optionsBrand,
             optionsModel,
             optionsLlantaType,
+            optionsTireWidth,
+            optionsTireHeight,
+            optionsTireTread,
+            filterOption,
+            optionsDaytonas,
+            optionsQuoteDetails,
         }
     }
 }
