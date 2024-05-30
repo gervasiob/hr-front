@@ -17,12 +17,12 @@ export const menuList = [
     {
         key: 'sub1',
         icon: () => h(SettingOutlined),
-        label: 'Navigation Three - Submenu',
-        title: 'Navigation Three - Submenu',
+        label: 'Configuración',
+        title: 'Configuración',
         children: [
             {
                 type: 'group',
-                label: 'Item 1',
+                label: 'Costos',
                 children: [
                     {
                         label: 'Option 1',
