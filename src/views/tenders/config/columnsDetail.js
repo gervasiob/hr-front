@@ -45,6 +45,11 @@ export const tableColumns = [
         },
     },
     {
+        title: 'Total Sin Iva',
+        key: 'ammount_wo_iva',
+        dataIndex: 'ammount_wo_iva',
+    },
+    {
         title: 'operation',
         dataIndex: 'operation',
     },

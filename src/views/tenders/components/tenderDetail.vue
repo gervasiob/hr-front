@@ -54,10 +54,12 @@
                 </a-descriptions>
             </template>
 
+            <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">Agregar Item</a-button>
+
             <a-table :columns="columns" :data-source="dataSource" bordered>
                 <template #bodyCell="{ column, text, record }">
                     <template
-                        v-if="['sku', 'llanta_type', 'vendor', 'po', 'price', 'quantity'].includes(column.dataIndex)">
+                        v-if="['sku', 'llanta_type', 'price', 'quantity', 'ammount_wo_iva'].includes(column.dataIndex)">
                         <div>
                             <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0" />
@@ -66,6 +68,42 @@
                             </template>
                         </div>
                     </template>
+                    <template v-if="['type'].includes(column.dataIndex)">
+                        <div>
+                            <a-select ref="select" v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0"
+                                @focus="focus" @change="handleChange">
+                                <a-select-option value="Nuematicos">Nuemáticos</a-select-option>
+                                <a-select-option value="Llantas">Llantas</a-select-option>
+                            </a-select>
+                            <template v-else>
+                                {{ text }}
+                            </template>
+                        </div>
+                    </template>
+                    <template v-if="['vendor_id'].includes(column.dataIndex)">
+                        <div>
+                            <a-select ref="select" v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0"
+                                @focus="focus" @change="handleChange">
+                                <a-select-option value="13">Proveedor 1</a-select-option>
+                                <a-select-option value="12">Proveedor 2</a-select-option>
+                            </a-select>
+                            <template v-else>
+                                {{ text }}
+                            </template>
+                        </div>
+                    </template>
+                    <template v-if="['po'].includes(column.dataIndex)">
+                        <div>
+                            <a-checkbox v-model:checked="editableData[record.key][column.dataIndex]"
+                                v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"></a-checkbox>
+                            <template v-else>
+                                <a-checkbox :checked="text" :disabled="true"></a-checkbox>
+                            </template>
+                        </div>
+                    </template>
+
                     <template v-else-if="column.dataIndex === 'total'">
                         <div>
                             {{ record.price * record.quantity }}
@@ -75,17 +113,23 @@
                         <div class="editable-row-operations">
                             <span v-if="editableData[record.key]">
                                 <a-typography-link @click="save(record.key)">Save</a-typography-link>
-                                <a-popconfirm title="Sure to cancel?" @confirm="cancel(record.key)">
+                                <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
                                     <a>Cancel</a>
                                 </a-popconfirm>
+
                             </span>
                             <span v-else>
                                 <a @click="edit(record.key)">Edit</a>
+                                <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
+                                    @confirm="onDelete(record.key)">
+                                    <a>Eliminar</a>
+                                </a-popconfirm>
                             </span>
                         </div>
                     </template>
                 </template>
             </a-table>
+
 
             <a-divider>Formulario de Cotización</a-divider>
             <a-form layout="horizontal" :model="formTenderDetail" :label-col="{ span: 4 }" :wrapper-col="{ span: 6 }">
@@ -156,9 +200,26 @@
                     </a-form-item>
                 </a-form>
             </div>
-            <a-form-item>
-                <a-button type="primary">Guardar</a-button>
-            </a-form-item>
+            <a-row>
+                <a-col :span="8">
+                    <a-button type="primary" class="hover-button-grey">Cancelar</a-button>
+                </a-col>
+                <a-col :span="8" :offset="8">
+                    <a-button type="primary">Guardar</a-button>
+                </a-col>
+            </a-row>
+            <!-- Colocar que se vea según el estado -->
+            <div>
+                <a-divider style="border-color: #563CCA" dashed />
+                <a-row>
+                    <a-col :span="8">
+                        <a-button type="primary" danger>Cancelar Presupuesto</a-button>
+                    </a-col>
+                    <a-col :span="8" :offset="8">
+                        <a-button type="primary" class="hover-button">Licitar</a-button>
+                    </a-col>
+                </a-row>
+            </div>
 
         </a-collapse-panel>
     </a-collapse>
@@ -166,7 +227,7 @@
 
 <script>
 import { cloneDeep } from 'lodash-es';
-import { ref, onMounted, reactive, toRaw } from 'vue';
+import { ref, onMounted, reactive, toRaw, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes } from '@/api/quotes/quotes.js';
@@ -220,7 +281,9 @@ export default {
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
         };
         const save = key => {
-            Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
+            const record = dataSource.value.find(item => key === item.key);
+            Object.assign(record, editableData[key]);
+            record.total = record.price * record.quantity;
             delete editableData[key];
         };
         const cancel = key => {
@@ -269,9 +332,29 @@ export default {
         const onCancel = () => {
             console.log('cancel!', toRaw(formTenderDetail));
         };
+        const onDelete = key => {
+            dataSource.value = dataSource.value.filter(item => item.key !== key);
+        };
         const handleChangeDeliveryTime = () => {
             console.log('handle dT');
         }
+        const count = computed(() => dataSource.value.length + 1);
+        const handleAdd = () => {
+            const newKey = `${count.value}`;
+            const newData = {
+                key: newKey,
+                type: '',
+                sku: '',
+                llanta_type: '',
+                vendor: '',
+                po: false,
+                price: 0,
+                quantity: 0,
+                total: 0,
+            };
+            dataSource.value.push(newData);
+            editableData[newKey] = cloneDeep(newData);
+        };
         onMounted(() => {
             fetchTenderData(tenderId.value);
         });
@@ -301,6 +384,9 @@ export default {
             filterOption,
             optionsDaytonas,
             optionsQuoteDetails,
+            handleAdd,
+            count,
+            onDelete,
         }
     }
 }
@@ -318,5 +404,34 @@ export default {
     border: 3px solid #563CCA;
     border-radius: 20px;
     /* Esto hace que los bordes sean redondeados */
+}
+
+.editable-add-btn {
+    margin-bottom: 8px;
+    align-self: left;
+}
+
+.hover-button {
+    background-color: green;
+    /* Color de fondo inicial */
+    color: white;
+    /* Color de texto */
+}
+
+.hover-button:hover {
+    background-color: rgb(125, 201, 125);
+    /* Color de fondo al pasar el mouse */
+}
+
+.hover-button-grey {
+    background-color: grey;
+    /* Color de fondo inicial */
+    color: white;
+    /* Color de texto */
+}
+
+.hover-button-grey:hover {
+    background-color: lightgray;
+    /* Color de fondo al pasar el mouse */
 }
 </style>
