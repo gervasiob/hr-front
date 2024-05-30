@@ -38,7 +38,7 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="Rentabilidad" name="rentabilidad">
-                        <a-input v-model:value="filterInputs.rentabilidad" allowClear/>
+                        <a-input v-model:value="filterInputs.rentabilidad" allowClear />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -64,17 +64,16 @@
 
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'id'">
-                 <a-button type="primary" shape="circle">
-                      <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id }}">
-                    {{ record.id }}
-                </router-link>
+                <a-button type="primary" shape="circle">
+                    <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id } }">
+                        {{ record.id }}
+                    </router-link>
                 </a-button>
             </template>
-            <template v-else-if="column.key === 'claim_state'">
+            <template v-else-if="column.key === 'quote_state'">
                 <span>
-                    <a-tag v-for="tag in record.claim_state" :key="tag"
-                        :color="tag === 'N' ? 'volcano' : tag === 'V' ? 'geekblue' : 'green'">
-                        {{ tag.toUpperCase() }}
+                    <a-tag v-for="tag in record.quote_state" :key="tag" :color="getState(tag).color">
+                        {{ getState(tag).label.toUpperCase() }}
                     </a-tag>
                 </span>
             </template>
@@ -99,7 +98,7 @@ import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
-import { getTendersIndex } from '@/api/tenders/tenders.js';
+import { getQuotes } from '@/api/quotes/quotes.js';
 
 export default {
     name: 'TenderList',
@@ -154,11 +153,17 @@ export default {
         // ];
         const fetchData = async (params = {}) => {
             try {
-                const response = await getTendersIndex(params);
-                dataSource.value = response;
-                console.log(response)
+                const response = await getQuotes(params);
+                const dataWithCompanyName = response.map(item => {
+                    return {
+                        ...item,
+                        total: item.price * item.quantity,
+                    };
+                });
+
+                dataSource.value = dataWithCompanyName;
             } catch (error) {
-                console.error("Error fetching tenders:", error);
+                console.error("Error fetching quotes:", error);
             }
         };
 
@@ -173,7 +178,11 @@ export default {
         const filterOption = (input, option) => {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
-
+        const getState = (tag) => {
+            const state = TENDER_STATES.find((item) => item.value === tag);
+            console.log(state)
+            return state;
+        }
         onMounted(() => {
             fetchData();
         });
@@ -215,6 +224,7 @@ export default {
             onSearch,
             filterOption,
             resetFilters,
+            getState,
         }
     }
 }
@@ -233,7 +243,7 @@ export default {
     margin-top: 16px;
     border: 1px dashed #e9e9e9;
     border-radius: 2px;
-    background-color: #fafafa;
+
     min-height: 200px;
     text-align: center;
     padding-top: 80px;

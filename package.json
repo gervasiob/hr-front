@@ -9,6 +9,7 @@
     "start": "serve -s dist -l $PORT"
   },
   "dependencies": {
+    "@ant-design/icons-vue": "^7.0.1",
     "ant-design-vue": "^4.2.1",
     "axios": "^1.7.2",
     "serve": "^14.2.3",
