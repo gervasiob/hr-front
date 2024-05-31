@@ -28,7 +28,7 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { message } from 'ant-design-vue';
 import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
 
@@ -39,15 +39,10 @@ export default {
         LoadingOutlined,
     },
     setup() {
-        function getBase64(img, callback) {
-            const reader = new FileReader();
-            reader.addEventListener('load', () => callback(reader.result));
-            reader.readAsDataURL(img);
-        }
-
         const fileList = ref([]);
         const loading = ref(false);
         const imageUrl = ref('');
+        const uploadRequests = {};
 
         const handleChange = info => {
             if (info.file.status === 'uploading') {
@@ -74,7 +69,7 @@ export default {
 
             if (!isExcelOrCsv) {
                 message.error('Solo se permiten archivos Excel o CSV');
-                return false; // Cancela la carga del archivo
+                return false;
             }
             const isLt2M = file.size / 1024 / 1024 < 2;
             if (!isLt2M) {
@@ -84,18 +79,93 @@ export default {
             return isExcelOrCsv && isLt2M;
         };
 
+        function getBase64(img, callback) {
+            const reader = new FileReader();
+            reader.addEventListener('load', () => callback(reader.result));
+            reader.readAsDataURL(img);
+        }
+
         function handleDrop(e) {
             console.log(e);
         }
 
+        function uploadFile(file) {
+            const { action, headers, withCredentials, method, name, data } = props;
+            const formData = new FormData();
+            formData.append(name, file);
+
+            if (typeof data === 'function') {
+                Object.keys(data(file)).forEach(key => {
+                    formData.append(key, data(file)[key]);
+                });
+            } else if (typeof data === 'object') {
+                Object.keys(data).forEach(key => {
+                    formData.append(key, data[key]);
+                });
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open(method || 'POST', action);
+
+            if (withCredentials) {
+                xhr.withCredentials = true;
+            }
+
+            if (headers) {
+                Object.keys(headers).forEach(key => {
+                    xhr.setRequestHeader(key, headers[key]);
+                });
+            }
+
+            xhr.onload = () => {
+                if (xhr.status < 200 || xhr.status >= 300) {
+                    message.error('Upload failed');
+                } else {
+                    message.success('Upload successful');
+                }
+                loading.value = false;
+            };
+
+            xhr.onerror = () => {
+                message.error('Upload error');
+                loading.value = false;
+            };
+
+            xhr.upload.onprogress = event => {
+                if (event.lengthComputable) {
+                    const percentComplete = Math.round((event.loaded / event.total) * 100);
+                    console.log(`Upload progress: ${percentComplete}%`);
+                }
+            };
+
+            loading.value = true;
+            xhr.send(formData);
+        }
+
+        const handleFilesUpload = files => {
+            Array.from(files).forEach(file => {
+                if (beforeUpload(file)) {
+                    uploadFile(file);
+                }
+            });
+        };
+
+        onMounted(() => {
+            // Initialize or fetch any data if needed
+        });
+
+        onBeforeUnmount(() => {
+            // Cleanup if needed
+        });
+
         return {
-            getBase64,
             fileList,
             loading,
             imageUrl,
             handleChange,
             beforeUpload,
             handleDrop,
+            handleFilesUpload,
         };
     },
 };
