@@ -1,17 +1,19 @@
-import axios from 'axios';
-import { BASE_URL } from '../apiUrls.js';
+import { apiRequest } from '../apiUrls.js';
 
-export function getQuotes(params) {
-    const endpoint = 'quotes/';
-    const path = BASE_URL + endpoint;
-    return axios.get(path, {
-        params: params,
-    })
-        .then((response) => {
-            return response.data;
-        })
-        .catch((error) => {
-            console.error("Error fetching quotes:", error);
-            throw error;
-        });
+const ENDPOINT = 'quotes/';
+
+export async function getQuotes(params, id = null) {
+    return await apiRequest('get', ENDPOINT, params, id);
+}
+
+export async function addQuotes(params) {
+    return await apiRequest('post', ENDPOINT, params);
+}
+
+export async function updateQuotes(id, params) {
+    return await apiRequest('put', ENDPOINT, params, id);
+}
+
+export async function deleteQuotes(id, params) {
+    return await apiRequest('delete', ENDPOINT, params, id);
 }
