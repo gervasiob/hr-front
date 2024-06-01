@@ -48,8 +48,8 @@ export default {
         return;
       }
       if (info.file.status === 'done') {
-        // Handle success
-        loading.value = false;
+        // Call uploadFile function here
+        uploadFile(info.file.originFileObj);
       }
       if (info.file.status === 'error') {
         // Handle error
@@ -79,9 +79,32 @@ export default {
       return isExcelOrCsv && isLt2M;
     };
 
-    function handleDrop(e) {
+    const handleDrop = e => {
       console.log(e);
-    }
+    };
+
+    const uploadFile = async file => {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      try {
+        loading.value = true;
+        const response = await fetch('https://dft-back-dev-2484ff5ddb07.herokuapp.com/upload/', {
+          method: 'POST',
+          body: formData,
+        });
+        if (!response.ok) {
+          throw new Error('Upload failed');
+        }
+        // Handle success
+        loading.value = false;
+        message.success('Upload successful');
+      } catch (error) {
+        // Handle error
+        loading.value = false;
+        message.error('Upload error');
+      }
+    };
 
     return {
       fileList,
@@ -109,4 +132,5 @@ export default {
   color: #666;
 }
 </style>
+
 
