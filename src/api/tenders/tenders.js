@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { BASE_URL } from './apiUrls.js';
+import { BASE_URL } from '../apiUrls.js';
 
 export function getTendersIndex(params) {
     const endpoint = 'tenders/';

@@ -1,1 +1,0 @@
-export const BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';

@@ -1,5 +1,5 @@
 import { h } from 'vue';
-import { MailOutlined, AppstoreOutlined, SettingOutlined } from '@ant-design/icons-vue';
+import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import TenderIndex from '../views/tenders/index.vue';
 
 export const menuList = [
@@ -23,38 +23,22 @@ export const menuList = [
         title: 'Login',
     },
     {
-        key: 'sub1',
+        key: 'config',
         icon: () => h(SettingOutlined),
-        label: 'Navigation Three - Submenu',
-        title: 'Navigation Three - Submenu',
+        label: 'Configuracion',
+        title: 'Configuración',
         children: [
             {
-                type: 'group',
-                label: 'Item 1',
-                children: [
-                    {
-                        label: 'Option 1',
-                        key: 'setting:1',
-                    },
-                    {
-                        label: 'Option 2',
-                        key: 'setting:2',
-                    },
-                ],
-            },
-            {
-                type: 'group',
-                label: 'Item 2',
-                children: [
-                    {
-                        label: 'Option 3',
-                        key: 'setting:3',
-                    },
-                    {
-                        label: 'Option 4',
-                        key: 'setting:4',
-                    },
-                ],
+                key: 'costos',
+                path: '/Costos',
+                name: 'Costos',
+                icon: () => h(UploadOutlined),
+                label: 'Costos',
+                title: 'Costos',
+                meta: {
+                    label: 'Costos',
+                    title: 'Archivo Excel Costos',
+                }
             },
         ],
     },

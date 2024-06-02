@@ -61,6 +61,16 @@ const otherRoutes = [
             label: 'Licitacion Detalle',
             title: 'Licitacion Detalle',
         }
+    },
+    {
+        key: 'Cost',
+        name: 'CostIndex',
+        path: '/costos',
+        component: () => import('@/views/settings/index.vue'),
+        meta: {
+            label: 'Costos',
+            title: 'Costos',
+        }
     }
 ]
 export const basicRoutes = [
