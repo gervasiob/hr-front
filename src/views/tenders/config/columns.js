@@ -37,4 +37,28 @@ export const tableColumns = [
         filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
         onFilter: (value, record) => record.claim_state === value,
     },
+    {
+        title: 'Agente',
+        key: 'agent',
+        dataIndex: 'agent',
+        sorter: (a, b) => a.agent.localeCompare(b.agent),
+        // filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
+        // onFilter: (value, record) => record.claim_state === value,
+    },
+    {
+        title: 'Prioridad',
+        key: 'priority',
+        dataIndex: 'priority',
+        // sorter: (a, b) => a.agent.localeCompare(b.agent),
+        // filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
+        // onFilter: (value, record) => record.claim_state === value,
+    },
+    {
+        title: 'Ranking',
+        key: 'ranking',
+        dataIndex: 'ranking',
+        // sorter: (a, b) => a.agent.localeCompare(b.agent),
+        // filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
+        // onFilter: (value, record) => record.claim_state === value,
+    },
 ];

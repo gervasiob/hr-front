@@ -138,7 +138,7 @@
                     <a-switch v-model:checked="formTenderDetail.not_quote" />
                 </a-form-item>
                 <div v-show="!formTenderDetail.not_quote">
-                    <a-form-item label="Tiempo de Entrega">
+                    <a-form-item label="Tiempo de Entrega" required>
                         <a-select v-model:value="formTenderDetail.delivery_time" style="width: 100%" placeholder="..."
                             :options="optionsDeliveryTime" @change="handleChangeDeliveryTime" allow-clear show-search
                             :filter-option="filterOption"></a-select>
@@ -150,14 +150,14 @@
                         <a-input v-model:value="formTenderDetail.tire_quoted" placeholder="0" />
                     </a-form-item>
                     <a-form-item label="Neumático $">
-                        <a-input v-model:value="formTenderDetail.tire_quoted" placeholder="0" />
+                        <a-input v-model:value="formTenderDetail.spare_tire_amount" placeholder="0" />
                     </a-form-item>
                     <a-form-item label="Marca">
                         <a-select v-model:value="formTenderDetail.brand" style="width: 100%" placeholder="..."
-                            :options="optionsBrand" allow-clear></a-select>
+                            :options="optionsBrand" allow-clear :filter-option="filterOption"></a-select>
                     </a-form-item>
                     <a-form-item label="Modelo Neumatico">
-                        <a-select v-model:value="formTenderDetail.model" style="width: 100%" placeholder="..."
+                        <a-select v-model:value="formTenderDetail.tire_model" style="width: 100%" placeholder="..."
                             :options="optionsModel" allow-clear show-search :filter-option="filterOption"></a-select>
                     </a-form-item>
                     <a-form-item label="Tipo de Llanta">
@@ -190,7 +190,7 @@
                         <a-textarea v-model:value="formTenderDetail.obs" :rows="4" />
                     </a-form-item>
                     <a-form-item label="Estoy Cotizando">
-                        <a-select v-model:value="formTenderDetail.quote_detail" style="width: 100%" placeholder="..."
+                        <a-select v-model:value="formTenderDetail.original_parts" style="width: 100%" placeholder="..."
                             :options="optionsQuoteDetails" allow-clear show-search
                             :filter-option="filterOption"></a-select>
                     </a-form-item>
@@ -203,7 +203,8 @@
             </div>
             <a-row>
                 <a-col :span="8">
-                    <a-button type="primary" class="hover-button-grey">Cancelar</a-button>
+                    <a-button type="primary" class="hover-button-grey" @click="onCancel"
+                        :loading="isLoading">Cancelar</a-button>
                 </a-col>
                 <a-col :span="8" :offset="8">
                     <a-button type="primary" @click="onSave" :loading="isLoading">Guardar</a-button>
@@ -215,10 +216,12 @@
                 <a-divider style="border-color: #563CCA" dashed />
                 <a-row>
                     <a-col :span="8">
-                        <a-button type="primary" danger>Cancelar Presupuesto</a-button>
+                        <a-button type="primary" danger @click="onCancel" :loading="isLoading">Cancelar
+                            Presupuesto</a-button>
                     </a-col>
                     <a-col :span="8" :offset="8">
-                        <a-button type="primary" class="hover-button">Licitar</a-button>
+                        <a-button type="primary" class="hover-button" @click="onLicitar"
+                            :loading="isLoading">Licitar</a-button>
                     </a-col>
                 </a-row>
             </div>
@@ -322,6 +325,15 @@ export default {
                         quantity: quoteData.value.quantity ?? 12,
                         total: quoteData.value.quantity * quoteData.value.price,
                     }]
+                const quoteDataValue = {
+                    ...quoteData.value,
+                    brand: parseInt(quoteData.value.brand),
+                    delivery_time: parseInt(quoteData.value.delivery_time),
+                    tire_model: parseInt(quoteData.value.tire_model),
+                    llanta_type: parseInt(quoteData.value.llanta_type),
+                };
+                formTenderDetail.value = quoteDataValue;
+
             } catch (error) {
                 console.error('Error fetching tender data:', error);
             }
@@ -342,7 +354,7 @@ export default {
         const onSave = async () => {
             isLoading.value = true;
             errorMessage.value = '';
-            console.log(formTenderDetail.value)
+            console.log(formTenderDetail.value, 'on save')
             formRef.value
                 .validate().then(() => {
                     try {
@@ -365,7 +377,42 @@ export default {
 
         };
         const onCancel = () => {
+            isLoading.value = true;
+            errorMessage.value = '';
+            try {
+                const params = {
+                    id: formTenderDetail.value.id,
+                    claim_state: 'C',
+                }; // O ajusta según necesites
+                const response = updateQuotes(quoteId.value, params);
+                console.log('Response:', response);
+                // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
+            } catch (error) {
+                console.error('Error updating quotes:', error);
+                errorMessage.value = 'Error actualizando las cotizaciones: ' + error;
+            } finally {
+                isLoading.value = false;
+            }
             console.log('cancel!', toRaw(formTenderDetail));
+        };
+        const onLicitar = () => {
+            isLoading.value = true;
+            errorMessage.value = '';
+            try {
+                const params = {
+                    id: formTenderDetail.value.id,
+                    claim_state: 'V',
+                }; // O ajusta según necesites
+                const response = updateQuotes(quoteId.value, params);
+                console.log('Response:', response);
+                // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
+            } catch (error) {
+                console.error('Error updating quotes:', error);
+                errorMessage.value = 'Error actualizando las cotizaciones: ' + error;
+            } finally {
+                isLoading.value = false;
+            }
+            console.log('licitado!', toRaw(formTenderDetail));
         };
         const onDelete = key => {
             dataSource.value = dataSource.value.filter(item => item.key !== key);
@@ -427,6 +474,7 @@ export default {
             quoteId,
             formRef,
             rules,
+            onLicitar,
         }
     }
 }
