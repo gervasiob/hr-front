@@ -37,7 +37,7 @@ export const TENDER_STATES = [
     {
         label: 'Evaluado',
         value: 'E',
-        color: 'lime'
+        color: 'green'
     },
     {
         label: 'Rechazado',
@@ -48,6 +48,23 @@ export const TENDER_STATES = [
         label: 'Cancelado',
         value: 'C',
         color: 'red'
+    },
+];
+export const PRIORITY_VALUES = [
+    {
+        label: 1,
+        value: 1,
+        color: 'gold'
+    },
+    {
+        label: 2,
+        value: 2,
+        color: 'blue'
+    },
+    {
+        label: 3,
+        value: 3,
+        color: 'green'
     },
 ];
 export const DELIVERY_TIMES = [

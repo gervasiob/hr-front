@@ -9,8 +9,8 @@
             }}</a-descriptions-item>
         <a-descriptions-item label="Compañía" class="a-descriptions-item">{{ tenderData.company }}</a-descriptions-item>
         <a-descriptions-item label="Estado" class="a-descriptions-item">
-            <a-badge status="processing" :color="getStateColor(tenderData.claim_state)"
-                :text="getStateLabel(tenderData.claim_state)" />
+            <a-badge status="processing" :color="getStateColor(formTenderDetail.quote_state)"
+                :text="getStateLabel(formTenderDetail.quote_state)" />
             <!-- <a-tag :color="getStateColor(tenderData.claim_state)" class="large-tag">
                 {{ getStateLabel(tenderData.claim_state) }}
             </a-tag> -->
@@ -201,26 +201,29 @@
                     </a-form-item>
                 </a-form>
             </div>
-            <a-row>
-                <a-col :span="8">
-                    <a-button type="primary" class="hover-button-grey" @click="onCancel"
-                        :loading="isLoading">Cancelar</a-button>
-                </a-col>
-                <a-col :span="8" :offset="8">
-                    <a-button type="primary" @click="onSave" :loading="isLoading">Guardar</a-button>
-                    <a-alert v-if="errorMessage" type="error" :message="errorMessage" />
-                </a-col>
-            </a-row>
-            <!-- Colocar que se vea según el estado -->
-            <div>
-                <a-divider style="border-color: #563CCA" dashed />
+            <a-divider style="border-color: #563CCA" dashed />
+            <div
+                v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'">
                 <a-row>
                     <a-col :span="8">
-                        <a-button type="primary" danger @click="onCancel" :loading="isLoading">Cancelar
+                        <a-button type="primary" class="hover-button-grey" @click="onSave('C')"
+                            :loading="isLoading">Cancelar</a-button>
+                    </a-col>
+                    <a-col :span="8" :offset="8">
+                        <a-button type="primary" @click="onSave('E')" :loading="isLoading">Guardar</a-button>
+                        <a-alert v-if="errorMessage" type="error" :message="errorMessage" />
+                    </a-col>
+                </a-row>
+            </div>
+            <!-- Colocar que se vea según el estado -->
+            <div v-if="formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'V'">
+                <a-row>
+                    <a-col :span="8" v-if="formTenderDetail.quote_state === 'V'">
+                        <a-button type="primary" danger @click="onSave('R')" :loading="isLoading">Cancelar
                             Presupuesto</a-button>
                     </a-col>
                     <a-col :span="8" :offset="8">
-                        <a-button type="primary" class="hover-button" @click="onLicitar"
+                        <a-button type="primary" class="hover-button" @click="onSave('V')"
                             :loading="isLoading">Licitar</a-button>
                     </a-col>
                 </a-row>
@@ -351,18 +354,24 @@ export default {
         const filterOption = (input, option) => {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
-        const onSave = async () => {
+        const onSave = async (value) => {
             isLoading.value = true;
             errorMessage.value = '';
             console.log(formTenderDetail.value, 'on save')
             formRef.value
-                .validate().then(() => {
+                .validate().then(async () => {
                     try {
-
                         const params = formTenderDetail.value; // O ajusta según necesites
-                        console.log(params)
-                        const response = updateQuotes(quoteId.value, params);
+
+                        params.quote_state = value;
+                        const fullParams = {
+                            ...params,
+                            details: dataSource.value, 
+                        }
+                        console.log(fullParams)
+                        const response = updateQuotes(quoteId.value, fullParams);
                         console.log('Response:', response);
+                        await fetchTenderData(tenderId.value);
                         // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
                     } catch (error) {
                         console.error('Error updating quotes:', error);
