@@ -40,6 +40,11 @@ export const TENDER_STATES = [
         color: 'green'
     },
     {
+        label: 'Evaluado',
+        value: 'G',
+        color: 'green'
+    },
+    {
         label: 'Rechazado',
         value: 'R',
         color: 'default'
