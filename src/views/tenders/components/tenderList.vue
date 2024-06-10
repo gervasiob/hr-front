@@ -37,14 +37,20 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item label="Rentabilidad" name="rentabilidad">
-                        <a-input v-model:value="filterInputs.rentabilidad" allowClear />
+                    <a-form-item label="Agente" name="agent">
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
+                            show-search :filter-option="filterOption">
+                            <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
+                                :label="item.label">
+                                {{ item.label }}
+                            </a-select-option>
+                        </a-select>
                     </a-form-item>
                 </a-col>
             </a-row>
             <a-row>
                 <a-col :span="24" style="text-align: right">
-                    <a-button type="primary" @click="onSearch">Buscar</a-button>
+                    <a-button type="primary" danger @click="onSearch">Buscar</a-button>
                     <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
                 </a-col>
             </a-row>
@@ -52,7 +58,7 @@
     </div>
 
     <!-- Table -->
-    <a-table :columns="columns" :data-source="dataSource">
+    <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
         <template #headerCell="{ column }">
             <template v-if="column.key === 'id'">
                 <span>
@@ -151,6 +157,11 @@ export default {
         //         dataIndex: 'estado',
         //     },
         // ];
+        const customHeaderRow = (column) => {
+            return {
+                class: 'custom-header',
+            };
+        };
         const fetchData = async (params = {}) => {
             try {
                 const response = await getQuotes(params);
@@ -167,6 +178,7 @@ export default {
             }
         };
 
+
         const onSearch = () => {
             fetchData(filterInputs.value);
         };
@@ -180,7 +192,6 @@ export default {
         };
         const getState = (tag) => {
             const state = TENDER_STATES.find((item) => item.value === tag);
-            console.log(state)
             return state;
         }
         onMounted(() => {
@@ -225,6 +236,7 @@ export default {
             filterOption,
             resetFilters,
             getState,
+            customHeaderRow,
         }
     }
 }
@@ -232,8 +244,13 @@ export default {
 
 <style scoped>
 .filters {
-    margin: 2%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    background-color: #ececec;
+    padding: 2%;
+    border-radius: 20px;
 }
+
 
 #components-form-demo-advanced-search .ant-form {
     max-width: none;

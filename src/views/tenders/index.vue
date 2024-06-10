@@ -1,9 +1,8 @@
 <template>
   <div class="header">
-    <h1>Integración con Claims</h1>
   </div>
 
-  <div style="background-color: #ececec; padding: 20px">
+  <div style="background-color: #ececec; padding: 20px;  border-radius: 20px;">
     <a-row :gutter="16">
       <a-col :span="8">
         <a-card title="Prioridad 1" :bordered="false" class="card-1" @click="handleCardClick(1)">
