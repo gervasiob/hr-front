@@ -139,8 +139,8 @@ export default {
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
 
         // Define agentList como un computed property
-        const agentList = computed(async () => {
-            agents.value = await getUsers({ roles: roles.value });
+        const agentList = computed( () => {
+            agents.value = getUsers({ roles: roles.value });
             console.log(agents.value)
             return agents.value;
         });
