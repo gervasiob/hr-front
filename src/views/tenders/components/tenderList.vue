@@ -15,7 +15,7 @@
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="Estado" name="estado">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.claim_state" allowClear
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.quote_state" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
                                 :label="item.label">
@@ -26,17 +26,17 @@
                 </a-col>
             </a-row>
             <a-row :gutter="24">
-                <a-col :span="8">
+                <a-col :span="6">
                     <a-form-item label="Claim id" name="claim_id">
                         <a-input v-model:value="filterInputs.claim_id" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="8">
+                <a-col :span="6">
                     <a-form-item label="Licitación id" name="tender_id">
                         <a-input v-model:value="filterInputs.id" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="8">
+                <a-col :span="6">
                     <a-form-item label="Agente" name="agent">
                         <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
                             show-search :filter-option="filterOption">
@@ -47,9 +47,7 @@
                         </a-select>
                     </a-form-item>
                 </a-col>
-            </a-row>
-            <a-row>
-                <a-col :span="24" style="text-align: right">
+                <a-col :span="6" style="text-align: right">
                     <a-button type="primary" danger @click="onSearch">Buscar</a-button>
                     <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
                 </a-col>
@@ -70,7 +68,7 @@
 
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'id'">
-                <a-button type="primary" shape="circle">
+                <a-button type="primary" danger>
                     <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id } }">
                         {{ record.id }}
                     </router-link>
@@ -99,7 +97,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, computed } from 'vue';
+import { reactive, ref, onMounted, watch } from 'vue';
 import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
@@ -108,7 +106,13 @@ import { getQuotes } from '@/api/quotes/quotes.js';
 
 export default {
     name: 'TenderList',
-    setup() {
+    props: {
+        cardFilter: {
+            type: Number,
+            default: null,
+        }
+    },
+    setup(props) {
         const expand = ref(false);
         const formRef = ref();
         const dataSource = ref([]);
@@ -197,29 +201,15 @@ export default {
         onMounted(() => {
             fetchData();
         });
-        // const data = [
-        //     {
-        //         key: '1',
-        //         aseguradora: 'Federación Patronal',
-        //         cotizacion: '$1.000.000',
-        //         rentabilidad: '10%',
-        //         estado: ['licitado'],
-        //     },
-        //     {
-        //         key: '2',
-        //         aseguradora: 'La Caja',
-        //         cotizacion: '$5.000.000',
-        //         rentabilidad: '30%',
-        //         estado: ['pendiente'],
-        //     },
-        //     {
-        //         key: '3',
-        //         aseguradora: 'Federación Patronal',
-        //         cotizacion: '$300.000',
-        //         rentabilidad: '-10%',
-        //         estado: ['cancelado'],
-        //     },
-        // ];
+        
+        watch(
+            () => props.cardFilter, 
+            (newValue, oldValue) => {
+                console.log(newValue);
+                filterInputs.value.quote_state = 'N';
+                fetchData({ priority: newValue, quote_state: 'N' });
+            }
+        );
         return {
             expand,
             formRef,
@@ -246,7 +236,7 @@ export default {
 .filters {
     margin-top: 1%;
     margin-bottom: 1%;
-    background-color: #ececec;
+    background-color: var(--mute);
     padding: 2%;
     border-radius: 20px;
 }
@@ -276,5 +266,17 @@ export default {
 [data-theme='dark'] #components-form-demo-advanced-search .search-result-list {
     border: 1px dashed #434343;
     background: rgba(255, 255, 255, 0.04);
+}
+:deep(.ant-table-thead .ant-table-cell) {
+    background-color: var(--principal);
+    color: white;
+}
+:deep(.ant-table-thead:hover .ant-table-cell:hover) {
+    background-color: var(--mute);
+    color: black;
+}
+:deep(.ant-table-thead .ant-table-column-sort) {
+    background-color: var(--secondary) !important;
+    color: black !important;
 }
 </style>
