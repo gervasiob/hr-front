@@ -1,15 +1,15 @@
 import { h } from 'vue';
 import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import TenderIndex from '../views/tenders/index.vue';
-
+import tenderDetail from '@/views/tenders/components/tenderDetail.vue';
 export const menuList = [
     {
         key: 'licitaciones',
         path: '/Licitaciones',
         name: 'Licitaciones',
         icon: () => h(MailOutlined),
-        label: 'Licitaciones',
-        title: 'Licitaciones',
+        label: 'LICITACIONES',
+        title: 'LICITACIONES',
         meta: {
             label: 'Licitaciones',
             title: 'Licitaciones',
@@ -19,13 +19,13 @@ export const menuList = [
         key: 'login',
         path: '/login',
         icon: () => h(AppstoreOutlined),
-        label: 'Login',
-        title: 'Login',
+        label: 'LOGIN',
+        title: 'LOGIN',
     },
     {
         key: 'config',
         icon: () => h(SettingOutlined),
-        label: 'Configuracion',
+        label: 'CONFIGURACION',
         title: 'Configuración',
         children: [
             {
@@ -33,7 +33,7 @@ export const menuList = [
                 path: '/Costos',
                 name: 'Costos',
                 icon: () => h(UploadOutlined),
-                label: 'Costos',
+                label: 'COSTOS',
                 title: 'Costos',
                 meta: {
                     label: 'Costos',

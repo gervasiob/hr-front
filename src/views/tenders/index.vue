@@ -2,7 +2,7 @@
   <div class="header">
   </div>
 
-  <div style="background-color: #ececec; padding: 20px;  border-radius: 20px;">
+  <div style="background-color: var(--mute); padding: 20px;  border-radius: 20px;">
     <a-row :gutter="16">
       <a-col :span="8">
         <a-card title="Prioridad 1" :bordered="false" class="card-1" @click="handleCardClick(1)">
@@ -25,28 +25,31 @@
     </a-row>
   </div>
 
-  <TenderList />
+  <TenderList :card-filter="cardNumber" />
 
 
 </template>
 
 <script>
 import TenderList from './components/tenderList.vue';
-
+import { ref } from 'vue';
 export default {
   name: 'TenderIndex',
   components: {
     TenderList,
   },
   setup() {
-    const handleCardClick = (cardNumber) => {
-      console.log(`Clicked on card ${cardNumber}`);
+    const cardNumber = ref();
+    const handleCardClick = (cardKey) => {
+      console.log(`Clicked on card ${cardKey}`);
+      cardNumber.value = cardKey;
       // Aquí puedes manejar la lógica del clic de la tarjeta, por ejemplo, redireccionar a otra página
     };
 
 
     return {
       handleCardClick,
+      cardNumber,
     }
   }
 }
@@ -61,7 +64,7 @@ export default {
 }
 
 .card-2 {
-  background-color: rgb(170, 170, 39);
+  background-color: rgb(180, 172, 29);
   color: white;
   cursor: pointer;
   transition: background-color 0.3s ease, box-shadow 0.3s ease;
@@ -78,7 +81,7 @@ export default {
 .card-1:hover,
 .card-2:hover,
 .card-3:hover {
-  background-color: rgba(12, 121, 127, 0.889);
+  background-color: #CB2127;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
