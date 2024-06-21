@@ -65,14 +65,37 @@
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">$ {{ tenderData.total ??
-                            '255.567,94'
+                        '255.567,94'
                             }}</span></a-descriptions-item>
                     <a-descriptions-item label="RENTABILIDAD"><span class="collapse-item">{{ tenderData.rentabilidad ??
-                            '10'
+                        '10'
                             }}%</span></a-descriptions-item>
                 </a-descriptions>
             </template>
             <div class="collapse-body">
+                <div class="image-container">
+                    <a-space style="align-items: start;">
+                        <span>Imágenes</span>
+                        <a-select ref="select" v-model:value="imageSelect"
+                            style="width: 300px; border: 2px solid var(--border-item)" @focus="focus"
+                            @change="handleImageChange" show-search :filter-option="filterOption" allow-clear
+                            placeholder="Seleccione un item">
+                            <a-select-option v-for="(image, index) in imageList" :key="index" :value="image.value"
+                                :label="image.label">
+                                {{ image.label }}
+                            </a-select-option>
+                        </a-select>
+                    </a-space>
+                    <div v-if="imageUrl" class="image-container-item" @click="showModal">
+                        <img :src="imageUrl" alt="Imagen seleccionada" class="selected-image" />
+                    </div>
+                </div>
+                <a-modal v-model:open="isModalVisible" :footer="imageUrl" @cancel="handleModalCancel"
+                    style="width: fit-content; height: fit-content;">
+                    <img :src="imageUrl" alt="Imagen ampliada" />
+                </a-modal>
+                <!-- <vue-image-lightbox :images="[imageUrl]" :index="currentImageIndex" @close="isModalVisible = false"
+                    v-if="isModalVisible" /> -->
                 <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
                 <a-table :columns="columns" :data-source="dataSource" bordered>
                     <template #bodyCell="{ column, text, record }">
@@ -178,20 +201,24 @@
                             <a-col :span="6">
                                 <div class="form-item-container">
                                     <span>Fee</span>
-                                    <a-input v-model:value="formTenderDetail.fee" style="width: 100%"></a-input>
+                                    <a-input v-model:value="formTenderDetail.fee"
+                                        style="width: 100%; border: 2px solid var(--border-item)"></a-input>
                                 </div>
                             </a-col>
                         </a-row>
 
                         <div style="align-content: center; padding: 2%">
+                            <a-button class="editable-add-btn" style="margin-bottom: 8px"
+                                @click="handleDetailAdd">AGREGAR
+                                ITEM</a-button>
                             <a-table :columns="columnsQuote" :data-source="dataQuoteSource" bordered
                                 :paggination="false">
                                 <template #bodyCell="{ column, text, record }">
                                     <template
                                         v-if="['tire_type_name', 'Llanta', 'Neumatico'].includes(column.dataIndex)">
                                         <div>
-                                            <a-input v-if="editableData[record.key]"
-                                                v-model:value="editableData[record.key][column.dataIndex]"
+                                            <a-input v-if="editableQuoteData[record.key]"
+                                                v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" />
                                             <template v-else>
                                                 {{ text }}
@@ -200,8 +227,8 @@
                                     </template>
                                     <template v-if="['type'].includes(column.dataIndex)">
                                         <div>
-                                            <a-select ref="select" v-if="editableData[record.key]"
-                                                v-model:value="editableData[record.key][column.dataIndex]"
+                                            <a-select ref="select" v-if="editableQuoteData[record.key]"
+                                                v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" @focus="focus" @change="handleChange">
                                                 <a-select-option value="Nuematicos">Nuemáticos</a-select-option>
                                                 <a-select-option value="Llantas">Llantas</a-select-option>
@@ -209,6 +236,26 @@
                                             <template v-else>
                                                 {{ text }}
                                             </template>
+                                        </div>
+                                    </template>
+                                    <template v-else-if="column.dataIndex === 'operation'">
+                                        <div class="editable-row-operations">
+                                            <span v-if="editableQuoteData[record.key]">
+                                                <a-typography-link
+                                                    @click="saveQuote(record.key)">Save</a-typography-link>
+                                                <a-popconfirm title="Confirma cancelar?"
+                                                    @confirm="cancelQuote(record.key)">
+                                                    <a>Cancel</a>
+                                                </a-popconfirm>
+
+                                            </span>
+                                            <span v-else>
+                                                <a @click="editQuote(record.key)">Edit</a>
+                                                <a-popconfirm v-if="dataQuoteSource.length"
+                                                    title="Confirma eliminación?" @confirm="onDeleteQuote(record.key)">
+                                                    <a>Eliminar</a>
+                                                </a-popconfirm>
+                                            </span>
                                         </div>
                                     </template>
                                 </template>
@@ -244,7 +291,7 @@
                                 <div class="form-item-container label-top">
                                     <span>Descripción</span>
                                     <a-textarea :rows="4" v-model:value="formTenderDetail.description"
-                                        style="width: 100%"></a-textarea>
+                                        style="width: 100%;  border: 2px solid var(--border-item)"></a-textarea>
                                 </div>
                             </a-col>
                         </a-row>
@@ -295,7 +342,8 @@
                     </div>
                     <div class="form-item-container label-top">
                         <span>Observaciones</span>
-                        <a-textarea v-model:value="formTenderDetail.obs" :rows="4" />
+                        <a-textarea v-model:value="formTenderDetail.obs" :rows="4"
+                            style=" border: 2px solid var(--border-item)" />
                     </div>
                 </a-form>
                 <div v-show="!formTenderDetail.not_quote">
@@ -362,8 +410,8 @@ export default {
         const tenderId = ref(route.params.id);
         const tenderData = ref({});
         const quoteData = ref({});
-        const dataSource = ref();
-        const dataQuoteSource = ref();
+        const dataSource = ref([]);
+        const dataQuoteSource = ref([]);
         const quoteId = ref();
         const columns = tableColumns;
         const columnsQuote = tableQuoteColumns;
@@ -396,9 +444,35 @@ export default {
             daytona_ids: [],
             quote_detail: '',
         });
+        const imageList = ref([
+            {
+                value: 1,
+                label: 'img 1',
+                url: 'https://img.zsmotor.cl/wp-content/uploads/2023/01/Screenshot_4-3-1024x609.jpg'
+            },
+            {
+                value: 2,
+                label: 'img 2',
+                url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS695Vd-2JpJc0h_VZD80pr9a48mYY5gFQkGg&s'
+            },
+            {
+                value: 3,
+                label: 'img 3',
+                url: 'https://www.autonocion.com/wp-content/uploads/2016/06/C%C3%B3digos-neum%C3%A1ticos-1.jpg'
+            },
+        ]);
+        const imageSelect = ref();
+        const imageUrl = ref();
         const editableData = reactive({});
+        const editableQuoteData = reactive({});
+        const selectedOption = ref(null);
+        const isModalVisible = ref(false);
+        const currentImageIndex = ref(0);
         const edit = key => {
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+        };
+        const editQuote = key => {
+            editableQuoteData[key] = cloneDeep(dataQuoteSource.value.filter(item => key === item.key)[0]);
         };
         const save = key => {
             const record = dataSource.value.find(item => key === item.key);
@@ -408,6 +482,14 @@ export default {
         };
         const cancel = key => {
             delete editableData[key];
+        };
+        const saveQuote = key => {
+            const record = dataQuoteSource.value.find(item => key === item.key);
+            Object.assign(record, editableQuoteData[key]);
+            delete editableQuoteData[key];
+        };
+        const cancelQuote = key => {
+            delete editableQuoteData[key];
         };
 
         const fetchTenderData = async (id) => {
@@ -420,18 +502,18 @@ export default {
                 };
                 const quoteResponse = await getQuotes(params);
                 quoteData.value = quoteResponse[0];
-                quoteId.value = quoteData.value.id,
+                quoteId.value = quoteData.value.id;
+                console.log(quoteData.value.details)
+                quoteData.value.details.map((item) => {
+                    console.log(item,'item')
+                    dataSource.value.push(item)
+                })
+                // quoteData.value.tire_type_name.map((item) => {
+                //     console.log(item,'tire_type_name')
+                //     dataQuoteSource.value.push(item)
+                // })
+             
 
-                    dataSource.value = [{
-                        type: quoteData.value.type ?? 'Neumáticos',
-                        sku: quoteData.value.sku ?? '9991274',
-                        llanta_type: quoteData.value.llanta_type ?? '9991274',
-                        vendor: quoteData.value.vendor ?? 'A definir',
-                        po: quoteData.value.po ?? 0,
-                        price: quoteData.value.price ?? 100,
-                        quantity: quoteData.value.quantity ?? 12,
-                        total: quoteData.value.quantity * quoteData.value.price,
-                    }]
                 let records = [];
                 records = quoteResponse[0].tire_type_name;
                 console.log(records)
@@ -448,7 +530,7 @@ export default {
                 } else {
                     console.error("Expected records to be an array, but got:", typeof records);
                 }
-                
+
                 console.log(quoteResponse)
                 console.log(dataQuoteSource.value)
                 console.log(dataSource.value)
@@ -491,6 +573,7 @@ export default {
                         const fullParams = {
                             ...params,
                             details: dataSource.value,
+                            tire_type_name: dataQuoteSource.value,
                         }
                         console.log(fullParams)
                         const response = updateQuotes(quoteId.value, fullParams);
@@ -550,10 +633,35 @@ export default {
         const onDelete = key => {
             dataSource.value = dataSource.value.filter(item => item.key !== key);
         };
+        const onDeleteQuote = key => {
+            dataQuoteSource.value = dataQuoteSource.value.filter(item => item.key !== key);
+        };
         const handleChangeDeliveryTime = () => {
             console.log('handle dT');
         }
-        const count = computed(() => dataSource.value.length + 1);
+        const handleModalCancel = () => {
+            console.log('handle Cancel Modal');
+            isModalVisible.value = false;
+        }
+        const showModal = () => {
+            isModalVisible.value = true;
+            console.log('handle open Modal');
+        }
+        const handleImageChange = () => {
+            if (imageSelect.value) {
+                imageUrl.value = imageList.value.find((item) => item.value === imageSelect.value).url;
+            } else {
+                imageUrl.value = null;
+            }
+            console.log(imageUrl.value);
+        }
+
+        const count = computed(() => {
+            if(dataSource.value) {
+             return   dataSource.value.length + 1
+            }
+            return 0;
+        });
         const handleAdd = () => {
             const newKey = `${count.value}`;
             const newData = {
@@ -569,6 +677,18 @@ export default {
             };
             dataSource.value.push(newData);
             editableData[newKey] = cloneDeep(newData);
+        };
+        const handleDetailAdd = () => {
+            const newKey = `${count.value}`;
+            const newData = {
+                key: newKey,
+                tire_type_name: '',
+                Llanta: 0,
+                Neumatico: 0,
+                type: '',
+            };
+            dataQuoteSource.value.push(newData);
+            editableQuoteData[newKey] = cloneDeep(newData);
         };
         onMounted(() => {
             fetchTenderData(tenderId.value);
@@ -586,9 +706,13 @@ export default {
             columnsQuote,
             dataSource,
             editableData,
+            editableQuoteData,
             edit,
+            editQuote,
             save,
             cancel,
+            saveQuote,
+            cancelQuote,
             optionsDeliveryTime,
             handleChangeDeliveryTime,
             optionsBrand,
@@ -603,6 +727,7 @@ export default {
             handleAdd,
             count,
             onDelete,
+            onDeleteQuote,
             isLoading,
             errorMessage,
             quoteId,
@@ -610,6 +735,16 @@ export default {
             rules,
             onLicitar,
             dataQuoteSource,
+            handleDetailAdd,
+            imageSelect,
+            handleImageChange,
+            imageList,
+            imageUrl,
+            selectedOption,
+            isModalVisible,
+            handleModalCancel,
+            showModal,
+            currentImageIndex,
         }
     }
 }
@@ -796,5 +931,30 @@ export default {
 
 .label-top {
     align-items: normal !important;
+}
+
+:deep(.ant-select-selector) {
+    border: 2px solid var(--border-item) !important;
+}
+
+:deep(.ant-input-affix-wrapper) {
+    border: 2px solid var(--border-item) !important;
+}
+
+.image-container {
+    display: flex;
+    width: 400px;
+    height: 250px;
+    align-content: center;
+
+}
+
+.image-container-item {
+    margin-left: 10%;
+}
+
+.selected-image {
+    max-width: 400px;
+    max-height: 400px;
 }
 </style>

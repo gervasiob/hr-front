@@ -38,11 +38,12 @@
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="Agente" name="agent">
+                        {{ agentList }}
                         <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
                             show-search :filter-option="filterOption">
-                            <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
-                                :label="item.label">
-                                {{ item.label }}
+                            <a-select-option v-for="(item, index) in agentList" :key="index" :value="item.id"
+                                :label="item.last_name">
+                                {{ item.last_name }}
                             </a-select-option>
                         </a-select>
                     </a-form-item>
@@ -97,12 +98,13 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, watch } from 'vue';
+import { reactive, ref, onMounted, computed, watch } from 'vue';
 import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
 import { getQuotes } from '@/api/quotes/quotes.js';
+import { getUsers } from '@/api/users/users.js';
 
 export default {
     name: 'TenderList',
@@ -132,6 +134,17 @@ export default {
         const filters = filterList;
         const columns = tableColumns;
         const aseguradoraList = ASEGURADORAS;
+
+        const roles = ref(2); // Define roles como un ref para que sea reactivo
+        const agents = ref([]); // Define agents como un ref para almacenar los agentes
+
+        // Define agentList como un computed property
+        const agentList = computed(async () => {
+            agents.value = await getUsers({ roles: roles.value });
+            console.log(agents.value)
+            return agents.value;
+        });
+        console.log(agentList)
         const estadoList = TENDER_STATES;
 
         // const columns = [
@@ -200,6 +213,7 @@ export default {
         }
         onMounted(() => {
             fetchData();
+            agentList;
         });
         
         watch(
@@ -227,6 +241,9 @@ export default {
             resetFilters,
             getState,
             customHeaderRow,
+            agentList,
+            agents,
+            roles,
         }
     }
 }
