@@ -69,11 +69,13 @@
 
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'id'">
-                <a-button type="primary" danger>
-                    <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id } }">
+
+                <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id } }">
+                    <a-button type="primary" danger>
                         {{ record.id }}
-                    </router-link>
-                </a-button>
+
+                    </a-button>
+                </router-link>
             </template>
             <template v-else-if="column.key === 'quote_state'">
                 <span>
@@ -98,7 +100,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, computed, watch } from 'vue';
+import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
@@ -139,7 +141,7 @@ export default {
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
 
         // Define agentList como un computed property
-        const agentList = computed( () => {
+        const agentList = computed(() => {
             agents.value = getUsers({ roles: roles.value });
             console.log(agents.value)
             return agents.value;
@@ -213,15 +215,22 @@ export default {
         }
         onMounted(() => {
             fetchData();
-            agentList;
+            window.addEventListener('card-clicked', handleCardClick);
         });
-        
+        const handleCardClick = (event) => {
+            const cardKey = event.detail;
+            console.log(event)
+            console.log(`Card ${cardKey} clicked nuevo`);
+            filterInputs.value.quote_state = 'N';
+            fetchData({ priority: cardKey, quote_state: 'N' });
+        };
+
+        onUnmounted(() => {
+            window.removeEventListener('card-clicked', handleCardClick);
+        });
         watch(
-            () => props.cardFilter, 
+            () => props.cardFilter,
             (newValue, oldValue) => {
-                console.log(newValue);
-                filterInputs.value.quote_state = 'N';
-                fetchData({ priority: newValue, quote_state: 'N' });
             }
         );
         return {
@@ -284,14 +293,17 @@ export default {
     border: 1px dashed #434343;
     background: rgba(255, 255, 255, 0.04);
 }
+
 :deep(.ant-table-thead .ant-table-cell) {
     background-color: var(--principal);
     color: white;
 }
+
 :deep(.ant-table-thead:hover .ant-table-cell:hover) {
     background-color: var(--mute);
     color: black;
 }
+
 :deep(.ant-table-thead .ant-table-column-sort) {
     background-color: var(--secondary) !important;
     color: black !important;

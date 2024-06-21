@@ -1,7 +1,7 @@
 <template>
     <span>Costos</span>
     <a-upload-dragger v-model:file-list="fileList" name="avatar" list-type="picture-card" class="avatar-uploader"
-        :show-upload-list="false" action="https://dft-back-dev-2484ff5ddb07.herokuapp.com/upload/"
+        :show-upload-list="true" action="https://dft-back-dev-2484ff5ddb07.herokuapp.com/upload/"
         :before-upload="beforeUpload" @change="handleChange" @drop="handleDrop">
         <div v-if="imageUrl">
             <span>{{ imageUrl }}</span>
@@ -66,9 +66,9 @@ export default {
                 this.$message.error('Solo se permiten archivos Excel o CSV');
                 return false; // Cancela la carga del archivo
             }
-            const isLt2M = file.size / 1024 / 1024 < 2;
+            const isLt2M = file.size / 1024 / 1024 < 6;
             if (!isLt2M) {
-                message.error('File must smaller than 2MB!');
+                message.error('File must smaller than 6MB!');
             }
             return isExcelOrCsv && isLt2M;
         };

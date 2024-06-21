@@ -22,7 +22,7 @@ export const tableColumns = [
         key: 'vendor_id',
     },
     {
-        title: 'Orden de Compra',
+        title: 'OC',
         key: 'po',
         dataIndex: 'po',
     },
@@ -50,7 +50,7 @@ export const tableColumns = [
         dataIndex: 'ammount_wo_iva',
     },
     {
-        title: 'operation',
+        title: 'Operation',
         dataIndex: 'operation',
     },
 ];
