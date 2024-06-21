@@ -7,7 +7,7 @@
       <a-col :span="8">
         <a-card title="Prioridad 1" :bordered="false" class="card-1" @click="handleCardClick(1)">
           <p><small>Alta probabilidad de éxito</small></p>
-          <p>Cantidad: 34 Licitaciones</p>
+          <p>Cantidad: {{ priorityCounts }} Licitaciones</p>
         </a-card>
       </a-col>
       <a-col :span="8">
@@ -33,6 +33,7 @@
 <script>
 import TenderList from './components/tenderList.vue';
 import { ref } from 'vue';
+import { getPriorityCounts } from '@/api/quotes/quotes';
 export default {
   name: 'TenderIndex',
   components: {
@@ -45,11 +46,24 @@ export default {
       cardNumber.value = cardKey;
       // Aquí puedes manejar la lógica del clic de la tarjeta, por ejemplo, redireccionar a otra página
     };
+    const priorityCounts = ref();
+    const fectchData = async () => {
+      const response = await getPriorityCounts().then(() => {
+        priorityCounts.value = response;
+        console.log(response, 'response')
+        console.log(priorityCounts.value)
+      })
+    
+    }
+
+
 
 
     return {
       handleCardClick,
       cardNumber,
+      priorityCounts,
+      fectchData,
     }
   }
 }

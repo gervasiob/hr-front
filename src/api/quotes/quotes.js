@@ -17,3 +17,6 @@ export async function updateQuotes(id, params) {
 export async function deleteQuotes(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
+export async function getPriorityCounts(id, params) {
+    return await apiRequest('get', 'priority-counts', params, id);
+}
