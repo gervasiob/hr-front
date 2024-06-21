@@ -88,6 +88,10 @@ export const DELIVERY_TIMES = [
         label: '30 días o más',
         value: 5,
     },
+    {
+        label: '...',
+        value: 18,
+    },
 ];
 export const TIRE_BRANDS = [
     { value: 1, label: "BRIDGESTONE" },
@@ -198,6 +202,6 @@ export const DAYTONAS = [
     { value: 3, businessName: "DAYTONA", completeAddress: "AV. DIRECTORIO 1601", idClaimsProvider: 54049732, virtualOffice: "N" }
 ];
 export const QUOTE_DETAILS = [
-    { value: 'X', label: "Modelo Exacto" },
+    { value: 'modelo exacto', label: "Modelo Exacto" },
     { value: 'S', label: "Modelo Similar" },
 ];

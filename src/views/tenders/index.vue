@@ -25,14 +25,14 @@
     </a-row>
   </div>
 
-  <TenderList :card-filter="cardNumber" />
+  <TenderList :card-filter="cardNumber" @card-clicked="onCardClicked" />
 
 
 </template>
 
 <script>
 import TenderList from './components/tenderList.vue';
-import { ref } from 'vue';
+import { ref, defineProps, defineEmits } from 'vue';
 import { getPriorityCounts } from '@/api/quotes/quotes';
 export default {
   name: 'TenderIndex',
@@ -40,11 +40,18 @@ export default {
     TenderList,
   },
   setup() {
+
     const cardNumber = ref();
     const handleCardClick = (cardKey) => {
       console.log(`Clicked on card ${cardKey}`);
       cardNumber.value = cardKey;
+      console.log(`Card ${cardKey} clicked`);
+      // Emite un evento personalizado cuando se hace clic en una card
+      window.dispatchEvent(new CustomEvent('card-clicked', { detail: cardKey }));
       // Aquí puedes manejar la lógica del clic de la tarjeta, por ejemplo, redireccionar a otra página
+    };
+    const onCardClicked = (cardId) => {
+      console.log(`Card ${cardId} clicked in TenderList`);
     };
     const priorityCounts = ref();
     const fectchData = async () => {
@@ -53,7 +60,7 @@ export default {
         console.log(response, 'response')
         console.log(priorityCounts.value)
       })
-    
+
     }
 
 
@@ -64,6 +71,7 @@ export default {
       cardNumber,
       priorityCounts,
       fectchData,
+      onCardClicked,
     }
   }
 }

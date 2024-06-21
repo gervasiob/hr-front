@@ -64,9 +64,8 @@
                     :labelStyle="{ fontWeight: 'bold', color: 'white', fontStyle: 'Italic' }">
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
-                    <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">$ {{ tenderData.total ??
-                        '255.567,94'
-                            }}</span></a-descriptions-item>
+                    <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">{{
+                        quoteData.total_quoted }}</span></a-descriptions-item>
                     <a-descriptions-item label="RENTABILIDAD"><span class="collapse-item">{{ tenderData.rentabilidad ??
                         '10'
                             }}%</span></a-descriptions-item>
@@ -87,17 +86,19 @@
                         </a-select>
                     </a-space>
                     <div v-if="imageUrl" class="image-container-item" @click="showModal">
-                        <img :src="imageUrl" alt="Imagen seleccionada" class="selected-image" />
+                        <!-- <img :src="imageUrl" alt="Imagen seleccionada" class="selected-image" /> -->
+                        <img :src="imageUrl" alt="Base64 Image" class="selected-image" />
                     </div>
                 </div>
                 <a-modal v-model:open="isModalVisible" :footer="imageUrl" @cancel="handleModalCancel"
                     style="width: fit-content; height: fit-content;">
-                    <img :src="imageUrl" alt="Imagen ampliada" />
+                    <!-- <img :src="imageUrl" alt="Imagen ampliada" /> -->
+                    <img :src="imageUrl" alt="Base64 Image" />
                 </a-modal>
                 <!-- <vue-image-lightbox :images="[imageUrl]" :index="currentImageIndex" @close="isModalVisible = false"
                     v-if="isModalVisible" /> -->
                 <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-                <a-table :columns="columns" :data-source="dataSource" bordered>
+                <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
                         <template
                             v-if="['sku', 'llanta_type', 'price', 'quantity', 'ammount_wo_iva'].includes(column.dataIndex)">
@@ -128,8 +129,8 @@
                                 <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0"
                                     @focus="focus" @change="handleChange">
-                                    <a-select-option value="13">Proveedor 1</a-select-option>
-                                    <a-select-option value="12">Proveedor 2</a-select-option>
+                                    <a-select-option value="Proveedor 1">Proveedor 1</a-select-option>
+                                    <a-select-option value="Proveedor 2">Proveedor 2</a-select-option>
                                 </a-select>
                                 <template v-else>
                                     {{ text }}
@@ -212,10 +213,10 @@
                                 @click="handleDetailAdd">AGREGAR
                                 ITEM</a-button>
                             <a-table :columns="columnsQuote" :data-source="dataQuoteSource" bordered
-                                :paggination="false">
+                                :pagination="false">
                                 <template #bodyCell="{ column, text, record }">
                                     <template
-                                        v-if="['tire_type_name', 'Llanta', 'Neumatico'].includes(column.dataIndex)">
+                                        v-if="['tire_type_name', 'llanta', 'neumatico'].includes(column.dataIndex)">
                                         <div>
                                             <a-input v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
@@ -325,7 +326,7 @@
                             <a-col :span="12">
                                 <div class="form-item-container">
                                     <span>Estoy Cotizando</span>
-                                    <a-select v-model:value="formTenderDetail.original_parts" style="width: 100%"
+                                    <a-select v-model:value="formTenderDetail.tire_quoted" style="width: 100%"
                                         placeholder="..." :options="optionsQuoteDetails" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
                                 </div>
@@ -357,11 +358,12 @@
                     v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'">
                     <a-row>
                         <a-col :span="8">
-                            <a-button type="primary" class="hover-button-grey" @click="onSave('C')"
+                            <a-button type="primary" size="large" class="hover-button-grey" @click="onSave('C')"
                                 :loading="isLoading">Cancelar</a-button>
                         </a-col>
                         <a-col :span="8" :offset="8">
-                            <a-button type="primary" @click="onSave('E')" :loading="isLoading">Guardar</a-button>
+                            <a-button type="primary" size="large" @click="onSave('E')"
+                                :loading="isLoading">Guardar</a-button>
                             <a-alert v-if="errorMessage" type="error" :message="errorMessage" />
                         </a-col>
                     </a-row>
@@ -370,11 +372,12 @@
                 <div v-if="formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'V'">
                     <a-row>
                         <a-col :span="8" v-if="formTenderDetail.quote_state === 'V'">
-                            <a-button type="primary" danger @click="onSave('R')" :loading="isLoading">Cancelar
+                            <a-button type="primary" size="large" danger @click="onSave('R')"
+                                :loading="isLoading">Cancelar
                                 Presupuesto</a-button>
                         </a-col>
                         <a-col :span="8" :offset="8">
-                            <a-button type="primary" class="hover-button" @click="onSave('V')"
+                            <a-button type="primary" size="large" class="hover-button" @click="onSave('V')"
                                 :loading="isLoading">Licitar</a-button>
                         </a-col>
                     </a-row>
@@ -386,7 +389,7 @@
 
 <script>
 import { cloneDeep } from 'lodash-es';
-import { ref, onMounted, reactive, toRaw, computed } from 'vue';
+import { ref, onMounted, onUnmounted, reactive, toRaw, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
@@ -410,6 +413,7 @@ export default {
         const tenderId = ref(route.params.id);
         const tenderData = ref({});
         const quoteData = ref({});
+        const imageData = ref();
         const dataSource = ref([]);
         const dataQuoteSource = ref([]);
         const quoteId = ref();
@@ -504,15 +508,19 @@ export default {
                 quoteData.value = quoteResponse[0];
                 quoteId.value = quoteData.value.id;
                 console.log(quoteData.value.details)
-                quoteData.value.details.map((item) => {
-                    console.log(item,'item')
-                    dataSource.value.push(item)
-                })
+                if (Array.isArray(quoteData.value.details)) {
+                    quoteData.value.details.map((item) => {
+                        console.log(item, 'item')
+                        dataSource.value.push(item)
+                    })
+                } else {
+                    dataSource.value.push(quoteData.value.details);
+                }
                 // quoteData.value.tire_type_name.map((item) => {
                 //     console.log(item,'tire_type_name')
                 //     dataQuoteSource.value.push(item)
                 // })
-             
+
 
                 let records = [];
                 records = quoteResponse[0].tire_type_name;
@@ -541,6 +549,9 @@ export default {
                     tire_model: parseInt(quoteData.value.tire_model),
                     llanta_type: parseInt(quoteData.value.llanta_type),
                 };
+                imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
+                imageUrl.value = imageData.value;
+                console.log(imageData.value)
                 formTenderDetail.value = quoteDataValue;
 
             } catch (error) {
@@ -657,8 +668,8 @@ export default {
         }
 
         const count = computed(() => {
-            if(dataSource.value) {
-             return   dataSource.value.length + 1
+            if (dataSource.value) {
+                return dataSource.value.length + 1
             }
             return 0;
         });
@@ -693,6 +704,8 @@ export default {
         onMounted(() => {
             fetchTenderData(tenderId.value);
         });
+
+
         return {
             tenderId,
             tenderData,
@@ -745,6 +758,7 @@ export default {
             handleModalCancel,
             showModal,
             currentImageIndex,
+            imageData,
         }
     }
 }
@@ -946,6 +960,7 @@ export default {
     width: 400px;
     height: 250px;
     align-content: center;
+    margin-bottom: 10px;
 
 }
 
@@ -955,6 +970,6 @@ export default {
 
 .selected-image {
     max-width: 400px;
-    max-height: 400px;
+    max-height: 250px;
 }
 </style>

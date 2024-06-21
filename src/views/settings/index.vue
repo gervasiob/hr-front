@@ -1,4 +1,5 @@
 <template>
+<<<<<<< HEAD
   <a-upload-dragger
     v-model:file-list="fileList"
     name="file"
@@ -25,6 +26,28 @@
       </div>
     </div>
   </a-upload-dragger>
+=======
+    <span>Costos</span>
+    <a-upload-dragger v-model:file-list="fileList" name="avatar" list-type="picture-card" class="avatar-uploader"
+        :show-upload-list="true" action="https://dft-back-dev-2484ff5ddb07.herokuapp.com/upload/"
+        :before-upload="beforeUpload" @change="handleChange" @drop="handleDrop">
+        <div v-if="imageUrl">
+            <span>{{ imageUrl }}</span>
+        </div>
+        <div v-else>
+            <loading-outlined v-if="loading"></loading-outlined>
+            <div v-else>
+                <p class="ant-upload-drag-icon">
+                    <inbox-outlined></inbox-outlined>
+                </p>
+                <p class="ant-upload-text">Click o arrastre el archivo al recuadro</p>
+                <p class="ant-upload-hint">
+                  Soporta 1 solo archivo en excel o csv
+                </p>
+            </div>
+        </div>
+    </a-upload-dragger>
+>>>>>>> sprint1_dev_apiConnectionTenders_20240523
 </template>
 
 <script>

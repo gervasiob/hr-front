@@ -16,13 +16,6 @@ export const menuList = [
         }
     },
     {
-        key: 'login',
-        path: '/login',
-        icon: () => h(AppstoreOutlined),
-        label: 'LOGIN',
-        title: 'LOGIN',
-    },
-    {
         key: 'config',
         icon: () => h(SettingOutlined),
         label: 'CONFIGURACION',
@@ -43,15 +36,31 @@ export const menuList = [
         ],
     },
     {
-        key: 'alipay',
-        label: h(
-            'a',
-            {
-                href: 'https://antdv.com',
-                target: '_blank',
-            },
-            'Navigation Four - Link',
-        ),
-        title: 'Navigation Four - Link',
+        key: 'login',
+        path: '/login',
+        icon: () => h(AppstoreOutlined),
+        label: 'LOGIN',
+        title: 'LOGIN',
+    },
+    {
+        key: 'resportes',
+        path: '/reportes',
+        icon: () => h(AppstoreOutlined),
+        label: 'REPORTES',
+        title: 'REPORTES',
+    },
+    {
+        key: 'dashboard',
+        path: '/dashboard',
+        icon: () => h(AppstoreOutlined),
+        label: 'DASHBOARD',
+        title: 'DASHBOARD',
+    },
+    {
+        key: 'logout',
+        path: '/logout',
+        icon: () => h(AppstoreOutlined),
+        label: 'LOGOUT',
+        title: 'LOGOUT',
     },
 ];

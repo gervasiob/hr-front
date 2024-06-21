@@ -1,0 +1,20 @@
+import { apiRequest } from '../apiUrls.js';
+
+const ENDPOINT = 'costs/';
+
+export async function getCosts(params, id = null) {
+    return await apiRequest('get', ENDPOINT, params, id);
+}
+
+export async function addCosts(params) {
+    return await apiRequest('post', ENDPOINT, params);
+}
+
+export async function updateCosts(id, params) {
+    return await apiRequest('put', ENDPOINT, params, id);
+}
+
+export async function deleteCosts(id, params) {
+    return await apiRequest('delete', ENDPOINT, params, id);
+}
+
