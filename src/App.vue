@@ -96,14 +96,14 @@ export default {
 
 <style scoped>
 .logo-container {
-  height: 140px;
+  height: 80px;
   overflow: hidden;
   position: relative;
 }
 
 .logo-image {
-  width: 50%;
-  height: 200px;
+  width: 40%;
+  height: 120px;
 }
 
 .title {

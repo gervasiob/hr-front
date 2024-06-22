@@ -36,18 +36,17 @@
                         <a-input v-model:value="filterInputs.id" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="6">
+                <!-- <a-col :span="6">
                     <a-form-item label="Agente" name="agent">
-                        {{ agentList }}
                         <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
                             show-search :filter-option="filterOption">
-                            <a-select-option v-for="(item, index) in agentList" :key="index" :value="item.id"
+                            <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                                 :label="item.last_name">
                                 {{ item.last_name }}
                             </a-select-option>
                         </a-select>
                     </a-form-item>
-                </a-col>
+                </a-col> -->
                 <a-col :span="6" style="text-align: right">
                     <a-button type="primary" danger @click="onSearch">Buscar</a-button>
                     <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -140,13 +139,6 @@ export default {
         const roles = ref(2); // Define roles como un ref para que sea reactivo
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
 
-        // Define agentList como un computed property
-        const agentList = computed(() => {
-            agents.value = getUsers({ roles: roles.value });
-            console.log(agents.value)
-            return agents.value;
-        });
-        console.log(agentList)
         const estadoList = TENDER_STATES;
 
         // const columns = [
@@ -192,6 +184,8 @@ export default {
                 });
 
                 dataSource.value = dataWithCompanyName;
+                agents.value = getUsers({ roles: roles.value });
+                console.log(agents.value)
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }
@@ -250,7 +244,6 @@ export default {
             resetFilters,
             getState,
             customHeaderRow,
-            agentList,
             agents,
             roles,
         }

@@ -7,19 +7,19 @@
       <a-col :span="8">
         <a-card title="Prioridad 1" :bordered="false" class="card-1" @click="handleCardClick(1)">
           <p><small>Alta probabilidad de éxito</small></p>
-          <p>Cantidad: {{ priorityCounts }} Licitaciones</p>
+          <p>Cantidad: {{ priorityCounts["1"] }} Licitaciones</p>
         </a-card>
       </a-col>
       <a-col :span="8">
         <a-card title="Prioridad 2" :bordered="false" class="card-2" @click="handleCardClick(2)">
           <p><small>Media probabilidad de éxito</small></p>
-          <p>Cantidad: 45 Licitaciones</p>
+          <p>Cantidad: {{ priorityCounts["2"] ?? 0 }} Licitaciones</p>
         </a-card>
       </a-col>
       <a-col :span="8">
         <a-card title="Prioridad 3" :bordered="false" class="card-3" @click="handleCardClick(3)">
           <p><small>Baja probabilidad de éxito</small></p>
-          <p>Cantidad: 100 Licitaciones</p>
+          <p>Cantidad: {{ priorityCounts["3"] }} Licitaciones</p>
         </a-card>
       </a-col>
     </a-row>
@@ -32,7 +32,7 @@
 
 <script>
 import TenderList from './components/tenderList.vue';
-import { ref, defineProps, defineEmits } from 'vue';
+import { ref, defineProps, defineEmits, onMounted } from 'vue';
 import { getPriorityCounts } from '@/api/quotes/quotes';
 export default {
   name: 'TenderIndex',
@@ -53,17 +53,28 @@ export default {
     const onCardClicked = (cardId) => {
       console.log(`Card ${cardId} clicked in TenderList`);
     };
-    const priorityCounts = ref();
-    const fectchData = async () => {
-      const response = await getPriorityCounts().then(() => {
-        priorityCounts.value = response;
-        console.log(response, 'response')
-        console.log(priorityCounts.value)
-      })
-
+    const priorityCounts = ref({
+      "1": 0,
+      "2": 0,
+      "3": 0,
     }
+    );
+    const fectchData = async () => {
+      // loading.value = true;
+      // error.value = null;
+      try {
+        priorityCounts.value = await getPriorityCounts();
 
+      } catch (err) {
+        console.log(err);
+      } finally {
+        // loading.value = false;
+      }
+    };
 
+    onMounted(() => {
+      fectchData();
+    });
 
 
     return {

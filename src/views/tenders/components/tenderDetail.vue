@@ -297,7 +297,7 @@
                             </a-col>
                         </a-row>
                         <a-row :gutter="24">
-                            <a-col :span="12">
+                            <a-col :span="8">
                                 <div class="form-item-container">
                                     <span>Marca</span>
                                     <div class="input-select">
@@ -322,8 +322,14 @@
                                             :filter-option="filterOption"></a-select>
                                     </div>
                                 </div>
+
                             </a-col>
-                            <a-col :span="12">
+                            <a-col :span="6">
+                                <span>Costo: {{ newCost }}</span>
+                                <a-button type="primary" @click="handleGetCost()" :loading="isLoading">Buscar
+                                    Costo</a-button>
+                            </a-col>
+                            <a-col :span="10">
                                 <div class="form-item-container">
                                     <span>Estoy Cotizando</span>
                                     <a-select v-model:value="formTenderDetail.tire_quoted" style="width: 100%"
@@ -393,6 +399,7 @@ import { ref, onMounted, onUnmounted, reactive, toRaw, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
+import { getTireCost } from '@/api/costs/costs.js';
 import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
 import {
@@ -417,6 +424,7 @@ export default {
         const dataSource = ref([]);
         const dataQuoteSource = ref([]);
         const quoteId = ref();
+        const newCost = ref(null);
         const columns = tableColumns;
         const columnsQuote = tableQuoteColumns;
         const optionsDeliveryTime = DELIVERY_TIMES;
@@ -427,6 +435,8 @@ export default {
         const optionsTireHeight = TIRE_HEIGHT;
         const optionsTireTread = TIRE_TREAD;
         const optionsQuoteDetails = QUOTE_DETAILS;
+        const loading = ref(false);
+        const error = ref(null);
         const optionsDaytonas = DAYTONAS.map(daytona => ({
             label: `${daytona.businessName} - ${daytona.completeAddress}`,
             value: daytona.idClaimsProvider
@@ -549,10 +559,23 @@ export default {
                     tire_model: parseInt(quoteData.value.tire_model),
                     llanta_type: parseInt(quoteData.value.llanta_type),
                 };
-                imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
-                imageUrl.value = imageData.value;
-                console.log(imageData.value)
+                if (quoteData.value.imageData) {
+                    imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
+                    imageUrl.value = imageData.value;
+                }
                 formTenderDetail.value = quoteDataValue;
+                if (!formTenderDetail.value.daytona_ids) {
+                    formTenderDetail.value.daytona_ids = [];
+                }
+                if (!formTenderDetail.value.brand) {
+                    formTenderDetail.value.brand = [];
+                }
+                if (!formTenderDetail.value.tire_model) {
+                    formTenderDetail.value.tire_model = [];
+                }
+                if (!formTenderDetail.value.llanta_type) {
+                    formTenderDetail.value.llanta_type = [];
+                }
 
             } catch (error) {
                 console.error('Error fetching tender data:', error);
@@ -704,8 +727,24 @@ export default {
         onMounted(() => {
             fetchTenderData(tenderId.value);
         });
-
-
+        const handleGetCost = async () => {
+            loading.value = true;
+            error.value = null;
+            try {
+                const params = {
+                    tire_width: formTenderDetail.value.tire_width,
+                    tire_height: formTenderDetail.value.tire_height,
+                    tire_tread: formTenderDetail.value.tire_tread,
+                    brand: formTenderDetail.value.brand,
+                }
+                console.log(params)
+                newCost.value = await getTireCost(params);
+            } catch (err) {
+                error.value = err;
+            } finally {
+                loading.value = false;
+            }
+        };
         return {
             tenderId,
             tenderData,
@@ -759,6 +798,10 @@ export default {
             showModal,
             currentImageIndex,
             imageData,
+            handleGetCost,
+            newCost,
+            loading,
+            error,
         }
     }
 }
