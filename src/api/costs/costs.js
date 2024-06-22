@@ -5,6 +5,9 @@ const ENDPOINT = 'costs/';
 export async function getCosts(params, id = null) {
     return await apiRequest('get', ENDPOINT, params, id);
 }
+export async function getTireCost(params) {
+    return await apiRequest('post', 'tire-cost/', params);
+}
 
 export async function addCosts(params) {
     return await apiRequest('post', ENDPOINT, params);
