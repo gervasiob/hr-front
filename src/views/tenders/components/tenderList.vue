@@ -219,7 +219,15 @@ export default {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
         const getState = (tag) => {
-            const state = TENDER_STATES.find((item) => item.value === tag);
+            let state = TENDER_STATES.find((item) => item.value === tag);
+            if (!state) {
+                state = {
+                    label: tag,
+                    color: 'blue',
+                    value: tag,
+                }
+                console.log("falta estado", tag)
+            }
             return state;
         }
         onMounted(() => {

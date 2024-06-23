@@ -65,9 +65,9 @@
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">{{
-                            formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
+                        formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
                     <a-descriptions-item label="RENTABILIDAD"><span class="collapse-item">{{ tenderData.rentabilidad ??
-                            '10'
+                        '10'
                             }}%</span></a-descriptions-item>
                 </a-descriptions>
             </template>
@@ -147,17 +147,19 @@
                                 </template>
                             </div>
                         </template>
-
+                        <template v-if="column.dataIndex === 'ammount_wo_iva'">
+                            <a-input v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                            <template v-else>
+                                {{ formatCurrency(record.ammount_wo_iva) }}
+                            </template>
+                        </template>
                         <template v-else-if="column.dataIndex === 'total'">
                             <div>
                                 {{ formatCurrency(record.price * record.quantity) }}
                             </div>
                         </template>
-                        <template v-if="column.dataIndex === 'ammount_wo_iva'">
-                            <div>
-                                {{ formatCurrency(record.ammount_wo_iva) }}
-                            </div>
-                        </template>
+
                         <template v-else-if="column.dataIndex === 'operation'">
                             <div class="editable-row-operations">
                                 <span v-if="editableData[record.key]">
