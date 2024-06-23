@@ -41,8 +41,8 @@
                         <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
-                                :label="item.last_name">
-                                {{ item.last_name }}
+                                :label="(item.fullName)">
+                                {{ item.fullName }}
                             </a-select-option>
                         </a-select>
                     </a-form-item>
@@ -104,7 +104,7 @@ import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
-import { getQuotes } from '@/api/quotes/quotes.js';
+import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
 import { getUsers } from '@/api/users/users.js';
 
 export default {
@@ -175,17 +175,23 @@ export default {
         };
         const fetchData = async (params = {}) => {
             try {
-                const response = await getQuotes(params);
-                const dataWithCompanyName = response.map(item => {
+                const response = await getQuotesSummary(params);
+                // const dataWithCompanyName = response.map(item => {
+                //     return {
+                //         ...item,
+                //         total: item.price * item.quantity,
+                //     };
+                // });
+                dataSource.value = response;
+                console.log(dataSource.value)
+                const agentsResponse = await getUsers({ roles: roles.value });
+                const transformedAgents = agentsResponse.map((item) => {
                     return {
                         ...item,
-                        total: item.price * item.quantity,
+                        fullName: item.last_name + ", " + item.first_name,
                     };
                 });
-
-                dataSource.value = dataWithCompanyName;
-                agents.value = getUsers({ roles: roles.value });
-                console.log(agents.value)
+                agents.value = transformedAgents;
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }

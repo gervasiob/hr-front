@@ -16,6 +16,9 @@ export async function addCosts(params) {
 export async function updateCosts(id, params) {
     return await apiRequest('put', ENDPOINT, params, id);
 }
+export async function upload( params) {
+    return await apiRequest('put', ENDPOINT, params, id);
+}
 
 export async function deleteCosts(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
