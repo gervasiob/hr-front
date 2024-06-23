@@ -65,9 +65,9 @@
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">{{
-                        quoteData.total_quoted }}</span></a-descriptions-item>
+                            formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
                     <a-descriptions-item label="RENTABILIDAD"><span class="collapse-item">{{ tenderData.rentabilidad ??
-                        '10'
+                            '10'
                             }}%</span></a-descriptions-item>
                 </a-descriptions>
             </template>
@@ -102,8 +102,7 @@
                 <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
                 <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
-                        <template
-                            v-if="['sku', 'llanta_type', 'price', 'quantity', 'ammount_wo_iva'].includes(column.dataIndex)">
+                        <template v-if="['sku', 'llanta_type', 'price', 'quantity'].includes(column.dataIndex)">
                             <div>
                                 <a-input v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
@@ -151,7 +150,12 @@
 
                         <template v-else-if="column.dataIndex === 'total'">
                             <div>
-                                {{ record.price * record.quantity }}
+                                {{ formatCurrency(record.price * record.quantity) }}
+                            </div>
+                        </template>
+                        <template v-if="column.dataIndex === 'ammount_wo_iva'">
+                            <div>
+                                {{ formatCurrency(record.ammount_wo_iva) }}
                             </div>
                         </template>
                         <template v-else-if="column.dataIndex === 'operation'">
@@ -224,7 +228,14 @@
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" />
                                             <template v-else>
-                                                {{ text }}
+                                                <template v-if="['llanta', 'neumatico'].includes(column.dataIndex)">
+                                                    <div>
+                                                        {{ formatCurrency(text) }}
+                                                    </div>
+                                                </template>
+                                                <template v-else>
+                                                    {{ text }}
+                                                </template>
                                             </template>
                                         </div>
                                     </template>
@@ -241,6 +252,7 @@
                                             </template>
                                         </div>
                                     </template>
+
                                     <template v-else-if="column.dataIndex === 'operation'">
                                         <div class="editable-row-operations">
                                             <span v-if="editableQuoteData[record.key]">
@@ -304,7 +316,7 @@
                                     <span>Marca</span>
                                     <div class="input-select">
                                         <a-select v-model:value="formTenderDetail.brand" placeholder="..."
-                                            style="width:100%" :options="optionsBrand" allow-clear
+                                            style="width:100%" :options="optionsBrand" allow-clear show-search
                                             :filter-option="filterOption"></a-select>
                                     </div>
                                 </div>
@@ -327,7 +339,17 @@
 
                             </a-col>
                             <a-col :span="6">
-                                <span>Costo: {{ newCost }}</span>
+                                <div v-show="newCost">
+                                    <a-descriptions title="Costos" bordered>
+                                        <template v-for="(item, index) in newCost.spare_tire_amounts" :key="index">
+                                            <a-descriptions-item label="Detalle">{{
+                                                item.detail }}</a-descriptions-item>
+                                            <a-descriptions-item label="Costo">{{
+                                                item.cost_amount }}</a-descriptions-item>
+
+                                        </template>
+                                    </a-descriptions>
+                                </div>
                                 <a-button type="primary" @click="handleGetCost()" :loading="isLoading">Buscar
                                     Costo</a-button>
                             </a-col>
@@ -410,7 +432,7 @@ import {
 } from '@/common/common';
 import { dataTable } from './data';
 import { formRules } from '../config/rules.js';
-
+import { formatCurrency, formatNumber } from '@/utils/utils.js';
 export default {
     name: 'TenderDetail',
     setup() {
@@ -426,7 +448,7 @@ export default {
         const dataSource = ref([]);
         const dataQuoteSource = ref([]);
         const quoteId = ref();
-        const newCost = ref(null);
+        const newCost = ref({ spare_tire_amount: [] });
         const columns = tableColumns;
         const columnsQuote = tableQuoteColumns;
         const optionsDeliveryTime = DELIVERY_TIMES;
@@ -542,8 +564,8 @@ export default {
                         dataQuoteSource.value.push(
                             {
                                 tire_type_name: item.tire_type_name,
-                                llanta: item.Llanta,
-                                neumatico: item.Neumatico,
+                                llanta: item.llanta,
+                                neumatico: item.neumatico,
                             }
                         );
                     });
@@ -594,6 +616,10 @@ export default {
             return state ? state.label : stateValue;
         };
         const filterOption = (input, option) => {
+            console.log(input)
+            return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        };
+        const filterOptionBrand = (input, option) => {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
         const onSave = async (value) => {
@@ -614,6 +640,8 @@ export default {
                         console.log(fullParams)
                         const response = updateQuotes(quoteId.value, fullParams);
                         console.log('Response:', response);
+                        dataSource.value = [];
+                        dataQuoteSource.value = [];
                         await fetchTenderData(tenderId.value);
                         // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
                     } catch (error) {
@@ -732,6 +760,7 @@ export default {
         const handleGetCost = async () => {
             loading.value = true;
             error.value = null;
+            newCost.value = { spare_tire_amount: [] };
             const brandName = optionsBrand.find((item) => item.value === formTenderDetail.value.brand).label;
             try {
                 const params = {
@@ -740,8 +769,10 @@ export default {
                     tire_tread: formTenderDetail.value.tire_tread,
                     brand: brandName,
                 }
-                console.log(params)
-                newCost.value = await getTireCost(params);
+                const costResponse = await getTireCost(params);
+                newCost.value = costResponse;
+                console.log(costResponse)
+                console.log(newCost.value)
             } catch (err) {
                 error.value = err;
             } finally {
@@ -805,6 +836,8 @@ export default {
             newCost,
             loading,
             error,
+            formatCurrency,
+            formatNumber,
         }
     }
 }

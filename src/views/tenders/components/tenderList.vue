@@ -182,8 +182,17 @@ export default {
                 //         total: item.price * item.quantity,
                 //     };
                 // });
+                console.log("response");
+                console.log(response);
+
+                console.log(dataSource.value)
                 dataSource.value = response;
                 console.log(dataSource.value)
+
+            } catch (error) {
+                console.error("Error fetching quotes:", error);
+            }
+            try {
                 const agentsResponse = await getUsers({ roles: roles.value });
                 const transformedAgents = agentsResponse.map((item) => {
                     return {
@@ -193,7 +202,7 @@ export default {
                 });
                 agents.value = transformedAgents;
             } catch (error) {
-                console.error("Error fetching quotes:", error);
+                console.error("Error fetching agents:", error);
             }
         };
 
@@ -219,10 +228,11 @@ export default {
         });
         const handleCardClick = (event) => {
             const cardKey = event.detail;
-            console.log(event)
-            console.log(`Card ${cardKey} clicked nuevo`);
+            filterInputs.value = {};
             filterInputs.value.quote_state = 'N';
-            fetchData({ priority: cardKey, quote_state: 'N' });
+            filterInputs.value.priority = cardKey;
+            dataSource.value = [];
+            fetchData(filterInputs.value);
         };
 
         onUnmounted(() => {
