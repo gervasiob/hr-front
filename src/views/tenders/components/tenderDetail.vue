@@ -72,8 +72,10 @@
                 </a-descriptions>
             </template>
             <div class="collapse-body">
-                <div class="image-container">
-                    <a-space style="align-items: start;">
+
+                <div class="image-container" v-if="imageUrl">
+                    <span>Imágenes</span>
+                    <!-- <a-space style="align-items: start;">
                         <span>Imágenes</span>
                         <a-select ref="select" v-model:value="imageSelect"
                             style="width: 300px; border: 2px solid var(--border-item)" @focus="focus"
@@ -84,7 +86,7 @@
                                 {{ image.label }}
                             </a-select-option>
                         </a-select>
-                    </a-space>
+                    </a-space> -->
                     <div v-if="imageUrl" class="image-container-item" @click="showModal">
                         <!-- <img :src="imageUrl" alt="Imagen seleccionada" class="selected-image" /> -->
                         <img :src="imageUrl" alt="Base64 Image" class="selected-image" />
@@ -730,12 +732,13 @@ export default {
         const handleGetCost = async () => {
             loading.value = true;
             error.value = null;
+            const brandName = optionsBrand.find((item) => item.value === formTenderDetail.value.brand).label;
             try {
                 const params = {
                     tire_width: formTenderDetail.value.tire_width,
                     tire_height: formTenderDetail.value.tire_height,
                     tire_tread: formTenderDetail.value.tire_tread,
-                    brand: formTenderDetail.value.brand,
+                    brand: brandName,
                 }
                 console.log(params)
                 newCost.value = await getTireCost(params);

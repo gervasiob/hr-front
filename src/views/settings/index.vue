@@ -1,6 +1,6 @@
 <template>
     <span>Costos</span>
-    <a-upload-dragger v-model:file-list="fileList" name="avatar" list-type="picture-card" class="avatar-uploader"
+    <a-upload-dragger v-model:file-list="fileList" name="file" list-type="picture-card" class="avatar-uploader"
         :show-upload-list="true" action="https://dft-back-dev-2484ff5ddb07.herokuapp.com/upload/"
         :before-upload="beforeUpload" @change="handleChange" @drop="handleDrop">
         <div v-if="imageUrl">
@@ -13,9 +13,7 @@
                     <inbox-outlined></inbox-outlined>
                 </p>
                 <p class="ant-upload-text">Click o arrastre el archivo al recuadro</p>
-                <p class="ant-upload-hint">
-                  Soporta 1 solo archivo en excel o csv
-                </p>
+                <p class="ant-upload-hint">Soporta 1 solo archivo en excel o csv</p>
             </div>
         </div>
     </a-upload-dragger>
@@ -24,22 +22,26 @@
 <script>
 import { ref } from 'vue';
 import { message } from 'ant-design-vue';
-import { PlusOutlined, LoadingOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, LoadingOutlined, InboxOutlined } from '@ant-design/icons-vue';
+
 export default {
     name: 'CostIndex',
     components: {
         PlusOutlined,
         LoadingOutlined,
+        InboxOutlined
     },
     setup() {
+        const fileList = ref([]);
+        const loading = ref(false);
+        const imageUrl = ref('');
+
         function getBase64(img, callback) {
             const reader = new FileReader();
             reader.addEventListener('load', () => callback(reader.result));
             reader.readAsDataURL(img);
         }
-        const fileList = ref([]);
-        const loading = ref(false);
-        const imageUrl = ref('');
+
         const handleChange = info => {
             if (info.file.status === 'uploading') {
                 loading.value = true;
@@ -51,43 +53,49 @@ export default {
                     imageUrl.value = base64Url;
                     loading.value = false;
                 });
+                message.success('File uploaded successfully');
             }
             if (info.file.status === 'error') {
                 loading.value = false;
-                message.error('upload error');
+                message.error('Upload error');
             }
         };
+
         const beforeUpload = file => {
             const isExcelOrCsv = file.type === 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' ||
                 file.type === 'application/vnd.ms-excel' ||
                 file.type === 'text/csv';
-            console.log(isExcelOrCsv)
+
             if (!isExcelOrCsv) {
-                this.$message.error('Solo se permiten archivos Excel o CSV');
+                message.error('Solo se permiten archivos Excel o CSV');
                 return false; // Cancela la carga del archivo
             }
+
             const isLt2M = file.size / 1024 / 1024 < 6;
             if (!isLt2M) {
-                message.error('File must smaller than 6MB!');
+                message.error('File must be smaller than 6MB!');
+                return false; // Cancela la carga del archivo
             }
-            return isExcelOrCsv && isLt2M;
+
+            return true;
         };
+
         function handleDrop(e) {
             console.log(e);
         }
+
         return {
-            getBase64,
             fileList,
             loading,
             imageUrl,
             handleChange,
             beforeUpload,
-            handleDrop,
-
-        }
+            handleDrop
+        };
     }
-}
+};
 </script>
+
 <style scoped>
 .avatar-uploader>.ant-upload {
     width: 128px;
