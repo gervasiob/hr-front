@@ -165,7 +165,7 @@ export const TIRE_TREAD = [
     { value: 20, label: "20" },
     { value: 24, label: "24" }
 ];
-export const TIRE_WIDTH = [
+export const TIRE_HEIGHT = [
     { value: 30, label: "30" },
     { value: 35, label: "35" },
     { value: 40, label: "40" },
@@ -179,7 +179,7 @@ export const TIRE_WIDTH = [
     { value: 80, label: "80" },
     { value: 85, label: "85" }
 ];
-export const TIRE_HEIGHT = [
+export const TIRE_WIDTH = [
     { value: 145, label: "145" },
     { value: 155, label: "155" },
     { value: 165, label: "165" },
