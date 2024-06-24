@@ -1,22 +1,27 @@
 import { h } from 'vue';
 import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import TenderIndex from '../views/tenders/index.vue';
+<<<<<<< HEAD
 import useradmin from '../views/useradmin/index.vue';
 
+=======
+import tenderDetail from '@/views/tenders/components/tenderDetail.vue';
+>>>>>>> dev
 export const menuList = [
     {
         key: 'licitaciones',
         path: '/Licitaciones',
         name: 'Licitaciones',
         icon: () => h(MailOutlined),
-        label: 'Licitaciones',
-        title: 'Licitaciones',
+        label: 'LICITACIONES',
+        title: 'LICITACIONES',
         meta: {
             label: 'Licitaciones',
             title: 'Licitaciones',
         }
     },
     {
+<<<<<<< HEAD
         key: 'login',
         path: '/login',
         icon: () => h(AppstoreOutlined),
@@ -38,9 +43,11 @@ export const menuList = [
         title: 'Administracion de Roles',
     },
     {
+=======
+>>>>>>> dev
         key: 'config',
         icon: () => h(SettingOutlined),
-        label: 'Configuracion',
+        label: 'CONFIGURACION',
         title: 'Configuración',
         children: [
             {
@@ -48,7 +55,7 @@ export const menuList = [
                 path: '/Costos',
                 name: 'Costos',
                 icon: () => h(UploadOutlined),
-                label: 'Costos',
+                label: 'COSTOS',
                 title: 'Costos',
                 meta: {
                     label: 'Costos',
@@ -58,15 +65,31 @@ export const menuList = [
         ],
     },
     {
-        key: 'alipay',
-        label: h(
-            'a',
-            {
-                href: 'https://antdv.com',
-                target: '_blank',
-            },
-            'Navigation Four - Link',
-        ),
-        title: 'Navigation Four - Link',
+        key: 'login',
+        path: '/login',
+        icon: () => h(AppstoreOutlined),
+        label: 'LOGIN',
+        title: 'LOGIN',
+    },
+    {
+        key: 'resportes',
+        path: '/reportes',
+        icon: () => h(AppstoreOutlined),
+        label: 'REPORTES',
+        title: 'REPORTES',
+    },
+    {
+        key: 'dashboard',
+        path: '/dashboard',
+        icon: () => h(AppstoreOutlined),
+        label: 'DASHBOARD',
+        title: 'DASHBOARD',
+    },
+    {
+        key: 'logout',
+        path: '/logout',
+        icon: () => h(AppstoreOutlined),
+        label: 'LOGOUT',
+        title: 'LOGOUT',
     },
 ];

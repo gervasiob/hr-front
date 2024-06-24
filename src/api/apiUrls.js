@@ -3,7 +3,7 @@ export const BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
-    timeout: 10000,
+    timeout: 40000,
 });
 
 export async function apiRequest(method, endpoint, params, id = null) {
