@@ -49,6 +49,11 @@ export const TENDER_STATES = [
         value: 'C',
         color: 'red'
     },
+    {
+        label: 'Adjudicado',
+        value: 'A',
+        color: 'red'
+    },
 ];
 export const PRIORITY_VALUES = [
     {
