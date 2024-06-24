@@ -50,6 +50,29 @@ export const menuList = {
             label: 'Licitaciones',
             title: 'Licitaciones',
         }
+
+}
+export const useradmin = {
+    path: '/useradmin',
+    key: 'useradmin',
+    label: 'useradmin',
+    title: 'Administracion de Usuarios',
+    name: 'Administracion de Usuarios',
+    component: () => import('@/views/useradmin/index.vue'),
+    meta: {
+        title: 'Administracion de Usuarios'
+    }
+}
+export const roles = {
+    path: '/roles',
+    key: 'roles',
+    label: 'roles',
+    title: 'Administracion de Roles',
+    name: 'Administracion de Roles',
+    component: () => import('@/views/roles/index.vue'),
+    meta: {
+        title: 'Administracion de Roles'
+    }
 }
 const otherRoutes = [
     {
@@ -77,6 +100,8 @@ export const basicRoutes = [
     LoginRoute,
     RootRoute,
     menuList,
+    useradmin,
+    roles,
     ...otherRoutes,
 ]
 

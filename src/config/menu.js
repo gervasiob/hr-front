@@ -1,6 +1,7 @@
 import { h } from 'vue';
 import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import TenderIndex from '../views/tenders/index.vue';
+import useradmin from '../views/useradmin/index.vue';
 
 export const menuList = [
     {
@@ -21,6 +22,20 @@ export const menuList = [
         icon: () => h(AppstoreOutlined),
         label: 'Login',
         title: 'Login',
+    },
+    {
+        key: 'useradmin',
+        path: '/useradmin',
+        icon: () => h(SettingOutlined),
+        label: 'Administracion de Usuarios',
+        title: 'Administracion de Usuarios',
+    },
+    {
+        key: 'roles',
+        path: '/roles',
+        icon: () => h(SettingOutlined),
+        label: 'Administracion de Roles',
+        title: 'Administracion de Roles',
     },
     {
         key: 'config',
