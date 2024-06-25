@@ -1,12 +1,9 @@
 import { h } from 'vue';
 import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
 import TenderIndex from '../views/tenders/index.vue';
-<<<<<<< HEAD
 import useradmin from '../views/useradmin/index.vue';
 
-=======
 import tenderDetail from '@/views/tenders/components/tenderDetail.vue';
->>>>>>> dev
 export const menuList = [
     {
         key: 'licitaciones',
@@ -21,7 +18,6 @@ export const menuList = [
         }
     },
     {
-<<<<<<< HEAD
         key: 'login',
         path: '/login',
         icon: () => h(AppstoreOutlined),
@@ -43,8 +39,6 @@ export const menuList = [
         title: 'Administracion de Roles',
     },
     {
-=======
->>>>>>> dev
         key: 'config',
         icon: () => h(SettingOutlined),
         label: 'CONFIGURACION',
