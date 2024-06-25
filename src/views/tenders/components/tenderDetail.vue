@@ -72,7 +72,6 @@
                 </a-descriptions>
             </template>
             <div class="collapse-body">
-
                 <div class="image-container" v-if="imageUrl">
                     <span>Imágenes</span>
                     <!-- <a-space style="align-items: start;">
@@ -102,7 +101,7 @@
                 <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
                 <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
-                        <template v-if="['sku', 'llanta_type', 'price', 'quantity'].includes(column.dataIndex)">
+                        <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
                             <div>
                                 <a-input v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
@@ -152,6 +151,13 @@
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
                             <template v-else>
                                 {{ formatCurrency(record.ammount_wo_iva) }}
+                            </template>
+                        </template>
+                        <template v-if="column.dataIndex === 'price'">
+                            <a-input v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                            <template v-else>
+                                {{ formatCurrency(record.price) }}
                             </template>
                         </template>
                         <template v-else-if="column.dataIndex === 'total'">
@@ -585,7 +591,8 @@ export default {
                     tire_model: parseInt(quoteData.value.tire_model),
                     llanta_type: parseInt(quoteData.value.llanta_type),
                 };
-                if (quoteData.value.imageData) {
+
+                if (quoteData.value.image_data) {
                     imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
                     imageUrl.value = imageData.value;
                 }
