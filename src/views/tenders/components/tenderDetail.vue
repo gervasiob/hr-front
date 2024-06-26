@@ -347,7 +347,7 @@
 
                             </a-col>
                             <a-col :span="6">
-                                <div v-show="newCost">
+                                <!-- <div v-show="newCost">
                                     <a-descriptions title="Costos" bordered>
                                         <template v-for="(item, index) in newCost.spare_tire_amounts" :key="index">
                                             <a-descriptions-item label="Detalle">{{
@@ -357,7 +357,7 @@
 
                                         </template>
                                     </a-descriptions>
-                                </div>
+                                </div> -->
                                 <a-button type="primary" @click="handleGetCost()" :loading="isLoading">Buscar
                                     Costo</a-button>
                             </a-col>
@@ -580,14 +580,15 @@ export default {
                 } else {
                     console.error("Expected records to be an array, but got:", typeof records);
                 }
+                let deliveryTime = parseInt(quoteData.value.delivery_time);
+                if (deliveryTime > 5) {
+                    deliveryTime = 18;
+                }
 
-                console.log(quoteResponse)
-                console.log(dataQuoteSource.value)
-                console.log(dataSource.value)
                 const quoteDataValue = {
                     ...quoteData.value,
-                    brand: parseInt(quoteData.value.brand),
-                    delivery_time: parseInt(quoteData.value.delivery_time),
+                    brand: optionsBrand.find((item) => item.label === quoteData.value.brand).value,
+                    delivery_time: deliveryTime,
                     tire_model: parseInt(quoteData.value.tire_model),
                     llanta_type: parseInt(quoteData.value.llanta_type),
                 };
@@ -780,8 +781,16 @@ export default {
                 }
                 const costResponse = await getTireCost(params);
                 newCost.value = costResponse;
+                console.log("cost response")
                 console.log(costResponse)
-                console.log(newCost.value)
+
+                dataQuoteSource.value = dataQuoteSource.value.map((item) => {
+                    item.neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
+                    return item;
+                });
+        
+                console.log("data",dataQuoteSource.value)
+                console.log("newcost", newCost.value.spare_tire_amounts[0].cost_amount)
             } catch (err) {
                 error.value = err;
             } finally {
