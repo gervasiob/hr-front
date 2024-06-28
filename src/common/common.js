@@ -37,7 +37,7 @@ export const TENDER_STATES = [
     {
         label: 'Evaluado',
         value: 'E',
-        color: 'lime'
+        color: 'green'
     },
     {
         label: 'Rechazado',
@@ -48,6 +48,28 @@ export const TENDER_STATES = [
         label: 'Cancelado',
         value: 'C',
         color: 'red'
+    },
+    {
+        label: 'Adjudicado',
+        value: 'A',
+        color: 'red'
+    },
+];
+export const PRIORITY_VALUES = [
+    {
+        label: 1,
+        value: 1,
+        color: 'gold'
+    },
+    {
+        label: 2,
+        value: 2,
+        color: 'blue'
+    },
+    {
+        label: 3,
+        value: 3,
+        color: 'green'
     },
 ];
 export const DELIVERY_TIMES = [
@@ -70,6 +92,10 @@ export const DELIVERY_TIMES = [
     {
         label: '30 días o más',
         value: 5,
+    },
+    {
+        label: '...',
+        value: 18,
     },
 ];
 export const TIRE_BRANDS = [
@@ -139,7 +165,7 @@ export const TIRE_TREAD = [
     { value: 20, label: "20" },
     { value: 24, label: "24" }
 ];
-export const TIRE_WIDTH = [
+export const TIRE_HEIGHT = [
     { value: 30, label: "30" },
     { value: 35, label: "35" },
     { value: 40, label: "40" },
@@ -153,7 +179,7 @@ export const TIRE_WIDTH = [
     { value: 80, label: "80" },
     { value: 85, label: "85" }
 ];
-export const TIRE_HEIGHT = [
+export const TIRE_WIDTH = [
     { value: 145, label: "145" },
     { value: 155, label: "155" },
     { value: 165, label: "165" },
@@ -181,6 +207,6 @@ export const DAYTONAS = [
     { value: 3, businessName: "DAYTONA", completeAddress: "AV. DIRECTORIO 1601", idClaimsProvider: 54049732, virtualOffice: "N" }
 ];
 export const QUOTE_DETAILS = [
-    { value: 'X', label: "Modelo Exacto" },
+    { value: 'modelo exacto', label: "Modelo Exacto" },
     { value: 'S', label: "Modelo Similar" },
 ];

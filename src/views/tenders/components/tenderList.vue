@@ -15,7 +15,7 @@
                 </a-col>
                 <a-col :span="12">
                     <a-form-item label="Estado" name="estado">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.claim_state" allowClear
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.quote_state" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
                                 :label="item.label">
@@ -26,25 +26,29 @@
                 </a-col>
             </a-row>
             <a-row :gutter="24">
-                <a-col :span="8">
+                <a-col :span="6">
                     <a-form-item label="Claim id" name="claim_id">
                         <a-input v-model:value="filterInputs.claim_id" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="8">
+                <a-col :span="6">
                     <a-form-item label="Licitación id" name="tender_id">
                         <a-input v-model:value="filterInputs.id" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="8">
-                    <a-form-item label="Rentabilidad" name="rentabilidad">
-                        <a-input v-model:value="filterInputs.rentabilidad" allowClear />
+                <a-col :span="6">
+                    <a-form-item label="Agente" name="agent">
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
+                            show-search :filter-option="filterOption">
+                            <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
+                                :label="(item.fullName)">
+                                {{ item.fullName }}
+                            </a-select-option>
+                        </a-select>
                     </a-form-item>
                 </a-col>
-            </a-row>
-            <a-row>
-                <a-col :span="24" style="text-align: right">
-                    <a-button type="primary" @click="onSearch">Buscar</a-button>
+                <a-col :span="6" style="text-align: right">
+                    <a-button type="primary" danger @click="onSearch">Buscar</a-button>
                     <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
                 </a-col>
             </a-row>
@@ -52,7 +56,7 @@
     </div>
 
     <!-- Table -->
-    <a-table :columns="columns" :data-source="dataSource">
+    <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
         <template #headerCell="{ column }">
             <template v-if="column.key === 'id'">
                 <span>
@@ -64,11 +68,13 @@
 
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'id'">
-                <a-button type="primary" shape="circle">
-                    <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id } }">
+
+                <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id } }">
+                    <a-button type="primary" danger>
                         {{ record.id }}
-                    </router-link>
-                </a-button>
+
+                    </a-button>
+                </router-link>
             </template>
             <template v-else-if="column.key === 'quote_state'">
                 <span>
@@ -93,16 +99,23 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, computed } from 'vue';
+import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
-import { getQuotes } from '@/api/quotes/quotes.js';
+import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
+import { getUsers } from '@/api/users/users.js';
 
 export default {
     name: 'TenderList',
-    setup() {
+    props: {
+        cardFilter: {
+            type: Number,
+            default: null,
+        }
+    },
+    setup(props) {
         const expand = ref(false);
         const formRef = ref();
         const dataSource = ref([]);
@@ -122,6 +135,10 @@ export default {
         const filters = filterList;
         const columns = tableColumns;
         const aseguradoraList = ASEGURADORAS;
+
+        const roles = ref(2); // Define roles como un ref para que sea reactivo
+        const agents = ref([]); // Define agents como un ref para almacenar los agentes
+
         const estadoList = TENDER_STATES;
 
         // const columns = [
@@ -151,21 +168,44 @@ export default {
         //         dataIndex: 'estado',
         //     },
         // ];
+        const customHeaderRow = (column) => {
+            return {
+                class: 'custom-header',
+            };
+        };
         const fetchData = async (params = {}) => {
             try {
-                const response = await getQuotes(params);
-                const dataWithCompanyName = response.map(item => {
-                    return {
-                        ...item,
-                        total: item.price * item.quantity,
-                    };
-                });
+                const response = await getQuotesSummary(params);
+                // const dataWithCompanyName = response.map(item => {
+                //     return {
+                //         ...item,
+                //         total: item.price * item.quantity,
+                //     };
+                // });
+                console.log("response");
+                console.log(response);
 
-                dataSource.value = dataWithCompanyName;
+                console.log(dataSource.value)
+                dataSource.value = response;
+                console.log(dataSource.value)
+
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }
+            try {
+                const agentsResponse = await getUsers({ roles: roles.value });
+                const transformedAgents = agentsResponse.map((item) => {
+                    return {
+                        ...item,
+                        fullName: item.last_name + ", " + item.first_name,
+                    };
+                });
+                agents.value = transformedAgents;
+            } catch (error) {
+                console.error("Error fetching agents:", error);
+            }
         };
+
 
         const onSearch = () => {
             fetchData(filterInputs.value);
@@ -179,36 +219,38 @@ export default {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
         const getState = (tag) => {
-            const state = TENDER_STATES.find((item) => item.value === tag);
-            console.log(state)
+            let state = TENDER_STATES.find((item) => item.value === tag);
+            if (!state) {
+                state = {
+                    label: tag,
+                    color: 'blue',
+                    value: tag,
+                }
+                console.log("falta estado", tag)
+            }
             return state;
         }
         onMounted(() => {
             fetchData();
+            window.addEventListener('card-clicked', handleCardClick);
         });
-        // const data = [
-        //     {
-        //         key: '1',
-        //         aseguradora: 'Federación Patronal',
-        //         cotizacion: '$1.000.000',
-        //         rentabilidad: '10%',
-        //         estado: ['licitado'],
-        //     },
-        //     {
-        //         key: '2',
-        //         aseguradora: 'La Caja',
-        //         cotizacion: '$5.000.000',
-        //         rentabilidad: '30%',
-        //         estado: ['pendiente'],
-        //     },
-        //     {
-        //         key: '3',
-        //         aseguradora: 'Federación Patronal',
-        //         cotizacion: '$300.000',
-        //         rentabilidad: '-10%',
-        //         estado: ['cancelado'],
-        //     },
-        // ];
+        const handleCardClick = (event) => {
+            const cardKey = event.detail;
+            filterInputs.value = {};
+            filterInputs.value.quote_state = 'N';
+            filterInputs.value.priority = cardKey;
+            dataSource.value = [];
+            fetchData(filterInputs.value);
+        };
+
+        onUnmounted(() => {
+            window.removeEventListener('card-clicked', handleCardClick);
+        });
+        watch(
+            () => props.cardFilter,
+            (newValue, oldValue) => {
+            }
+        );
         return {
             expand,
             formRef,
@@ -225,6 +267,9 @@ export default {
             filterOption,
             resetFilters,
             getState,
+            customHeaderRow,
+            agents,
+            roles,
         }
     }
 }
@@ -232,8 +277,13 @@ export default {
 
 <style scoped>
 .filters {
-    margin: 2%;
+    margin-top: 1%;
+    margin-bottom: 1%;
+    background-color: var(--mute);
+    padding: 2%;
+    border-radius: 20px;
 }
+
 
 #components-form-demo-advanced-search .ant-form {
     max-width: none;
@@ -259,5 +309,20 @@ export default {
 [data-theme='dark'] #components-form-demo-advanced-search .search-result-list {
     border: 1px dashed #434343;
     background: rgba(255, 255, 255, 0.04);
+}
+
+:deep(.ant-table-thead .ant-table-cell) {
+    background-color: var(--principal);
+    color: white;
+}
+
+:deep(.ant-table-thead:hover .ant-table-cell:hover) {
+    background-color: var(--mute);
+    color: black;
+}
+
+:deep(.ant-table-thead .ant-table-column-sort) {
+    background-color: var(--secondary) !important;
+    color: black !important;
 }
 </style>

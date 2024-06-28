@@ -5,7 +5,7 @@ export const filterList = [
         state: 1,
     },
     {
-        name: 'claim_state',
+        name: 'quote_state',
         label: 'Estado',
         state: 1,
     },

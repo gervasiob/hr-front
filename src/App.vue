@@ -1,21 +1,29 @@
 <template>
-    <a-layout style="height: 100vh;">
-      <a-layout-header :style="headerStyle">
-        <nav>
-          <a-menu v-model:selectedKeys="current" mode="horizontal" :items="items" @select="handleMenuSelect" />
-        </nav>
-      </a-layout-header>
+  <a-layout style="background: #fff">
+    <a-layout style="background: #fff">
+      <a-layout-sider :style="siderStyle" v-model:collapsed="collapsed" collapsible>
+        <a-menu v-model:selectedKeys="current" :items="items" @click="handleMenuSelect" /></a-layout-sider>
       <a-layout-content :style="contentStyle">
+        <div class="title">
+          <div class="logo-container">
+            <img src="@/assets/daytona-logo.png" alt="Daytona Logo" class="logo-image" />
+          </div>
+          <h4 class="sub-title">DFT - Daytona Fast Track</h4>
+          <a-divider style="height: 4px; background-color: #EC2233"></a-divider>
+        </div>
         <RouterView />
       </a-layout-content>
     </a-layout>
+    <!-- <a-layout-footer :style="footerStyle">Footer</a-layout-footer> -->
+  </a-layout>
+
 
 </template>
 
 <script>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { menuList } from '@/config/menu'
-import { useRouter } from 'vue-router';
+import { useRouter, useRoute } from 'vue-router';
 
 
 export default {
@@ -24,31 +32,50 @@ export default {
   setup() {
     const current = ref(['mail']);
     const items = menuList;
+    const collapsed = ref(false);
     const router = useRouter(); // Importar el router
+    // const handleMenuSelect = (key) => {
+    //   // current.value = key; // Actualizar el valor actual del menú
+    //   console.log(key.item.path);
+    //   router.push({ path: key.item.path }); // Navegar a la ruta seleccionada
+    // };
+    const route = useRoute(); // Obtener la ruta actual
+
     const handleMenuSelect = (key) => {
-      // current.value = key; // Actualizar el valor actual del menú
-      console.log(key.item.path);
-      router.push({ path: key.item.path }); // Navegar a la ruta seleccionada
+      const path = key.item.path;
+      if (route.path === path) {
+        // Forzar la redirección a la misma página
+        router.push({ path: '/' }).then(() => {
+          router.push({ path });
+        });
+      } else {
+        router.push({ path }); // Navegar a la ruta seleccionada
+      }
     };
     const headerStyle = {
       textAlign: 'center',
-      height: 64,
-      lineHeight: '64px',
-      'background-color': 'transparent',
+      lineHeight: '30px',
+      paddingInline: '10px',
+      height: '100px',
+      backgroundColor: '#fff',
     };
     const contentStyle = {
       textAlign: 'center',
-      minHeight: 'calc(100vh- 128px)',
-      lineHeight: '120px',
+      minHeight: 120,
+      color: '#fff',
+      backgroundColor: '#fff',
     };
     const siderStyle = {
       textAlign: 'center',
-      lineHeight: '120px',
+      color: '#fff',
+      backgroundColor: '#fff',
+      marginTop: '50px',
     };
     const footerStyle = {
       textAlign: 'center',
       lineHeight: '64px',
     };
+    
     return {
       current,
       items,
@@ -57,39 +84,66 @@ export default {
       contentStyle,
       siderStyle,
       footerStyle,
+      collapsed,
+      route,
     }
 
   }
 
-  
+
 };
 </script>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.logo-container {
+  height: 80px;
+  overflow: hidden;
+  position: relative;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+.logo-image {
+  width: 40%;
+  height: 120px;
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
+.title {
+  text-align: center;
+  color: black;
+  line-height: '20px';
 
-  .logo {
-    margin: 0 2rem 0 0;
-  }
+}
 
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+.sub-title {
+  font-style: italic;
+  font-weight: bold;
+  font-size: x-large;
+
+}
+
+:deep(.ant-menu-item) {
+  background: #fff;
+  color: var(--principal);
+  text-align: left;
+}
+
+:deep(.ant-menu-submenu) {
+  background: #fff;
+  color: var(--principal);
+  text-align: left;
+}
+
+:deep(.ant-menu-title-content) {
+  font-weight: bold;
+  color: var(--principal);
+}
+
+:deep(.ant-menu-item-selected) {
+  background-color: var(--mute);
+  color: var(--principal);
+  border-left: 6px solid var(--principal) !important;
+}
+
+:deep(.ant-layout-sider-trigger) {
+  background: var(--principal);
 }
 </style>

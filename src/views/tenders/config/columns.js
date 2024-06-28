@@ -1,4 +1,4 @@
-import { ASEGURADORAS, TENDER_STATES } from "@/common/common";
+import { ASEGURADORAS, TENDER_STATES, PRIORITY_VALUES } from "@/common/common";
 
 export const tableColumns = [
     {
@@ -33,9 +33,9 @@ export const tableColumns = [
         title: 'Estado',
         key: 'quote_state',
         dataIndex: 'quote_state',
-        sorter: (a, b) => a.claim_state.localeCompare(b.claim_state),
+        sorter: (a, b) => a.quote_state.localeCompare(b.quote_state),
         filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
-        onFilter: (value, record) => record.claim_state === value,
+        onFilter: (value, record) => record.quote_state === value,
     },
     {
         title: 'Agente',
@@ -49,15 +49,16 @@ export const tableColumns = [
         title: 'Prioridad',
         key: 'priority',
         dataIndex: 'priority',
-        // sorter: (a, b) => a.agent.localeCompare(b.agent),
-        // filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
-        // onFilter: (value, record) => record.claim_state === value,
+        sorter: (a, b) => a.id - b.id,
+        sorter: (a, b) => a.priority - b.priority,
+        filters: PRIORITY_VALUES.map((item) => ({ text: item.label, value: item.value })),
+        onFilter: (value, record) => record.priority === value,
     },
     {
         title: 'Ranking',
         key: 'ranking',
         dataIndex: 'ranking',
-        // sorter: (a, b) => a.agent.localeCompare(b.agent),
+        sorter: (a, b) => a.ranking - b.ranking,
         // filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
         // onFilter: (value, record) => record.claim_state === value,
     },
