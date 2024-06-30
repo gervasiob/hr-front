@@ -8,6 +8,12 @@ export const tableColumns = [
         sorter: (a, b) => a.id - b.id,
     },
     {
+        title: 'Número Siniestro',
+        dataIndex: 'claim_id',
+        key: 'claim_id',
+        sorter: (a, b) => a.claim_id - b.claim_id,
+    },
+    {
         title: 'Aseguradora',
         dataIndex: 'company_name', // Usamos la nueva propiedad company_name
         key: 'company_name',
@@ -20,13 +26,6 @@ export const tableColumns = [
         dataIndex: 'cotizacion',
         key: 'cotizacion',
         sorter: (a, b) => a.cotizacion - b.cotizacion,
-
-    },
-    {
-        title: 'Rentabilidad',
-        dataIndex: 'rentabilidad',
-        key: 'rentabilidad',
-        sorter: (a, b) => a.rentabilidad - b.rentabilidad,
 
     },
     {
@@ -53,13 +52,5 @@ export const tableColumns = [
         sorter: (a, b) => a.priority - b.priority,
         filters: PRIORITY_VALUES.map((item) => ({ text: item.label, value: item.value })),
         onFilter: (value, record) => record.priority === value,
-    },
-    {
-        title: 'Ranking',
-        key: 'ranking',
-        dataIndex: 'ranking',
-        sorter: (a, b) => a.ranking - b.ranking,
-        // filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
-        // onFilter: (value, record) => record.claim_state === value,
     },
 ];
