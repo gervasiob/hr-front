@@ -42,15 +42,54 @@ export const LoginRoute = {
     }
 }
 
-export const menuList = {
+export const menuList = [
+    {
+        key: 'nuevaLicitacion',
+        name: 'Nueva Licitacion',
+        path: '/nueva-licitacion',
+        component: () => import('@/views/tenders/components/tenderDetail.vue'),
+        meta: {
+            label: 'Nueva Licitación',
+            title: 'Nueva Licitación',
+        }
+    },
+    {
         key: 'licitaciones',
         path: '/Licitaciones',
         component: () => import('@/views/tenders/index.vue'),
         meta: {
             label: 'Licitaciones',
             title: 'Licitaciones',
+        },
+    },
+    {
+        key: 'licitacionesEvaluadas',
+        path: '/Evaluadas',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitaciones Evaluadas',
+            title: 'Licitaciones Evaluadas',
         }
-}
+    },
+    {
+        key: 'licitacionesNoPendientes',
+        path: '/No-pendientes',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitaciones No Pendientes',
+            title: 'Licitaciones No Pendientes',
+        }
+    },
+    {
+        key: 'licitacionesSucursal',
+        path: '/Sucursal',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitaciones Sucursal',
+            title: 'Licitaciones Sucursal',
+        }
+    },
+]
 const otherRoutes = [
     {
         key: 'TenderDetail',
@@ -76,7 +115,7 @@ const otherRoutes = [
 export const basicRoutes = [
     LoginRoute,
     RootRoute,
-    menuList,
+    ...menuList,
     ...otherRoutes,
 ]
 

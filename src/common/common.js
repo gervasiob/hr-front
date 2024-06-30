@@ -25,34 +25,89 @@ export const ASEGURADORAS = [
 
 export const TENDER_STATES = [
     {
-        label: 'Pendiente',
-        value: 'N',
-        color: 'gold'
+        label: 'Adjudicado',
+        value: 'A',
+        color: 'var(--principal)' // Rojo
     },
     {
-        label: 'Licitado',
-        value: 'V',
-        color: 'blue'
+        label: 'Entregado',
+        value: 'D',
+        color: '#FFA500' // Naranja
     },
     {
         label: 'Evaluado',
         value: 'E',
-        color: 'green'
+        color: 'lime',
     },
     {
-        label: 'Rechazado',
+        label: 'Rechazado/Sin Resolucion',
+        value: 'G',
+        color: 'default' // Rechazado
+    },
+    {
+        label: 'Documentación Observada',
+        value: 'J',
+        color: '#800080' // Púrpura
+    },
+    {
+        label: 'Pendiente de cobranza',
+        value: 'L',
+        color: '#FFFF00' // Amarillo
+    },
+    {
+        label: 'Factura Procesada',
+        value: 'M',
+        color: '#008000' // Verde
+    },
+    {
+        label: 'Pendiente Cotizar',
+        value: 'N',
+        color: 'gold'
+    },
+    {
+        label: 'Solicitud Cambio de Costo',
+        value: 'O',
+        color: '#00FFFF' // Cian
+    },
+    {
+        label: 'Pagado',
+        value: 'P',
+        color: '#0000FF' // Azul
+    },
+    {
+        label: 'Documentación',
+        value: 'Q',
+        color: '#A52A2A' // Marrón
+    },
+    {
+        label: 'Factura Observada',
         value: 'R',
-        color: 'default'
+        color: 'default' // Rechazado
     },
     {
-        label: 'Cancelado',
-        value: 'C',
-        color: 'red'
+        label: 'Adjudicado Pendiente',
+        value: 'S',
+        color: '#808080' // Gris
     },
     {
-        label: 'Adjudicado',
-        value: 'A',
-        color: 'red'
+        label: 'Facturado',
+        value: 'T',
+        color: '#00FF00' // Verde claro
+    },
+    {
+        label: 'Cotizado',
+        value: 'V',
+        color: 'blue'
+    },
+    {
+        label: 'Adjudicado/Rechazado',
+        value: 'W',
+        color: '#FFC0CB' // Rosa
+    },
+    {
+        label: 'Aprobado para Facturar',
+        value: 'Y',
+        color: '#FF1493' // Rosa fuerte
     },
 ];
 export const PRIORITY_VALUES = [

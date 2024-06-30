@@ -2,7 +2,7 @@
   <div class="header">
   </div>
 
-  <div style="background-color: var(--mute); padding: 20px;  border-radius: 20px;">
+  <div v-show="routeName === '/Licitaciones'" style="background-color: var(--mute); padding: 20px;  border-radius: 20px;">
     <a-row :gutter="16">
       <a-col :span="8">
         <a-card title="Prioridad 1" :bordered="false" class="card-1" @click="handleCardClick(1)">
@@ -31,6 +31,8 @@
 </template>
 
 <script>
+import { useRoute } from 'vue-router';
+import { watch } from 'vue';
 import TenderList from './components/tenderList.vue';
 import { ref, defineProps, defineEmits, onMounted } from 'vue';
 import { getPriorityCounts } from '@/api/quotes/quotes';
@@ -42,6 +44,8 @@ export default {
   setup() {
 
     const cardNumber = ref();
+    const route = useRoute();
+    let routeName = ref();
     const handleCardClick = (cardKey) => {
       console.log(`Clicked on card ${cardKey}`);
       cardNumber.value = cardKey;
@@ -73,9 +77,15 @@ export default {
     };
 
     onMounted(() => {
+      routeName.value = route.path;
       fectchData();
     });
-
+    watch(
+      () => route.path,
+      (_newValue) => {
+        routeName.value = _newValue;
+      }
+    );
 
     return {
       handleCardClick,
@@ -83,6 +93,9 @@ export default {
       priorityCounts,
       fectchData,
       onCardClicked,
+      route,
+      routeName,
+      
     }
   }
 }
