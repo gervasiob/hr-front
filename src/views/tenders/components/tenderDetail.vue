@@ -7,17 +7,17 @@
             <h1>DATOS DEL SINIESTRO</h1>
         </div>
     </div>
-    <div v-show="type === 'Add'">
+    <div v-show="type === 'Add'" class="form-item-container mg-bottom">
         <a-form :model="formTenderDetail" name="horizontal_login" layout="inline" autocomplete="off">
             <a-form-item label="Nro Siniestro" name="claim_id"
-                :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-input v-model:value="formTenderDetail.claim_id">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Compañía" name="company_id" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+            <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.company_id" allowClear
                     show-search :filter-option="filterOption">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
@@ -35,74 +35,74 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item label="Dominio" name="domain" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.domain">
+            <a-form-item label="Dominio" name="domain" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.domain">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Chasis" name="chasis" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.chasis">
+            <a-form-item label="Chasis" name="chasis" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.chasis">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Marca" name="brand" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.brand">
+            <a-form-item label="Marca" name="brand" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.brand">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Modelo" name="vehicle" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.vehicle">
+            <a-form-item label="Modelo" name="vehicle" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.vehicle">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
             <a-form-item label="Año Vehículo" name="vehicle_year"
-                :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.vehicle_year">
+                :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.vehicle_year">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
             <a-form-item label="Fecha Siniestro" name="claim_date"
-                :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.claim_date">
+                :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input type="date" v-model:value="formTenderDetail.tender_data.claim_date">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Sede" name="sede" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.sede">
+            <a-form-item label="Sede" name="sede" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.sede">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Nombre Cliente" name="name" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.name">
+            <a-form-item label="Nombre Cliente" name="name" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.name">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Teléfono" name="phone" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.phone">
+            <a-form-item label="Teléfono" name="phone" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.phone">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
             <a-form-item label="Agente" name="agent">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.agent" allowClear show-search
-                    :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.agent" allowClear
+                    show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                         :label="(item.fullName)">
                         {{ item.fullName }}
@@ -129,7 +129,7 @@
             :labelStyle="{ fontWeight: 'bolder', fontSize: '16px' }" :style="{ padding: '1%' }">
             <a-descriptions-item label="Nro Siniestro" class="a-descriptions-item">
                 <div class="item-d">
-                    {{ tenderData.claim_id
+                    {{ formTenderDetail.claim_id
                     }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Compañía" class="a-descriptions-item">
@@ -137,6 +137,7 @@
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
                 <div class="item-d">
+                    <span>{{ formTenderDetail.quote_state}}</span>
                     <a-badge status="processing" :color="getStateColor(formTenderDetail.quote_state)"
                         :text="getStateLabel(formTenderDetail.quote_state)" />
                 </div>
@@ -186,7 +187,7 @@
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">{{
-                        formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
+                            formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
                 </a-descriptions>
             </template>
             <div class="collapse-body">
@@ -370,7 +371,7 @@
                                             <a-select ref="select" v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" @focus="focus" @change="handleChange">
-                                                <a-select-option value="Nuematicos">Nuemáticos</a-select-option>
+                                                <a-select-option value="Neumaticos">Neumáticos</a-select-option>
                                                 <a-select-option value="Llantas">Llantas</a-select-option>
                                             </a-select>
                                             <template v-else>
@@ -616,7 +617,10 @@ export default {
             daytona_ids: [],
             quote_detail: '',
             quote_state: '',
-            tenderData: {},
+            spare_tire_amount: 0,
+            tenderData: { domain: '' },
+            tender_data: { domain: '' },
+            original_parts: null,
         });
         const imageList = ref([
             {
@@ -798,7 +802,15 @@ export default {
                             tire_type_name: dataQuoteSource.value,
                         }
                         console.log(fullParams)
-                        const response = updateQuotes(quoteId.value, fullParams);
+                        let response;
+                        if (type.value === 'Edit') {
+                            console.log('Edit')
+                            response = updateQuotes(quoteId.value, fullParams);
+                        }
+                        if (type.value === 'Add') {
+                            console.log('Add')
+                            response = addQuotes(fullParams);
+                        }
                         console.log('Response:', response);
                         dataSource.value = [];
                         dataQuoteSource.value = [];
@@ -922,6 +934,32 @@ export default {
                 fetchTenderData(tenderId.value);
             } else {
                 type.value = 'Add';
+                formTenderDetail.value = {
+                    not_quote: false,
+                    delivery_time: '',
+                    original_parts: '',
+                    spare_tire_amount: '',
+                    brand: '',
+                    tire_model: '',
+                    llanta_type: '',
+                    tire_width: '',
+                    tire_height: '',
+                    tire_tread: '',
+                    obs: '',
+                    tire_type_name: 'Auxilio',
+                    tire_quoted: '',
+                    daytona_ids: [],
+                    quote_detail: '',
+                    quote_state: 'N',
+                    original_parts: null,
+                    spare_tire_amount: 0,
+                    tender_data: {
+                        domain: '',
+                    },
+                    tenderData: {
+                        domain: '',
+                    },
+                }
             }
         });
         const handleGetCost = async () => {
@@ -1239,5 +1277,10 @@ export default {
 .selected-image {
     max-width: 400px;
     max-height: 250px;
+}
+
+.mg-bottom .ant-form-item {
+    margin-bottom: 10px;
+    width: 15%;
 }
 </style>
