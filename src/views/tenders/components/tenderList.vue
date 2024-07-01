@@ -100,6 +100,7 @@
 
 <script>
 import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { useRoute } from 'vue-router';
 import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
@@ -119,6 +120,8 @@ export default {
         const expand = ref(false);
         const formRef = ref();
         const dataSource = ref([]);
+        const route = useRoute();
+        let routeName = ref();
         const rulesRef = reactive({
             name: [
                 {
@@ -128,7 +131,9 @@ export default {
             ],
         });
         const formState = reactive({});
-        const filterInputs = ref({});
+        const filterInputs = ref({
+            quote_state: 'N'
+        });
         const useForm = Form.useForm;
         const { resetFields, validate, validateInfos } = useForm(formRef, rulesRef);
 
@@ -174,14 +179,9 @@ export default {
             };
         };
         const fetchData = async (params = {}) => {
+            dataSource.value = [];
             try {
                 const response = await getQuotesSummary(params);
-                // const dataWithCompanyName = response.map(item => {
-                //     return {
-                //         ...item,
-                //         total: item.price * item.quantity,
-                //     };
-                // });
                 console.log("response");
                 console.log(response);
 
@@ -197,7 +197,7 @@ export default {
                 const transformedAgents = agentsResponse.map((item) => {
                     return {
                         ...item,
-                        fullName: item.last_name + ", " + item.first_name,
+                        fullName: item.username,
                     };
                 });
                 agents.value = transformedAgents;
@@ -231,9 +231,29 @@ export default {
             return state;
         }
         onMounted(() => {
-            fetchData();
-            window.addEventListener('card-clicked', handleCardClick);
+            getFetchData();
+
         });
+        const getFetchData = () => {
+            routeName.value = route.path;
+            if (routeName.value === '/Licitaciones') {
+                filterInputs.value.quote_state = 'N';
+                fetchData(filterInputs.value);
+                window.addEventListener('card-clicked', handleCardClick);
+            }
+            if (routeName.value === '/No-pendientes') {
+                filterInputs.value.quote_state = null;
+                fetchData();
+            }
+            if (routeName.value === '/Sucursal') {
+                filterInputs.value.quote_state = 'A';
+                fetchData(filterInputs.value);
+            }
+            if (routeName.value === '/Evaluadas') {
+                filterInputs.value.quote_state = 'E';
+                fetchData(filterInputs.value);
+            }
+        };
         const handleCardClick = (event) => {
             const cardKey = event.detail;
             filterInputs.value = {};
@@ -249,6 +269,13 @@ export default {
         watch(
             () => props.cardFilter,
             (newValue, oldValue) => {
+            }
+        );
+        watch(
+            () => route.path,
+            (_newValue) => {
+                routeName.value = _newValue;
+                getFetchData();
             }
         );
         return {
@@ -270,6 +297,9 @@ export default {
             customHeaderRow,
             agents,
             roles,
+            route,
+            routeName,
+            getFetchData,
         }
     }
 }
