@@ -70,23 +70,29 @@ export const menuList = [
             label: 'Licitaciones Evaluadas',
             title: 'Licitaciones Evaluadas',
         }
-    },
+    }
+];
+export const adm = [
     {
-        key: 'licitacionesNoPendientes',
-        path: '/No-pendientes',
-        component: () => import('@/views/tenders/index.vue'),
+        path: '/adm/roles',
+        key: 'roles',
+        label: 'roles',
+        title: 'Administracion de Roles',
+        name: 'Administracion de Roles',
+        component: () => import('@/views/roles/index.vue'),
         meta: {
-            label: 'Licitaciones No Pendientes',
-            title: 'Licitaciones No Pendientes',
+            title: 'Administracion de Roles'
         }
     },
     {
-        key: 'licitacionesSucursal',
-        path: '/Sucursal',
-        component: () => import('@/views/tenders/index.vue'),
+        path: '/adm/users',
+        key: 'useradmin',
+        label: 'useradmin',
+        title: 'Administracion de Usuarios',
+        name: 'Administracion de Usuarios',
+        component: () => import('@/views/useradmin/index.vue'),
         meta: {
-            label: 'Licitaciones Sucursal',
-            title: 'Licitaciones Sucursal',
+            title: 'Administracion de Usuarios'
         }
     },
 ]
@@ -115,6 +121,8 @@ const otherRoutes = [
 export const basicRoutes = [
     LoginRoute,
     RootRoute,
+    menuList,
+    ...adm,
     ...menuList,
     ...otherRoutes,
 ]
