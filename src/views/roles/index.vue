@@ -92,7 +92,7 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getRoles } from '@/api/roles/roles.js';
+import { getRoles, addRoles, updateRoles, deleteRoles } from '@/api/roles/roles.js';
 
 export default {
   name: 'RolesList',
@@ -152,12 +152,25 @@ export default {
 
     const editableData = reactive({});
     const edit = key => {
-      console.log(key)
-      editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+      const data = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+      editableData[key] = data;
+
     };
     const save = key => {
-      Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
+      const data = dataSource.value.filter(item => key === item.key)[0];
+      Object.assign(data, editableData[key]);
       delete editableData[key];
+      console.log(data)
+      if (data.id > 0) {
+        const params = {
+          name: data.name,
+        }
+        updateRoles(data.id, params);
+      } else {
+        const { id, ...dataWithoutId } = data;
+        addRoles(dataWithoutId);
+      }
+      fetchData();
     };
     const cancel = key => {
       delete editableData[key];
@@ -179,7 +192,16 @@ export default {
       editableData[newKey] = cloneDeep(newData);
     };
     const onDelete = key => {
-      dataSource.value = dataSource.value.filter(item => item.key !== key);
+      const data = dataSource.value.filter(item => key === item.key)[0];
+      if (data.id) {
+        const params = {
+          name: data.name,
+        }
+        deleteRoles(data.id, params);
+      }
+      const newData = dataSource.value.filter(item => item.key !== key);
+      dataSource.value = newData;
+      fetchData();
     };
     return {
       formRef,
