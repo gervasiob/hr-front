@@ -14,11 +14,11 @@
           </a-form-item>
         </a-col>
         <a-col :span="12">
-          <a-form-item label="Estado" name="estado">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.quote_state" allowClear show-search
+          <a-form-item label="Roles" name="name">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
               :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value" :label="item.label">
-                {{ item.label }}
+              <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.id" :label="item.name">
+                {{ item.name }}
               </a-select-option>
             </a-select>
           </a-form-item>
@@ -55,158 +55,53 @@
 
   <!-- Table -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
-      <template #bodyCell="{ column, text, record }">
-                        <template v-if="['sku', 'llanta_type', 'price', 'quantity'].includes(column.dataIndex)">
-                            <div>
-                                <a-input v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0;" />
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['type'].includes(column.dataIndex)">
-                            <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0;width: 150px;" @focus="focus" @change="handleChange">
-                                    <a-select-option value="Nuematicos">Nuemáticos</a-select-option>
-                                    <a-select-option value="Llantas">Llantas</a-select-option>
-                                </a-select>
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['vendor_id'].includes(column.dataIndex)">
-                            <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0"
-                                    @focus="focus" @change="handleChange">
-                                    <a-select-option value="Proveedor 1">Proveedor 1</a-select-option>
-                                    <a-select-option value="Proveedor 2">Proveedor 2</a-select-option>
-                                </a-select>
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['po'].includes(column.dataIndex)">
-                            <div>
-                                <a-checkbox v-model:checked="editableData[record.key][column.dataIndex]"
-                                    v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"></a-checkbox>
-                                <template v-else>
-                                    <a-checkbox :checked="text" :disabled="true"></a-checkbox>
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="column.dataIndex === 'ammount_wo_iva'">
-                            <a-input v-if="editableData[record.key]"
-                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                            <template v-else>
-                                {{ formatCurrency(record.ammount_wo_iva) }}
-                            </template>
-                        </template>
-                        <template v-else-if="column.dataIndex === 'total'">
-                            <div>
-                                {{ formatCurrency(record.price * record.quantity) }}
-                            </div>
-                        </template>
+    <template #bodyCell="{ column, text, record }">
 
-                        <template v-else-if="column.dataIndex === 'operation'">
-                            <div class="editable-row-operations">
-                                <span v-if="editableData[record.key]">
-                                    <a-typography-link @click="save(record.key)">Save</a-typography-link>
-                                    <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
-                                        <a>Cancel</a>
-                                    </a-popconfirm>
+      <template v-if="['id', 'name'].includes(column.dataIndex)">
+        <div>
+          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />
+          <template v-else>
+            {{ text }}
+          </template>
+        </div>
+      </template>
 
-                                </span>
-                                <span v-else>
-                                    <a @click="edit(record.key)">Edit</a>
-                                    <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
-                                        @confirm="onDelete(record.key)">
-                                        <a>Eliminar</a>
-                                    </a-popconfirm>
-                                </span>
-                            </div>
-                        </template>
-  </template>
+      <template v-else-if="column.dataIndex === 'operation'">
+        <div class="editable-row-operations">
+          <span v-if="editableData[record.key]">
+            <a-typography-link @click="save(record.key)">Save</a-typography-link>
+            <a-popconfirm title="Sure to cancel?" @confirm="cancel(record.key)">
+              <a>Cancel</a>
+            </a-popconfirm>
+          </span>
+          <span v-else>
+            <a @click="edit(record.key)">Edit</a>
+          </span>
+        </div>
+      </template>
+    </template>
   </a-table>
-</template> 
+</template>
 
 <script>
-import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { reactive, ref, onMounted } from 'vue';
+import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { filterList } from './config/filters.js';
-import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
-import { Form } from 'ant-design-vue';
-import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
-import { getUsers } from '@/api/users/users.js';
 import { getRoles } from '@/api/roles/roles.js';
 
 export default {
   name: 'RolesList',
-  props: {
-    cardFilter: {
-      type: Number,
-      default: null,
-    }
-  },
-  setup(props) {
-    const expand = ref(false);
+
+  setup() {
     const formRef = ref();
     const dataSource = ref([]);
-    const rulesRef = reactive({
-      name: [
-        {
-          required: true,
-          message: 'Please input name',
-        },
-      ],
-    });
     const formState = reactive({});
     const filterInputs = ref({});
-    const useForm = Form.useForm;
-    const { resetFields, validate, validateInfos } = useForm(formRef, rulesRef);
 
-    const filters = filterList;
     const columns = tableColumns;
-    const aseguradoraList = ASEGURADORAS;
+    const roleList = ref([]);
 
-    const roles = ref(2); // Define roles como un ref para que sea reactivo
-    const agents = ref([]); // Define agents como un ref para almacenar los agentes
-
-    const estadoList = TENDER_STATES;
-
-    // const columns = [
-    //     {
-    //         name: 'Id',
-    //         dataIndex: 'id',
-    //         key: 'id',
-    //     },
-    //     {
-    //         title: 'Aseguradora',
-    //         dataIndex: 'aseguradora',
-    //         key: 'aseguradora',
-    //     },
-    //     {
-    //         title: 'Cotización',
-    //         dataIndex: 'cotizacion',
-    //         key: 'cotizacion',
-    //     },
-    //     {
-    //         title: 'Rentabilidad',
-    //         dataIndex: 'rentabilidad',
-    //         key: 'rentabilidad',
-    //     },
-    //     {
-    //         title: 'Estado',
-    //         key: 'estado',
-    //         dataIndex: 'estado',
-    //     },
-    // ];
     const customHeaderRow = (column) => {
       return {
         class: 'custom-header',
@@ -215,17 +110,13 @@ export default {
     const fetchData = async (params = {}) => {
       try {
         const response = await getRoles(params);
-        // const dataWithCompanyName = response.map(item => {
-        //     return {
-        //         ...item,
-        //         total: item.price * item.quantity,
-        //     };
-        // });
+
         console.log("response");
         console.log(response);
 
         console.log(dataSource.value)
         dataSource.value = response;
+        roleList.value = response;
         console.log(dataSource.value)
 
       } catch (error) {
@@ -245,58 +136,40 @@ export default {
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
-    const getState = (tag) => {
-      let state = TENDER_STATES.find((item) => item.value === tag);
-      if (!state) {
-        state = {
-          label: tag,
-          color: 'blue',
-          value: tag,
-        }
-        console.log("falta estado", tag)
-      }
-      return state;
-    }
+
     onMounted(() => {
       fetchData();
-      window.addEventListener('card-clicked', handleCardClick);
+
     });
-    const handleCardClick = (event) => {
-      const cardKey = event.detail;
-      filterInputs.value = {};
-      filterInputs.value.quote_state = 'N';
-      filterInputs.value.priority = cardKey;
-      dataSource.value = [];
-      fetchData(filterInputs.value);
+
+    const editableData = reactive({});
+    const edit = key => {
+      editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+    };
+    const save = key => {
+      Object.assign(dataSource.value.filter(item => key === item.key)[0], editableData[key]);
+      delete editableData[key];
+    };
+    const cancel = key => {
+      delete editableData[key];
     };
 
-    onUnmounted(() => {
-      window.removeEventListener('card-clicked', handleCardClick);
-    });
-    watch(
-      () => props.cardFilter,
-      (newValue, oldValue) => {
-      }
-    );
     return {
-      expand,
       formRef,
-      filters,
       formState,
       columns,
       dataSource,
       onSearch,
       filterInputs,
-      aseguradoraList,
-      estadoList,
-      rulesRef,
       onSearch,
       filterOption,
       resetFilters,
-      getState,
       customHeaderRow,
-      agents,
-      roles,
+      editableData,
+      edit,
+      cancel,
+      save,
+      roleList,
     }
   }
 }
