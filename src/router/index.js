@@ -42,16 +42,36 @@ export const LoginRoute = {
     }
 }
 
-export const menuList = {
+export const menuList = [
+    {
+        key: 'nuevaLicitacion',
+        name: 'Nueva Licitacion',
+        path: '/nueva-licitacion',
+        component: () => import('@/views/tenders/components/tenderDetail.vue'),
+        meta: {
+            label: 'Nueva Licitación',
+            title: 'Nueva Licitación',
+        }
+    },
+    {
         key: 'licitaciones',
         path: '/Licitaciones',
         component: () => import('@/views/tenders/index.vue'),
         meta: {
             label: 'Licitaciones',
             title: 'Licitaciones',
+        },
+    },
+    {
+        key: 'licitacionesEvaluadas',
+        path: '/Evaluadas',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitaciones Evaluadas',
+            title: 'Licitaciones Evaluadas',
         }
-
-}
+    }
+];
 export const useradmin = {
     path: '/useradmin',
     key: 'useradmin',
@@ -63,17 +83,37 @@ export const useradmin = {
         title: 'Administracion de Usuarios'
     }
 }
-export const roles = {
-    path: '/roles',
-    key: 'roles',
-    label: 'roles',
-    title: 'Administracion de Roles',
-    name: 'Administracion de Roles',
-    component: () => import('@/views/roles/index.vue'),
-    meta: {
-        title: 'Administracion de Roles'
-    }
-}
+export const roles = [
+    {
+        path: '/roles',
+        key: 'roles',
+        label: 'roles',
+        title: 'Administracion de Roles',
+        name: 'Administracion de Roles',
+        component: () => import('@/views/roles/index.vue'),
+        meta: {
+            title: 'Administracion de Roles'
+        }
+    },
+    {
+        key: 'licitacionesNoPendientes',
+        path: '/No-pendientes',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitaciones No Pendientes',
+            title: 'Licitaciones No Pendientes',
+        }
+    },
+    {
+        key: 'licitacionesSucursal',
+        path: '/Sucursal',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitaciones Sucursal',
+            title: 'Licitaciones Sucursal',
+        }
+    },
+]
 const otherRoutes = [
     {
         key: 'TenderDetail',
@@ -102,6 +142,7 @@ export const basicRoutes = [
     menuList,
     useradmin,
     roles,
+    ...menuList,
     ...otherRoutes,
 ]
 

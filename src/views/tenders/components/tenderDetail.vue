@@ -1,48 +1,169 @@
 <template>
-    <div class="header-1">
-        <h1 class="title-1">DETALLE DE COTIZACIÓN</h1>
+    <div>
+        <div class="header-1">
+            <h1 class="title-1">DETALLE DE COTIZACIÓN</h1>
+        </div>
+        <div class="header-2">
+            <h1>DATOS DEL SINIESTRO</h1>
+        </div>
     </div>
-    <div class="header-2">
-        <h1>DATOS DEL SINIESTRO</h1>
-    </div>
-    <a-descriptions class="description-group" :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" bordered
-        :labelStyle="{ fontWeight: 'bolder', fontSize: '16px' }" :style="{ padding: '1%' }">
-        <a-descriptions-item label="Nro Siniestro" class="a-descriptions-item">
-            <div class="item-d">
-                {{ tenderData.claim_id
-                }}</div>
-        </a-descriptions-item>
-        <a-descriptions-item label="Compañía" class="a-descriptions-item">
-            <div class="item-d">{{ tenderData.company }}</div>
-        </a-descriptions-item>
-        <a-descriptions-item label="Estado" class="a-descriptions-item">
-            <div class="item-d">
-                <a-badge status="processing" :color="getStateColor(formTenderDetail.quote_state)"
-                    :text="getStateLabel(formTenderDetail.quote_state)" />
-                <!-- <a-tag :color="getStateColor(tenderData.claim_state)" class="large-tag">
-                {{ getStateLabel(tenderData.claim_state) }}
-            </a-tag> -->
-            </div>
-        </a-descriptions-item>
-        <a-descriptions-item label="Dominio" class="a-descriptions-item">
-            <div class="item-d">{{ tenderData.domain }}</div>
-        </a-descriptions-item>
-        <a-descriptions-item label="Chasis" class="a-descriptions-item">
-            <div class="item-d">{{ tenderData.chasis }}</div>
-        </a-descriptions-item>
-        <a-descriptions-item label="Marca" class="a-descriptions-item">
-            <div class="item-d">{{ tenderData.brand }}</div>
-        </a-descriptions-item>
-        <a-descriptions-item label="Modelo" class="a-descriptions-item">
-            <div class="item-d">{{ tenderData.model }}</div>
-        </a-descriptions-item>
-        <a-descriptions-item label="Fecha" class="a-descriptions-item">
-            <div class="item-d">{{ tenderData.claim_date }}</div>
-        </a-descriptions-item>
+    <div v-show="type === 'Add'">
+        <a-form :model="formTenderDetail" name="horizontal_login" layout="inline" autocomplete="off">
+            <a-form-item label="Nro Siniestro" name="claim_id"
+                :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.claim_id">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Compañía" name="company_id" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.company_id" allowClear
+                    show-search :filter-option="filterOption">
+                    <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
+                        :value="aseguradora.value" :label="aseguradora.label">
+                        {{ aseguradora.label }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item label="Estado" name="estado">
+                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.quote_state" allowClear
+                    show-search :filter-option="filterOption">
+                    <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
+                        :label="item.label">
+                        {{ item.label }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item label="Dominio" name="domain" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.domain">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Chasis" name="chasis" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.chasis">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Marca" name="brand" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.brand">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Modelo" name="vehicle" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.vehicle">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Año Vehículo" name="vehicle_year"
+                :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.vehicle_year">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Fecha Siniestro" name="claim_date"
+                :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.claim_date">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Sede" name="sede" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.sede">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Nombre Cliente" name="name" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.name">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Teléfono" name="phone" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tenderData.phone">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Agente" name="agent">
+                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.agent" allowClear show-search
+                    :filter-option="filterOption">
+                    <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
+                        :label="(item.fullName)">
+                        {{ item.fullName }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
+            <!-- <a-form-item label="Password" name="password"
+                :rules="[{ required: true, message: 'Please input your password!' }]">
+                <a-input-password v-model:value="formState.password">
+                    <template #prefix>
+                        <LockOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input-password>
+            </a-form-item>
 
-    </a-descriptions>
+            <a-form-item>
+                <a-button :disabled="disabled" type="primary" html-type="submit">Log in</a-button>
+            </a-form-item> -->
+        </a-form>
+    </div>
+    <div>
+        <a-descriptions v-show="type === 'Edit'" class="description-group"
+            :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" bordered
+            :labelStyle="{ fontWeight: 'bolder', fontSize: '16px' }" :style="{ padding: '1%' }">
+            <a-descriptions-item label="Nro Siniestro" class="a-descriptions-item">
+                <div class="item-d">
+                    {{ tenderData.claim_id
+                    }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Compañía" class="a-descriptions-item">
+                <div class="item-d">{{ tenderData.company }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Estado" class="a-descriptions-item">
+                <div class="item-d">
+                    <a-badge status="processing" :color="getStateColor(formTenderDetail.quote_state)"
+                        :text="getStateLabel(formTenderDetail.quote_state)" />
+                </div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Dominio" class="a-descriptions-item">
+                <div class="item-d">{{ tenderData.domain }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Chasis" class="a-descriptions-item">
+                <div class="item-d">{{ tenderData.chasis }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Marca" class="a-descriptions-item">
+                <div class="item-d">{{ tenderData.brand }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Modelo" class="a-descriptions-item">
+                <div class="item-d">{{ tenderData.vehicle }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
+                <div class="item-d">{{ tenderData.vehicle_year }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Fecha" class="a-descriptions-item">
+                <div class="item-d">{{ tenderData.claim_date }}</div>
+            </a-descriptions-item>
+
+        </a-descriptions>
+    </div>
     <a-collapse class="collapse-class">
-        <a-collapse-panel key="1" header="INFORMACIÓN EXTRA">
+        <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
                 <a-descriptions-item label="Sede">
                     <div class="item-d">{{ tenderData.sede }}</div>
@@ -66,13 +187,9 @@
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">{{
                         formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
-                    <a-descriptions-item label="RENTABILIDAD"><span class="collapse-item">{{ tenderData.rentabilidad ??
-                        '10'
-                            }}%</span></a-descriptions-item>
                 </a-descriptions>
             </template>
             <div class="collapse-body">
-
                 <div class="image-container" v-if="imageUrl">
                     <span>Imágenes</span>
                     <!-- <a-space style="align-items: start;">
@@ -102,7 +219,7 @@
                 <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
                 <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
-                        <template v-if="['sku', 'llanta_type', 'price', 'quantity'].includes(column.dataIndex)">
+                        <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
                             <div>
                                 <a-input v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
@@ -117,7 +234,7 @@
                                 <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
                                     style="margin: -5px 0;width: 150px;" @focus="focus" @change="handleChange">
-                                    <a-select-option value="Nuematicos">Nuemáticos</a-select-option>
+                                    <a-select-option value="Neumatico">Neumáticos</a-select-option>
                                     <a-select-option value="Llantas">Llantas</a-select-option>
                                 </a-select>
                                 <template v-else>
@@ -152,6 +269,13 @@
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
                             <template v-else>
                                 {{ formatCurrency(record.ammount_wo_iva) }}
+                            </template>
+                        </template>
+                        <template v-if="column.dataIndex === 'price'">
+                            <a-input v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                            <template v-else>
+                                {{ formatCurrency(record.price) }}
                             </template>
                         </template>
                         <template v-else-if="column.dataIndex === 'total'">
@@ -341,7 +465,7 @@
 
                             </a-col>
                             <a-col :span="6">
-                                <div v-show="newCost">
+                                <!-- <div v-show="newCost">
                                     <a-descriptions title="Costos" bordered>
                                         <template v-for="(item, index) in newCost.spare_tire_amounts" :key="index">
                                             <a-descriptions-item label="Detalle">{{
@@ -351,7 +475,7 @@
 
                                         </template>
                                     </a-descriptions>
-                                </div>
+                                </div> -->
                                 <a-button type="primary" @click="handleGetCost()" :loading="isLoading">Buscar
                                     Costo</a-button>
                             </a-col>
@@ -421,7 +545,7 @@
 
 <script>
 import { cloneDeep } from 'lodash-es';
-import { ref, onMounted, onUnmounted, reactive, toRaw, computed } from 'vue';
+import { ref, onMounted, watch, reactive, toRaw, computed } from 'vue';
 import { useRoute } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
@@ -430,20 +554,22 @@ import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
-    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, DAYTONAS, QUOTE_DETAILS
+    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, DAYTONAS, QUOTE_DETAILS, ASEGURADORAS
 } from '@/common/common';
 import { dataTable } from './data';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
+import { getUsers } from '@/api/users/users.js';
 export default {
     name: 'TenderDetail',
     setup() {
         const route = useRoute();
+        const routeName = ref(route.path);
         const isLoading = ref(false);
         const formRef = ref();
         const rules = formRules;
         const errorMessage = ref('');
-        const tenderId = ref(route.params.id);
+        let tenderId = ref(route.params.id);
         const tenderData = ref({});
         const quoteData = ref({});
         const imageData = ref();
@@ -463,6 +589,12 @@ export default {
         const optionsQuoteDetails = QUOTE_DETAILS;
         const loading = ref(false);
         const error = ref(null);
+        const type = ref('Edit');
+        const aseguradoraList = ASEGURADORAS;
+        const roles = ref(2); // Define roles como un ref para que sea reactivo
+        const agents = ref([]); // Define agents como un ref para almacenar los agentes
+
+        const estadoList = TENDER_STATES;
         const optionsDaytonas = DAYTONAS.map(daytona => ({
             label: `${daytona.businessName} - ${daytona.completeAddress}`,
             value: daytona.idClaimsProvider
@@ -483,6 +615,8 @@ export default {
             tire_quoted: '',
             daytona_ids: [],
             quote_detail: '',
+            quote_state: '',
+            tenderData: {},
         });
         const imageList = ref([
             {
@@ -533,17 +667,26 @@ export default {
         };
 
         const fetchTenderData = async (id) => {
+            console.log('id')
+            console.log(id)
             try {
                 const response = await getTendersIndex({ claim_id: id });
                 tenderData.value = response[0]; //!! Importante ver que solo devuelva 1 solo
-                // dataSource.value = tenderData;
+                const agentsResponse = await getUsers({ roles: roles.value });
+                const transformedAgents = agentsResponse.map((item) => {
+                    return {
+                        ...item,
+                        fullName: item.username,
+                    };
+                });
+                agents.value = transformedAgents;
                 const params = {
                     claim_id: id,
                 };
                 const quoteResponse = await getQuotes(params);
                 quoteData.value = quoteResponse[0];
                 quoteId.value = quoteData.value.id;
-                console.log(quoteData.value.details)
+                console.log('quote details', quoteData.value.details)
                 if (Array.isArray(quoteData.value.details)) {
                     quoteData.value.details.map((item) => {
                         console.log(item, 'item')
@@ -560,7 +703,7 @@ export default {
 
                 let records = [];
                 records = quoteResponse[0].tire_type_name;
-                console.log(records)
+                console.log('records', records)
                 if (Array.isArray(records)) {
                     records.map((item) => {
                         dataQuoteSource.value.push(
@@ -574,22 +717,31 @@ export default {
                 } else {
                     console.error("Expected records to be an array, but got:", typeof records);
                 }
-
-                console.log(quoteResponse)
-                console.log(dataQuoteSource.value)
-                console.log(dataSource.value)
+                let deliveryTime = parseInt(quoteData.value.delivery_time);
+                if (deliveryTime > 5) {
+                    deliveryTime = 18;
+                }
+                console.log('quoteData', quoteData.value)
+                let brandObject = optionsBrand.find((item) => item.label === quoteData.value.brand);
+                let brand = '';
+                if (brandObject) {
+                    brand = brandObject.value;
+                }
                 const quoteDataValue = {
                     ...quoteData.value,
-                    brand: parseInt(quoteData.value.brand),
-                    delivery_time: parseInt(quoteData.value.delivery_time),
+                    brand: brand,
+                    delivery_time: deliveryTime,
                     tire_model: parseInt(quoteData.value.tire_model),
                     llanta_type: parseInt(quoteData.value.llanta_type),
                 };
-                if (quoteData.value.imageData) {
+                console.log('quoteDAtaVAlue', quoteDataValue)
+                if (quoteData.value.image_data) {
                     imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
                     imageUrl.value = imageData.value;
                 }
                 formTenderDetail.value = quoteDataValue;
+                console.log('form Tender Detail nuevos datos - quoteDataValue', quoteDataValue)
+                console.log('form Tender Detail nuevos datos - formTEnderDetail', formTenderDetail.value)
                 if (!formTenderDetail.value.daytona_ids) {
                     formTenderDetail.value.daytona_ids = [];
                 }
@@ -632,7 +784,13 @@ export default {
                 .validate().then(async () => {
                     try {
                         const params = formTenderDetail.value; // O ajusta según necesites
-
+                        console.log('formTernder details ', formTenderDetail.value)
+                        let brandObject = optionsBrand.find((item) => item.value === formTenderDetail.value.brand);
+                        console.log('brand Object', brandObject)
+                        if (brandObject) {
+                            params.brand = brandObject.label;
+                            console.log('params', params)
+                        }
                         params.quote_state = value;
                         const fullParams = {
                             ...params,
@@ -757,7 +915,14 @@ export default {
             editableQuoteData[newKey] = cloneDeep(newData);
         };
         onMounted(() => {
-            fetchTenderData(tenderId.value);
+            tenderId.value = route.params.id;
+            console.log(tenderId.value)
+            if (tenderId.value) {
+                type.value = 'Edit';
+                fetchTenderData(tenderId.value);
+            } else {
+                type.value = 'Add';
+            }
         });
         const handleGetCost = async () => {
             loading.value = true;
@@ -773,14 +938,31 @@ export default {
                 }
                 const costResponse = await getTireCost(params);
                 newCost.value = costResponse;
+                console.log("cost response")
                 console.log(costResponse)
-                console.log(newCost.value)
+
+                dataQuoteSource.value = dataQuoteSource.value.map((item) => {
+                    item.neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
+                    return item;
+                });
+
+                console.log("data", dataQuoteSource.value)
+                console.log("newcost", newCost.value.spare_tire_amounts[0].cost_amount)
             } catch (err) {
                 error.value = err;
             } finally {
                 loading.value = false;
             }
         };
+        watch(
+            () => route.path,
+            (_newValue) => {
+                routeName.value = _newValue;
+                if (routeName.value === '/nueva-licitacion') {
+                    location.reload();
+                }
+            }
+        );
         return {
             tenderId,
             tenderData,
@@ -840,6 +1022,11 @@ export default {
             error,
             formatCurrency,
             formatNumber,
+            type,
+            routeName,
+            aseguradoraList,
+            agents,
+            estadoList,
         }
     }
 }

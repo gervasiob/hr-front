@@ -6,16 +6,66 @@ import useradmin from '../views/useradmin/index.vue';
 import tenderDetail from '@/views/tenders/components/tenderDetail.vue';
 export const menuList = [
     {
-        key: 'licitaciones',
-        path: '/Licitaciones',
-        name: 'Licitaciones',
+        key: 'licitacionesMenu',
         icon: () => h(MailOutlined),
         label: 'LICITACIONES',
-        title: 'LICITACIONES',
-        meta: {
-            label: 'Licitaciones',
-            title: 'Licitaciones',
-        }
+        title: 'Licitaciones',
+        children: [
+            {
+            key: 'nuevaLicitacion',
+            path: '/nueva-licitacion',
+            name: 'Nueva Licitacion',
+            label: 'NUEVA LICITACIÓN',
+            title: 'NUEVA LICITACIÓN',
+            meta: {
+                label: 'Nueva Licitacion',
+                title: 'Nueva Licitacion',
+            }
+        },
+            {
+            key: 'licitaciones',
+            path: '/Licitaciones',
+            name: 'Licitaciones Pendientes',
+            label: 'LICITACIONES PENDIENTES',
+            title: 'LICITACIONES PENDIENTES',
+            meta: {
+                label: 'Licitaciones Pendientes',
+                title: 'Licitaciones Pendientes',
+            }
+        },
+        {
+            key: 'licitacionesEvaluadas',
+            path: '/Evaluadas',
+            name: 'Licitaciones Evaluadas',
+            label: 'LICITACIONES EVALUADAS',
+            title: 'LICITACIONES EVALUADAS',
+            meta: {
+                label: 'Licitaciones Evaluadas',
+                title: 'Licitaciones Evaluadas',
+            }
+        },
+        {
+            key: 'licitacionesNoPendientes',
+            path: '/No-pendientes',
+            name: 'Licitaciones no Pendientes',
+            label: 'LICITACIONES NO PENDIENTES',
+            title: 'LICITACIONES NO PENDIENTES',
+            meta: {
+                label: 'Licitaciones No Pendientes',
+                title: 'Licitaciones No Pendientes',
+            }
+        },
+        {
+            key: 'licitacionesSucursal',
+            path: '/Sucursal',
+            name: 'Licitaciones Sucursal',
+            label: 'LICITACIONES SUCURSAL',
+            title: 'LICITACIONES SUCURSAL',
+            meta: {
+                label: 'Licitaciones Sucursal',
+                title: 'Licitaciones Sucursal',
+            }
+        },]
     },
     {
         key: 'login',
