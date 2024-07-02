@@ -54,10 +54,11 @@
   </div>
 
   <!-- Table -->
+  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['id', 'name'].includes(column.dataIndex)">
+      <template v-if="['name'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -77,6 +78,9 @@
           </span>
           <span v-else>
             <a @click="edit(record.key)">Edit</a>
+            <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
+              <a>Eliminar</a>
+            </a-popconfirm>
           </span>
         </div>
       </template>
@@ -85,7 +89,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted } from 'vue';
+import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getRoles } from '@/api/roles/roles.js';
@@ -115,7 +119,11 @@ export default {
         console.log(response);
 
         console.log(dataSource.value)
-        dataSource.value = response;
+        dataSource.value = response.map((item, index) => ({
+          ...item,
+          key: index
+        }));
+
         roleList.value = response;
         console.log(dataSource.value)
 
@@ -144,6 +152,7 @@ export default {
 
     const editableData = reactive({});
     const edit = key => {
+      console.log(key)
       editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
     };
     const save = key => {
@@ -153,7 +162,25 @@ export default {
     const cancel = key => {
       delete editableData[key];
     };
-
+    const count = computed(() => {
+      if (dataSource.value) {
+        return dataSource.value.length + 1
+      }
+      return 0;
+    });
+    const handleAdd = () => {
+      const newKey = `${count.value}`;
+      const newData = {
+        key: newKey,
+        id: '',
+        name: '',
+      };
+      dataSource.value.push(newData);
+      editableData[newKey] = cloneDeep(newData);
+    };
+    const onDelete = key => {
+      dataSource.value = dataSource.value.filter(item => item.key !== key);
+    };
     return {
       formRef,
       formState,
@@ -170,6 +197,9 @@ export default {
       cancel,
       save,
       roleList,
+      handleAdd,
+      count,
+      onDelete,
     }
   }
 }
