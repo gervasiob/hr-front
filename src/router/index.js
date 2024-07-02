@@ -72,20 +72,9 @@ export const menuList = [
         }
     }
 ];
-export const useradmin = {
-    path: '/useradmin',
-    key: 'useradmin',
-    label: 'useradmin',
-    title: 'Administracion de Usuarios',
-    name: 'Administracion de Usuarios',
-    component: () => import('@/views/useradmin/index.vue'),
-    meta: {
-        title: 'Administracion de Usuarios'
-    }
-}
-export const roles = [
+export const adm = [
     {
-        path: '/roles',
+        path: '/adm/roles',
         key: 'roles',
         label: 'roles',
         title: 'Administracion de Roles',
@@ -96,21 +85,14 @@ export const roles = [
         }
     },
     {
-        key: 'licitacionesNoPendientes',
-        path: '/No-pendientes',
-        component: () => import('@/views/tenders/index.vue'),
+        path: '/adm/users',
+        key: 'useradmin',
+        label: 'useradmin',
+        title: 'Administracion de Usuarios',
+        name: 'Administracion de Usuarios',
+        component: () => import('@/views/useradmin/index.vue'),
         meta: {
-            label: 'Licitaciones No Pendientes',
-            title: 'Licitaciones No Pendientes',
-        }
-    },
-    {
-        key: 'licitacionesSucursal',
-        path: '/Sucursal',
-        component: () => import('@/views/tenders/index.vue'),
-        meta: {
-            label: 'Licitaciones Sucursal',
-            title: 'Licitaciones Sucursal',
+            title: 'Administracion de Usuarios'
         }
     },
 ]
@@ -140,8 +122,7 @@ export const basicRoutes = [
     LoginRoute,
     RootRoute,
     menuList,
-    useradmin,
-    roles,
+    ...adm,
     ...menuList,
     ...otherRoutes,
 ]

@@ -12,60 +12,60 @@ export const menuList = [
         title: 'Licitaciones',
         children: [
             {
-            key: 'nuevaLicitacion',
-            path: '/nueva-licitacion',
-            name: 'Nueva Licitacion',
-            label: 'NUEVA LICITACIÓN',
-            title: 'NUEVA LICITACIÓN',
-            meta: {
-                label: 'Nueva Licitacion',
-                title: 'Nueva Licitacion',
-            }
-        },
+                key: 'nuevaLicitacion',
+                path: '/nueva-licitacion',
+                name: 'Nueva Licitacion',
+                label: 'NUEVA LICITACIÓN',
+                title: 'NUEVA LICITACIÓN',
+                meta: {
+                    label: 'Nueva Licitacion',
+                    title: 'Nueva Licitacion',
+                }
+            },
             {
-            key: 'licitaciones',
-            path: '/Licitaciones',
-            name: 'Licitaciones Pendientes',
-            label: 'LICITACIONES PENDIENTES',
-            title: 'LICITACIONES PENDIENTES',
-            meta: {
-                label: 'Licitaciones Pendientes',
-                title: 'Licitaciones Pendientes',
-            }
-        },
-        {
-            key: 'licitacionesEvaluadas',
-            path: '/Evaluadas',
-            name: 'Licitaciones Evaluadas',
-            label: 'LICITACIONES EVALUADAS',
-            title: 'LICITACIONES EVALUADAS',
-            meta: {
-                label: 'Licitaciones Evaluadas',
-                title: 'Licitaciones Evaluadas',
-            }
-        },
-        {
-            key: 'licitacionesNoPendientes',
-            path: '/No-pendientes',
-            name: 'Licitaciones no Pendientes',
-            label: 'LICITACIONES NO PENDIENTES',
-            title: 'LICITACIONES NO PENDIENTES',
-            meta: {
-                label: 'Licitaciones No Pendientes',
-                title: 'Licitaciones No Pendientes',
-            }
-        },
-        {
-            key: 'licitacionesSucursal',
-            path: '/Sucursal',
-            name: 'Licitaciones Sucursal',
-            label: 'LICITACIONES SUCURSAL',
-            title: 'LICITACIONES SUCURSAL',
-            meta: {
-                label: 'Licitaciones Sucursal',
-                title: 'Licitaciones Sucursal',
-            }
-        },]
+                key: 'licitaciones',
+                path: '/Licitaciones',
+                name: 'Licitaciones Pendientes',
+                label: 'LICITACIONES PENDIENTES',
+                title: 'LICITACIONES PENDIENTES',
+                meta: {
+                    label: 'Licitaciones Pendientes',
+                    title: 'Licitaciones Pendientes',
+                }
+            },
+            {
+                key: 'licitacionesEvaluadas',
+                path: '/Evaluadas',
+                name: 'Licitaciones Evaluadas',
+                label: 'LICITACIONES EVALUADAS',
+                title: 'LICITACIONES EVALUADAS',
+                meta: {
+                    label: 'Licitaciones Evaluadas',
+                    title: 'Licitaciones Evaluadas',
+                }
+            },
+            {
+                key: 'licitacionesNoPendientes',
+                path: '/No-pendientes',
+                name: 'Licitaciones no Pendientes',
+                label: 'LICITACIONES NO PENDIENTES',
+                title: 'LICITACIONES NO PENDIENTES',
+                meta: {
+                    label: 'Licitaciones No Pendientes',
+                    title: 'Licitaciones No Pendientes',
+                }
+            },
+            {
+                key: 'licitacionesSucursal',
+                path: '/Sucursal',
+                name: 'Licitaciones Sucursal',
+                label: 'LICITACIONES SUCURSAL',
+                title: 'LICITACIONES SUCURSAL',
+                meta: {
+                    label: 'Licitaciones Sucursal',
+                    title: 'Licitaciones Sucursal',
+                }
+            },]
     },
     {
         key: 'login',
@@ -75,19 +75,36 @@ export const menuList = [
         title: 'Login',
     },
     {
-        key: 'useradmin',
-        path: '/useradmin',
+        key: 'administracion',
         icon: () => h(SettingOutlined),
-        label: 'Administracion de Usuarios',
-        title: 'Administracion de Usuarios',
+        label: 'ADMINISTRACION',
+        title: 'Administracion',
+        children: [
+            {
+                key: 'roles',
+                path: '/adm/roles',
+                name: 'Roles',
+                label: 'ROLES',
+                title: 'ROLES',
+                meta: {
+                    label: 'Roles',
+                    title: 'Roles',
+                }
+            },
+            {
+                key: 'users',
+                path: '/adm/users',
+                name: 'Usuarios',
+                label: 'USUARIOS',
+                title: 'USUARIOS',
+                meta: {
+                    label: 'Usuarios',
+                    title: 'Usuarios',
+                }
+            },
+        ]
     },
-    {
-        key: 'roles',
-        path: '/roles',
-        icon: () => h(SettingOutlined),
-        label: 'Administracion de Roles',
-        title: 'Administracion de Roles',
-    },
+
     {
         key: 'config',
         icon: () => h(SettingOutlined),
