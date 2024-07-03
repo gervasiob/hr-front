@@ -146,33 +146,6 @@ export default {
 
         const estadoList = TENDER_STATES;
 
-        // const columns = [
-        //     {
-        //         name: 'Id',
-        //         dataIndex: 'id',
-        //         key: 'id',
-        //     },
-        //     {
-        //         title: 'Aseguradora',
-        //         dataIndex: 'aseguradora',
-        //         key: 'aseguradora',
-        //     },
-        //     {
-        //         title: 'Cotización',
-        //         dataIndex: 'cotizacion',
-        //         key: 'cotizacion',
-        //     },
-        //     {
-        //         title: 'Rentabilidad',
-        //         dataIndex: 'rentabilidad',
-        //         key: 'rentabilidad',
-        //     },
-        //     {
-        //         title: 'Estado',
-        //         key: 'estado',
-        //         dataIndex: 'estado',
-        //     },
-        // ];
         const customHeaderRow = (column) => {
             return {
                 class: 'custom-header',
@@ -182,12 +155,7 @@ export default {
             dataSource.value = [];
             try {
                 const response = await getQuotesSummary(params);
-                console.log("response");
-                console.log(response);
-
-                console.log(dataSource.value)
                 dataSource.value = response;
-                console.log(dataSource.value)
 
             } catch (error) {
                 console.error("Error fetching quotes:", error);
