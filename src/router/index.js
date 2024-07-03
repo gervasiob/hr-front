@@ -70,7 +70,25 @@ export const menuList = [
             label: 'Licitaciones Evaluadas',
             title: 'Licitaciones Evaluadas',
         }
-    }
+    },
+    {
+        key: 'licitacionesNoPendientes',
+        path: '/No-pendientes',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitaciones No Pendientes',
+            title: 'Licitaciones No Pendientes',
+        }
+    },
+    {
+        key: 'licitacionesSucursal',
+        path: '/Sucursal',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: {
+            label: 'Licitaciones Sucursal',
+            title: 'Licitaciones Sucursal',
+        }
+    },
 ];
 export const adm = [
     {

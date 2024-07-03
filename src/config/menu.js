@@ -6,6 +6,13 @@ import useradmin from '../views/useradmin/index.vue';
 import tenderDetail from '@/views/tenders/components/tenderDetail.vue';
 export const menuList = [
     {
+        key: 'login',
+        path: '/login',
+        icon: () => h(AppstoreOutlined),
+        label: 'LOGIN',
+        title: 'Login',
+    },
+    {
         key: 'licitacionesMenu',
         icon: () => h(MailOutlined),
         label: 'LICITACIONES',
@@ -68,13 +75,6 @@ export const menuList = [
             },]
     },
     {
-        key: 'login',
-        path: '/login',
-        icon: () => h(AppstoreOutlined),
-        label: 'Login',
-        title: 'Login',
-    },
-    {
         key: 'administracion',
         icon: () => h(SettingOutlined),
         label: 'ADMINISTRACION',
@@ -124,13 +124,6 @@ export const menuList = [
                 }
             },
         ],
-    },
-    {
-        key: 'login',
-        path: '/login',
-        icon: () => h(AppstoreOutlined),
-        label: 'LOGIN',
-        title: 'LOGIN',
     },
     {
         key: 'resportes',

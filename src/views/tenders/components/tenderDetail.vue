@@ -137,7 +137,6 @@
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
                 <div class="item-d">
-                    <span>{{ formTenderDetail.quote_state}}</span>
                     <a-badge status="processing" :color="getStateColor(formTenderDetail.quote_state)"
                         :text="getStateLabel(formTenderDetail.quote_state)" />
                 </div>
@@ -186,8 +185,8 @@
                     :labelStyle="{ fontWeight: 'bold', color: 'white', fontStyle: 'Italic' }">
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
-                    <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">{{
-                            formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
+                    <a-descriptions-item label="TOTAL: "><span class="collapse-item">{{
+                        formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
                 </a-descriptions>
             </template>
             <div class="collapse-body">
@@ -660,6 +659,9 @@ export default {
         };
         const cancel = key => {
             delete editableData[key];
+            if (!key.type) {
+                onDelete(key);
+            }
         };
         const saveQuote = key => {
             const record = dataQuoteSource.value.find(item => key === item.key);
@@ -668,6 +670,7 @@ export default {
         };
         const cancelQuote = key => {
             delete editableQuoteData[key];
+            onDeleteQuote(key);
         };
 
         const fetchTenderData = async (id) => {
@@ -690,12 +693,14 @@ export default {
                 const quoteResponse = await getQuotes(params);
                 quoteData.value = quoteResponse[0];
                 quoteId.value = quoteData.value.id;
-                console.log('quote details', quoteData.value.details)
                 if (Array.isArray(quoteData.value.details)) {
                     quoteData.value.details.map((item) => {
-                        console.log(item, 'item')
                         dataSource.value.push(item)
                     })
+                    dataSource.value = quoteData.value.map((item, index) => ({
+                        ...item,
+                        key: index
+                    }));
                 } else {
                     dataSource.value.push(quoteData.value.details);
                 }
@@ -707,17 +712,22 @@ export default {
 
                 let records = [];
                 records = quoteResponse[0].tire_type_name;
-                console.log('records', records)
+                console.log('tire type', records)
                 if (Array.isArray(records)) {
                     records.map((item) => {
                         dataQuoteSource.value.push(
                             {
                                 tire_type_name: item.tire_type_name,
-                                llanta: item.llanta,
-                                neumatico: item.neumatico,
+                                llanta: item.Llanta,
+                                neumatico: item.Neumatico,
                             }
                         );
                     });
+                    dataQuoteSource.value = dataQuoteSource.value.map((item, index) => ({
+                        ...item,
+                        key: index
+                    }));
+                    console.log('data quote source', dataQuoteSource.value)
                 } else {
                     console.error("Expected records to be an array, but got:", typeof records);
                 }
@@ -777,9 +787,6 @@ export default {
             console.log(input)
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
-        const filterOptionBrand = (input, option) => {
-            return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-        };
         const onSave = async (value) => {
             isLoading.value = true;
             errorMessage.value = '';
@@ -796,7 +803,7 @@ export default {
                             console.log('params', params)
                         }
                         params.quote_state = value;
-                        const fullParams = {
+                        let fullParams = {
                             ...params,
                             details: dataSource.value,
                             tire_type_name: dataQuoteSource.value,
@@ -809,12 +816,20 @@ export default {
                         }
                         if (type.value === 'Add') {
                             console.log('Add')
+                            fullParams = {
+                                ...fullParams,
+                                tire_quoted: 0,
+                                user_id: 1,
+                            }
                             response = addQuotes(fullParams);
+                            tenderId.value = response.claim_id;
                         }
                         console.log('Response:', response);
                         dataSource.value = [];
                         dataQuoteSource.value = [];
-                        await fetchTenderData(tenderId.value);
+                        if (tenderId.value) {
+                            await fetchTenderData(tenderId.value);
+                        }
                         // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
                     } catch (error) {
                         console.error('Error updating quotes:', error);
@@ -914,8 +929,14 @@ export default {
             dataSource.value.push(newData);
             editableData[newKey] = cloneDeep(newData);
         };
+        const countDetail = computed(() => {
+            if (dataQuoteSource.value) {
+                return dataQuoteSource.value.length + 1
+            }
+            return 0;
+        });
         const handleDetailAdd = () => {
-            const newKey = `${count.value}`;
+            const newKey = `${countDetail.value}`;
             const newData = {
                 key: newKey,
                 tire_type_name: '',
@@ -1043,6 +1064,7 @@ export default {
             rules,
             onLicitar,
             dataQuoteSource,
+            countDetail,
             handleDetailAdd,
             imageSelect,
             handleImageChange,
