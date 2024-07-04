@@ -895,6 +895,7 @@ export default {
                                 ...fullParams,
                                 tire_quoted: 0,
                                 user_id: 1,
+                                company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
                             }
                             response = addQuotes(fullParams);
                             tenderId.value = response.claim_id;
@@ -1035,11 +1036,11 @@ export default {
                     };
                 });
                 agents.value = transformedAgents;
-                
+
             } catch (error) {
-                
+
             }
-            
+
         }
         onMounted(() => {
             tenderId.value = route.params.id;
