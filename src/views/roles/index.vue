@@ -2,7 +2,7 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <a-col :span="12">
+        <!-- <a-col :span="12">
           <a-form-item label="Aseguradora" name="aseguradora">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
               :filter-option="filterOption">
@@ -12,7 +12,7 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-        </a-col>
+        </a-col> -->
         <a-col :span="12">
           <a-form-item label="Roles" name="name">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
@@ -26,16 +26,16 @@
       </a-row>
       <a-row :gutter="24">
         <a-col :span="6">
-          <a-form-item label="Claim id" name="claim_id">
+          <a-form-item label="Rol Id" name="rol_id">
             <a-input v-model:value="filterInputs.claim_id" allowClear />
           </a-form-item>
         </a-col>
-        <a-col :span="6">
+        <!-- <a-col :span="6">
           <a-form-item label="Licitación id" name="tender_id">
             <a-input v-model:value="filterInputs.id" allowClear />
           </a-form-item>
-        </a-col>
-        <a-col :span="6">
+        </a-col> -->
+        <!-- <a-col :span="6">
           <a-form-item label="Agente" name="agent">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
               :filter-option="filterOption">
@@ -44,7 +44,7 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-        </a-col>
+        </a-col> -->
         <a-col :span="6" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
