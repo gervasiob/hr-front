@@ -245,8 +245,8 @@
                         <template v-if="['vendor_id'].includes(column.dataIndex)">
                             <div>
                                 <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0"
-                                    @focus="focus" @change="handleChange">
+                                    v-model:value="editableData[record.key][column.dataIndex]"
+                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange">
                                     <a-select-option value="Proveedor 1">Proveedor 1</a-select-option>
                                     <a-select-option value="Proveedor 2">Proveedor 2</a-select-option>
                                 </a-select>
@@ -656,10 +656,18 @@ export default {
             Object.assign(record, editableData[key]);
             record.total = record.price * record.quantity;
             delete editableData[key];
+            calculateTireType();
         };
         const cancel = key => {
+            if (key === undefined) {
+                onDelete(key);
+                delete editableQuoteData[key];
+                return;
+            }
+            const record = dataSource.value.find(item => key === item.key);
+            Object.assign(record, editableData[key]);
             delete editableData[key];
-            if (!key.type) {
+            if (!record.type) {
                 onDelete(key);
             }
         };
@@ -667,19 +675,79 @@ export default {
             const record = dataQuoteSource.value.find(item => key === item.key);
             Object.assign(record, editableQuoteData[key]);
             delete editableQuoteData[key];
+            calculateTotalQuoted();
         };
         const cancelQuote = key => {
+            console.log('key', key)
+            if (key === undefined) {
+                console.log('key no existe')
+                onDeleteQuote(key);
+                delete editableQuoteData[key];
+                return;
+            }
+            const record = dataQuoteSource.value.find(item => key === item.key);
+            Object.assign(record, editableData[key]);
             delete editableQuoteData[key];
-            onDeleteQuote(key);
+            console.log('record', record)
+            if (!record.tire_type_name) {
+                console.log('ingreso al if')
+                onDeleteQuote(key);
+            }
         };
+        const calculateTireType = () => {
+            // Obtener datos
+            let tireValue = 0;
+            let tireQuantity = 0;
+            let llantaValue = 0;
+            let llantaQuantity = 0;
+            let freight = 0;
+            let fee = 0;
+            console.log(dataSource.value)
+            const tireValues = Object.values(dataSource.value);
+            tireValues.map((item) => {
+                if (item.type === 'Neumatico') {
+                    tireValue = item.price;
+                }
+            })
+            tireValues.map((item) => {
+                if (item.type === 'Llantas') {
+                    llantaValue = item.price;
+                }
+            });
+            let tireValueTotal = 0;
+            if (tireValue > 0) {
+                freight = formTenderDetail.value.freight;
+                fee = formTenderDetail.value.fee;
+                tireValueTotal = (parseFloat(tireValue) + parseFloat(freight)) * (1 + (fee / 100));
+            }
+            // Actualizar
+
+
+            dataQuoteSource.value.map((item) => {
+                if (tireValueTotal >= 0) {
+                    item.neumatico = tireValueTotal;
+                }
+                if (llantaValue >= 0) {
+                    item.llanta = llantaValue;
+                }
+            })
+            calculateTotalQuoted();
+        }
+        const calculateTotalQuoted = () => {
+            let totalQuoted = 0;
+            dataQuoteSource.value.map((item) => {
+
+                totalQuoted += parseFloat(item.llanta) + parseFloat(item.neumatico);
+            })
+            quoteData.value.total_quoted = totalQuoted;
+        }
 
         const fetchTenderData = async (id) => {
-            console.log('id')
-            console.log(id)
             try {
                 const response = await getTendersIndex({ claim_id: id });
                 tenderData.value = response[0]; //!! Importante ver que solo devuelva 1 solo
                 const agentsResponse = await getUsers({ roles: roles.value });
+                console.log(agentsResponse)
                 const transformedAgents = agentsResponse.map((item) => {
                     return {
                         ...item,
@@ -697,7 +765,7 @@ export default {
                     quoteData.value.details.map((item) => {
                         dataSource.value.push(item)
                     })
-                    dataSource.value = quoteData.value.map((item, index) => ({
+                    dataSource.value = quoteData.value.details.map((item, index) => ({
                         ...item,
                         key: index
                     }));
@@ -741,12 +809,19 @@ export default {
                 if (brandObject) {
                     brand = brandObject.value;
                 }
+                let llantaType = null;
+                if (quoteData.value.llanta_type === 'CHAPA') {
+                    llantaType = 1;
+                }
+                if (quoteData.value.llanta_type === 'ALEACION') {
+                    llantaType = 2;
+                }
                 const quoteDataValue = {
                     ...quoteData.value,
                     brand: brand,
                     delivery_time: deliveryTime,
                     tire_model: parseInt(quoteData.value.tire_model),
-                    llanta_type: parseInt(quoteData.value.llanta_type),
+                    llanta_type: llantaType,
                 };
                 console.log('quoteDAtaVAlue', quoteDataValue)
                 if (quoteData.value.image_data) {
@@ -763,10 +838,10 @@ export default {
                     formTenderDetail.value.brand = [];
                 }
                 if (!formTenderDetail.value.tire_model) {
-                    formTenderDetail.value.tire_model = [];
+                    formTenderDetail.value.tire_model = '';
                 }
                 if (!formTenderDetail.value.llanta_type) {
-                    formTenderDetail.value.llanta_type = [];
+                    formTenderDetail.value.llanta_type = '';
                 }
 
             } catch (error) {
@@ -883,9 +958,11 @@ export default {
         };
         const onDelete = key => {
             dataSource.value = dataSource.value.filter(item => item.key !== key);
+            calculateTireType();
         };
         const onDeleteQuote = key => {
             dataQuoteSource.value = dataQuoteSource.value.filter(item => item.key !== key);
+            calculateTotalQuoted();
         };
         const handleChangeDeliveryTime = () => {
             console.log('handle dT');
@@ -947,13 +1024,32 @@ export default {
             dataQuoteSource.value.push(newData);
             editableQuoteData[newKey] = cloneDeep(newData);
         };
+        const getUsers = async () => {
+            try {
+                const agentsResponse = await getUsers({ roles: roles.value });
+                console.log(agentsResponse)
+                const transformedAgents = agentsResponse.map((item) => {
+                    return {
+                        ...item,
+                        fullName: item.username,
+                    };
+                });
+                agents.value = transformedAgents;
+                
+            } catch (error) {
+                
+            }
+            
+        }
         onMounted(() => {
             tenderId.value = route.params.id;
-            console.log(tenderId.value)
+            console.log('tender value', tenderId.value)
             if (tenderId.value) {
+                console.log('edit')
                 type.value = 'Edit';
                 fetchTenderData(tenderId.value);
             } else {
+                console.log('add')
                 type.value = 'Add';
                 formTenderDetail.value = {
                     not_quote: false,
@@ -1087,6 +1183,10 @@ export default {
             aseguradoraList,
             agents,
             estadoList,
+            calculateTireType,
+            calculateTotalQuoted,
+            roles,
+            getUsers,
         }
     }
 }
