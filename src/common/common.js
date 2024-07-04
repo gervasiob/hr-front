@@ -201,11 +201,11 @@ export const MODELS = [
 ];
 export const LLANTA_TYPES = [
     {
-        label: 'Llanta de chapa',
+        label: 'Llanta de Chapa',
         value: 1,
     },
     {
-        label: 'Llanta de aleación',
+        label: 'Llanta de Aleación',
         value: 2,
     },
 ];

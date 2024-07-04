@@ -68,11 +68,9 @@
 
         <template #bodyCell="{ column, record }">
             <template v-if="column.key === 'id'">
-
                 <router-link :to="{ name: 'TenderDetail', params: { id: record.claim_id } }">
                     <a-button type="primary" danger>
                         {{ record.id }}
-
                     </a-button>
                 </router-link>
             </template>
@@ -155,7 +153,7 @@ export default {
             dataSource.value = [];
             try {
                 const response = await getQuotesSummary(params);
-                dataSource.value = response;
+                dataSource.value = response.filter(item => item.claim_id !== null);
 
             } catch (error) {
                 console.error("Error fetching quotes:", error);
@@ -210,7 +208,7 @@ export default {
                 window.addEventListener('card-clicked', handleCardClick);
             }
             if (routeName.value === '/No-pendientes') {
-                filterInputs.value.quote_state = null;
+                filterInputs.value.quote_state = '';
                 fetchData();
             }
             if (routeName.value === '/Sucursal') {

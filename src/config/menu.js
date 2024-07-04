@@ -52,17 +52,6 @@ export const menuList = [
                 }
             },
             {
-                key: 'licitacionesNoPendientes',
-                path: '/No-pendientes',
-                name: 'Licitaciones no Pendientes',
-                label: 'LICITACIONES NO PENDIENTES',
-                title: 'LICITACIONES NO PENDIENTES',
-                meta: {
-                    label: 'Licitaciones No Pendientes',
-                    title: 'Licitaciones No Pendientes',
-                }
-            },
-            {
                 key: 'licitacionesSucursal',
                 path: '/Sucursal',
                 name: 'Licitaciones Sucursal',
@@ -72,7 +61,19 @@ export const menuList = [
                     label: 'Licitaciones Sucursal',
                     title: 'Licitaciones Sucursal',
                 }
-            },]
+            },
+            {
+                key: 'licitacionesNoPendientes',
+                path: '/No-pendientes',
+                name: 'Licitaciones no Pendientes',
+                label: 'LISTADO DE LICITACIONES',
+                title: 'LICITACIONES NO PENDIENTES',
+                meta: {
+                    label: 'Listado de Licitaciones',
+                    title: 'Licitaciones No Pendientes',
+                }
+            },
+        ]
     },
     {
         key: 'administracion',
