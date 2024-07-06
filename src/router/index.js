@@ -105,6 +105,12 @@ const otherRoutes = [
         path: '/reports',
         component: () => import('@/views/reports/reportIndex.vue'),
     },
+    {
+        key: 'dashboard',
+        name: 'DashboardIndex',
+        path: '/dashboard',
+        component: () => import('@/views/dashboard/dashboardIndex.vue'),
+    },
 ]
 export const basicRoutes = [
     LoginRoute,
