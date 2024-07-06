@@ -138,7 +138,7 @@
                     }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Compañía" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.company }}</div>
+                <div class="item-d">{{ formTenderDetail.company_name }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
                 <div class="item-d">
@@ -147,22 +147,22 @@
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.domain }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.domain }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Chasis" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.chasis }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.chasis }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Marca" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.brand }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.brand }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.vehicle }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.vehicle }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.vehicle_year }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.vehicle_year }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Fecha" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.claim_date }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.claim_date }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Plataforma" class="a-descriptions-item">
                 <div class="item-d">{{ formTenderDetail.platform }}</div>
@@ -174,16 +174,16 @@
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
                 <a-descriptions-item label="Sede">
-                    <div class="item-d">{{ tenderData.sede }}</div>
+                    <div class="item-d">{{ formTenderDetail.tender_data.sede }}</div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Nombre Cliente">
-                    <div class="item-d">{{ tenderData.name }}</div>
+                    <div class="item-d">{{ formTenderDetail.tender_data.name }}</div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Teléfono">
-                    <div class="item-d">{{ tenderData.phone }}</div>
+                    <div class="item-d">{{ formTenderDetail.tender_data.phone }}</div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Operador">
-                    <div class="item-d">{{ tenderData.operador }}</div>
+                    <div class="item-d">{{ formTenderDetail.tender_data.operador }}</div>
                 </a-descriptions-item>
             </a-descriptions>
         </a-collapse-panel>
@@ -356,13 +356,13 @@
                                 :pagination="false">
                                 <template #bodyCell="{ column, text, record }">
                                     <template
-                                        v-if="['tire_type_name', 'llanta', 'neumatico'].includes(column.dataIndex)">
+                                        v-if="['tire_type_name', 'Llanta', 'Neumatico'].includes(column.dataIndex)">
                                         <div>
                                             <a-input v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" />
                                             <template v-else>
-                                                <template v-if="['llanta', 'neumatico'].includes(column.dataIndex)">
+                                                <template v-if="['Llanta', 'Neumatico'].includes(column.dataIndex)">
                                                     <div>
                                                         {{ formatCurrency(text) }}
                                                     </div>
@@ -621,7 +621,7 @@ export default {
             tire_height: '',
             tire_tread: '',
             obs: '',
-            tire_type_name: 'Auxilio',
+            tire_type_name: '',
             tire_quoted: '',
             daytona_ids: [],
             quote_detail: '',
@@ -629,7 +629,7 @@ export default {
             spare_tire_amount: 0,
             tenderData: { domain: '' },
             tender_data: { domain: '' },
-            original_parts: null,
+            original_parts: '',
         });
         const imageList = ref([
             {
@@ -731,10 +731,10 @@ export default {
 
             dataQuoteSource.value.map((item) => {
                 if (tireValueTotal >= 0) {
-                    item.neumatico = tireValueTotal;
+                    item.Neumatico = tireValueTotal;
                 }
                 if (llantaValue >= 0) {
-                    item.llanta = llantaValue;
+                    item.Llanta = llantaValue;
                 }
             })
             calculateTotalQuoted();
@@ -743,7 +743,7 @@ export default {
             let totalQuoted = 0;
             dataQuoteSource.value.map((item) => {
 
-                totalQuoted += parseFloat(item.llanta) + parseFloat(item.neumatico);
+                totalQuoted += parseFloat(item.Llanta) + parseFloat(item.Neumatico);
             })
             quoteData.value.total_quoted = totalQuoted;
         }
@@ -783,8 +783,8 @@ export default {
                         dataQuoteSource.value.push(
                             {
                                 tire_type_name: item.tire_type_name,
-                                llanta: item.Llanta,
-                                neumatico: item.Neumatico,
+                                Llanta: item.Llanta,
+                                Neumatico: item.Neumatico,
                             }
                         );
                     });
@@ -873,6 +873,7 @@ export default {
                             ...params,
                             details: dataSource.value,
                             tire_type_name: dataQuoteSource.value,
+                            total_quoted: quoteData.value.total_quoted, 
                         }
                         console.log(fullParams)
                         let response;
@@ -884,7 +885,6 @@ export default {
                             console.log('Add')
                             fullParams = {
                                 ...fullParams,
-                                tire_quoted: 0,
                                 user: formTenderDetail.value.agent,
                                 company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
                             }
@@ -1056,24 +1056,20 @@ export default {
                     spare_tire_amount: '',
                     brand: 1,
                     tire_model: 1,
-                    llanta_type: 1,
+                    llanta_type: 'ALEACION',
                     tire_width: 145,
                     tire_height: 30,
                     tire_tread: 13,
                     obs: '',
                     tire_type_name: 'Auxilio',
-                    tire_quoted: 0,
+                    tire_quoted: 'modelo exacto',
                     daytona_ids: [],
                     quote_detail: '',
                     quote_state: 'N',
-                    original_parts: 'modelo exacto',
                     spare_tire_amount: 0,
                     freight: 0,
                     fee: 0,
                     tender_data: {
-                        domain: '',
-                    },
-                    tenderData: {
                         domain: '',
                     },
                 }

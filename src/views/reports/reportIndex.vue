@@ -49,7 +49,7 @@
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="SKU" name="sku">
-                        <a-input v-model:value="filterInputs.sku" allowClear />
+                        <a-input v-model:value="filterInputs.sku__icontains" allowClear />
                     </a-form-item>
                 </a-col>
             </a-row>
@@ -67,12 +67,12 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="Marca Auto" name="car_brand">
-                        <a-input v-model:value="filterInputs.car_brand" allowClear />
+                        <a-input v-model:value="filterInputs.tender_data.car__icontains" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="Modelo Auto" name="vehicle">
-                        <a-input v-model:value="filterInputs.vehicle" allowClear />
+                        <a-input v-model:value="filterInputs.tender_data.vehicle__icontains" allowClear />
                     </a-form-item>
                 </a-col>
 
@@ -152,7 +152,7 @@ import { useRoute } from 'vue-router';
 import { tableColumns } from './config/columns.js';
 import { ASEGURADORAS, TENDER_STATES, TIRE_BRANDS, MODELS } from '@/common/common'
 import { Form } from 'ant-design-vue';
-import { getQuotesSummary } from '@/api/quotes/quotes.js';
+import { getQuotesSummary, exportQuotes } from '@/api/quotes/quotes.js';
 import { getUsers } from '@/api/users/users.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 export default {
@@ -207,7 +207,7 @@ export default {
             fetchData(filterInputs.value);
         };
         const onExport = () => {
-            fetchData(filterInputs.value);
+            exportQuotes(filterInputs.value);
         };
         const resetFilters = () => {
             formRef.value.resetFields();
