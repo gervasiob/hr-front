@@ -1,5 +1,5 @@
 export const ASEGURADORAS = [
-    { value: 30, label: "ATM" },
+    { value: '30', label: "ATM" },
     { "value": "46", "label": "CHUBB" },
     { "value": "50", "label": "DIGNA" },
     { "value": "33", "label": "EXPERTA" },
@@ -202,11 +202,11 @@ export const MODELS = [
 export const LLANTA_TYPES = [
     {
         label: 'Llanta de Chapa',
-        value: 1,
+        value: 'CHAPA',
     },
     {
         label: 'Llanta de Aleación',
-        value: 2,
+        value: 'ALEACION',
     },
 ];
 export const TIRE_TREAD = [

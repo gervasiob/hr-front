@@ -8,7 +8,7 @@ export const RootRoute = {
     title: 'Root',
     path: '/',
     name: 'Root',
-    // component: Layout,
+    redirect: '/login',
     meta: {
         title: 'Root',
     },

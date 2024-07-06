@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { onMounted, ref } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
 
@@ -34,17 +34,12 @@ export default {
     const items = menuList;
     const collapsed = ref(false);
     const router = useRouter(); // Importar el router
-    // const handleMenuSelect = (key) => {
-    //   // current.value = key; // Actualizar el valor actual del menú
-    //   console.log(key.item.path);
-    //   router.push({ path: key.item.path }); // Navegar a la ruta seleccionada
-    // };
+
     const route = useRoute(); // Obtener la ruta actual
 
     const handleMenuSelect = (key) => {
       const path = key.item.path;
       if (route.path === path) {
-        // Forzar la redirección a la misma página
         router.push({ path: '/' }).then(() => {
           router.push({ path });
         });
@@ -52,6 +47,7 @@ export default {
         router.push({ path }); // Navegar a la ruta seleccionada
       }
     };
+
     const headerStyle = {
       textAlign: 'center',
       lineHeight: '30px',
@@ -75,7 +71,16 @@ export default {
       textAlign: 'center',
       lineHeight: '64px',
     };
-    
+
+    // onMounted(() => {
+    //   console.log('route path',route)
+    //   if (route.path === '/Login') {
+    //     console.log('home')
+    //     const path = '/login';
+    //     router.push({ path })
+    //   }
+    // })
+
     return {
       current,
       items,

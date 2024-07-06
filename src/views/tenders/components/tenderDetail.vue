@@ -11,11 +11,7 @@
         <a-form :model="formTenderDetail" name="horizontal_login" layout="inline" autocomplete="off">
             <a-form-item label="Nro Siniestro" name="claim_id"
                 :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.claim_id">
-                    <template #prefix>
-                        <UserOutlined class="site-form-item-icon" />
-                    </template>
-                </a-input>
+                <a-input v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
             <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.company_id" allowClear
@@ -109,6 +105,15 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
+            <a-form-item label="Plataforma" name="platform">
+                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.platform" allowClear
+                    show-search :filter-option="filterOption">
+                    <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
+                        :label="(item.name)">
+                        {{ item.name }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
             <!-- <a-form-item label="Password" name="password"
                 :rules="[{ required: true, message: 'Please input your password!' }]">
                 <a-input-password v-model:value="formState.password">
@@ -133,7 +138,7 @@
                     }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Compañía" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.company }}</div>
+                <div class="item-d">{{ formTenderDetail.company }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
                 <div class="item-d">
@@ -158,6 +163,9 @@
             </a-descriptions-item>
             <a-descriptions-item label="Fecha" class="a-descriptions-item">
                 <div class="item-d">{{ tenderData.claim_date }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Plataforma" class="a-descriptions-item">
+                <div class="item-d">{{ formTenderDetail.platform }}</div>
             </a-descriptions-item>
 
         </a-descriptions>
@@ -264,11 +272,11 @@
                                 </template>
                             </div>
                         </template>
-                        <template v-if="column.dataIndex === 'ammount_wo_iva'">
+                        <template v-if="column.dataIndex === 'amount_wo_iva'">
                             <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
                             <template v-else>
-                                {{ formatCurrency(record.ammount_wo_iva) }}
+                                {{ formatCurrency(record.amount_wo_iva) }}
                             </template>
                         </template>
                         <template v-if="column.dataIndex === 'price'">
@@ -546,7 +554,7 @@
 <script>
 import { cloneDeep } from 'lodash-es';
 import { ref, onMounted, watch, reactive, toRaw, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { getTireCost } from '@/api/costs/costs.js';
@@ -560,10 +568,12 @@ import { dataTable } from './data';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { getUsers } from '@/api/users/users.js';
+import { getPlatforms } from '@/api/platforms/platforms.js';
 export default {
     name: 'TenderDetail',
     setup() {
         const route = useRoute();
+        const router = useRouter(); // Importar el router   
         const routeName = ref(route.path);
         const isLoading = ref(false);
         const formRef = ref();
@@ -643,6 +653,7 @@ export default {
         const editableData = reactive({});
         const editableQuoteData = reactive({});
         const selectedOption = ref(null);
+        const platformList = ref([]);
         const isModalVisible = ref(false);
         const currentImageIndex = ref(0);
         const edit = key => {
@@ -678,9 +689,7 @@ export default {
             calculateTotalQuoted();
         };
         const cancelQuote = key => {
-            console.log('key', key)
             if (key === undefined) {
-                console.log('key no existe')
                 onDeleteQuote(key);
                 delete editableQuoteData[key];
                 return;
@@ -688,9 +697,7 @@ export default {
             const record = dataQuoteSource.value.find(item => key === item.key);
             Object.assign(record, editableData[key]);
             delete editableQuoteData[key];
-            console.log('record', record)
             if (!record.tire_type_name) {
-                console.log('ingreso al if')
                 onDeleteQuote(key);
             }
         };
@@ -702,7 +709,6 @@ export default {
             let llantaQuantity = 0;
             let freight = 0;
             let fee = 0;
-            console.log(dataSource.value)
             const tireValues = Object.values(dataSource.value);
             tireValues.map((item) => {
                 if (item.type === 'Neumatico') {
@@ -745,16 +751,12 @@ export default {
         const fetchTenderData = async (id) => {
             try {
                 const response = await getTendersIndex({ claim_id: id });
-                tenderData.value = response[0]; //!! Importante ver que solo devuelva 1 solo
+                if (response.length > 0) {
+                    tenderData.value = response[0];
+                }
+                console.log('tenderData.value', tenderData.value)
                 const agentsResponse = await getUsers({ roles: roles.value });
-                console.log(agentsResponse)
-                const transformedAgents = agentsResponse.map((item) => {
-                    return {
-                        ...item,
-                        fullName: item.username,
-                    };
-                });
-                agents.value = transformedAgents;
+                console.log('agent response', agentsResponse)
                 const params = {
                     claim_id: id,
                 };
@@ -772,15 +774,10 @@ export default {
                 } else {
                     dataSource.value.push(quoteData.value.details);
                 }
-                // quoteData.value.tire_type_name.map((item) => {
-                //     console.log(item,'tire_type_name')
-                //     dataQuoteSource.value.push(item)
-                // })
 
 
                 let records = [];
                 records = quoteResponse[0].tire_type_name;
-                console.log('tire type', records)
                 if (Array.isArray(records)) {
                     records.map((item) => {
                         dataQuoteSource.value.push(
@@ -803,19 +800,13 @@ export default {
                 if (deliveryTime > 5) {
                     deliveryTime = 18;
                 }
-                console.log('quoteData', quoteData.value)
                 let brandObject = optionsBrand.find((item) => item.label === quoteData.value.brand);
                 let brand = '';
                 if (brandObject) {
                     brand = brandObject.value;
                 }
                 let llantaType = null;
-                if (quoteData.value.llanta_type === 'CHAPA') {
-                    llantaType = 1;
-                }
-                if (quoteData.value.llanta_type === 'ALEACION') {
-                    llantaType = 2;
-                }
+                llantaType = quoteData.value.llanta_type;
                 const quoteDataValue = {
                     ...quoteData.value,
                     brand: brand,
@@ -872,7 +863,7 @@ export default {
                         const params = formTenderDetail.value; // O ajusta según necesites
                         console.log('formTernder details ', formTenderDetail.value)
                         let brandObject = optionsBrand.find((item) => item.value === formTenderDetail.value.brand);
-                        console.log('brand Object', brandObject)
+
                         if (brandObject) {
                             params.brand = brandObject.label;
                             console.log('params', params)
@@ -894,19 +885,16 @@ export default {
                             fullParams = {
                                 ...fullParams,
                                 tire_quoted: 0,
-                                user_id: 1,
+                                user: formTenderDetail.value.agent,
                                 company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
                             }
-                            response = addQuotes(fullParams);
-                            tenderId.value = response.claim_id;
+                            addQuotes(fullParams);
+                            tenderId.value = formTenderDetail.value.claim_id;
+                            const path = 'licitaciones/' + tenderId.value;
+                            router.push({ path });
                         }
-                        console.log('Response:', response);
                         dataSource.value = [];
                         dataQuoteSource.value = [];
-                        if (tenderId.value) {
-                            await fetchTenderData(tenderId.value);
-                        }
-                        // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
                     } catch (error) {
                         console.error('Error updating quotes:', error);
                         errorMessage.value = 'Error actualizando las cotizaciones: ' + error;
@@ -1025,7 +1013,7 @@ export default {
             dataQuoteSource.value.push(newData);
             editableQuoteData[newKey] = cloneDeep(newData);
         };
-        const getUsers = async () => {
+        const getUsersList = async () => {
             try {
                 const agentsResponse = await getUsers({ roles: roles.value });
                 console.log(agentsResponse)
@@ -1038,9 +1026,15 @@ export default {
                 agents.value = transformedAgents;
 
             } catch (error) {
-
+                console.log('error in get user list', error)
             }
-
+        }
+        const getPlatformsList = async () => {
+            try {
+                platformList.value = await getPlatforms();
+            } catch (error) {
+                console.log('error in get user list', error)
+            }
         }
         onMounted(() => {
             tenderId.value = route.params.id;
@@ -1052,25 +1046,30 @@ export default {
             } else {
                 console.log('add')
                 type.value = 'Add';
+                getUsersList();
+                getPlatformsList();
+                console.log('platform list', platformList.value)
                 formTenderDetail.value = {
                     not_quote: false,
-                    delivery_time: '',
+                    delivery_time: 1,
                     original_parts: '',
                     spare_tire_amount: '',
-                    brand: '',
-                    tire_model: '',
-                    llanta_type: '',
-                    tire_width: '',
-                    tire_height: '',
-                    tire_tread: '',
+                    brand: 1,
+                    tire_model: 1,
+                    llanta_type: 1,
+                    tire_width: 145,
+                    tire_height: 30,
+                    tire_tread: 13,
                     obs: '',
                     tire_type_name: 'Auxilio',
-                    tire_quoted: '',
+                    tire_quoted: 0,
                     daytona_ids: [],
                     quote_detail: '',
                     quote_state: 'N',
-                    original_parts: null,
+                    original_parts: 'modelo exacto',
                     spare_tire_amount: 0,
+                    freight: 0,
+                    fee: 0,
                     tender_data: {
                         domain: '',
                     },
@@ -1187,7 +1186,10 @@ export default {
             calculateTireType,
             calculateTotalQuoted,
             roles,
-            getUsers,
+            getUsersList,
+            platformList,
+            getPlatformsList,
+            router,
         }
     }
 }

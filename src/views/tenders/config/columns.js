@@ -23,8 +23,8 @@ export const tableColumns = [
     },
     {
         title: 'Cotización',
-        dataIndex: 'cotizacion',
-        key: 'cotizacion',
+        dataIndex: 'total_quoted',
+        key: 'total_quoted',
         sorter: (a, b) => a.cotizacion - b.cotizacion,
 
     },
