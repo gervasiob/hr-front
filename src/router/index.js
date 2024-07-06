@@ -11,6 +11,7 @@ export const RootRoute = {
     redirect: '/login',
     meta: {
         title: 'Root',
+        label:'Root',
     },
     children: [
         {
@@ -37,9 +38,6 @@ export const LoginRoute = {
     title: 'Login',
     name: 'Login',
     component: () => import('@/views/login/index.vue'),
-    meta: {
-        title: 'Login'
-    }
 }
 
 export const menuList = [
@@ -48,46 +46,26 @@ export const menuList = [
         name: 'Nueva Licitacion',
         path: '/nueva-licitacion',
         component: () => import('@/views/tenders/components/tenderDetail.vue'),
-        meta: {
-            label: 'Nueva Licitación',
-            title: 'Nueva Licitación',
-        }
     },
     {
         key: 'licitaciones',
         path: '/Licitaciones',
         component: () => import('@/views/tenders/index.vue'),
-        meta: {
-            label: 'Licitaciones',
-            title: 'Licitaciones',
-        },
     },
     {
         key: 'licitacionesEvaluadas',
         path: '/Evaluadas',
         component: () => import('@/views/tenders/index.vue'),
-        meta: {
-            label: 'Licitaciones Evaluadas',
-            title: 'Licitaciones Evaluadas',
-        }
     },
     {
         key: 'licitacionesNoPendientes',
         path: '/No-pendientes',
         component: () => import('@/views/tenders/index.vue'),
-        meta: {
-            label: 'Licitaciones No Pendientes',
-            title: 'Licitaciones No Pendientes',
-        }
     },
     {
         key: 'licitacionesSucursal',
         path: '/Sucursal',
         component: () => import('@/views/tenders/index.vue'),
-        meta: {
-            label: 'Licitaciones Sucursal',
-            title: 'Licitaciones Sucursal',
-        }
     },
 ];
 export const adm = [
@@ -98,9 +76,6 @@ export const adm = [
         title: 'Administracion de Roles',
         name: 'Administracion de Roles',
         component: () => import('@/views/roles/index.vue'),
-        meta: {
-            title: 'Administracion de Roles'
-        }
     },
     {
         path: '/adm/users',
@@ -109,31 +84,26 @@ export const adm = [
         title: 'Administracion de Usuarios',
         name: 'Administracion de Usuarios',
         component: () => import('@/views/useradmin/index.vue'),
-        meta: {
-            title: 'Administracion de Usuarios'
-        }
     },
 ]
 const otherRoutes = [
     {
-        key: 'TenderDetail',
+        key: 'tender-detail',
         name: 'TenderDetail',
         path: '/Licitaciones/:id',
         component: () => import('@/views/tenders/components/tenderDetail.vue'),
-        meta: {
-            label: 'Licitacion Detalle',
-            title: 'Licitacion Detalle',
-        }
     },
     {
-        key: 'Cost',
+        key: 'cost',
         name: 'CostIndex',
         path: '/costos',
         component: () => import('@/views/settings/index.vue'),
-        meta: {
-            label: 'Costos',
-            title: 'Costos',
-        }
+    },
+    {
+        key: 'report',
+        name: 'ReportIndex',
+        path: '/report',
+        component: () => import('@/views/report/index.vue'),
     }
 ]
 export const basicRoutes = [
