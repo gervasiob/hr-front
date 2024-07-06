@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
 
@@ -30,8 +30,8 @@ export default {
   name: 'Daytona-App',
   components: {},
   setup() {
-    const current = ref(['mail']);
-    const items = menuList;
+    const current = ref(['login']);
+    let items = ref([]);
     const collapsed = ref(false);
     const router = useRouter(); // Importar el router
 
@@ -44,7 +44,7 @@ export default {
           router.push({ path });
         });
       } else {
-        router.push({ path }); // Navegar a la ruta seleccionada
+        router.push({ path });
       }
     };
 
@@ -71,15 +71,16 @@ export default {
       textAlign: 'center',
       lineHeight: '64px',
     };
-
-    // onMounted(() => {
-    //   console.log('route path',route)
-    //   if (route.path === '/Login') {
-    //     console.log('home')
-    //     const path = '/login';
-    //     router.push({ path })
-    //   }
-    // })
+    onMounted(() => {
+      items.value = items.value = menuList.filter((item) => item.key === 'login');
+    })
+    watch(() => route.path, (newPath) => {
+      if (newPath === '/login') {
+        items.value = menuList.filter((item) => item.key === 'login');
+      } else {
+        items.value = menuList.filter((item) => item.key !== 'login');
+      }
+    }, { immediate: true });
 
     return {
       current,
