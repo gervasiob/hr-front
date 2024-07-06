@@ -44,7 +44,7 @@ export default {
           router.push({ path });
         });
       } else {
-        router.push({ path }); // Navegar a la ruta seleccionada
+        router.push({ path });
       }
     };
 
@@ -80,7 +80,6 @@ export default {
       } else {
         items.value = menuList.filter((item) => item.key !== 'login');
       }
-      console.log('items', items.value);
     }, { immediate: true });
 
     return {

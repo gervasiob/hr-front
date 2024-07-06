@@ -11,7 +11,7 @@ export const RootRoute = {
     redirect: '/login',
     meta: {
         title: 'Root',
-        label:'Root',
+        label: 'Root',
     },
     children: [
         {
@@ -102,9 +102,9 @@ const otherRoutes = [
     {
         key: 'report',
         name: 'ReportIndex',
-        path: '/report',
-        component: () => import('@/views/report/index.vue'),
-    }
+        path: '/reports',
+        component: () => import('@/views/reports/reportIndex.vue'),
+    },
 ]
 export const basicRoutes = [
     LoginRoute,

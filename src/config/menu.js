@@ -24,10 +24,6 @@ export const menuList = [
                 name: 'Nueva Licitacion',
                 label: 'NUEVA LICITACIÓN',
                 title: 'NUEVA LICITACIÓN',
-                meta: {
-                    label: 'Nueva Licitacion',
-                    title: 'Nueva Licitacion',
-                }
             },
             {
                 key: 'licitaciones',
@@ -35,10 +31,6 @@ export const menuList = [
                 name: 'Licitaciones Pendientes',
                 label: 'LICITACIONES PENDIENTES',
                 title: 'LICITACIONES PENDIENTES',
-                meta: {
-                    label: 'Licitaciones Pendientes',
-                    title: 'Licitaciones Pendientes',
-                }
             },
             {
                 key: 'licitacionesEvaluadas',
@@ -46,10 +38,6 @@ export const menuList = [
                 name: 'Licitaciones Evaluadas',
                 label: 'LICITACIONES EVALUADAS',
                 title: 'LICITACIONES EVALUADAS',
-                meta: {
-                    label: 'Licitaciones Evaluadas',
-                    title: 'Licitaciones Evaluadas',
-                }
             },
             {
                 key: 'licitacionesSucursal',
@@ -57,10 +45,6 @@ export const menuList = [
                 name: 'Licitaciones Sucursal',
                 label: 'LICITACIONES SUCURSAL',
                 title: 'LICITACIONES SUCURSAL',
-                meta: {
-                    label: 'Licitaciones Sucursal',
-                    title: 'Licitaciones Sucursal',
-                }
             },
             {
                 key: 'licitacionesNoPendientes',
@@ -68,10 +52,6 @@ export const menuList = [
                 name: 'Licitaciones no Pendientes',
                 label: 'LISTADO DE LICITACIONES',
                 title: 'LICITACIONES NO PENDIENTES',
-                meta: {
-                    label: 'Listado de Licitaciones',
-                    title: 'Licitaciones No Pendientes',
-                }
             },
         ]
     },
@@ -87,10 +67,6 @@ export const menuList = [
                 name: 'Roles',
                 label: 'ROLES',
                 title: 'ROLES',
-                meta: {
-                    label: 'Roles',
-                    title: 'Roles',
-                }
             },
             {
                 key: 'users',
@@ -98,10 +74,6 @@ export const menuList = [
                 name: 'Usuarios',
                 label: 'USUARIOS',
                 title: 'USUARIOS',
-                meta: {
-                    label: 'Usuarios',
-                    title: 'Usuarios',
-                }
             },
         ]
     },
@@ -119,16 +91,12 @@ export const menuList = [
                 icon: () => h(UploadOutlined),
                 label: 'COSTOS',
                 title: 'Costos',
-                meta: {
-                    label: 'Costos',
-                    title: 'Archivo Excel Costos',
-                }
             },
         ],
     },
     {
         key: 'resportes',
-        path: '/reportes',
+        path: '/reports',
         icon: () => h(AppstoreOutlined),
         label: 'REPORTES',
         title: 'REPORTES',
