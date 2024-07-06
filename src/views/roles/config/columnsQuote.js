@@ -8,13 +8,13 @@ export const tableQuoteColumns = [
     },
     {
         title: 'Llanta $',
-        dataIndex: 'Llanta',
-        key: 'Llanta',
+        dataIndex: 'llanta',
+        key: 'llanta',
     },
     {
         title: 'Neumatico $',
-        dataIndex: 'Neumatico',
-        key: 'Neumatico',
+        dataIndex: 'neumatico',
+        key: 'neumatico',
     },
     {
         title: 'Operation',

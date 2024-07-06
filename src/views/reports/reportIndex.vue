@@ -4,10 +4,10 @@
             <a-row :gutter="24">
                 <a-col :span="12">
                     <a-form-item label="Aseguradora" name="aseguradora">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_name" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
-                                :value="aseguradora.value" :label="aseguradora.label">
+                                :value="aseguradora.label" :label="aseguradora.label">
                                 {{ aseguradora.label }}
                             </a-select-option>
                         </a-select>
@@ -27,7 +27,7 @@
             </a-row>
             <a-row :gutter="24">
                 <a-col :span="6">
-                    <a-form-item label="Claim id" name="claim_id">
+                    <a-form-item label="N° Siniestro" name="claim_id">
                         <a-input v-model:value="filterInputs.claim_id" allowClear />
                     </a-form-item>
                 </a-col>
@@ -38,29 +38,75 @@
                 </a-col>
                 <a-col :span="6">
                     <a-form-item label="Agente" name="agent">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.user" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
-                                :label="(item.fullName)">
-                                {{ item.fullName }}
+                                :label="(item.username)">
+                                {{ item.username }}
                             </a-select-option>
                         </a-select>
                     </a-form-item>
                 </a-col>
-                <a-col :span="6" style="text-align: right">
+                <a-col :span="6">
+                    <a-form-item label="SKU" name="sku">
+                        <a-input v-model:value="filterInputs.sku__icontains" allowClear />
+                    </a-form-item>
+                </a-col>
+            </a-row>
+            <a-row :gutter="24">
+                <a-col :span="8">
+                    <a-form-item label="Marca Neumático" name="brand">
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.brand" allowClear
+                            show-search :filter-option="filterOption">
+                            <a-select-option v-for="(item, index) in brandList" :key="index" :value="item.label"
+                                :label="(item.label)">
+                                {{ item.label }}
+                            </a-select-option>
+                        </a-select>
+                    </a-form-item>
+                </a-col>
+                <a-col :span="8">
+                    <a-form-item label="Marca Auto" name="car_brand">
+                        <a-input v-model:value="filterInputs.tender_data.car__icontains" allowClear />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="8">
+                    <a-form-item label="Modelo Auto" name="vehicle">
+                        <a-input v-model:value="filterInputs.tender_data.vehicle__icontains" allowClear />
+                    </a-form-item>
+                </a-col>
+
+            </a-row>
+            <a-row :gutter="24">
+                <a-col :span="6">
+                    <a-form-item label="Fecha Desde" name="start_date">
+                        <a-input v-model:value="filterInputs.start_date" type="date" allowClear />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="6">
+                    <a-form-item label="Fecha Hasta" name="end_date">
+                        <a-input v-model:value="filterInputs.end_date" type="date" allowClear />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="6" :offset="6" style="text-align: right">
                     <a-button type="primary" danger @click="onSearch">Buscar</a-button>
                     <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
                 </a-col>
             </a-row>
         </a-form>
     </div>
-
+    <div class="btn-container">
+        <a-row>
+            <a-col :span="6" :offset="18" style="text-align: right">
+                <a-button type="primary" @click="onExport">Exportar Excel</a-button>
+            </a-col>
+        </a-row>
+    </div>
     <!-- Table -->
     <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
         <template #headerCell="{ column }">
             <template v-if="column.key === 'id'">
                 <span>
-                    <!-- <smile-outlined /> -->
                     Id
                 </span>
             </template>
@@ -103,22 +149,15 @@
 <script>
 import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
 import { useRoute } from 'vue-router';
-import { tableColumns } from '../config/columns.js';
-import { filterList } from '../config/filters.js';
-import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
+import { tableColumns } from './config/columns.js';
+import { ASEGURADORAS, TENDER_STATES, TIRE_BRANDS, MODELS } from '@/common/common'
 import { Form } from 'ant-design-vue';
-import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
+import { getQuotesSummary, exportQuotes } from '@/api/quotes/quotes.js';
 import { getUsers } from '@/api/users/users.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 export default {
-    name: 'TenderList',
-    props: {
-        cardFilter: {
-            type: Number,
-            default: null,
-        }
-    },
-    setup(props) {
+    name: 'ReportIndex',
+    setup() {
         const expand = ref(false);
         const formRef = ref();
         const dataSource = ref([]);
@@ -134,19 +173,19 @@ export default {
         });
         const formState = reactive({});
         const filterInputs = ref({
-            quote_state: 'N'
+            tender_data: {},
         });
         const useForm = Form.useForm;
         const { resetFields, validate, validateInfos } = useForm(formRef, rulesRef);
 
-        const filters = filterList;
         const columns = tableColumns;
         const aseguradoraList = ASEGURADORAS;
+        const estadoList = TENDER_STATES;
+        const brandList = TIRE_BRANDS;
+        const modelList = MODELS;
 
         const roles = ref(2); // Define roles como un ref para que sea reactivo
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
-
-        const estadoList = TENDER_STATES;
 
         const customHeaderRow = (column) => {
             return {
@@ -162,23 +201,13 @@ export default {
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }
-            try {
-                const agentsResponse = await getUsers({ roles: roles.value });
-                const transformedAgents = agentsResponse.map((item) => {
-                    return {
-                        ...item,
-                        fullName: item.username,
-                    };
-                });
-                agents.value = transformedAgents;
-            } catch (error) {
-                console.error("Error fetching agents:", error);
-            }
+
         };
-
-
         const onSearch = () => {
             fetchData(filterInputs.value);
+        };
+        const onExport = () => {
+            exportQuotes(filterInputs.value);
         };
         const resetFilters = () => {
             formRef.value.resetFields();
@@ -202,56 +231,25 @@ export default {
         }
         onMounted(() => {
             getFetchData();
+            getUserList();
+
 
         });
+        const getUserList = async () => {
+            try {
+                agents.value = await getUsers({ roles: roles.value });
+            } catch (error) {
+                console.error("Error fetching agents:", error);
+            }
+        }
         const getFetchData = () => {
-            routeName.value = route.path;
-            if (routeName.value === '/Licitaciones') {
-                filterInputs.value.quote_state = 'N';
-                fetchData(filterInputs.value);
-                window.addEventListener('card-clicked', handleCardClick);
-            }
-            if (routeName.value === '/No-pendientes') {
-                filterInputs.value.quote_state = '';
-                fetchData();
-            }
-            if (routeName.value === '/Sucursal') {
-                filterInputs.value.quote_state = 'A';
-                fetchData(filterInputs.value);
-            }
-            if (routeName.value === '/Evaluadas') {
-                filterInputs.value.quote_state = 'E';
-                fetchData(filterInputs.value);
-            }
-        };
-        const handleCardClick = (event) => {
-            const cardKey = event.detail;
-            filterInputs.value = {};
-            filterInputs.value.quote_state = 'N';
-            filterInputs.value.priority = cardKey;
-            dataSource.value = [];
             fetchData(filterInputs.value);
         };
 
-        onUnmounted(() => {
-            window.removeEventListener('card-clicked', handleCardClick);
-        });
-        watch(
-            () => props.cardFilter,
-            (newValue, oldValue) => {
-            }
-        );
-        watch(
-            () => route.path,
-            (_newValue) => {
-                routeName.value = _newValue;
-                getFetchData();
-            }
-        );
+
         return {
             expand,
             formRef,
-            filters,
             formState,
             columns,
             dataSource,
@@ -271,6 +269,9 @@ export default {
             routeName,
             getFetchData,
             formatCurrency,
+            brandList,
+            modelList,
+            onExport,
         }
     }
 }
@@ -325,5 +326,11 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
     background-color: var(--secondary) !important;
     color: black !important;
+}
+
+.btn-container {
+    align-content: rigth;
+    margin-bottom: 1%;
+    padding-right: 40px;
 }
 </style>

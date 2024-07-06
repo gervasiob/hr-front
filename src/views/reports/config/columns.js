@@ -8,7 +8,15 @@ export const tableColumns = [
         sorter: (a, b) => a.id - b.id,
     },
     {
-        title: 'Número Siniestro',
+        title: 'Estado',
+        key: 'quote_state',
+        dataIndex: 'quote_state',
+        sorter: (a, b) => a.quote_state.localeCompare(b.quote_state),
+        filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
+        onFilter: (value, record) => record.quote_state === value,
+    },
+    {
+        title: 'N° Siniestro',
         dataIndex: 'claim_id',
         key: 'claim_id',
         sorter: (a, b) => a.claim_id - b.claim_id,
@@ -27,14 +35,6 @@ export const tableColumns = [
         key: 'total_quoted',
         sorter: (a, b) => a.cotizacion - b.cotizacion,
 
-    },
-    {
-        title: 'Estado',
-        key: 'quote_state',
-        dataIndex: 'quote_state',
-        sorter: (a, b) => a.quote_state.localeCompare(b.quote_state),
-        filters: TENDER_STATES.map((item) => ({ text: item.label, value: item.value })),
-        onFilter: (value, record) => record.quote_state === value,
     },
     {
         title: 'Agente',
