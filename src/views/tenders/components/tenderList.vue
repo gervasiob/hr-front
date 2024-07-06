@@ -74,6 +74,10 @@
                     </a-button>
                 </router-link>
             </template>
+            <template v-if="column.key === 'total_quoted'">
+                <span>
+                    {{ record.total_quoted }}</span>
+            </template>
             <template v-else-if="column.key === 'quote_state'">
                 <span>
                     <a-tag v-for="tag in record.quote_state" :key="tag" :color="getState(tag).color">
@@ -105,7 +109,7 @@ import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
 import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
 import { getUsers } from '@/api/users/users.js';
-
+import { formatCurrency, formatNumber } from '@/utils/utils.js';
 export default {
     name: 'TenderList',
     props: {
@@ -266,6 +270,7 @@ export default {
             route,
             routeName,
             getFetchData,
+            formatCurrency,
         }
     }
 }
