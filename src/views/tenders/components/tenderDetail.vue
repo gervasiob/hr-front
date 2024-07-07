@@ -7,17 +7,13 @@
             <h1>DATOS DEL SINIESTRO</h1>
         </div>
     </div>
-    <div v-show="type === 'Add'">
+    <div v-show="type === 'Add'" class="form-item-container mg-bottom">
         <a-form :model="formTenderDetail" name="horizontal_login" layout="inline" autocomplete="off">
             <a-form-item label="Nro Siniestro" name="claim_id"
-                :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.claim_id">
-                    <template #prefix>
-                        <UserOutlined class="site-form-item-icon" />
-                    </template>
-                </a-input>
+                :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input class="input-item" v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
-            <a-form-item label="Compañía" name="company_id" :rules="[{ required: true, message: 'Ingrese un valor' }]">
+            <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.company_id" allowClear
                     show-search :filter-option="filterOption">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
@@ -35,77 +31,86 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item label="Dominio" name="domain" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.domain">
+            <a-form-item label="Dominio" name="domain" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.domain">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Chasis" name="chasis" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.chasis">
+            <a-form-item label="Chasis" name="chasis" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.chasis">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Marca" name="brand" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.brand">
+            <a-form-item label="Marca" name="brand" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.brand">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Modelo" name="vehicle" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.vehicle">
+            <a-form-item label="Modelo" name="vehicle" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.vehicle">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
             <a-form-item label="Año Vehículo" name="vehicle_year"
-                :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.vehicle_year">
+                :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.vehicle_year">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
             <a-form-item label="Fecha Siniestro" name="claim_date"
-                :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.claim_date">
+                :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input type="date" v-model:value="formTenderDetail.tender_data.claim_date">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Sede" name="sede" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.sede">
+            <a-form-item label="Sede" name="sede" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.sede">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Nombre Cliente" name="name" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.name">
+            <a-form-item label="Nombre Cliente" name="name" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.name">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Teléfono" name="phone" :rules="[{ required: true, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tenderData.phone">
+            <a-form-item label="Teléfono" name="phone" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.phone">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
             <a-form-item label="Agente" name="agent">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.agent" allowClear show-search
-                    :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.agent" allowClear
+                    show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                         :label="(item.fullName)">
                         {{ item.fullName }}
+                    </a-select-option>
+                </a-select>
+            </a-form-item>
+            <a-form-item label="Plataforma" name="platform">
+                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.platform" allowClear
+                    show-search :filter-option="filterOption">
+                    <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
+                        :label="(item.name)">
+                        {{ item.name }}
                     </a-select-option>
                 </a-select>
             </a-form-item>
@@ -129,11 +134,11 @@
             :labelStyle="{ fontWeight: 'bolder', fontSize: '16px' }" :style="{ padding: '1%' }">
             <a-descriptions-item label="Nro Siniestro" class="a-descriptions-item">
                 <div class="item-d">
-                    {{ tenderData.claim_id
+                    {{ formTenderDetail.claim_id
                     }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Compañía" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.company }}</div>
+                <div class="item-d">{{ formTenderDetail.company_name }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
                 <div class="item-d">
@@ -142,22 +147,25 @@
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.domain }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.domain }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Chasis" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.chasis }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.chasis }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Marca" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.brand }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.brand }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.vehicle }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.vehicle }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.vehicle_year }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.vehicle_year }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Fecha" class="a-descriptions-item">
-                <div class="item-d">{{ tenderData.claim_date }}</div>
+                <div class="item-d">{{ formTenderDetail.tender_data.claim_date }}</div>
+            </a-descriptions-item>
+            <a-descriptions-item label="Plataforma" class="a-descriptions-item">
+                <div class="item-d">{{ formTenderDetail.platform }}</div>
             </a-descriptions-item>
 
         </a-descriptions>
@@ -166,16 +174,16 @@
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
                 <a-descriptions-item label="Sede">
-                    <div class="item-d">{{ tenderData.sede }}</div>
+                    <div class="item-d">{{ formTenderDetail.tender_data.sede }}</div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Nombre Cliente">
-                    <div class="item-d">{{ tenderData.name }}</div>
+                    <div class="item-d">{{ formTenderDetail.tender_data.name }}</div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Teléfono">
-                    <div class="item-d">{{ tenderData.phone }}</div>
+                    <div class="item-d">{{ formTenderDetail.tender_data.phone }}</div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Operador">
-                    <div class="item-d">{{ tenderData.operador }}</div>
+                    <div class="item-d">{{ formTenderDetail.tender_data.operador }}</div>
                 </a-descriptions-item>
             </a-descriptions>
         </a-collapse-panel>
@@ -185,7 +193,7 @@
                     :labelStyle="{ fontWeight: 'bold', color: 'white', fontStyle: 'Italic' }">
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
-                    <a-descriptions-item label="TOTAL: $ "><span class="collapse-item">{{
+                    <a-descriptions-item label="TOTAL: "><span class="collapse-item">{{
                         formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
                 </a-descriptions>
             </template>
@@ -245,8 +253,8 @@
                         <template v-if="['vendor_id'].includes(column.dataIndex)">
                             <div>
                                 <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0"
-                                    @focus="focus" @change="handleChange">
+                                    v-model:value="editableData[record.key][column.dataIndex]"
+                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange">
                                     <a-select-option value="Proveedor 1">Proveedor 1</a-select-option>
                                     <a-select-option value="Proveedor 2">Proveedor 2</a-select-option>
                                 </a-select>
@@ -264,11 +272,11 @@
                                 </template>
                             </div>
                         </template>
-                        <template v-if="column.dataIndex === 'ammount_wo_iva'">
+                        <template v-if="column.dataIndex === 'amount_wo_iva'">
                             <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
                             <template v-else>
-                                {{ formatCurrency(record.ammount_wo_iva) }}
+                                {{ formatCurrency(record.amount_wo_iva) }}
                             </template>
                         </template>
                         <template v-if="column.dataIndex === 'price'">
@@ -348,13 +356,13 @@
                                 :pagination="false">
                                 <template #bodyCell="{ column, text, record }">
                                     <template
-                                        v-if="['tire_type_name', 'llanta', 'neumatico'].includes(column.dataIndex)">
+                                        v-if="['tire_type_name', 'Llanta', 'Neumatico'].includes(column.dataIndex)">
                                         <div>
                                             <a-input v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" />
                                             <template v-else>
-                                                <template v-if="['llanta', 'neumatico'].includes(column.dataIndex)">
+                                                <template v-if="['Llanta', 'Neumatico'].includes(column.dataIndex)">
                                                     <div>
                                                         {{ formatCurrency(text) }}
                                                     </div>
@@ -370,7 +378,7 @@
                                             <a-select ref="select" v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" @focus="focus" @change="handleChange">
-                                                <a-select-option value="Nuematicos">Nuemáticos</a-select-option>
+                                                <a-select-option value="Neumaticos">Neumáticos</a-select-option>
                                                 <a-select-option value="Llantas">Llantas</a-select-option>
                                             </a-select>
                                             <template v-else>
@@ -546,7 +554,7 @@
 <script>
 import { cloneDeep } from 'lodash-es';
 import { ref, onMounted, watch, reactive, toRaw, computed } from 'vue';
-import { useRoute } from 'vue-router';
+import { useRoute, useRouter } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { getTireCost } from '@/api/costs/costs.js';
@@ -560,10 +568,12 @@ import { dataTable } from './data';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { getUsers } from '@/api/users/users.js';
+import { getPlatforms } from '@/api/platforms/platforms.js';
 export default {
     name: 'TenderDetail',
     setup() {
         const route = useRoute();
+        const router = useRouter(); // Importar el router   
         const routeName = ref(route.path);
         const isLoading = ref(false);
         const formRef = ref();
@@ -611,12 +621,15 @@ export default {
             tire_height: '',
             tire_tread: '',
             obs: '',
-            tire_type_name: 'Auxilio',
+            tire_type_name: '',
             tire_quoted: '',
             daytona_ids: [],
             quote_detail: '',
             quote_state: '',
-            tenderData: {},
+            spare_tire_amount: 0,
+            tenderData: { domain: '' },
+            tender_data: { domain: '' },
+            original_parts: '',
         });
         const imageList = ref([
             {
@@ -640,6 +653,7 @@ export default {
         const editableData = reactive({});
         const editableQuoteData = reactive({});
         const selectedOption = ref(null);
+        const platformList = ref([]);
         const isModalVisible = ref(false);
         const currentImageIndex = ref(0);
         const edit = key => {
@@ -653,67 +667,132 @@ export default {
             Object.assign(record, editableData[key]);
             record.total = record.price * record.quantity;
             delete editableData[key];
+            calculateTireType();
         };
         const cancel = key => {
+            if (key === undefined) {
+                onDelete(key);
+                delete editableQuoteData[key];
+                return;
+            }
+            const record = dataSource.value.find(item => key === item.key);
+            Object.assign(record, editableData[key]);
             delete editableData[key];
+            if (!record.type) {
+                onDelete(key);
+            }
         };
         const saveQuote = key => {
             const record = dataQuoteSource.value.find(item => key === item.key);
             Object.assign(record, editableQuoteData[key]);
             delete editableQuoteData[key];
+            calculateTotalQuoted();
         };
         const cancelQuote = key => {
+            if (key === undefined) {
+                onDeleteQuote(key);
+                delete editableQuoteData[key];
+                return;
+            }
+            const record = dataQuoteSource.value.find(item => key === item.key);
+            Object.assign(record, editableData[key]);
             delete editableQuoteData[key];
+            if (!record.tire_type_name) {
+                onDeleteQuote(key);
+            }
         };
+        const calculateTireType = () => {
+            // Obtener datos
+            let tireValue = 0;
+            let tireQuantity = 0;
+            let llantaValue = 0;
+            let llantaQuantity = 0;
+            let freight = 0;
+            let fee = 0;
+            const tireValues = Object.values(dataSource.value);
+            tireValues.map((item) => {
+                if (item.type === 'Neumatico') {
+                    tireValue = item.price;
+                }
+            })
+            tireValues.map((item) => {
+                if (item.type === 'Llantas') {
+                    llantaValue = item.price;
+                }
+            });
+            let tireValueTotal = 0;
+            if (tireValue > 0) {
+                freight = formTenderDetail.value.freight;
+                fee = formTenderDetail.value.fee;
+                tireValueTotal = (parseFloat(tireValue) + parseFloat(freight)) * (1 + (fee / 100));
+            }
+            // Actualizar
+
+
+            dataQuoteSource.value.map((item) => {
+                if (tireValueTotal >= 0) {
+                    item.Neumatico = tireValueTotal;
+                }
+                if (llantaValue >= 0) {
+                    item.Llanta = llantaValue;
+                }
+            })
+            calculateTotalQuoted();
+        }
+        const calculateTotalQuoted = () => {
+            let totalQuoted = 0;
+            dataQuoteSource.value.map((item) => {
+
+                totalQuoted += parseFloat(item.Llanta) + parseFloat(item.Neumatico);
+            })
+            quoteData.value.total_quoted = totalQuoted;
+        }
 
         const fetchTenderData = async (id) => {
-            console.log('id')
-            console.log(id)
             try {
                 const response = await getTendersIndex({ claim_id: id });
-                tenderData.value = response[0]; //!! Importante ver que solo devuelva 1 solo
+                if (response.length > 0) {
+                    tenderData.value = response[0];
+                }
+                console.log('tenderData.value', tenderData.value)
                 const agentsResponse = await getUsers({ roles: roles.value });
-                const transformedAgents = agentsResponse.map((item) => {
-                    return {
-                        ...item,
-                        fullName: item.username,
-                    };
-                });
-                agents.value = transformedAgents;
+                console.log('agent response', agentsResponse)
                 const params = {
                     claim_id: id,
                 };
                 const quoteResponse = await getQuotes(params);
                 quoteData.value = quoteResponse[0];
                 quoteId.value = quoteData.value.id;
-                console.log('quote details', quoteData.value.details)
                 if (Array.isArray(quoteData.value.details)) {
                     quoteData.value.details.map((item) => {
-                        console.log(item, 'item')
                         dataSource.value.push(item)
                     })
+                    dataSource.value = quoteData.value.details.map((item, index) => ({
+                        ...item,
+                        key: index
+                    }));
                 } else {
                     dataSource.value.push(quoteData.value.details);
                 }
-                // quoteData.value.tire_type_name.map((item) => {
-                //     console.log(item,'tire_type_name')
-                //     dataQuoteSource.value.push(item)
-                // })
 
 
                 let records = [];
                 records = quoteResponse[0].tire_type_name;
-                console.log('records', records)
                 if (Array.isArray(records)) {
                     records.map((item) => {
                         dataQuoteSource.value.push(
                             {
                                 tire_type_name: item.tire_type_name,
-                                llanta: item.llanta,
-                                neumatico: item.neumatico,
+                                Llanta: item.Llanta,
+                                Neumatico: item.Neumatico,
                             }
                         );
                     });
+                    dataQuoteSource.value = dataQuoteSource.value.map((item, index) => ({
+                        ...item,
+                        key: index
+                    }));
+                    console.log('data quote source', dataQuoteSource.value)
                 } else {
                     console.error("Expected records to be an array, but got:", typeof records);
                 }
@@ -721,18 +800,19 @@ export default {
                 if (deliveryTime > 5) {
                     deliveryTime = 18;
                 }
-                console.log('quoteData', quoteData.value)
                 let brandObject = optionsBrand.find((item) => item.label === quoteData.value.brand);
                 let brand = '';
                 if (brandObject) {
                     brand = brandObject.value;
                 }
+                let llantaType = null;
+                llantaType = quoteData.value.llanta_type;
                 const quoteDataValue = {
                     ...quoteData.value,
                     brand: brand,
                     delivery_time: deliveryTime,
                     tire_model: parseInt(quoteData.value.tire_model),
-                    llanta_type: parseInt(quoteData.value.llanta_type),
+                    llanta_type: llantaType,
                 };
                 console.log('quoteDAtaVAlue', quoteDataValue)
                 if (quoteData.value.image_data) {
@@ -749,10 +829,10 @@ export default {
                     formTenderDetail.value.brand = [];
                 }
                 if (!formTenderDetail.value.tire_model) {
-                    formTenderDetail.value.tire_model = [];
+                    formTenderDetail.value.tire_model = '';
                 }
                 if (!formTenderDetail.value.llanta_type) {
-                    formTenderDetail.value.llanta_type = [];
+                    formTenderDetail.value.llanta_type = '';
                 }
 
             } catch (error) {
@@ -773,9 +853,6 @@ export default {
             console.log(input)
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
-        const filterOptionBrand = (input, option) => {
-            return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-        };
         const onSave = async (value) => {
             isLoading.value = true;
             errorMessage.value = '';
@@ -786,24 +863,38 @@ export default {
                         const params = formTenderDetail.value; // O ajusta según necesites
                         console.log('formTernder details ', formTenderDetail.value)
                         let brandObject = optionsBrand.find((item) => item.value === formTenderDetail.value.brand);
-                        console.log('brand Object', brandObject)
+
                         if (brandObject) {
                             params.brand = brandObject.label;
                             console.log('params', params)
                         }
                         params.quote_state = value;
-                        const fullParams = {
+                        let fullParams = {
                             ...params,
                             details: dataSource.value,
                             tire_type_name: dataQuoteSource.value,
+                            total_quoted: quoteData.value.total_quoted, 
                         }
                         console.log(fullParams)
-                        const response = updateQuotes(quoteId.value, fullParams);
-                        console.log('Response:', response);
+                        let response;
+                        if (type.value === 'Edit') {
+                            console.log('Edit')
+                            response = updateQuotes(quoteId.value, fullParams);
+                        }
+                        if (type.value === 'Add') {
+                            console.log('Add')
+                            fullParams = {
+                                ...fullParams,
+                                user: formTenderDetail.value.agent,
+                                company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
+                            }
+                            addQuotes(fullParams);
+                            tenderId.value = formTenderDetail.value.claim_id;
+                            const path = 'licitaciones/' + tenderId.value;
+                            router.push({ path });
+                        }
                         dataSource.value = [];
                         dataQuoteSource.value = [];
-                        await fetchTenderData(tenderId.value);
-                        // Aquí puedes manejar la respuesta, por ejemplo, mostrar un mensaje de éxito
                     } catch (error) {
                         console.error('Error updating quotes:', error);
                         errorMessage.value = 'Error actualizando las cotizaciones: ' + error;
@@ -856,9 +947,11 @@ export default {
         };
         const onDelete = key => {
             dataSource.value = dataSource.value.filter(item => item.key !== key);
+            calculateTireType();
         };
         const onDeleteQuote = key => {
             dataQuoteSource.value = dataQuoteSource.value.filter(item => item.key !== key);
+            calculateTotalQuoted();
         };
         const handleChangeDeliveryTime = () => {
             console.log('handle dT');
@@ -902,8 +995,14 @@ export default {
             dataSource.value.push(newData);
             editableData[newKey] = cloneDeep(newData);
         };
+        const countDetail = computed(() => {
+            if (dataQuoteSource.value) {
+                return dataQuoteSource.value.length + 1
+            }
+            return 0;
+        });
         const handleDetailAdd = () => {
-            const newKey = `${count.value}`;
+            const newKey = `${countDetail.value}`;
             const newData = {
                 key: newKey,
                 tire_type_name: '',
@@ -914,14 +1013,66 @@ export default {
             dataQuoteSource.value.push(newData);
             editableQuoteData[newKey] = cloneDeep(newData);
         };
+        const getUsersList = async () => {
+            try {
+                const agentsResponse = await getUsers({ roles: roles.value });
+                console.log(agentsResponse)
+                const transformedAgents = agentsResponse.map((item) => {
+                    return {
+                        ...item,
+                        fullName: item.username,
+                    };
+                });
+                agents.value = transformedAgents;
+
+            } catch (error) {
+                console.log('error in get user list', error)
+            }
+        }
+        const getPlatformsList = async () => {
+            try {
+                platformList.value = await getPlatforms();
+            } catch (error) {
+                console.log('error in get user list', error)
+            }
+        }
         onMounted(() => {
             tenderId.value = route.params.id;
-            console.log(tenderId.value)
+            console.log('tender value', tenderId.value)
             if (tenderId.value) {
+                console.log('edit')
                 type.value = 'Edit';
                 fetchTenderData(tenderId.value);
             } else {
+                console.log('add')
                 type.value = 'Add';
+                getUsersList();
+                getPlatformsList();
+                console.log('platform list', platformList.value)
+                formTenderDetail.value = {
+                    not_quote: false,
+                    delivery_time: 1,
+                    original_parts: '',
+                    spare_tire_amount: '',
+                    brand: 1,
+                    tire_model: 1,
+                    llanta_type: 'ALEACION',
+                    tire_width: 145,
+                    tire_height: 30,
+                    tire_tread: 13,
+                    obs: '',
+                    tire_type_name: 'Auxilio',
+                    tire_quoted: 'modelo exacto',
+                    daytona_ids: [],
+                    quote_detail: '',
+                    quote_state: 'N',
+                    spare_tire_amount: 0,
+                    freight: 0,
+                    fee: 0,
+                    tender_data: {
+                        domain: '',
+                    },
+                }
             }
         });
         const handleGetCost = async () => {
@@ -1005,6 +1156,7 @@ export default {
             rules,
             onLicitar,
             dataQuoteSource,
+            countDetail,
             handleDetailAdd,
             imageSelect,
             handleImageChange,
@@ -1027,6 +1179,13 @@ export default {
             aseguradoraList,
             agents,
             estadoList,
+            calculateTireType,
+            calculateTotalQuoted,
+            roles,
+            getUsersList,
+            platformList,
+            getPlatformsList,
+            router,
         }
     }
 }
@@ -1222,6 +1381,9 @@ export default {
 :deep(.ant-input-affix-wrapper) {
     border: 2px solid var(--border-item) !important;
 }
+.input-item {
+    border: 2px solid var(--border-item) !important;
+}
 
 .image-container {
     display: flex;
@@ -1239,5 +1401,10 @@ export default {
 .selected-image {
     max-width: 400px;
     max-height: 250px;
+}
+
+.mg-bottom .ant-form-item {
+    margin-bottom: 10px;
+    width: 15%;
 }
 </style>

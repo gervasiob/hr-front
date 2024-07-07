@@ -21,7 +21,7 @@
 </template>
 
 <script>
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
 
@@ -30,28 +30,24 @@ export default {
   name: 'Daytona-App',
   components: {},
   setup() {
-    const current = ref(['mail']);
-    const items = menuList;
+    const current = ref(['login']);
+    let items = ref([]);
     const collapsed = ref(false);
     const router = useRouter(); // Importar el router
-    // const handleMenuSelect = (key) => {
-    //   // current.value = key; // Actualizar el valor actual del menú
-    //   console.log(key.item.path);
-    //   router.push({ path: key.item.path }); // Navegar a la ruta seleccionada
-    // };
+
     const route = useRoute(); // Obtener la ruta actual
 
     const handleMenuSelect = (key) => {
       const path = key.item.path;
       if (route.path === path) {
-        // Forzar la redirección a la misma página
         router.push({ path: '/' }).then(() => {
           router.push({ path });
         });
       } else {
-        router.push({ path }); // Navegar a la ruta seleccionada
+        router.push({ path });
       }
     };
+
     const headerStyle = {
       textAlign: 'center',
       lineHeight: '30px',
@@ -75,7 +71,17 @@ export default {
       textAlign: 'center',
       lineHeight: '64px',
     };
-    
+    onMounted(() => {
+      items.value = items.value = menuList.filter((item) => item.key === 'login');
+    })
+    watch(() => route.path, (newPath) => {
+      if (newPath === '/login') {
+        items.value = menuList.filter((item) => item.key === 'login');
+      } else {
+        items.value = menuList.filter((item) => item.key !== 'login');
+      }
+    }, { immediate: true });
+
     return {
       current,
       items,

@@ -1,52 +1,151 @@
 <template>
-
-  <div style="margin-top: 100px; margin-left: 0%;">
-    <a-form :model="formState" name="basic" :label-col="{ span: 4 }" :wrapper-col="{ span: 16 }" @finish="onFinish"
-      @finishFailed="onFinishFailed">
-      <a-form-item label="Usuario" name="username" :rules="[{ required: true, message: 'Ingrese su usuario' }]">
-        <a-input v-model:value="formState.username" />
-      </a-form-item>
-
-      <a-form-item label="Password" name="password" :rules="[{ required: true, message: 'Ingrese su password' }]">
-        <a-input-password v-model:value="formState.password" />
-      </a-form-item>
-
-      <a-form-item name="remember" :wrapper-col="{ offset: 4, span: 16 }">
-        <a-checkbox v-model:checked="formState.remember">Recordarme</a-checkbox>
-      </a-form-item>
-
-      <a-form-item :wrapper-col="{ offset: 4, span: 16 }">
-        <a-button type="primary" html-type="submit">Acceder</a-button>
-      </a-form-item>
-    </a-form>
+  <div class="login-background">
+    <div class="login-container">
+      <div class="login-title">
+        <h2>INICIO DE SESIÓN</h2>
+      </div>
+      <a-form layout="vertical" @submit="handleSubmit">
+        <a-form-item>
+          <div class="item-d">
+            <a-input placeholder="Ingrese su usuario" v-model="loginForm.username">
+              <template #prefix>
+                <UserOutlined class="site-form-item-icon" />
+              </template>
+            </a-input>
+          </div>
+        </a-form-item>
+        <a-form-item>
+          <a-input type="password" placeholder="Ingrese su contraseña" v-model="loginForm.password">
+            <template #prefix>
+              <LockOutlined class="site-form-item-icon" />
+            </template>
+          </a-input>
+        </a-form-item>
+        <a-form-item>
+          <a-checkbox v-model="loginForm.remember">Recordarme</a-checkbox>
+          <a class="login-form-forgot" @click="handleForgotPassword">
+            ¿Olvidaste tu contraseña?
+          </a>
+          <a-button type="primary" htmlType="submit" class="login-form-button">
+            Iniciar Sesión
+          </a-button>
+        </a-form-item>
+      </a-form>
+    </div>
   </div>
 </template>
 
 <script>
 import { reactive } from 'vue';
+import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
+import { useRouter } from 'vue-router';
 export default {
   name: 'LoginIndex',
+  components: {
+    UserOutlined,
+    LockOutlined
+  },
   setup() {
-
-    const formState = reactive({
+    const router = useRouter(); // Importar el router
+    const loginForm = reactive({
       username: '',
       password: '',
-      remember: true,
+      remember: false,
     });
-    const onFinish = values => {
-      console.log('Success:', values);
+
+    const handleSubmit = (e) => {
+      e.preventDefault();
+      console.log(loginForm);
+      router.push({ path:'/Licitaciones' });
+      // Aquí iría la lógica para manejar el inicio de sesión
     };
-    const onFinishFailed = errorInfo => {
-      console.log('Failed:', errorInfo);
+
+    const handleForgotPassword = () => {
+      console.log('Olvidé mi contraseña');
+      // Aquí iría la lógica para manejar el olvidé mi contraseña
     };
 
     return {
-      formState,
-      onFinish,
-      onFinishFailed,
-    }
-  }
-}
+      loginForm,
+      handleSubmit,
+      handleForgotPassword,
+      router,
+    };
+  },
+};
 </script>
 
-<style></style>
+<style scoped>
+.login-background {
+  background-image: url('@/assets/fondo-login.png');
+  background-size: cover;
+  background-position: center;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-container {
+  background-color: var(--back);
+  /* Fondo blanco semi-transparente */
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  width: 600px;
+  height: 350px;
+  text-align: center;
+}
+
+.logo-container {
+  margin-bottom: 20px;
+}
+
+.logo {
+  max-width: 100%;
+  height: auto;
+}
+
+.login-title {
+  margin-bottom: 20px;
+}
+
+.login-title h2 {
+  color: var(--principal);
+  font-size: 25px;
+  /* Color rojo del título */
+}
+
+.login-form-forgot {
+  float: right;
+  color: #D32F2F;
+  /* Color rojo del enlace */
+}
+
+.login-form-button {
+  margin-top: 5%;
+  width: 100%;
+  height: 40px;
+  background-color: #D32F2F;
+  /* Color rojo del botón */
+  border-color: #D32F2F;
+}
+
+.login-form-button:hover {
+  background-color: #B71C1C;
+  /* Color rojo oscuro al pasar el ratón */
+  border-color: #B71C1C;
+}
+
+:deep(.ant-input) {
+  background-color: var(--border-item) !important;
+  color: white;
+
+}
+
+:deep(.ant-input-affix-wrapper) {
+  background-color: var(--border-item) !important;
+  color: white;
+  font-size: 18px;
+}
+</style>

@@ -6,6 +6,13 @@ import useradmin from '../views/useradmin/index.vue';
 import tenderDetail from '@/views/tenders/components/tenderDetail.vue';
 export const menuList = [
     {
+        key: 'login',
+        path: '/login',
+        icon: () => h(AppstoreOutlined),
+        label: 'LOGIN',
+        title: 'Login',
+    },
+    {
         key: 'licitacionesMenu',
         icon: () => h(MailOutlined),
         label: 'LICITACIONES',
@@ -17,10 +24,6 @@ export const menuList = [
                 name: 'Nueva Licitacion',
                 label: 'NUEVA LICITACIÓN',
                 title: 'NUEVA LICITACIÓN',
-                meta: {
-                    label: 'Nueva Licitacion',
-                    title: 'Nueva Licitacion',
-                }
             },
             {
                 key: 'licitaciones',
@@ -28,10 +31,6 @@ export const menuList = [
                 name: 'Licitaciones Pendientes',
                 label: 'LICITACIONES PENDIENTES',
                 title: 'LICITACIONES PENDIENTES',
-                meta: {
-                    label: 'Licitaciones Pendientes',
-                    title: 'Licitaciones Pendientes',
-                }
             },
             {
                 key: 'licitacionesEvaluadas',
@@ -39,21 +38,6 @@ export const menuList = [
                 name: 'Licitaciones Evaluadas',
                 label: 'LICITACIONES EVALUADAS',
                 title: 'LICITACIONES EVALUADAS',
-                meta: {
-                    label: 'Licitaciones Evaluadas',
-                    title: 'Licitaciones Evaluadas',
-                }
-            },
-            {
-                key: 'licitacionesNoPendientes',
-                path: '/No-pendientes',
-                name: 'Licitaciones no Pendientes',
-                label: 'LICITACIONES NO PENDIENTES',
-                title: 'LICITACIONES NO PENDIENTES',
-                meta: {
-                    label: 'Licitaciones No Pendientes',
-                    title: 'Licitaciones No Pendientes',
-                }
             },
             {
                 key: 'licitacionesSucursal',
@@ -61,18 +45,15 @@ export const menuList = [
                 name: 'Licitaciones Sucursal',
                 label: 'LICITACIONES SUCURSAL',
                 title: 'LICITACIONES SUCURSAL',
-                meta: {
-                    label: 'Licitaciones Sucursal',
-                    title: 'Licitaciones Sucursal',
-                }
-            },]
-    },
-    {
-        key: 'login',
-        path: '/login',
-        icon: () => h(AppstoreOutlined),
-        label: 'Login',
-        title: 'Login',
+            },
+            {
+                key: 'licitacionesNoPendientes',
+                path: '/No-pendientes',
+                name: 'Licitaciones no Pendientes',
+                label: 'LISTADO DE LICITACIONES',
+                title: 'LICITACIONES NO PENDIENTES',
+            },
+        ]
     },
     {
         key: 'administracion',
@@ -86,10 +67,6 @@ export const menuList = [
                 name: 'Roles',
                 label: 'ROLES',
                 title: 'ROLES',
-                meta: {
-                    label: 'Roles',
-                    title: 'Roles',
-                }
             },
             {
                 key: 'users',
@@ -97,10 +74,6 @@ export const menuList = [
                 name: 'Usuarios',
                 label: 'USUARIOS',
                 title: 'USUARIOS',
-                meta: {
-                    label: 'Usuarios',
-                    title: 'Usuarios',
-                }
             },
         ]
     },
@@ -118,23 +91,12 @@ export const menuList = [
                 icon: () => h(UploadOutlined),
                 label: 'COSTOS',
                 title: 'Costos',
-                meta: {
-                    label: 'Costos',
-                    title: 'Archivo Excel Costos',
-                }
             },
         ],
     },
     {
-        key: 'login',
-        path: '/login',
-        icon: () => h(AppstoreOutlined),
-        label: 'LOGIN',
-        title: 'LOGIN',
-    },
-    {
         key: 'resportes',
-        path: '/reportes',
+        path: '/reports',
         icon: () => h(AppstoreOutlined),
         label: 'REPORTES',
         title: 'REPORTES',

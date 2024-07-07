@@ -7,10 +7,6 @@ const apiClient = axios.create({
 });
 
 export async function apiRequest(method, endpoint, params, id = null) {
-    console.log(method)
-    console.log(endpoint)
-    console.log(params)
-    console.log(id)
     const url_endpoint = id ? `${BASE_URL}${endpoint}${id}/` : `${BASE_URL}${endpoint}`;
     try {
         const response = await apiClient({

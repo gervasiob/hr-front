@@ -2,7 +2,8 @@
   <div class="header">
   </div>
 
-  <div v-show="routeName === '/Licitaciones'" style="background-color: var(--mute); padding: 20px;  border-radius: 20px;">
+  <div v-show="routeName === '/Licitaciones'"
+    style="background-color: var(--mute); padding: 20px;  border-radius: 20px;">
     <a-row :gutter="16">
       <a-col :span="8">
         <a-card title="Prioridad 1" :bordered="false" class="card-1" @click="handleCardClick(1)">
@@ -95,7 +96,7 @@ export default {
       onCardClicked,
       route,
       routeName,
-      
+
     }
   }
 }

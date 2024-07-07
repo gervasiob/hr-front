@@ -23,3 +23,6 @@ export async function getPriorityCounts(params) {
 export async function getQuotesSummary(params) {
     return await apiRequest('get', 'quotes-summary/', params);
 }
+export async function exportQuotes(params) {
+    return await apiRequest('get', 'quotes/export/', params);
+}

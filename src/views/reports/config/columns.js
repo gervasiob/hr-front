@@ -36,7 +36,6 @@ export const tableColumns = [
         sorter: (a, b) => a.cotizacion - b.cotizacion,
 
     },
-
     {
         title: 'Agente',
         key: 'agent',
