@@ -30,10 +30,14 @@
     <div class="clean-contanier">
         <a-row :gutter="24">
             <a-col :span="12">
-                <div class="graph-2">Grafico 3</div>
+                <div class="graph-2">
+                    <QuotesAggregationChart :chart-data="quotesAggregationData" />
+                </div>
             </a-col>
             <a-col :span="12">
-                <div class="graph-2">Grafico 4</div>
+                <div class="graph-2">
+                    <QuotesAchievementChart :chart-data="quotesAchievementData" />
+                </div>
             </a-col>
         </a-row>
     </div>
@@ -46,7 +50,9 @@
                 <div class="graph-2">Grafico 6</div>
             </a-col>
             <a-col :span="9">
-                <div class="graph-2">Grafico 7</div>
+                <div class="graph-2">
+                    <TireTypeNameChart :chart-data="tireTypeNameData" />
+                </div>
             </a-col>
         </a-row>
     </div>
@@ -54,17 +60,48 @@
 </template>
 
 <script>
+import { onMounted, ref } from 'vue';
+import { getQuotesAchievement, getQuotesAggregation, getQuotesAchievementPercentage, getTireTipeNameSummary } from '@/api/dashboard/dashboard';
+import QuotesAchievementChart from './components/quotesAchievement.vue';
+import QuotesAggregationChart from './components/quotesAggregation.vue';
+import TireTypeNameChart from './components/tireTypeName.vue';
 
 export default {
     name: 'DashboardIndex',
-
+    components: {
+        QuotesAchievementChart,
+        QuotesAggregationChart,
+        TireTypeNameChart,
+    },
     setup() {
+        const quotesAchievementData = ref([]);
+        const quotesAggregationData = ref([]);
+        const tireTypeNameData = ref([]);
+        const fetchData = async (params = {}) => {
+            try {
+                quotesAchievementData.value = await getQuotesAchievement(params);
+                console.log('achivement', quotesAchievementData)
+                quotesAggregationData.value = await getQuotesAggregation(params);
+                console.log('aggregation', quotesAggregationData)
+                const responsec = await getQuotesAchievementPercentage(params);
+                console.log('percentage', responsec)
+                tireTypeNameData.value = await getTireTipeNameSummary(params);
+                console.log('summary', tireTypeNameData)
 
+            } catch (error) {
+                console.error("Error fetching quotes:", error);
+            }
 
+        };
 
+        onMounted(() => {
+            fetchData();
+        });
         return {
-
-
+            fetchData,
+            quotesAchievementData,
+            quotesAggregationData,
+            tireTypeNameData,
         }
     }
 }
@@ -82,7 +119,7 @@ export default {
 
 .clean-contanier {
     width: 100%;
-    height: 350px;
+    height: 450px;
     margin-top: 1%;
     margin-bottom: 1%;
     color: black;
@@ -91,7 +128,7 @@ export default {
 .graph-2 {
     border: 1px solid var(--back);
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 350px;
+    height: 450px;
     width: 100%;
 }
 
