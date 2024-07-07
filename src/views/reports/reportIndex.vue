@@ -67,7 +67,7 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="Marca Auto" name="car_brand">
-                        <a-input v-model:value="filterInputs.tender_data.car__icontains" allowClear />
+                        <a-input v-model:value="filterInputs.car_brand" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
@@ -79,13 +79,13 @@
             </a-row>
             <a-row :gutter="24">
                 <a-col :span="6">
-                    <a-form-item label="Fecha Desde" name="start_date">
-                        <a-input v-model:value="filterInputs.start_date" type="date" allowClear />
+                    <a-form-item label="Fecha Desde" name="created_at_before">
+                        <a-input v-model:value="filterInputs.created_at_before" type="date" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
-                    <a-form-item label="Fecha Hasta" name="end_date">
-                        <a-input v-model:value="filterInputs.end_date" type="date" allowClear />
+                    <a-form-item label="Fecha Hasta" name="created_at_after">
+                        <a-input v-model:value="filterInputs.created_at_after" type="date" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="6" :offset="6" style="text-align: right">
@@ -204,10 +204,28 @@ export default {
 
         };
         const onSearch = () => {
-            fetchData(filterInputs.value);
+            let params = filterInputs.value;
+            if (filterInputs.value.car_brand){ 
+            params = {
+                ...params,
+                tender_data: {
+                    brand__icontains: filterInputs.value.car_brand,
+                }
+                }
+            }
+            fetchData(params);
         };
         const onExport = () => {
-            exportQuotes(filterInputs.value);
+            let params = filterInputs.value;
+            if (filterInputs.value.car_brand) {
+                params = {
+                    ...params,
+                    tender_data: {
+                        brand__icontains: filterInputs.value.car_brand,
+                    }
+                }
+            }
+            exportQuotes(params);
         };
         const resetFilters = () => {
             formRef.value.resetFields();
@@ -232,8 +250,6 @@ export default {
         onMounted(() => {
             getFetchData();
             getUserList();
-
-
         });
         const getUserList = async () => {
             try {

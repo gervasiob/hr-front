@@ -11,7 +11,7 @@
         <a-form :model="formTenderDetail" name="horizontal_login" layout="inline" autocomplete="off">
             <a-form-item label="Nro Siniestro" name="claim_id"
                 :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.claim_id" />
+                <a-input class="input-item" v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
             <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.company_id" allowClear
@@ -1379,6 +1379,9 @@ export default {
 }
 
 :deep(.ant-input-affix-wrapper) {
+    border: 2px solid var(--border-item) !important;
+}
+.input-item {
     border: 2px solid var(--border-item) !important;
 }
 
