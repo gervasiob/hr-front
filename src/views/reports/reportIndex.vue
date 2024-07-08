@@ -79,13 +79,13 @@
             </a-row>
             <a-row :gutter="24">
                 <a-col :span="6">
-                    <a-form-item label="Fecha Desde" name="created_at_before">
-                        <a-input v-model:value="filterInputs.created_at_before" type="date" allowClear />
+                    <a-form-item label="Fecha Desde" name="start_date">
+                        <a-input v-model:value="filterInputs.start_date" type="date" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
-                    <a-form-item label="Fecha Hasta" name="created_at_after">
-                        <a-input v-model:value="filterInputs.created_at_after" type="date" allowClear />
+                    <a-form-item label="Fecha Hasta" name="end_date">
+                        <a-input v-model:value="filterInputs.end_date" type="date" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="6" :offset="6" style="text-align: right">
