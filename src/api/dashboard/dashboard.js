@@ -15,3 +15,6 @@ export async function getQuotesAchievementPercentage(params) {
 export async function getTireTipeNameSummary(params) {
     return await apiRequest('get', 'tire-type-name-summary', params);
 }
+export async function getQuotesValues(params) {
+    return await apiRequest('get', 'quotes-values', params);
+}
