@@ -6,23 +6,29 @@
         <a-row :gutter="24">
             <a-col :span="8">
                 <div class="card">
-                    <h2>2308</h2>
+                    <h2>{{ quotesValuesData.total_quotes }}</h2>
                     <p>LICITACIONES TOTALES</p>
                 </div>
                 <div class="card">
                     <p>ASEGURADORA LÍDER</p>
-                    <h3>FEDERACION PATRONAL</h3>
+                    <h3>{{ quotesValuesData.lider_assurance }}</h3>
                 </div>
             </a-col>
-            <a-col :span="8">Graph - componentes</a-col>
+
+            <a-col :span="4">
+                <PieChart :chart-data="tenderQuotesData" chart-pie-id="chart-pie-1" />
+            </a-col>
+            <a-col :span="4">
+                <PieChart :chart-data="wonQuotesData" chart-pie-id="chart-pie-2" />
+            </a-col>
             <a-col :span="8">
                 <div class="card">
                     <p>PLATAFORMA LÍDER</p>
-                    <h3>CLAIMS</h3>
+                    <h3>{{ quotesValuesData.lider_platform }}</h3>
                 </div>
                 <div class="card">
                     <p>AGENTE LÍDER</p>
-                    <h3>Agente</h3>
+                    <h3>{{ quotesValuesData.líder_agent }}</h3>
                 </div>
             </a-col>
         </a-row>
@@ -61,10 +67,11 @@
 
 <script>
 import { onMounted, ref } from 'vue';
-import { getQuotesAchievement, getQuotesAggregation, getQuotesAchievementPercentage, getTireTipeNameSummary } from '@/api/dashboard/dashboard';
+import { getQuotesAchievement, getQuotesAggregation, getQuotesAchievementPercentage, getTireTipeNameSummary, getQuotesValues } from '@/api/dashboard/dashboard';
 import QuotesAchievementChart from './components/quotesAchievement.vue';
 import QuotesAggregationChart from './components/quotesAggregation.vue';
 import TireTypeNameChart from './components/tireTypeName.vue';
+import PieChart from './components/pieChart.vue';
 
 export default {
     name: 'DashboardIndex',
@@ -72,11 +79,15 @@ export default {
         QuotesAchievementChart,
         QuotesAggregationChart,
         TireTypeNameChart,
+        PieChart,
     },
     setup() {
         const quotesAchievementData = ref([]);
         const quotesAggregationData = ref([]);
         const tireTypeNameData = ref([]);
+        const quotesValuesData = ref({});
+        const wonQuotesData = ref({});
+        const tenderQuotesData = ref({});
         const fetchData = async (params = {}) => {
             try {
                 quotesAchievementData.value = await getQuotesAchievement(params);
@@ -87,7 +98,19 @@ export default {
                 console.log('percentage', responsec)
                 tireTypeNameData.value = await getTireTipeNameSummary(params);
                 console.log('summary', tireTypeNameData)
+                quotesValuesData.value = await getQuotesValues(params);
+                console.log('quotes-values', quotesValuesData.value)
 
+                wonQuotesData.value = {
+                    quantity: quotesValuesData.value.won_quotes_quantity,
+                    percentage: quotesValuesData.value.won_quotes_percentage,
+                    seriesText: ['Ganandas', 'No Ganadas'],
+                };
+                tenderQuotesData.value = {
+                    quantity: quotesValuesData.value.tender_quoted_quantity,
+                    percentage: quotesValuesData.value.tender_quoted_percentage,
+                    seriesText: ['Cotizadas', 'No Cotizadas'],
+                };
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }
@@ -102,6 +125,9 @@ export default {
             quotesAchievementData,
             quotesAggregationData,
             tireTypeNameData,
+            quotesValuesData,
+            wonQuotesData,
+            tenderQuotesData,
         }
     }
 }

@@ -67,12 +67,12 @@
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="Marca Auto" name="car_brand">
-                        <a-input v-model:value="filterInputs.car_brand" allowClear />
+                        <a-input v-model:value="tenderFilters.car_brand" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
                     <a-form-item label="Modelo Auto" name="vehicle">
-                        <a-input v-model:value="filterInputs.tender_data.vehicle__icontains" allowClear />
+                        <a-input v-model:value="tenderFilters.vehicle" allowClear />
                     </a-form-item>
                 </a-col>
 
@@ -175,6 +175,7 @@ export default {
         const filterInputs = ref({
             tender_data: {},
         });
+        const tenderFilters = ref({})
         const useForm = Form.useForm;
         const { resetFields, validate, validateInfos } = useForm(formRef, rulesRef);
 
@@ -205,24 +206,32 @@ export default {
         };
         const onSearch = () => {
             let params = filterInputs.value;
-            if (filterInputs.value.car_brand){ 
-            params = {
-                ...params,
-                tender_data: {
-                    brand__icontains: filterInputs.value.car_brand,
+            if (tenderFilters.value.car_brand) {
+                params = {
+                    ...params,
+                    tender_data__icontains: tenderFilters.value.car_brand,
                 }
+            }
+            if (tenderFilters.value.vehicle) {
+                params = {
+                    ...params,
+                    tender_data__icontains: tenderFilters.value.vehicle,
                 }
             }
             fetchData(params);
         };
         const onExport = () => {
             let params = filterInputs.value;
-            if (filterInputs.value.car_brand) {
+            if (tenderFilters.value.car_brand) {
                 params = {
                     ...params,
-                    tender_data: {
-                        brand__icontains: filterInputs.value.car_brand,
-                    }
+                    tender_data__icontains: tenderFilters.value.car_brand,
+                }
+            }
+            if (tenderFilters.value.vehicle) {
+                params = {
+                    ...params,
+                    tender_data__icontains: tenderFilters.value.vehicle,
                 }
             }
             exportQuotes(params);
@@ -288,6 +297,7 @@ export default {
             brandList,
             modelList,
             onExport,
+            tenderFilters,
         }
     }
 }
