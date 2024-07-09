@@ -73,7 +73,7 @@
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
             <a-typography-link @click="save(record.key)">Save</a-typography-link>
-            <a-popconfirm title="Sure to cancel?" @confirm="cancel(record.key)">
+            <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
               <a>Cancel</a>
             </a-popconfirm>
           </span>
@@ -166,12 +166,15 @@ export default {
         const params = {
           name: data.name,
         }
-        updateRoles(data.id, params);
+        updateRoles(data.id, params).then(() => {
+          fetchData();
+        });
       } else {
         const { id, ...dataWithoutId } = data;
-        addRoles(dataWithoutId);
+        addRoles(dataWithoutId).then(() => {
+          fetchData();
+        });
       }
-      fetchData();
     };
     const cancel = key => {
       delete editableData[key];
@@ -198,11 +201,13 @@ export default {
         const params = {
           name: data.name,
         }
-        deleteRoles(data.id, params);
+        deleteRoles(data.id, params).then(() => {
+          fetchData();
+        });
       }
       const newData = dataSource.value.filter(item => item.key !== key);
       dataSource.value = newData;
-      fetchData();
+
     };
     return {
       formRef,
