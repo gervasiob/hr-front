@@ -112,6 +112,12 @@ const otherRoutes = [
         component: () => import('@/views/dashboard/dashboardIndex.vue'),
     },
     {
+        key: 'platforms',
+        name: 'PlatformsIndex',
+        path: '/adm/platforms',
+        component: () => import('@/views/platforms/platformsIndex.vue'),
+    },
+    {
         key: 'logout',
         path: '/logout',
         name: 'Logout',

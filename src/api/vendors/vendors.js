@@ -1,17 +1,19 @@
 import { apiRequest } from '../apiUrls.js';
 
-const ENDPOINT = 'platforms/';
+const ENDPOINT = 'vendors/';
 
-export async function getPlatforms(params, id = null) {
+export async function getVendors(params, id = null) {
     return await apiRequest('get', ENDPOINT, params, id);
 }
-export async function addPlatforms(params) {
+
+export async function addVendors(params) {
     return await apiRequest('post', ENDPOINT, params);
 }
-export async function updatePlatforms(id, params) {
+
+export async function updateVendors(id, params) {
     return await apiRequest('put', ENDPOINT, params, id);
 }
-export async function deletePlatforms(id, params) {
+
+export async function deleteVendors(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
-
