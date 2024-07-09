@@ -111,6 +111,12 @@ const otherRoutes = [
         path: '/dashboard',
         component: () => import('@/views/dashboard/dashboardIndex.vue'),
     },
+    {
+        key: 'logout',
+        path: '/logout',
+        name: 'Logout',
+        redirect: '/login',
+    },
 ]
 export const basicRoutes = [
     LoginRoute,
