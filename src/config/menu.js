@@ -75,6 +75,7 @@ export const menuList = [
                 label: 'USUARIOS',
                 title: 'USUARIOS',
             },
+            
         ]
     },
 
