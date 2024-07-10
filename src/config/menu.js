@@ -68,13 +68,13 @@ export const menuList = [
                 label: 'ROLES',
                 title: 'ROLES',
             },
-            {
-                key: 'users',
-                path: '/adm/users',
-                name: 'Usuarios',
-                label: 'USUARIOS',
-                title: 'USUARIOS',
-            },
+            // {
+            //     key: 'users',
+            //     path: '/adm/users',
+            //     name: 'Usuarios',
+            //     label: 'USUARIOS',
+            //     title: 'USUARIOS',
+            // },
             {
                 key: 'platforms',
                 path: '/adm/platforms',
