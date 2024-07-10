@@ -4,13 +4,26 @@
       <a-layout-sider :style="siderStyle" v-model:collapsed="collapsed" collapsible>
         <a-menu v-model:selectedKeys="current" :items="items" @click="handleMenuSelect" /></a-layout-sider>
       <a-layout-content :style="contentStyle">
-        <div class="title">
-          <div class="logo-container">
-            <img src="@/assets/daytona-logo.png" alt="Daytona Logo" class="logo-image" />
-          </div>
-          <h4 class="sub-title">DFT - Daytona Fast Track</h4>
+        <a-row :gutter="24">
+          <a-col :span="20">
+            <div class="title">
+              <div class="logo-container">
+                <img src="@/assets/daytona-logo.png" alt="Daytona Logo" class="logo-image" />
+              </div>
+              <h4 class="sub-title">DFT - Daytona Fast Track</h4>
+
+            </div>
+          </a-col>
+          <a-col :span="4">
+            <div class="notification">
+              <BellOutlined @click="openNotification" />
+              <a-badge :count="quotesLength" v-show="newNotifications">
+              </a-badge>
+            </div>
+          </a-col>
+
           <a-divider style="height: 4px; background-color: #EC2233"></a-divider>
-        </div>
+        </a-row>
         <RouterView />
       </a-layout-content>
     </a-layout>
@@ -24,17 +37,32 @@
 import { onMounted, ref, watch } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
-
+import { BellOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { notification } from 'ant-design-vue';
+import { getQuoteStateChanges } from '@/api/quotes/quotes.js'
 
 export default {
   name: 'Daytona-App',
-  components: {},
+  components: { BellOutlined, PlusOutlined },
   setup() {
+    const openNotification = () => {
+      const key = `open${Date.now()}`;
+      notification.open({
+        message: 'Ultimas Licitaciones',
+        description:
+          newNotificationsList.value.join('\n'),
+
+      });
+    };
     const current = ref(['login']);
     let items = ref([]);
     const collapsed = ref(false);
+    const newNotifications = ref(false);
+    const quotesLength = ref(0);
+    const newNotificationsList = ref([]);
+    const notificationText = ref(null);
     const router = useRouter(); // Importar el router
-
+    let newNotificationsString = '';
     const route = useRoute(); // Obtener la ruta actual
 
     const handleMenuSelect = (key) => {
@@ -47,7 +75,9 @@ export default {
         router.push({ path });
       }
     };
-
+    const handleNotification = () => {
+      console.log('click')
+    }
     const headerStyle = {
       textAlign: 'center',
       lineHeight: '30px',
@@ -71,8 +101,41 @@ export default {
       textAlign: 'center',
       lineHeight: '64px',
     };
+
+    const fetchData = async (params = {}) => {
+      try {
+        const response = await getQuoteStateChanges(params);
+
+        console.log("response");
+        console.log(response);
+        quotesLength.value = response.total_quantity;
+        if (quotesLength.value > 0) {
+          newNotifications.value = true;
+          newNotificationsList.value = response.quotes.map((item) => `nroSiniestro: ${item.claim_id}, estado: ${item.new_quote_state}`);
+          console.log('list', newNotificationsList.value);
+
+          console.log('text', newNotificationsString)
+        }
+        else {
+          newNotifications.value = false;
+        }
+        // console.log(dataSource.value)
+        // dataSource.value = response.map((item, index) => ({
+        //   ...item,
+        //   key: index
+        // }));
+
+        // roleList.value = response;
+        // console.log(dataSource.value)
+
+      } catch (error) {
+        console.error("Error fetching quotes:", error);
+      }
+    };
+
     onMounted(() => {
       items.value = items.value = menuList.filter((item) => item.key === 'login');
+      fetchData();
     })
     
     watch(() => route.path, (newPath) => {
@@ -93,6 +156,13 @@ export default {
       footerStyle,
       collapsed,
       route,
+      handleNotification,
+      openNotification,
+      newNotifications,
+      fetchData,
+      quotesLength,
+      newNotificationsString,
+      newNotificationsList,
     }
 
   }
@@ -152,5 +222,10 @@ export default {
 
 :deep(.ant-layout-sider-trigger) {
   background: var(--principal);
+}
+
+.notification {
+  color: var(--principal);
+  font-size: 50px;
 }
 </style>

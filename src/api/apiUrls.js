@@ -1,5 +1,13 @@
 import axios from 'axios';
-export const BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
+const stage = import.meta.env.VITE_STAGE;
+export let BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
+console.log('stage', stage)
+if (stage === 'DEV') {
+    BASE_URL = import.meta.env.VITE_BACKEND_DEV_BASE_URL;
+}
+if (stage === 'UAT') {
+    BASE_URL = import.meta.env.VITE_BACKEND_UAT_BASE_URL;
+}
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
