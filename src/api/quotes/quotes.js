@@ -24,6 +24,9 @@ export async function getPriorityCounts(params) {
 export async function getQuotesSummary(params) {
     return await apiRequest('get', 'quotes-summary/', params);
 }
+export async function getQuoteStateChanges(params) {
+    return await apiRequest('get', 'quote-state-changes/', params);
+}
 export async function exportQuotes(params) {
     try {
         const response = await axios.get('https://dft-back-dev-2484ff5ddb07.herokuapp.com/quotes/export/', {
