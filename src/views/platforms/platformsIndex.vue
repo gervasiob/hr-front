@@ -2,33 +2,36 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <a-col :span="12">
-          <a-form-item label="Usuario" name="usuario">
+        <!-- <a-col :span="12">
+          <a-form-item label="Aseguradora" name="aseguradora">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
               :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in userList" :key="index" :value="item.username" :label="item.username">
-                {{ item.username }}
+              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
+                :label="aseguradora.label">
+                {{ aseguradora.label }}
               </a-select-option>
             </a-select>
           </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Roles" name="name">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.id" :label="item.name">
-                {{ item.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24">
-        <a-col :span="6">
-          <a-form-item label="ID de Usuario" name="usuario_id">
-            <a-input v-model:value="filterInputs.claim_id" allowClear />
-          </a-form-item>
-        </a-col>
+        </a-col> -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="Plataforma" name="name">
+              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
+                :filter-option="filterOption" style="width: 300px;">
+                <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
+                  :label="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <!-- <a-col :span="12">
+            <a-form-item label="Rol Id" name="rol_id">
+              <a-input v-model:value="filterInputs.claim_id" allowClear />
+            </a-form-item>
+          </a-col> -->
+        </a-row>
+
         <!-- <a-col :span="6">
           <a-form-item label="Licitación id" name="tender_id">
             <a-input v-model:value="filterInputs.id" allowClear />
@@ -57,7 +60,7 @@
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['username'].includes(column.dataIndex)">
+      <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -66,13 +69,12 @@
           </template>
         </div>
       </template>
-      
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
             <a-typography-link @click="save(record.key)">Save</a-typography-link>
-            <a-popconfirm title="Sure to cancel?" @confirm="cancel(record.key)">
+            <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
               <a>Cancel</a>
             </a-popconfirm>
           </span>
@@ -92,11 +94,9 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getRoles, addRoles, updateRoles, deleteRoles } from '@/api/roles/roles.js';
-import { getUsers } from '@/api/users/users.js';
-
+import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms } from '@/api/platforms/platforms.js'
 export default {
-  name: 'UserList',
+  name: 'PlatformsList',
 
   setup() {
     const formRef = ref();
@@ -105,8 +105,7 @@ export default {
     const filterInputs = ref({});
 
     const columns = tableColumns;
-    const roleList = ref([]);
-    const userList = ref([]);
+    const platformList = ref([]);
 
     const customHeaderRow = (column) => {
       return {
@@ -115,20 +114,18 @@ export default {
     };
     const fetchData = async (params = {}) => {
       try {
-        const response = await getUsers(params);
-        
+        const response = await getPlatforms(params);
 
         console.log("response");
         console.log(response);
 
         console.log(dataSource.value)
-        dataSource.value = response.map((users, index) => ({
-          ...users,
+        dataSource.value = response.map((item, index) => ({
+          ...item,
           key: index
         }));
- 
-
-        userList.value = response;
+        const responseList = await getPlatforms();
+        platformList.value = responseList;
         console.log(dataSource.value)
 
       } catch (error) {
@@ -165,16 +162,19 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
+      if (data.url === "") {
+        data.url = null;
+      }
       if (data.id > 0) {
         const params = {
-          name: data.name,
+          ...data,
         }
-        updateRoles(data.id, params).then(() => {
+        updatePlatforms(data.id, params).then(() => {
           fetchData();
         });
       } else {
         const { id, ...dataWithoutId } = data;
-        addRoles(dataWithoutId).then(() => {
+        addPlatforms(dataWithoutId).then(() => {
           fetchData();
         });
       }
@@ -193,10 +193,12 @@ export default {
       const newData = {
         key: newKey,
         id: '',
-        username: '',
+        name: '',
       };
       dataSource.value.push(newData);
       editableData[newKey] = cloneDeep(newData);
+      // Esperar a que el DOM se actualice y luego desplazarse
+    
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -204,13 +206,13 @@ export default {
         const params = {
           name: data.name,
         }
-        deleteRoles(data.id, params).then(() => {
+        deletePlatforms(data.id, params).then(() => {
           fetchData();
         });
       }
       const newData = dataSource.value.filter(item => item.key !== key);
       dataSource.value = newData;
-      fetchData();
+
     };
     return {
       formRef,
@@ -227,11 +229,10 @@ export default {
       edit,
       cancel,
       save,
-      roleList,
       handleAdd,
       count,
       onDelete,
-      userList,
+      platformList,
     }
   }
 }
