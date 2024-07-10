@@ -137,6 +137,7 @@ export default {
       items.value = items.value = menuList.filter((item) => item.key === 'login');
       fetchData();
     })
+    
     watch(() => route.path, (newPath) => {
       if (newPath === '/login') {
         items.value = menuList.filter((item) => item.key === 'login');

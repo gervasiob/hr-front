@@ -2,7 +2,7 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <a-col :span="12">
+        <!-- <a-col :span="12">
           <a-form-item label="Aseguradora" name="aseguradora">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
               :filter-option="filterOption">
@@ -12,30 +12,31 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Roles" name="name">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.id" :label="item.name">
-                {{ item.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24">
-        <a-col :span="6">
-          <a-form-item label="Claim id" name="claim_id">
-            <a-input v-model:value="filterInputs.claim_id" allowClear />
-          </a-form-item>
-        </a-col>
-        <a-col :span="6">
+        </a-col> -->
+        <a-row :gutter="24">
+          <a-col :span="12">
+            <a-form-item label="Roles" name="name">
+              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
+                :filter-option="filterOption">
+                <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.id" :label="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <a-col :span="12">
+            <a-form-item label="Rol Id" name="rol_id">
+              <a-input v-model:value="filterInputs.claim_id" allowClear />
+            </a-form-item>
+          </a-col>
+        </a-row>
+
+        <!-- <a-col :span="6">
           <a-form-item label="Licitación id" name="tender_id">
             <a-input v-model:value="filterInputs.id" allowClear />
           </a-form-item>
-        </a-col>
-        <a-col :span="6">
+        </a-col> -->
+        <!-- <a-col :span="6">
           <a-form-item label="Agente" name="agent">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
               :filter-option="filterOption">
@@ -44,8 +45,8 @@
               </a-select-option>
             </a-select>
           </a-form-item>
-        </a-col>
-        <a-col :span="6" style="text-align: right">
+        </a-col> -->
+        <a-col :span="16" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -72,7 +73,7 @@
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
             <a-typography-link @click="save(record.key)">Save</a-typography-link>
-            <a-popconfirm title="Sure to cancel?" @confirm="cancel(record.key)">
+            <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
               <a>Cancel</a>
             </a-popconfirm>
           </span>
@@ -165,12 +166,15 @@ export default {
         const params = {
           name: data.name,
         }
-        updateRoles(data.id, params);
+        updateRoles(data.id, params).then(() => {
+          fetchData();
+        });
       } else {
         const { id, ...dataWithoutId } = data;
-        addRoles(dataWithoutId);
+        addRoles(dataWithoutId).then(() => {
+          fetchData();
+        });
       }
-      fetchData();
     };
     const cancel = key => {
       delete editableData[key];
@@ -197,11 +201,13 @@ export default {
         const params = {
           name: data.name,
         }
-        deleteRoles(data.id, params);
+        deleteRoles(data.id, params).then(() => {
+          fetchData();
+        });
       }
       const newData = dataSource.value.filter(item => item.key !== key);
       dataSource.value = newData;
-      fetchData();
+
     };
     return {
       formRef,

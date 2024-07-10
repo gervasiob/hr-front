@@ -75,7 +75,14 @@ export const menuList = [
                 label: 'USUARIOS',
                 title: 'USUARIOS',
             },
-            
+
+            {
+                key: 'platforms',
+                path: '/adm/platforms',
+                name: 'Plataformas',
+                label: 'PLATAFORMAS',
+                title: 'PLATAFORMAS',
+            },
         ]
     },
 

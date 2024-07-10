@@ -2,7 +2,7 @@ import { ASEGURADORAS, TENDER_STATES, PRIORITY_VALUES } from "@/common/common";
 
 export const tableColumns = [
     {
-        title: '#',
+        title: 'Id',
         dataIndex: 'id',
         key: 'id',
         sorter: (a, b) => a.id - b.id,
@@ -16,7 +16,7 @@ export const tableColumns = [
         onFilter: (value, record) => record.quote_state === value,
     },
     {
-        title: 'N° Siniestro',
+        title: 'Número Siniestro',
         dataIndex: 'claim_id',
         key: 'claim_id',
         sorter: (a, b) => a.claim_id - b.claim_id,
