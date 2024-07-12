@@ -82,6 +82,41 @@ export const menuList = [
                 label: 'PLATAFORMAS',
                 title: 'PLATAFORMAS',
             },
+            {
+                key: 'vendors',
+                path: '/adm/vendors',
+                name: 'Vendedor',
+                label: 'VENDEDOR',
+                title: 'VENDEDOR',
+            },
+            {
+                key: 'stocks',
+                path: '/adm/stocks',
+                name: 'Stocks',
+                label: 'STOCKS',
+                title: 'STOCKS',
+            },
+            {
+                key: 'product',
+                path: '/adm/produc',
+                name: 'Productos',
+                label: 'PRODUCTOS',
+                title: 'PRODUCTOS',
+            },
+            {
+                key: 'details',
+                path: '/adm/details',
+                name: 'Detalles',
+                label: 'DETALLES',
+                title: 'DETALLES',
+            },
+            {
+                key: 'criterial',
+                path: '/adm/criterial',
+                name: 'Criterios',
+                label: 'CRITERIOS',
+                title: 'CRITERIOS',
+            },
         ]
     },
 
