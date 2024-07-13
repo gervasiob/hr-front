@@ -16,8 +16,12 @@
           </a-col>
           <a-col :span="4">
             <div class="notification">
+              <a-switch v-model:checked="notificationOn" @change="handleChangeCheck">
+                <template #checkedChildren><check-outlined /></template>
+                <template #unCheckedChildren><close-outlined /></template>
+              </a-switch>
               <BellOutlined @click="openNotification" />
-              <a-badge :count="quotesLength" v-show="newNotifications">
+              <a-badge :count="quotesLength" v-show="notificationOn">
               </a-badge>
             </div>
           </a-col>
@@ -30,28 +34,33 @@
     <!-- <a-layout-footer :style="footerStyle">Footer</a-layout-footer> -->
   </a-layout>
 
-
 </template>
 
 <script>
-import { onMounted, ref, watch } from 'vue';
+import { onMounted, ref, watch, onUnmounted } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
-import { BellOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { notification } from 'ant-design-vue';
 import { getQuoteStateChanges } from '@/api/quotes/quotes.js'
 
 export default {
   name: 'Daytona-App',
-  components: { BellOutlined, PlusOutlined },
+  components: { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined },
   setup() {
     const openNotification = () => {
       const key = `open${Date.now()}`;
+      const listHtml = newNotificationsList.value.map(item => ` ${item}`).join(',');
+      const descriptionHtml = `${listHtml}`;
       notification.open({
-        message: 'Ultimas Licitaciones',
-        description:
-          newNotificationsList.value.join('\n'),
 
+        message: 'Licitaciones Adjudicadas',
+        description: descriptionHtml,
+        style: {
+          width: '200px',
+          marginLeft: `${335 - 600}px`,
+        },
+        class: 'notification-custom-class',
       });
     };
     const current = ref(['login']);
@@ -61,6 +70,8 @@ export default {
     const quotesLength = ref(0);
     const newNotificationsList = ref([]);
     const notificationText = ref(null);
+    const notificationOn = ref(false);
+    const intervalId = ref(null);
     const router = useRouter(); // Importar el router
     let newNotificationsString = '';
     const route = useRoute(); // Obtener la ruta actual
@@ -106,12 +117,10 @@ export default {
       try {
         const response = await getQuoteStateChanges(params);
 
-        console.log("response");
-        console.log(response);
         quotesLength.value = response.total_quantity;
         if (quotesLength.value > 0) {
           newNotifications.value = true;
-          newNotificationsList.value = response.quotes.map((item) => `nroSiniestro: ${item.claim_id}, estado: ${item.new_quote_state}`);
+          newNotificationsList.value = response.quotes.map((item) => `Nro Siniestro: ${item.claim_id}`);
           console.log('list', newNotificationsList.value);
 
           console.log('text', newNotificationsString)
@@ -136,8 +145,26 @@ export default {
     onMounted(() => {
       items.value = items.value = menuList.filter((item) => item.key === 'login');
       fetchData();
+
+      items.value = menuList.filter((item) => item.key === 'login');
+      fetchData();
+      if (notificationOn.value) {
+        intervalId.value = setInterval(fetchData, 15 * 60 * 1000);
+      } else {
+        clearInterval(intervalId.value);
+      }
+      onUnmounted(() => {
+        clearInterval(intervalId.value);
+      });
     })
-    
+    const handleChangeCheck = () => {
+      if (notificationOn.value) {
+        intervalId.value = setInterval(fetchData, 15 * 60 * 1000);
+      } else {
+        clearInterval(intervalId.value);
+      }
+    }
+
     watch(() => route.path, (newPath) => {
       if (newPath === '/login') {
         items.value = menuList.filter((item) => item.key === 'login');
@@ -163,6 +190,9 @@ export default {
       quotesLength,
       newNotificationsString,
       newNotificationsList,
+      notificationOn,
+      intervalId,
+      handleChangeCheck,
     }
 
   }
@@ -227,5 +257,9 @@ export default {
 .notification {
   color: var(--principal);
   font-size: 50px;
+}
+
+:deep(.ant-switch-checked) {
+  background-color: var(--principal) !important;
 }
 </style>
