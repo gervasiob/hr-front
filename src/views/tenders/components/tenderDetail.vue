@@ -1,7 +1,8 @@
 <template>
     <div>
         <div class="header-1">
-            <h1 class="title-1">DETALLE DE COTIZACIÓN</h1>
+            <h1 class="title-1" v-if="type === 'Add'">DETALLE DE NUEVA COTIZACIÓN</h1>
+            <h1 class="title-1" v-else>DETALLE DE COTIZACIÓN</h1>
         </div>
         <div class="header-2">
             <h1>DATOS DEL SINIESTRO</h1>
@@ -14,8 +15,8 @@
                 <a-input class="input-item" v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
             <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.company_id" allowClear
-                    show-search :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" style="width: 200px"
+                    v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
                         :value="aseguradora.value" :label="aseguradora.label">
                         {{ aseguradora.label }}
@@ -23,8 +24,8 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Estado" name="estado">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.quote_state" allowClear
-                    show-search :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" style="width: 200px"
+                    v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
                         :label="item.label">
                         {{ item.label }}
@@ -97,8 +98,8 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Agente" name="agent">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.agent" allowClear
-                    show-search :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" style="width: 200px" v-model:value="formTenderDetail.agent"
+                    allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                         :label="(item.fullName)">
                         {{ item.fullName }}
@@ -106,8 +107,8 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Plataforma" name="platform">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.platform" allowClear
-                    show-search :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" style="width: 250px"
+                    v-model:value="formTenderDetail.platform" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
                         :label="(item.name)">
                         {{ item.name }}
@@ -194,7 +195,7 @@
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: "><span class="collapse-item">{{
-                        formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
+                            formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
                 </a-descriptions>
             </template>
             <div class="collapse-body">
@@ -411,7 +412,7 @@
                             </a-table>
                         </div>
 
-                        <a-row style="margin-top: 2%;" :gutter="24">
+                        <a-row style="margin-top: 2%; align-content: center; padding-left: 2%" :gutter="24">
                             <a-col :span="3">
                                 <div class="">
                                     <span>Ancho</span>
@@ -444,7 +445,7 @@
                                 </div>
                             </a-col>
                         </a-row>
-                        <a-row :gutter="24">
+                        <a-row style="margin-top: 2%; align-content: center; padding-left: 2%" :gutter="24">
                             <a-col :span="8">
                                 <div class="form-item-container">
                                     <span>Marca</span>
@@ -489,7 +490,7 @@
                             </a-col>
                             <a-col :span="10">
                                 <div class="form-item-container">
-                                    <span>Estoy Cotizando</span>
+                                    <span>Cotizando</span>
                                     <a-select v-model:value="formTenderDetail.tire_quoted" style="width: 100%"
                                         placeholder="..." :options="optionsQuoteDetails" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
@@ -505,8 +506,9 @@
                         </a-row>
 
                     </div>
-                    <div class="form-item-container label-top">
-                        <span>Observaciones</span>
+                    <div class="form-item-obs label-top"
+                        style="margin-top: 1%; padding-left: 2%; padding-right: 2%">
+                        <span style="min-width: 140px">Observaciones</span>
                         <a-textarea v-model:value="formTenderDetail.obs" :rows="4"
                             style=" border: 2px solid var(--border-item)" />
                     </div>
@@ -1357,6 +1359,12 @@ export default {
     display: flex;
     align-items: center;
     padding-right: 5%;
+    white-space: nowrap;
+    margin-bottom: 2%;
+}
+.form-item-obs {
+    display: flex;
+    align-items: center;
     white-space: nowrap;
     margin-bottom: 2%;
 }
