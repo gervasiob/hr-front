@@ -15,7 +15,7 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Stocks" name="name">
+            <a-form-item label="Productos" name="name">
               <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
                 :filter-option="filterOption" style="width: 300px;">
                 <a-select-option v-for="(item, index) in stocksList" :key="index" :value="item.name"

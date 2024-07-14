@@ -15,7 +15,7 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Details" name="name">
+            <a-form-item label="Detalle" name="name">
               <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
                 :filter-option="filterOption" style="width: 300px;">
                 <a-select-option v-for="(item, index) in stocksList" :key="index" :value="item.name" :label="item.name">
@@ -68,6 +68,15 @@
           </template>
         </div>
       </template>
+      <template v-if="['created_at' , 'updated_at' ].includes(column.dataIndex)">
+        <div>
+          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />
+          <template v-else>
+            {{ new Date(text).toLocaleString('es-AR', {year: 'numeric', month: '2-digit', day: '2-digit'})}}, 
+          </template>
+        </div>
+      </template>
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
@@ -93,7 +102,7 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getDetails, addDetails, updateDetails, deleteDetails } from '@api/details/details.js';
+import { getDetails, addDetails, updateDetails, deleteDetails } from '@/api/details/details.js';
 export default {
   name: 'detailsList',
 

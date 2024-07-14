@@ -9,21 +9,37 @@ export const tableColumns = [
         sorter: (a, b) => a.id - b.id,
     },
     {
-        title: 'Stock',
-        dataIndex: 'name',
+        title: 'SKU',
+        dataIndex: 'sku',
         sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-        title: 'URL',
-        dataIndex: 'url',
+        title: 'Nombre',
+        dataIndex: 'name',
     },
     {
-        title: 'Fee',
-        dataIndex: 'fee',
+        title: 'Grupo',
+        dataIndex: 'group',
         sorter: (a, b) => a.fee - b.fee,
     },
     {
-        title: 'Operation',
-        dataIndex: 'operation',     
+        title: 'Tipo',
+        dataIndex: 'type',     
+    },
+    {
+        title: 'Cantidad',
+        dataIndex: 'quantity',     
+    },
+    {
+        title: 'Valor',
+        dataIndex: 'amount',     
+    },
+    {
+        title: 'Fecha de Creación',
+        dataIndex: 'created_at',     
+    },
+    {
+        title: 'Fecha de Actulización',
+        dataIndex: 'updated_at',     
     },
 ];

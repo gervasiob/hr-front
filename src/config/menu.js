@@ -85,9 +85,9 @@ export const menuList = [
             {
                 key: 'vendors',
                 path: '/adm/vendors',
-                name: 'Vendedor',
-                label: 'VENDEDOR',
-                title: 'VENDEDOR',
+                name: 'Proveedores',
+                label: 'PROVEEDORES',
+                title: 'PROVEEDORES',
             },
             {
                 key: 'stocks',

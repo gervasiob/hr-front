@@ -3,9 +3,7 @@ import { ASEGURADORAS, TENDER_STATES, PRIORITY_VALUES } from "@/common/common";
 export const tableColumns = [
     {
         title: '#',
-      
         dataIndex: 'id',
-   
         sorter: (a, b) => a.id - b.id,
     },
     {
@@ -16,6 +14,7 @@ export const tableColumns = [
     {
         title: 'Id de Licitación',
         dataIndex: 'quote_id',
+        sorter: (a, b) => a.id - b.id,
     },
     {
         title: 'Cantidad',
@@ -45,6 +44,6 @@ export const tableColumns = [
     {
         title: 'Fecha de Actualización',
         dataIndex: 'updated_at',
-        sorter: (a, b) => (a.updated_at) - (b.updated_at)   
+        sorter: (a, b) => a.updated_at - b.updated_at  
     },
 ];

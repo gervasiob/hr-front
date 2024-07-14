@@ -15,10 +15,10 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Vendedor" name="name">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.name"
+            <a-form-item label="Tipo" name="name">
+              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear
+                show-search :filter-option="filterOption" style="width: 300px;">
+                <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value"
                   :label="item.name">
                   {{ item.name }}
                 </a-select-option>
@@ -60,12 +60,29 @@
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
+      <template v-if="['name', 'comercial_name'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
             {{ text }}
+          </template>
+        </div>
+      </template>
+      <template v-if="['vendor_type'].includes(column.dataIndex)">
+        <div>
+          <!-- <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />  -->
+            <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]" allowClear
+                show-search :filter-option="filterOption" style="width: 300px;">
+                <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value"
+                  :label="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+          <template v-else>
+            {{ getName(text) }}  
+
           </template>
         </div>
       </template>
@@ -102,10 +119,16 @@ export default {
     const formRef = ref();
     const dataSource = ref([]);
     const formState = reactive({});
-    const filterInputs = ref({});
+    const filterInputs = ref({
+      vendor_type: 0,
+    });
 
     const columns = tableColumns;
-    const vendorsList = ref([]);
+    const vendorsList = ref([
+      { value: 0, name: 'Proveedor' },
+      { value: 1, name: 'Comp. Aseguradora' },
+      { value: 2, name: 'Sucursal' },
+    ]);
 
     const customHeaderRow = (column) => {
       return {
@@ -124,8 +147,8 @@ export default {
           ...item,
           key: index
         }));
-        const responseList = await getVendors();
-        vendorsList.value = responseList;
+        // const responseList = await getVendors();
+
         console.log(dataSource.value)
 
       } catch (error) {
@@ -147,7 +170,7 @@ export default {
     };
 
     onMounted(() => {
-      fetchData();
+      fetchData(filterInputs.value);
 
     });
 
@@ -169,12 +192,12 @@ export default {
         const params = {
           ...data,
         }
-        updatePlatforms(data.id, params).then(() => {
+        updateVendors(data.id, params).then(() => {
           fetchData();
         });
       } else {
         const { id, ...dataWithoutId } = data;
-        addPlatforms(dataWithoutId).then(() => {
+        addVendors(dataWithoutId).then(() => {
           fetchData();
         });
       }
@@ -198,7 +221,7 @@ export default {
       dataSource.value.push(newData);
       editableData[newKey] = cloneDeep(newData);
       // Esperar a que el DOM se actualice y luego desplazarse
-    
+
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -214,6 +237,9 @@ export default {
       dataSource.value = newData;
 
     };
+    const getName = (item) => {
+      return vendorsList.value.find((vendor)=> vendor.value===item).name
+    }
     return {
       formRef,
       formState,
@@ -233,6 +259,7 @@ export default {
       count,
       onDelete,
       vendorsList,
+      getName,
     }
   }
 }
