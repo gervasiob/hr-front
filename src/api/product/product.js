@@ -14,4 +14,6 @@ export async function updateProduct(id, params) {
 export async function deleteProduct(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
-
+export async function getProductList(params) {
+    return await apiRequest('get', 'products_deep ', params);
+}
