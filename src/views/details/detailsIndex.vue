@@ -93,7 +93,7 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getDetails, addDetails, updateDetails, deleteDetails } from '@api/details/details.js';
+import { getDetails, addDetails, updateDetails, deleteDetails } from '@/api/details/details.js';
 export default {
   name: 'detailsList',
 
