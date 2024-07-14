@@ -20,7 +20,7 @@
                 <template #checkedChildren><check-outlined /></template>
                 <template #unCheckedChildren><close-outlined /></template>
               </a-switch>
-              <BellOutlined @click="openNotification" />
+              <BellOutlined :class="{ animatebell: animateBell }" @click="openNotification" />
               <a-badge :count="quotesLength" v-show="notificationOn">
               </a-badge>
             </div>
@@ -67,6 +67,7 @@ export default {
     let items = ref([]);
     const collapsed = ref(false);
     const loginRoute = ref(false);
+    const animateBell = ref(false);
     const newNotifications = ref(false);
     const quotesLength = ref(0);
     const newNotificationsList = ref([]);
@@ -121,9 +122,8 @@ export default {
         if (quotesLength.value > 0) {
           newNotifications.value = true;
           newNotificationsList.value = response.quotes.map((item) => `Nro Siniestro: ${item.claim_id}`);
-          console.log('list', newNotificationsList.value);
-
-          console.log('text', newNotificationsString)
+          animateBell.value = true;
+          setTimeout(() => animateBell.value = false, 1000);
         }
         else {
           newNotifications.value = false;
@@ -196,6 +196,7 @@ export default {
       intervalId,
       handleChangeCheck,
       loginRoute,
+      animateBell,
     }
 
   }
@@ -259,10 +260,37 @@ export default {
 
 .notification {
   color: var(--principal);
-  font-size: 50px;
+  font-size: 40px;
 }
 
 :deep(.ant-switch-checked) {
   background-color: var(--principal) !important;
+}
+
+@keyframes rotateBell {
+
+  0% {
+    transform: rotate(0deg);
+  }
+
+  25% {
+    transform: rotate(15deg);
+  }
+
+  50% {
+    transform: rotate(0deg);
+  }
+
+  75% {
+    transform: rotate(-15deg);
+  }
+
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+.animatebell {
+  animation: rotateBell 0.3s ease-in-out 3;
 }
 </style>
