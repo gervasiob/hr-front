@@ -501,10 +501,8 @@
                                         mode="multiple" placeholder="Please select" :options="optionsDaytonas"
                                         allow-clear show-search :filter-option="filterOption"></a-select>
                                 </div>
-
                             </a-col>
                         </a-row>
-
                     </div>
                     <div class="form-item-obs label-top"
                         style="margin-top: 1%; padding-left: 2%; padding-right: 2%">
