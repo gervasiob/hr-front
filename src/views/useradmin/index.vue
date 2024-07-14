@@ -3,19 +3,19 @@
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
         <a-col :span="12">
-          <a-form-item label="Usuario" name="usuario">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
+          <a-form-item label="Usuario" name="username">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.username" allowClear show-search
               :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in userList" :key="index" :value="item.username" :label="item.username">
-                {{ item.username }}
+              <a-select-option v-for="(item, index) in userList" :key="index" :value="item.name" :label="item.name">
+                {{ item.name }}
               </a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
         <a-col :span="12">
           <a-form-item label="Roles" name="name">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-              :filter-option="filterOption">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.roles__icontains" allowClear
+              show-search :filter-option="filterOption">
               <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.id" :label="item.name">
                 {{ item.name }}
               </a-select-option>
@@ -25,8 +25,8 @@
       </a-row>
       <a-row :gutter="24">
         <a-col :span="6">
-          <a-form-item label="ID de Usuario" name="usuario_id">
-            <a-input v-model:value="filterInputs.claim_id" allowClear />
+          <a-form-item label="ID de Usuario" name="id">
+            <a-input v-model:value="filterInputs.id" allowClear />
           </a-form-item>
         </a-col>
         <!-- <a-col :span="6">
@@ -66,7 +66,7 @@
           </template>
         </div>
       </template>
-      
+
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
@@ -92,8 +92,8 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getRoles, addRoles, updateRoles, deleteRoles } from '@/api/roles/roles.js';
-import { getUsers } from '@/api/users/users.js';
+import { getRoles, addRoles, updateRoles, deleteRoles, getRoleList } from '@/api/roles/roles.js';
+import { getUsers, getUserList } from '@/api/users/users.js';
 
 export default {
   name: 'UserList',
@@ -116,7 +116,7 @@ export default {
     const fetchData = async (params = {}) => {
       try {
         const response = await getUsers(params);
-        
+
 
         console.log("response");
         console.log(response);
@@ -126,11 +126,11 @@ export default {
           ...users,
           key: index
         }));
- 
 
-        userList.value = response;
-        console.log(dataSource.value)
-
+        if (Object.keys(params).length === 0) {
+          userList.value = await getUserList();
+          roleList.value = await getRoleList();
+        }
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }

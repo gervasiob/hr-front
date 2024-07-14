@@ -94,7 +94,7 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms } from '@/api/platforms/platforms.js'
+import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms, getPlatformList } from '@/api/platforms/platforms.js'
 export default {
   name: 'PlatformsList',
 
@@ -124,8 +124,11 @@ export default {
           ...item,
           key: index
         }));
-        const responseList = await getPlatforms();
-        platformList.value = responseList;
+        console.log('params', params)
+        if (Object.keys(params).length === 0) {
+          const responseList = await getPlatformList();
+          platformList.value = responseList;
+        }
         console.log(dataSource.value)
 
       } catch (error) {
@@ -198,7 +201,7 @@ export default {
       dataSource.value.push(newData);
       editableData[newKey] = cloneDeep(newData);
       // Esperar a que el DOM se actualice y luego desplazarse
-    
+
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];

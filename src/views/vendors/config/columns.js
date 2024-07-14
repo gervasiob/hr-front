@@ -9,13 +9,13 @@ export const tableColumns = [
         sorter: (a, b) => a.id - b.id,
     },
     {
-        title: 'Vendedor',
-        dataIndex: 'name',
+        title: 'Nombre',
+        dataIndex: 'comercial_name',
         sorter: (a, b) => a.name.localeCompare(b.name),
     },
     {
-        title: 'URL',
-        dataIndex: 'url',
+        title: 'Tipo',
+        dataIndex: 'vendor_type',
     },
     {
         title: 'Fee',
