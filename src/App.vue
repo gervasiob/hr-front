@@ -15,7 +15,7 @@
             </div>
           </a-col>
           <a-col :span="4">
-            <div class="notification">
+            <div class="notification" v-show="!loginRoute">
               <a-switch v-model:checked="notificationOn" @change="handleChangeCheck">
                 <template #checkedChildren><check-outlined /></template>
                 <template #unCheckedChildren><close-outlined /></template>
@@ -66,10 +66,10 @@ export default {
     const current = ref(['login']);
     let items = ref([]);
     const collapsed = ref(false);
+    const loginRoute = ref(false);
     const newNotifications = ref(false);
     const quotesLength = ref(0);
     const newNotificationsList = ref([]);
-    const notificationText = ref(null);
     const notificationOn = ref(false);
     const intervalId = ref(null);
     const router = useRouter(); // Importar el router
@@ -168,8 +168,10 @@ export default {
     watch(() => route.path, (newPath) => {
       if (newPath === '/login') {
         items.value = menuList.filter((item) => item.key === 'login');
+        loginRoute.value = true;
       } else {
         items.value = menuList.filter((item) => item.key !== 'login');
+        loginRoute.value = false;
       }
     }, { immediate: true });
 
@@ -193,6 +195,7 @@ export default {
       notificationOn,
       intervalId,
       handleChangeCheck,
+      loginRoute,
     }
 
   }
