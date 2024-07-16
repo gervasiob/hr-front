@@ -27,6 +27,9 @@ export async function getQuotesSummary(params) {
 export async function getQuoteStateChanges(params) {
     return await apiRequest('get', 'quote-state-changes/', params);
 }
+export async function getQuoteStateChangesTimestamp(params) {
+    return await apiRequest('get', 'quote-state-changes-timestamp/', params);
+}
 export async function exportQuotes(params) {
     try {
         const response = await axios.get('https://dft-back-dev-2484ff5ddb07.herokuapp.com/quotes/export/', {

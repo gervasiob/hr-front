@@ -42,7 +42,8 @@ import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
 import { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { notification } from 'ant-design-vue';
-import { getQuoteStateChanges } from '@/api/quotes/quotes.js'
+import { getQuoteStateChanges, getQuoteStateChangesTimestamp } from '@/api/quotes/quotes.js';
+import { format } from 'date-fns';
 
 export default {
   name: 'Daytona-App',
@@ -115,7 +116,11 @@ export default {
 
     const fetchData = async (params = {}) => {
       try {
-        const response = await getQuoteStateChanges(params);
+        const lastTimestamp = localStorage.getItem('lastTimestamp');
+        const newTimestamp = format(new Date(), 'dd-MM-yyyy HH:mm:ss');
+        localStorage.setItem('lastTimestamp', newTimestamp);
+        params.change_timestamp = lastTimestamp;
+        const response = await getQuoteStateChangesTimestamp(params);
 
         quotesLength.value = response.total_quantity;
         if (quotesLength.value > 0) {
@@ -149,7 +154,7 @@ export default {
       items.value = menuList.filter((item) => item.key === 'login');
       fetchData();
       if (notificationOn.value) {
-        intervalId.value = setInterval(fetchData, 15 * 60 * 1000);
+        intervalId.value = setInterval(fetchData, 1 * 60 * 1000);
       } else {
         clearInterval(intervalId.value);
       }
@@ -159,7 +164,7 @@ export default {
     })
     const handleChangeCheck = () => {
       if (notificationOn.value) {
-        intervalId.value = setInterval(fetchData, 15 * 60 * 1000);
+        intervalId.value = setInterval(fetchData, 1 * 60 * 1000);
       } else {
         clearInterval(intervalId.value);
       }
