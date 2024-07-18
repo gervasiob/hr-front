@@ -23,10 +23,7 @@ export const tableColumns = [
     },
     {
         title: 'Rol',
-
-        dataIndex: 'name', // Usamos la nueva propiedad company_name
-        
-        sorter: (a, b) => a.name.roles.localeCompare(b.name.roles),
+        dataIndex: 'roles',
     },
     {
         title: 'Operation',

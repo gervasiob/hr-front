@@ -15,14 +15,8 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Stocks" name="name">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in stocksList" :key="index" :value="item.name"
-                  :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
+            <a-form-item label="SKU" name="sku">
+              <a-input v-model:value="filterInputs.sku" allowClear style="width: 300px;" /> 
             </a-form-item>
           </a-col>
           <!-- <a-col :span="12">
@@ -60,7 +54,7 @@
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
+      <template v-if="['sku', 'product_name', 'id_geo','quantity'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -94,7 +88,7 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getStocks, addStocks, updateStocks, deleteStocks } from '@/api/stocks/stocks.js';
+import { getStocks, addStocks, updateStocks, deleteStocks, getCostStock } from '@/api/stocks/stocks.js';
 export default {
   name: 'StocksList',
 
@@ -114,7 +108,7 @@ export default {
     };
     const fetchData = async (params = {}) => {
       try {
-        const response = await getStocks(params);
+        const response = await getCostStock(params);
 
         console.log("response");
         console.log(response);
@@ -124,10 +118,6 @@ export default {
           ...item,
           key: index
         }));
-        const responseList = await getStocks();
-        stocksList.value = responseList;
-        console.log(dataSource.value)
-
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
@@ -162,9 +152,6 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
-      if (data.url === "") {
-        data.url = null;
-      }
       if (data.id > 0) {
         const params = {
           ...data,
@@ -179,7 +166,19 @@ export default {
         });
       }
     };
-    const cancel = key => {
+    const cancel = (key) => {
+      console.log('cancel', key)
+      if (key === undefined) {
+        onDelete(key);
+        delete editableData[key];
+        return;
+      }
+      const record = dataSource.value.find(item => key === item.key);
+      Object.assign(record, editableData[key]);
+      delete editableData[key];
+      if (!record.sku || !record.product_name) {
+        onDelete(key);
+      }
       delete editableData[key];
     };
     const count = computed(() => {

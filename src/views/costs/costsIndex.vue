@@ -15,13 +15,8 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Detalle" name="sku">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in stocksList" :key="index" :value="item.name" :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
+            <a-form-item label="ID" name="id">
+              <a-input v-model:value="filterInputs.sku" allowClear style="width: 250px;" /> 
             </a-form-item>
           </a-col>
           <!-- <a-col :span="12">
@@ -59,21 +54,12 @@
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['product_id', 'sku', 'quote_id','quantity', 'price','amount_wo_iva','total_amount'].includes(column.dataIndex)">
+      <template v-if="['id', 'code', 'detail','model','cost_stock', 'cost_amount','product_brand','is_active'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
             {{ text }}
-          </template>
-        </div>
-      </template>
-      <template v-if="['created_at' , 'updated_at' ].includes(column.dataIndex)">
-        <div>
-          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
-            style="margin: -5px 0;" />
-          <template v-else>
-            {{ new Date(text).toLocaleString('es-AR', {year: 'numeric', month: '2-digit', day: '2-digit'})}}, 
           </template>
         </div>
       </template>
@@ -102,9 +88,9 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getDetails, addDetails, updateDetails, deleteDetails } from '@/api/details/details.js';
+import { getCosts, addCosts, updateCosts, deleteCosts } from '@/api/costs/costs.js';
 export default {
-  name: 'detailsList',
+  name: 'costsList',
 
   setup() {
     const formRef = ref();
@@ -113,7 +99,7 @@ export default {
     const filterInputs = ref({});
 
     const columns = tableColumns;
-    const detailsList = ref([]);
+    const costsList = ref([]);
 
     const customHeaderRow = (column) => {
       return {
@@ -122,7 +108,7 @@ export default {
     };
     const fetchData = async (params = {}) => {
       try {
-        const response = await getDetails(params);
+        const response = await getCostStock(params);
 
         console.log("response");
         console.log(response);
@@ -132,10 +118,6 @@ export default {
           ...item,
           key: index
         }));
-        const responseList = await getDetails();
-        detailsList.value = responseList;
-        console.log(dataSource.value)
-
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
@@ -170,19 +152,16 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
-      if (data.url === "") {
-        data.url = null;
-      }
       if (data.id > 0) {
         const params = {
           ...data,
         }
-        updateDetails(data.id, params).then(() => {
+        updateCosts(data.id, params).then(() => {
           fetchData();
         });
       } else {
         const { id, ...dataWithoutId } = data;
-        addDetails(dataWithoutId).then(() => {
+        addCosts(dataWithoutId).then(() => {
           fetchData();
         });
       }
@@ -197,10 +176,11 @@ export default {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.comercial_name || !record.vendor_type) {
+      if (!record.sku || !record.product_name) {
         onDelete(key);
       }
-      };
+      delete editableData[key];
+    };
     const count = computed(() => {
       if (dataSource.value) {
         return dataSource.value.length + 1
@@ -217,7 +197,7 @@ export default {
       dataSource.value.push(newData);
       editableData[newKey] = cloneDeep(newData);
       // Esperar a que el DOM se actualice y luego desplazarse
-
+    
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -225,7 +205,7 @@ export default {
         const params = {
           name: data.name,
         }
-        deleteDetails(data.id, params).then(() => {
+        deleteCosts(data.id, params).then(() => {
           fetchData();
         });
       }
@@ -251,7 +231,7 @@ export default {
       handleAdd,
       count,
       onDelete,
-      detailsList,
+      costsList,
     }
   }
 }

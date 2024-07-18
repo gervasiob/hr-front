@@ -15,14 +15,11 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Productos" name="name">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in stocksList" :key="index" :value="item.name"
-                  :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
+            <a-form-item label="SKU" name="sku">
+              <a-input v-model:value="filterInputs.sku" allowClear />
+            </a-form-item>
+            <a-form-item label="Nombre" name="name"> 
+              <a-input v-model:value="filterInputs.nome" allowClear />
             </a-form-item>
           </a-col>
           <!-- <a-col :span="12">
@@ -60,7 +57,7 @@
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
+      <template v-if="['sku', 'name', 'group','type','quantity','amount'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -179,7 +176,19 @@ export default {
         });
       }
     };
-    const cancel = key => {
+    const cancel = (key) => {
+      console.log('cancel', key)
+      if (key === undefined) {
+        onDelete(key);
+        delete editableData[key];
+        return;
+      }
+      const record = dataSource.value.find(item => key === item.key);
+      Object.assign(record, editableData[key]);
+      delete editableData[key];
+      if (!record.sku || !record.name) {
+        onDelete(key);
+      }
       delete editableData[key];
     };
     const count = computed(() => {
