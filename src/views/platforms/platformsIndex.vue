@@ -138,7 +138,6 @@ return response;
         console.error("Error fetching quotes:", error);
       }
     };
-const current = ref(1);
 const total = ref(10);
 const {
   data: dataSource,
