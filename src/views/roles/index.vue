@@ -113,7 +113,7 @@ export default {
     const fetchData = async (params = {}) => {
       try {
         const response = await getRoles(params);
-        dataSource.value = response.map((item, index) => ({
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
