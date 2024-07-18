@@ -57,7 +57,10 @@
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow"
+    :pagination="pagination" 
+    :loading="loading" 
+    @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
       <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
@@ -92,6 +95,7 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms, getPlatformList } from '@/api/platforms/platforms.js'
@@ -120,7 +124,7 @@ export default {
         console.log(response);
 
         console.log(dataSource.value)
-        dataSource.value = response.results.map((item, index) => ({
+        response = response.map((item, index) => ({
           ...item,
           key: index
         }));
@@ -130,13 +134,41 @@ export default {
           platformList.value = responseList;
         }
         console.log(dataSource.value)
-
+return response;
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-
-
+const current = ref(1);
+const total = ref(10);
+const {
+  data: dataSource,
+  run,
+  loading,
+  current,
+  pageSize,
+} = usePagination(fetchData, {
+  formatResult: res => res.results,
+	total.value = res.count,
+  pagination: {
+    currentKey: 'page',
+    pageSizeKey: 'results',
+  },
+});
+const pagination = computed(() => ({
+  total: 200,	//Acá hay que traer el count desde la respuesta
+  current: current.value,
+  pageSize: 10,
+}));
+const handleTableChange = (pag, filters, sorter) => {
+  run({
+    results: pag.pageSize,
+    page: pag?.current,
+    sortField: sorter.field,
+    sortOrder: sorter.order,
+    ...filters,
+  });
+};
     const onSearch = () => {
       fetchData(filterInputs.value);
     };
@@ -247,6 +279,10 @@ export default {
       count,
       onDelete,
       platformList,
+      current, 
+      total, 
+      pagination, 
+      handleTableChange, 
     }
   }
 }
