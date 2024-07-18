@@ -15,13 +15,8 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Detalle" name="sku">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in stocksList" :key="index" :value="item.name" :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
+            <a-form-item label="Razon Social" name="razon_social">
+              <a-input v-model:value="filterInputs.sku" allowClear style="width: 300px;" /> 
             </a-form-item>
           </a-col>
           <!-- <a-col :span="12">
@@ -59,7 +54,7 @@
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['product_id', 'sku', 'quote_id','quantity', 'price','amount_wo_iva','total_amount'].includes(column.dataIndex)">
+      <template v-if="['razon_social', 'cuit', 'provincia','sede'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -68,16 +63,7 @@
           </template>
         </div>
       </template>
-      <template v-if="['created_at' , 'updated_at' ].includes(column.dataIndex)">
-        <div>
-          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
-            style="margin: -5px 0;" />
-          <template v-else>
-            {{ new Date(text).toLocaleString('es-AR', {year: 'numeric', month: '2-digit', day: '2-digit'})}}, 
-          </template>
-        </div>
-      </template>
-
+     
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
@@ -102,9 +88,9 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getDetails, addDetails, updateDetails, deleteDetails } from '@/api/details/details.js';
+import { getOrders, addOrders, updateOrders, deleteOrders} from '@/api/orders/orders.js'
 export default {
-  name: 'detailsList',
+  name: 'ordersList',
 
   setup() {
     const formRef = ref();
@@ -113,7 +99,7 @@ export default {
     const filterInputs = ref({});
 
     const columns = tableColumns;
-    const detailsList = ref([]);
+    const ordersList = ref([]);
 
     const customHeaderRow = (column) => {
       return {
@@ -122,7 +108,7 @@ export default {
     };
     const fetchData = async (params = {}) => {
       try {
-        const response = await getDetails(params);
+        const response = await getOrders(params);
 
         console.log("response");
         console.log(response);
@@ -132,8 +118,8 @@ export default {
           ...item,
           key: index
         }));
-        const responseList = await getDetails();
-        detailsList.value = responseList;
+        const responseList = await getOrders();
+        ordersList.value = responseList;
         console.log(dataSource.value)
 
       } catch (error) {
@@ -177,12 +163,12 @@ export default {
         const params = {
           ...data,
         }
-        updateDetails(data.id, params).then(() => {
+        updateOrders(data.id, params).then(() => {
           fetchData();
         });
       } else {
         const { id, ...dataWithoutId } = data;
-        addDetails(dataWithoutId).then(() => {
+        addOrders(dataWithoutId).then(() => {
           fetchData();
         });
       }
@@ -197,7 +183,7 @@ export default {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.comercial_name || !record.vendor_type) {
+      if (!record.razon_social || !record.cuit) {
         onDelete(key);
       }
       };
@@ -225,7 +211,7 @@ export default {
         const params = {
           name: data.name,
         }
-        deleteDetails(data.id, params).then(() => {
+        deleteOrders(data.id, params).then(() => {
           fetchData();
         });
       }
@@ -251,7 +237,7 @@ export default {
       handleAdd,
       count,
       onDelete,
-      detailsList,
+      ordersList,
     }
   }
 }

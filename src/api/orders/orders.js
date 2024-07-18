@@ -1,17 +1,18 @@
 import { apiRequest } from '../apiUrls.js';
 
-const ENDPOINT = 'criterias/';
+const ENDPOINT = 'orders/';
 
-export async function getCriterias(params, id = null) {
+export async function getOrders(params, id = null) {
     return await apiRequest('get', ENDPOINT, params, id);
 }
-export async function addCriterias(params) {
+export async function addOrders(params) {
     return await apiRequest('post', ENDPOINT, params);
 }
-export async function updateCriterias(id, params) {
+
+export async function updateOrders(id, params) {
     return await apiRequest('put', ENDPOINT, params, id);
 }
-export async function deleteCriterias(id, params) {
+export async function deleteOrders(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
 

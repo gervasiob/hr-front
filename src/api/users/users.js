@@ -10,7 +10,7 @@ export async function addUsers(params) {
     return await apiRequest('post', ENDPOINT, params);
 }
 
-export async function updatUsers(id, params) {
+export async function updateUsers(id, params) {
     return await apiRequest('put', ENDPOINT, params, id);
 }
 

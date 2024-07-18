@@ -3,7 +3,7 @@ import { apiRequest } from '../apiUrls.js';
 const ENDPOINT = 'stocks/';
 
 export async function getStocks(params, id = null) {
-    return await apiRequest('get', ENDPOINT, params, id);
+    return await apiRequest('get', 'stock', params, id);
 }
 export async function addStocks(params) {
     return await apiRequest('post', ENDPOINT, params);
@@ -13,5 +13,8 @@ export async function updateStocks(id, params) {
 }
 export async function deleteStocks(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
+}
+export async function getCostStock(params) {
+    return await apiRequest('get', 'cost_stock/', params);
 }
 

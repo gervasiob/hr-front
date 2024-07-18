@@ -46,4 +46,8 @@ export const tableColumns = [
         dataIndex: 'updated_at',
         sorter: (a, b) => a.updated_at - b.updated_at  
     },
+    {
+        title: 'Operation',
+        dataIndex: 'operation',     
+    },
 ];

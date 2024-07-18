@@ -57,10 +57,12 @@
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <a-table :columns="columns" :data-source="dataSource">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['name', 'comercial_name'].includes(column.dataIndex)">
+      <template v-if="['name', 'comercial_name', 'subsidiary', 'cuit', 'mail', 'phone', 'wapp', 'user', 'password', 'address', 'city', 'province', 'cp',
+        'maps_link', 'freight', 'additional_percentage', 'additional_amount', 'fee_margen', 'fee_financial', 'vendor_state', 'vendor_obs', 'product_feedback'
+      ].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -73,15 +75,15 @@
         <div>
           <!-- <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />  -->
-            <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]" allowClear
-                show-search :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value"
-                  :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
+          <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
+            v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
+            :filter-option="filterOption" style="width: 200px;">
+            <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value" :label="item.name">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
           <template v-else>
-            {{ getName(text) }}  
+            {{ getName(text) }}
 
           </template>
         </div>
@@ -193,16 +195,28 @@ export default {
           ...data,
         }
         updateVendors(data.id, params).then(() => {
-          fetchData();
+          fetchData(filterInputs.value);
         });
       } else {
         const { id, ...dataWithoutId } = data;
         addVendors(dataWithoutId).then(() => {
-          fetchData();
+          fetchData(filterInputs.value);
         });
       }
     };
-    const cancel = key => {
+    const cancel = (key) => {
+      console.log('cancel', key)
+      if (key === undefined) {
+        onDelete(key);
+        delete editableData[key];
+        return;
+      }
+      const record = dataSource.value.find(item => key === item.key);
+      Object.assign(record, editableData[key]);
+      delete editableData[key];
+      if (!record.comercial_name || !record.vendor_type) {
+        onDelete(key);
+      }
       delete editableData[key];
     };
     const count = computed(() => {
@@ -230,7 +244,7 @@ export default {
           name: data.name,
         }
         deleteVendors(data.id, params).then(() => {
-          fetchData();
+          fetchData(filterInputs.value);
         });
       }
       const newData = dataSource.value.filter(item => item.key !== key);
@@ -238,7 +252,13 @@ export default {
 
     };
     const getName = (item) => {
-      return vendorsList.value.find((vendor)=> vendor.value===item).name
+      const vendor = vendorsList.value.find((vendor) => vendor.value === item);
+      if (vendor) {
+
+        return vendor.name
+      } else {
+        return '';
+      }
     }
     return {
       formRef,

@@ -31,15 +31,19 @@ export const tableColumns = [
         dataIndex: 'quantity',     
     },
     {
-        title: 'Valor',
+        title: 'Precio',
         dataIndex: 'amount',     
     },
+    // {
+    //     title: 'Fecha de Creación',
+    //     dataIndex: 'created_at',     
+    // },
+    // {
+    //     title: 'Fecha de Actulización',
+    //     dataIndex: 'updated_at',     
+    // },
     {
-        title: 'Fecha de Creación',
-        dataIndex: 'created_at',     
-    },
-    {
-        title: 'Fecha de Actulización',
-        dataIndex: 'updated_at',     
+        title: 'Operation',
+        dataIndex: 'operation',     
     },
 ];
