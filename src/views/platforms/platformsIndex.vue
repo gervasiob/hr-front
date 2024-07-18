@@ -4,7 +4,7 @@
       <a-row :gutter="24">
         <!-- <a-col :span="12">
           <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
+            <a-select placeholder="Ingrese su bús9queda" v-model:value="filterInputs.company_id" allowClear show-search
               :filter-option="filterOption">
               <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
                 :label="aseguradora.label">
@@ -104,7 +104,6 @@ export default {
 
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
