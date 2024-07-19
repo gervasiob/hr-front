@@ -43,7 +43,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { notification } from 'ant-design-vue';
 import { getQuoteStateChanges, getQuoteStateChangesTimestamp } from '@/api/quotes/quotes.js';
-import { format } from 'date-fns';
+
 
 export default {
   name: 'Daytona-App',
@@ -71,7 +71,7 @@ export default {
     const newNotifications = ref(false);
     const quotesLength = ref(0);
     const newNotificationsList = ref([]);
-    const notificationOn = ref(false);
+    const notificationOn = ref(1);
     const intervalId = ref(null);
     const router = useRouter(); // Importar el router
     let newNotificationsString = '';
@@ -116,11 +116,8 @@ export default {
 
     const fetchData = async (params = {}) => {
       try {
-        const lastTimestamp = localStorage.getItem('lastTimestamp');
-        const newTimestamp = format(new Date(), 'dd-MM-yyyy HH:mm:ss');
-        localStorage.setItem('lastTimestamp', newTimestamp);
-        params.change_timestamp = lastTimestamp;
-        const response = await getQuoteStateChangesTimestamp(params);
+
+        const response = await getQuoteStateChangesTimestamp();
 
         quotesLength.value = response.total_quantity;
         if (quotesLength.value > 0) {
@@ -147,14 +144,31 @@ export default {
       }
     };
 
+    let minutesAdjudicated = localStorage.getItem('minutesAdjudicated');
+    if (!minutesAdjudicated) {
+      minutesAdjudicated = 15;
+      localStorage.setItem('minutesAdjudicated', minutesAdjudicated);
+    }
+    let notificationOnPreference = notificationOn.value;
     onMounted(() => {
       items.value = items.value = menuList.filter((item) => item.key === 'login');
       fetchData();
 
       items.value = menuList.filter((item) => item.key === 'login');
       fetchData();
+      notificationOnPreference = localStorage.getItem('notificationOn');
+      console.log('not on pref', notificationOnPreference)
+      if (!notificationOnPreference) {
+        localStorage.setItem('notificationOn', false);
+      } else {
+        notificationOn.value = notificationOnPreference;
+      }
+      if (!minutesAdjudicated) {
+        minutesAdjudicated = 15;
+        localStorage.setItem('minutesAdjudicated', minutesAdjudicated);
+      }
       if (notificationOn.value) {
-        intervalId.value = setInterval(fetchData, 1 * 60 * 1000);
+        intervalId.value = setInterval(fetchData, minutesAdjudicated * 60 * 1000);
       } else {
         clearInterval(intervalId.value);
       }
@@ -163,11 +177,19 @@ export default {
       });
     })
     const handleChangeCheck = () => {
+      alert(notificationOn.value)
+      notificationOn.value != notificationOn.value;
+      alert(notificationOn.value)
       if (notificationOn.value) {
-        intervalId.value = setInterval(fetchData, 1 * 60 * 1000);
+        if (!minutesAdjudicated) {
+          minutesAdjudicated = 15;
+          localStorage.setItem('minutesAdjudicated', minutesAdjudicated);
+        }
+        intervalId.value = setInterval(fetchData, minutesAdjudicated * 60 * 1000);
       } else {
         clearInterval(intervalId.value);
       }
+      localStorage.setItem('notificationOn', notificationOn.value);
     }
 
     watch(() => route.path, (newPath) => {
@@ -201,6 +223,8 @@ export default {
       intervalId,
       handleChangeCheck,
       loginRoute,
+      minutesAdjudicated,
+      notificationOnPreference,
     }
 
   }

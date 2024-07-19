@@ -1,5 +1,6 @@
 import { apiRequest } from '../apiUrls.js';
 import axios from 'axios';
+import { format } from 'date-fns';
 
 const ENDPOINT = 'quotes/';
 
@@ -28,7 +29,25 @@ export async function getQuoteStateChanges(params) {
     return await apiRequest('get', 'quote-state-changes/', params);
 }
 export async function getQuoteStateChangesTimestamp(params) {
-    return await apiRequest('get', 'quote-state-changes-timestamp/', params);
+
+    let lastDate = localStorage.getItem('lastDate');
+    let lastTime = localStorage.getItem('lastTime');
+    const newDate = format(new Date(), 'dd-MM-yyyy');
+    const newTime = format(new Date(), 'HH:mm:ss');
+    if (!lastDate || !lastTime) {
+        lastDate = newDate;
+        lastTime = newTime;
+    }
+
+    const formattedDate = lastDate;
+    const formattedTime = lastTime;
+    console.log('formatted date', formattedDate)
+    console.log('formatted time', formattedTime)
+    const timestamp = `${formattedDate}%20${formattedTime}`;
+    localStorage.setItem('lastDate', newDate);
+    localStorage.setItem('lastTime', newTime);
+    let st = '?change_timestamp=' + timestamp;
+    return await apiRequest('get', 'quote-state-changes-timestamp/' + st, null);
 }
 export async function exportQuotes(params) {
     try {
