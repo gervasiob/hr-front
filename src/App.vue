@@ -152,7 +152,6 @@ export default {
     let notificationOnPreference = notificationOn.value;
     onMounted(() => {
       items.value = items.value = menuList.filter((item) => item.key === 'login');
-      fetchData();
 
       items.value = menuList.filter((item) => item.key === 'login');
       fetchData();

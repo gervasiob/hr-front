@@ -1,6 +1,6 @@
 import { apiRequest } from '../apiUrls.js';
 import axios from 'axios';
-import { format } from 'date-fns';
+import { format, addHours } from 'date-fns';
 
 const ENDPOINT = 'quotes/';
 
@@ -33,7 +33,11 @@ export async function getQuoteStateChangesTimestamp(params) {
     let lastDate = localStorage.getItem('lastDate');
     let lastTime = localStorage.getItem('lastTime');
     const newDate = format(new Date(), 'dd-MM-yyyy');
-    const newTime = format(new Date(), 'HH:mm:ss');
+    const utcNow = new Date();
+    const newUtcTime = addHours(utcNow, 3);
+
+    // Formatear la nueva hora
+    const newTime = format(newUtcTime, 'HH:mm:ss');
     if (!lastDate || !lastTime) {
         lastDate = newDate;
         lastTime = newTime;
