@@ -4,7 +4,7 @@
       <a-row :gutter="24">
         <!-- <a-col :span="12">
           <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su bús9queda" v-model:value="filterInputs.company_id" allowClear show-search
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
               :filter-option="filterOption">
               <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
                 :label="aseguradora.label">
@@ -15,11 +15,10 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Plataforma" name="name">
+            <a-form-item label="Detalle" name="sku">
               <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
                 :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
-                  :label="item.name">
+                <a-select-option v-for="(item, index) in stocksList" :key="index" :value="item.name" :label="item.name">
                   {{ item.name }}
                 </a-select-option>
               </a-select>
@@ -57,18 +56,24 @@
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow"
-    :pagination="pagination" 
-    :loading="loading" 
-    @change="handleTableChange">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
+      <template v-if="['product_id', 'sku', 'quote_id','quantity', 'price','amount_wo_iva','total_amount'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
             {{ text }}
+          </template>
+        </div>
+      </template>
+      <template v-if="['created_at' , 'updated_at' ].includes(column.dataIndex)">
+        <div>
+          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />
+          <template v-else>
+            {{ new Date(text).toLocaleString('es-AR', {year: 'numeric', month: '2-digit', day: '2-digit'})}}, 
           </template>
         </div>
       </template>
@@ -95,20 +100,20 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
-import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms, getPlatformList } from '@/api/platforms/platforms.js'
+import { getDetails, addDetails, updateDetails, deleteDetails } from '@/api/details/details.js';
 export default {
-  name: 'PlatformsList',
+  name: 'detailsList',
 
   setup() {
     const formRef = ref();
+    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
     const columns = tableColumns;
-    const platformList = ref([]);
+    const detailsList = ref([]);
 
     const customHeaderRow = (column) => {
       return {
@@ -117,58 +122,26 @@ export default {
     };
     const fetchData = async (params = {}) => {
       try {
-        const response = await getPlatforms(params);
+        const response = await getDetails(params);
 
         console.log("response");
         console.log(response);
 
         console.log(dataSource.value)
-        response = response.map((item, index) => ({
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
-        console.log('params', params)
-        if (Object.keys(params).length === 0) {
-          const responseList = await getPlatformList();
-          platformList.value = responseList;
-        }
+        const responseList = await getDetails();
+        detailsList.value = responseList;
         console.log(dataSource.value)
-return response;
+
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-const total = ref(10);
-const {
-  data: dataSource,
-  run,
-  loading,
-  current,
-  pageSize,
-} = usePagination(fetchData, {
-  formatResult: res => res.results,
-	total: {
-    value: res.count,
-  },
-  pagination: {
-    currentKey: 'page',
-    pageSizeKey: 'results',
-  },
-});
-const pagination = computed(() => ({
-  total: 200,	//Acá hay que traer el count desde la respuesta
-  current: current.value,
-  pageSize: 10,
-}));
-const handleTableChange = (pag, filters, sorter) => {
-  run({
-    results: pag.pageSize,
-    page: pag?.current,
-    sortField: sorter.field,
-    sortOrder: sorter.order,
-    ...filters,
-  });
-};
+
+
     const onSearch = () => {
       fetchData(filterInputs.value);
     };
@@ -204,12 +177,12 @@ const handleTableChange = (pag, filters, sorter) => {
         const params = {
           ...data,
         }
-        updatePlatforms(data.id, params).then(() => {
+        updateDetails(data.id, params).then(() => {
           fetchData();
         });
       } else {
         const { id, ...dataWithoutId } = data;
-        addPlatforms(dataWithoutId).then(() => {
+        addDetails(dataWithoutId).then(() => {
           fetchData();
         });
       }
@@ -224,10 +197,10 @@ const handleTableChange = (pag, filters, sorter) => {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.name) {
+      if (!record.comercial_name || !record.vendor_type) {
         onDelete(key);
       }
-    };
+      };
     const count = computed(() => {
       if (dataSource.value) {
         return dataSource.value.length + 1
@@ -252,7 +225,7 @@ const handleTableChange = (pag, filters, sorter) => {
         const params = {
           name: data.name,
         }
-        deletePlatforms(data.id, params).then(() => {
+        deleteDetails(data.id, params).then(() => {
           fetchData();
         });
       }
@@ -278,11 +251,7 @@ const handleTableChange = (pag, filters, sorter) => {
       handleAdd,
       count,
       onDelete,
-      platformList,
-      current, 
-      total, 
-      pagination, 
-      handleTableChange, 
+      detailsList,
     }
   }
 }

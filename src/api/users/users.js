@@ -10,10 +10,13 @@ export async function addUsers(params) {
     return await apiRequest('post', ENDPOINT, params);
 }
 
-export async function updatUsers(id, params) {
+export async function updateUsers(id, params) {
     return await apiRequest('put', ENDPOINT, params, id);
 }
 
 export async function deleteUsers(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
+}
+export async function getUserList(params) {
+    return await apiRequest('get', 'users_deep ', params);
 }

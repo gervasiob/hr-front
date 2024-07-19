@@ -24,3 +24,4 @@ export async function deleteCosts(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
 
+

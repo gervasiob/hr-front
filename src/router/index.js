@@ -118,6 +118,48 @@ const otherRoutes = [
         component: () => import('@/views/platforms/platformsIndex.vue'),
     },
     {
+        key: 'vendors',
+        name: 'VendorsIndex',
+        path: '/adm/vendors',
+        component: () => import('@/views/vendors/vendorsIndex.vue'),
+    },
+    {
+        key: 'stocks',
+        name: 'stocksIndex',
+        path: '/adm/stocks',
+        component: () => import('@/views/stocks/stocksIndex.vue'),
+    },
+    // {
+    //     key: 'products',
+    //     name: 'productIndex',
+    //     path: '/adm/products',
+    //     component: () => import('@/views/product/productIndex.vue'),
+    // },
+    {
+        key: 'details',
+        name: 'detailsIndex',
+        path: '/adm/details',
+        component: () => import('@/views/details/detailsIndex.vue'),
+    },
+    {
+        key: 'criterias',
+        name: 'criterialIndex',
+        path: '/adm/criterias',
+        component: () => import('@/views/criterial/criterialIndex.vue'),
+    },
+    {
+        key: 'Costo',
+        name: 'costsIndex',
+        path: '/adm/costs',
+        component: () => import('@/views/costs/costsIndex.vue'),
+    },
+    {
+        key: 'Ordenes de Compra',
+        name: 'ordersIndex',
+        path: '/adm/costs',
+        component: () => import('@/views/orders/ordersIndex.vue'),
+    },
+    {   
         key: 'logout',
         path: '/logout',
         name: 'Logout',

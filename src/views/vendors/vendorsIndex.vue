@@ -4,7 +4,7 @@
       <a-row :gutter="24">
         <!-- <a-col :span="12">
           <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su bús9queda" v-model:value="filterInputs.company_id" allowClear show-search
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
               :filter-option="filterOption">
               <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
                 :label="aseguradora.label">
@@ -15,10 +15,10 @@
         </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Plataforma" name="name">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
+            <a-form-item label="Tipo" name="name">
+              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear
+                show-search :filter-option="filterOption" style="width: 300px;">
+                <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value"
                   :label="item.name">
                   {{ item.name }}
                 </a-select-option>
@@ -57,18 +57,34 @@
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow"
-    :pagination="pagination" 
-    :loading="loading" 
-    @change="handleTableChange">
+  <a-table :columns="columns" :data-source="dataSource">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
+      <template v-if="['name', 'comercial_name', 'subsidiary', 'cuit', 'mail', 'phone', 'wapp', 'user', 'password', 'address', 'city', 'province', 'cp',
+        'maps_link', 'freight', 'additional_percentage', 'additional_amount', 'fee_margen', 'fee_financial', 'vendor_state', 'vendor_obs', 'product_feedback'
+      ].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
             {{ text }}
+          </template>
+        </div>
+      </template>
+      <template v-if="['vendor_type'].includes(column.dataIndex)">
+        <div>
+          <!-- <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />  -->
+          <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
+            v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
+            :filter-option="filterOption" style="width: 200px;">
+            <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value" :label="item.name">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
+          <template v-else>
+            {{ getName(text) }}
+
           </template>
         </div>
       </template>
@@ -95,20 +111,26 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
-import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms, getPlatformList } from '@/api/platforms/platforms.js'
+import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vendors/vendors.js';
 export default {
-  name: 'PlatformsList',
+  name: 'VendorsList',
 
   setup() {
     const formRef = ref();
+    const dataSource = ref([]);
     const formState = reactive({});
-    const filterInputs = ref({});
+    const filterInputs = ref({
+      vendor_type: 0,
+    });
 
     const columns = tableColumns;
-    const platformList = ref([]);
+    const vendorsList = ref([
+      { value: 0, name: 'Proveedor' },
+      { value: 1, name: 'Comp. Aseguradora' },
+      { value: 2, name: 'Sucursal' },
+    ]);
 
     const customHeaderRow = (column) => {
       return {
@@ -117,58 +139,26 @@ export default {
     };
     const fetchData = async (params = {}) => {
       try {
-        const response = await getPlatforms(params);
+        const response = await getVendors(params);
 
         console.log("response");
         console.log(response);
 
         console.log(dataSource.value)
-        response = response.map((item, index) => ({
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
-        console.log('params', params)
-        if (Object.keys(params).length === 0) {
-          const responseList = await getPlatformList();
-          platformList.value = responseList;
-        }
+        // const responseList = await getVendors();
+
         console.log(dataSource.value)
-return response;
+
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-const total = ref(10);
-const {
-  data: dataSource,
-  run,
-  loading,
-  current,
-  pageSize,
-} = usePagination(fetchData, {
-  formatResult: res => res.results,
-	total: {
-    value: res.count,
-  },
-  pagination: {
-    currentKey: 'page',
-    pageSizeKey: 'results',
-  },
-});
-const pagination = computed(() => ({
-  total: 200,	//Acá hay que traer el count desde la respuesta
-  current: current.value,
-  pageSize: 10,
-}));
-const handleTableChange = (pag, filters, sorter) => {
-  run({
-    results: pag.pageSize,
-    page: pag?.current,
-    sortField: sorter.field,
-    sortOrder: sorter.order,
-    ...filters,
-  });
-};
+
+
     const onSearch = () => {
       fetchData(filterInputs.value);
     };
@@ -182,7 +172,7 @@ const handleTableChange = (pag, filters, sorter) => {
     };
 
     onMounted(() => {
-      fetchData();
+      fetchData(filterInputs.value);
 
     });
 
@@ -204,13 +194,13 @@ const handleTableChange = (pag, filters, sorter) => {
         const params = {
           ...data,
         }
-        updatePlatforms(data.id, params).then(() => {
-          fetchData();
+        updateVendors(data.id, params).then(() => {
+          fetchData(filterInputs.value);
         });
       } else {
         const { id, ...dataWithoutId } = data;
-        addPlatforms(dataWithoutId).then(() => {
-          fetchData();
+        addVendors(dataWithoutId).then(() => {
+          fetchData(filterInputs.value);
         });
       }
     };
@@ -224,9 +214,10 @@ const handleTableChange = (pag, filters, sorter) => {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.name) {
+      if (!record.comercial_name || !record.vendor_type) {
         onDelete(key);
       }
+      delete editableData[key];
     };
     const count = computed(() => {
       if (dataSource.value) {
@@ -252,14 +243,23 @@ const handleTableChange = (pag, filters, sorter) => {
         const params = {
           name: data.name,
         }
-        deletePlatforms(data.id, params).then(() => {
-          fetchData();
+        deleteVendors(data.id, params).then(() => {
+          fetchData(filterInputs.value);
         });
       }
       const newData = dataSource.value.filter(item => item.key !== key);
       dataSource.value = newData;
 
     };
+    const getName = (item) => {
+      const vendor = vendorsList.value.find((vendor) => vendor.value === item);
+      if (vendor) {
+
+        return vendor.name
+      } else {
+        return '';
+      }
+    }
     return {
       formRef,
       formState,
@@ -278,11 +278,8 @@ const handleTableChange = (pag, filters, sorter) => {
       handleAdd,
       count,
       onDelete,
-      platformList,
-      current, 
-      total, 
-      pagination, 
-      handleTableChange, 
+      vendorsList,
+      getName,
     }
   }
 }
