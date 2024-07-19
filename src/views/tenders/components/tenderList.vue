@@ -56,7 +56,8 @@
     </div>
 
     <!-- Table -->
-    <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+    <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+        :loading="loading" @change="handleTableChange">
         <template #headerCell="{ column }">
             <template v-if="column.key === 'id'">
                 <span>
@@ -102,12 +103,14 @@
 
 <script>
 import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { usePagination } from 'vue-request';
 import { useRoute } from 'vue-router';
 import { tableColumns } from '../config/columns.js';
 import { filterList } from '../config/filters.js';
 import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
 import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
+import { getRoles } from '@/api/roles/roles.js';
 import { getUsers } from '@/api/users/users.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 export default {
@@ -121,7 +124,6 @@ export default {
     setup(props) {
         const expand = ref(false);
         const formRef = ref();
-        const dataSource = ref([]);
         const route = useRoute();
         let routeName = ref();
         const rulesRef = reactive({
@@ -143,9 +145,10 @@ export default {
         const columns = tableColumns;
         const aseguradoraList = ASEGURADORAS;
 
-        const roles = ref(2); // Define roles como un ref para que sea reactivo
+        const roles = ref(100); // Define roles como un ref para que sea reactivo
+        const total = ref(1);
+        const pageCurrent = ref(1);
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
-
         const estadoList = TENDER_STATES;
 
         const customHeaderRow = (column) => {
@@ -153,18 +156,23 @@ export default {
                 class: 'custom-header',
             };
         };
-        const fetchData = async (params = {}) => {
-            dataSource.value = [];
+
+        const fetchData = async (params) => {
+            params = {
+                ...params,
+                page: pageCurrent.value,
+            }
             try {
                 const response = await getQuotesSummary(params);
-                dataSource.value = response.filter(item => item.claim_id !== null);
-
+                dataSource.value = response.results.filter(item => item.claim_id !== null);
+                total.value = response.count;
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }
             try {
-                const agentsResponse = await getUsers({ roles: roles.value });
-                const transformedAgents = agentsResponse.map((item) => {
+                const idRole = await getRoles({ name: 'Agent' });
+                const agentsResponse = await getUsers({ roles: idRole.results[0].id });
+                const transformedAgents = agentsResponse.results.map((item) => {
                     return {
                         ...item,
                         fullName: item.username,
@@ -206,6 +214,7 @@ export default {
         });
         const getFetchData = () => {
             routeName.value = route.path;
+
             if (routeName.value === '/Licitaciones') {
                 filterInputs.value.quote_state = 'N';
                 fetchData(filterInputs.value);
@@ -230,7 +239,36 @@ export default {
             filterInputs.value.quote_state = 'N';
             filterInputs.value.priority = cardKey;
             dataSource.value = [];
+            pageCurrent.value = 1;
             fetchData(filterInputs.value);
+        };
+        const {
+            data: dataSource,
+            run,
+            loading,
+            current,
+            pageSize,
+        } = usePagination(getFetchData, {
+            formatResult: res => res.data.results,
+            pagination: {
+                currentKey: 'page',
+                pageSizeKey: 'results',
+            },
+        });
+        const pagination = computed(() => ({
+            total: total.value,
+            current: current.value,
+            pageSize: pageSize.value,
+        }));
+        const handleTableChange = (pag, filters, sorter) => {
+            pageCurrent.value = pag?.current;
+            run({
+                results: pag.pageSize,
+                page: pag?.current,
+                sortField: sorter.field,
+                sortOrder: sorter.order,
+                ...filters,
+            });
         };
 
         onUnmounted(() => {
@@ -271,6 +309,10 @@ export default {
             routeName,
             getFetchData,
             formatCurrency,
+            pagination,
+            handleTableChange,
+            total,
+            pageCurrent,
         }
     }
 }
