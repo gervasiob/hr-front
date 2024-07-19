@@ -147,7 +147,9 @@ const {
   pageSize,
 } = usePagination(fetchData, {
   formatResult: res => res.results,
-	total.value = res.count,
+	total: {
+    value: res.count,
+  },
   pagination: {
     currentKey: 'page',
     pageSizeKey: 'results',
