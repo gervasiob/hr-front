@@ -16,7 +16,8 @@
             </a-form-item>
             <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-select placeholder="Ingrese su búsqueda" style="width: 200px"
-                    v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption">
+                    v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption"
+                    @change="handleChangeAseguradora">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
                         :value="aseguradora.value" :label="aseguradora.label">
                         {{ aseguradora.label }}
@@ -195,7 +196,10 @@
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: "><span class="collapse-item">{{
-                        formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
+                        formatCurrency(quoteData.total_quoted) }}</span>
+                        <RobotOutlined style="margin-left: '10px'; color: white"
+                            v-show="iaCheck.includes('total_quoted')" />
+                    </a-descriptions-item>
                 </a-descriptions>
             </template>
             <div class="collapse-body">
@@ -419,6 +423,7 @@
                                     <a-select v-model:value="formTenderDetail.tire_width" style="width: 100%"
                                         :options="optionsTireWidth" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
+                                    <RobotOutlined class="ia-check" v-show="iaCheck.includes('tire_width')" />
                                 </div>
                             </a-col>
                             <a-col :span="3">
@@ -427,6 +432,7 @@
                                     <a-select v-model:value="formTenderDetail.tire_height" style="width: 100%"
                                         placeholder="..." :options="optionsTireHeight" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
+                                    <RobotOutlined class="ia-check" v-show="iaCheck.includes('tire_height')" />
                                 </div>
                             </a-col>
                             <a-col :span="3">
@@ -435,6 +441,7 @@
                                     <a-select v-model:value="formTenderDetail.tire_tread" style="width: 100%"
                                         placeholder="..." :options="optionsTireTread" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
+                                    <RobotOutlined class="ia-check" v-show="iaCheck.includes('tire_tread')" />
                                 </div>
                             </a-col>
                             <a-col :span="10" :offset="5">
@@ -448,11 +455,17 @@
                         <a-row style="margin-top: 2%; align-content: center; padding-left: 2%" :gutter="24">
                             <a-col :span="8">
                                 <div class="form-item-container">
+                                    <!-- <a-badge-ribbon text="IA" color="volcano" v-show="true"><span>Marca</span>
+                                    </a-badge-ribbon> -->
                                     <span>Marca</span>
                                     <div class="input-select">
-                                        <a-select v-model:value="formTenderDetail.brand" placeholder="..."
-                                            style="width:100%" :options="optionsBrand" allow-clear show-search
-                                            :filter-option="filterOption"></a-select>
+                                        <a-badge-ribbon text="IA" color="volcano" v-show="true">
+
+                                            <a-select v-model:value="formTenderDetail.brand" placeholder="..."
+                                                style="width:100%" :options="optionsBrand" allow-clear show-search
+                                                :filter-option="filterOption"></a-select>
+                                        </a-badge-ribbon>
+                                        <RobotOutlined class="ia-check" v-show="iaCheck.includes('brand')" />
                                     </div>
                                 </div>
                                 <div class="form-item-container">
@@ -461,6 +474,7 @@
                                         <a-select v-model:value="formTenderDetail.tire_model" style="width: 100%"
                                             placeholder="..." :options="optionsModel" allow-clear show-search
                                             :filter-option="filterOption"></a-select>
+                                        <RobotOutlined class="ia-check" v-show="iaCheck.includes('modelo_rueda')" />
                                     </div>
                                 </div>
                                 <div class="form-item-container">
@@ -469,6 +483,7 @@
                                         <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%"
                                             placeholder="..." :options="optionsLlantaType" allow-clear show-search
                                             :filter-option="filterOption"></a-select>
+                                        <RobotOutlined class="ia-check" v-show="iaCheck.includes('llanta_type')" />
                                     </div>
                                 </div>
 
@@ -569,8 +584,13 @@ import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { getUsers } from '@/api/users/users.js';
 import { getPlatformList } from '@/api/platforms/platforms.js';
 import { getRoles } from '@/api/roles/roles.js';
+import { getVendors } from '@/api/vendors/vendors.js';
+import { RobotOutlined } from '@ant-design/icons-vue';
 export default {
     name: 'TenderDetail',
+    components: {
+        RobotOutlined,
+    },
     setup() {
         const route = useRoute();
         const router = useRouter(); // Importar el router   
@@ -603,7 +623,7 @@ export default {
         const aseguradoraList = ASEGURADORAS;
         const roles = ref(100); // Define roles como un ref para que sea reactivo
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
-
+        const iaCheck = ref([]);
         const estadoList = TENDER_STATES;
         const optionsDaytonas = DAYTONAS.map(daytona => ({
             label: `${daytona.businessName} - ${daytona.completeAddress}`,
@@ -755,8 +775,6 @@ export default {
                     tenderData.value = response.results[0];
                 }
                 console.log('tenderData.value', tenderData.value)
-                // const agentsResponse = await getUsers({ roles: roles.value });
-                // console.log('agent response', agentsResponse)
                 const params = {
                     claim_id: id,
                 };
@@ -814,7 +832,6 @@ export default {
                     tire_model: parseInt(quoteData.value.tire_model),
                     llanta_type: llantaType,
                 };
-                console.log('quoteDAtaVAlue', quoteDataValue)
                 if (quoteData.value.image_data) {
                     imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
                     imageUrl.value = imageData.value;
@@ -831,6 +848,20 @@ export default {
                 }
                 if (!formTenderDetail.value.llanta_type) {
                     formTenderDetail.value.llanta_type = '';
+                }
+                //Trae Fee de la Aseguradora
+                if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.company_id) {
+                    const assurance = await getVendors({ comercial_name: formTenderDetail.value.company_name, vendor_type: 1 });
+                    console.log('assurance', assurance)
+                    if (assurance.count > 0) {
+                        formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
+                    }
+                }
+
+                //Marca con IA:
+                if (formTenderDetail.value.original_parts) {
+                    console.log('E original parts check IA changes')
+                    handleIACheck(formTenderDetail.value.original_parts);
                 }
 
             } catch (error) {
@@ -1011,22 +1042,6 @@ export default {
             dataQuoteSource.value.push(newData);
             editableQuoteData[newKey] = cloneDeep(newData);
         };
-        // const getUsersList = async () => {
-        //     try {
-        //         const agentsResponse = await getUsers({ roles: roles.value });
-        //         console.log(agentsResponse)
-        //         const transformedAgents = agentsResponse.map((item) => {
-        //             return {
-        //                 ...item,
-        //                 fullName: item.username,
-        //             };
-        //         });
-        //         agents.value = transformedAgents;
-
-        //     } catch (error) {
-        //         console.log('error in get user list', error)
-        //     }
-        // }
         const getUsersList = async () => {
             try {
                 const idRole = await getRoles({ name: 'Agent' });
@@ -1046,7 +1061,7 @@ export default {
             try {
                 platformList.value = await getPlatformList();
             } catch (error) {
-                console.log('error in get user list', error)
+                console.log('error in get platform list', error)
             }
         }
         onMounted(() => {
@@ -1061,7 +1076,6 @@ export default {
                 type.value = 'Add';
                 getUsersList();
                 getPlatformsListData();
-                console.log('platform list', platformList.value)
                 formTenderDetail.value = {
                     not_quote: false,
                     delivery_time: 1,
@@ -1118,6 +1132,25 @@ export default {
                 loading.value = false;
             }
         };
+        const handleChangeAseguradora = async () => {
+
+            if (formTenderDetail.value.company_id) {
+                const aseguradora = aseguradoraList.find((item) => item.value === formTenderDetail.value.company_id)
+                const assurance = await getVendors({ comercial_name: aseguradora.label, vendor_type: 1 });
+                if (assurance.count > 0) {
+                    formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
+                }
+                else {
+                    formTenderDetail.value.fee = 0;
+                }
+            }
+        }
+        const handleIACheck = (value) => {
+            console.log('valor recibido IA', value)
+            const originalPartsString = value;
+            iaCheck.value = originalPartsString.split(',').map(part => part.trim());
+            console.log('ia check value', iaCheck.value);
+        }
         watch(
             () => route.path,
             (_newValue) => {
@@ -1199,6 +1232,8 @@ export default {
             platformList,
             getPlatformsListData,
             router,
+            handleChangeAseguradora,
+            iaCheck,
         }
     }
 }
@@ -1427,5 +1462,10 @@ export default {
 .mg-bottom .ant-form-item {
     margin-bottom: 10px;
     width: 15%;
+}
+
+.ia-check {
+    margin-left: 10px;
+    color: var(--principal)
 }
 </style>
