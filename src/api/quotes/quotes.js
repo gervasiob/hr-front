@@ -1,6 +1,6 @@
 import { apiRequest } from '../apiUrls.js';
 import axios from 'axios';
-import { format, addHours } from 'date-fns';
+import { format, addHours, subHours } from 'date-fns';
 
 const ENDPOINT = 'quotes/';
 
@@ -35,6 +35,7 @@ export async function getQuoteStateChangesTimestamp(params) {
     const newDate = format(new Date(), 'dd-MM-yyyy');
     const utcNow = new Date();
     const newUtcTime = addHours(utcNow, 3);
+    // const newUtcTime = subHours(utcNow, 6);
 
     // Formatear la nueva hora
     const newTime = format(newUtcTime, 'HH:mm:ss');

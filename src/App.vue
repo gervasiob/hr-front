@@ -16,13 +16,23 @@
           </a-col>
           <a-col :span="4">
             <div class="notification" v-show="!loginRoute">
-              <a-switch v-model:checked="notificationOn" @change="handleChangeCheck">
-                <template #checkedChildren><check-outlined /></template>
-                <template #unCheckedChildren><close-outlined /></template>
-              </a-switch>
-              <BellOutlined :class="{ animatebell: animateBell }" @click="openNotification" />
-              <a-badge :count="quotesLength" v-show="notificationOn">
-              </a-badge>
+              <a-row>
+                <a-col class="notification">
+                  <BellOutlined :class="{ animatebell: animateBell }" @click="openNotification" />
+                  <a-badge :count="quotesLength" v-show="notificationOn">
+                  </a-badge>
+                </a-col>
+              </a-row>
+              <a-row>
+                <a-col > <a-switch v-model:checked="notificationOn" @change="handleChangeCheck">
+                    <template #checkedChildren><check-outlined /></template>
+                    <template #unCheckedChildren><close-outlined /></template>
+                  </a-switch></a-col>
+              </a-row>
+
+
+              <!-- <a-button type="primary" danger @click="handleChangeCheck">{{ notificationOn ? 'Desactivar' : 'Activar'
+                }}</a-button> -->
             </div>
           </a-col>
 
@@ -37,7 +47,7 @@
 </template>
 
 <script>
-import { onMounted, ref, watch, onUnmounted } from 'vue';
+import { onMounted, ref, watch, onUnmounted, inject } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
 import { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
@@ -49,6 +59,7 @@ export default {
   name: 'Daytona-App',
   components: { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined },
   setup() {
+    const localStorageData = inject('localStorageData');
     const openNotification = () => {
       const key = `open${Date.now()}`;
       const listHtml = newNotificationsList.value.map(item => ` ${item}`).join(',');
@@ -72,7 +83,7 @@ export default {
     const newNotifications = ref(false);
     const quotesLength = ref(0);
     const newNotificationsList = ref([]);
-    const notificationOn = ref(1);
+    const notificationOn = ref(localStorageData.notificationOn);
     const intervalId = ref(null);
     const router = useRouter(); // Importar el router
     let newNotificationsString = '';
@@ -130,55 +141,32 @@ export default {
         else {
           newNotifications.value = false;
         }
-        // console.log(dataSource.value)
-        // dataSource.value = response.map((item, index) => ({
-        //   ...item,
-        //   key: index
-        // }));
-
-        // roleList.value = response;
-        // console.log(dataSource.value)
-
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
 
-    let minutesAdjudicated = localStorage.getItem('minutesAdjudicated');
+    let minutesAdjudicated = localStorageData.minutesAdjudicated;
     if (!minutesAdjudicated) {
       minutesAdjudicated = 15;
       localStorage.setItem('minutesAdjudicated', minutesAdjudicated);
     }
-    let notificationOnPreference = notificationOn.value;
-    onMounted(() => {
-      items.value = items.value = menuList.filter((item) => item.key === 'login');
 
+    onMounted(() => {
       items.value = menuList.filter((item) => item.key === 'login');
-      fetchData();
-      notificationOnPreference = localStorage.getItem('notificationOn');
-      console.log('not on pref', notificationOnPreference)
-      if (!notificationOnPreference) {
-        localStorage.setItem('notificationOn', false);
-      } else {
-        notificationOn.value = notificationOnPreference;
-      }
-      if (!minutesAdjudicated) {
-        minutesAdjudicated = 15;
-        localStorage.setItem('minutesAdjudicated', minutesAdjudicated);
-      }
+
       if (notificationOn.value) {
         intervalId.value = setInterval(fetchData, minutesAdjudicated * 60 * 1000);
-      } else {
-        clearInterval(intervalId.value);
+        fetchData();
       }
+
       onUnmounted(() => {
         clearInterval(intervalId.value);
       });
     })
+
     const handleChangeCheck = () => {
-      alert(notificationOn.value)
-      notificationOn.value != notificationOn.value;
-      alert(notificationOn.value)
+      // notificationOn.value = !notificationOn.value;
       if (notificationOn.value) {
         if (!minutesAdjudicated) {
           minutesAdjudicated = 15;
@@ -223,8 +211,8 @@ export default {
       handleChangeCheck,
       loginRoute,
       minutesAdjudicated,
-      notificationOnPreference,
       animateBell,
+
     }
 
   }
