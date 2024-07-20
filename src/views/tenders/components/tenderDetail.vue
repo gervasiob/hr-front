@@ -459,12 +459,12 @@
                                     </a-badge-ribbon> -->
                                     <span>Marca</span>
                                     <div class="input-select">
-                                        <a-badge-ribbon text="IA" color="volcano" v-show="true">
+                                        <!-- <a-badge-ribbon text="IA" color="volcano" v-show="true">
+ </a-badge-ribbon> -->
+                                        <a-select v-model:value="formTenderDetail.brand" placeholder="..."
+                                            style="width:100%" :options="optionsBrand" allow-clear show-search
+                                            :filter-option="filterOption"></a-select>
 
-                                            <a-select v-model:value="formTenderDetail.brand" placeholder="..."
-                                                style="width:100%" :options="optionsBrand" allow-clear show-search
-                                                :filter-option="filterOption"></a-select>
-                                        </a-badge-ribbon>
                                         <RobotOutlined class="ia-check" v-show="iaCheck.includes('brand')" />
                                     </div>
                                 </div>
