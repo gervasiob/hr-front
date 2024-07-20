@@ -57,10 +57,8 @@
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow"
-    :pagination="pagination" 
-    :loading="loading" 
-    @change="handleTableChange">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+    :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
       <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
@@ -109,7 +107,7 @@ export default {
 
     const columns = tableColumns;
     const platformList = ref([]);
-
+    const pageCurrent = ref(1);
     const customHeaderRow = (column) => {
       return {
         class: 'custom-header',
@@ -119,56 +117,51 @@ export default {
       try {
         const response = await getPlatforms(params);
 
-        console.log("response");
-        console.log(response);
-
-        console.log(dataSource.value)
-        response = response.map((item, index) => ({
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
+        total.value = response.count;
         console.log('params', params)
         if (Object.keys(params).length === 0) {
           const responseList = await getPlatformList();
           platformList.value = responseList;
         }
         console.log(dataSource.value)
-return response;
+        return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-const total = ref(10);
-const {
-  data: dataSource,
-  run,
-  loading,
-  current,
-  pageSize,
-} = usePagination(fetchData, {
-  formatResult: res => res.results,
-	total: {
-    value: res.count,
-  },
-  pagination: {
-    currentKey: 'page',
-    pageSizeKey: 'results',
-  },
-});
-const pagination = computed(() => ({
-  total: 200,	//Acá hay que traer el count desde la respuesta
-  current: current.value,
-  pageSize: 10,
-}));
-const handleTableChange = (pag, filters, sorter) => {
-  run({
-    results: pag.pageSize,
-    page: pag?.current,
-    sortField: sorter.field,
-    sortOrder: sorter.order,
-    ...filters,
-  });
-};
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'results',
+      },
+    });
+    const pagination = computed(() => ({
+      total: total.value,	//Acá hay que traer el count desde la respuesta
+      current: current.value,
+      pageSize: 10,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
+      run({
+        results: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
     const onSearch = () => {
       fetchData(filterInputs.value);
     };
@@ -279,10 +272,10 @@ const handleTableChange = (pag, filters, sorter) => {
       count,
       onDelete,
       platformList,
-      current, 
-      total, 
-      pagination, 
-      handleTableChange, 
+      current,
+      total,
+      pagination,
+      handleTableChange,
     }
   }
 }
