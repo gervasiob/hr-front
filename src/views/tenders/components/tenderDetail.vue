@@ -196,7 +196,7 @@
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: "><span class="collapse-item">{{
-                        formatCurrency(quoteData.total_quoted) }}</span>
+                            formatCurrency(quoteData.total_quoted) }}</span>
                         <RobotOutlined style="margin-left: '10px'; color: white"
                             v-show="iaCheck.includes('total_quoted')" />
                     </a-descriptions-item>
@@ -317,6 +317,7 @@
                         </template>
                     </template>
                 </a-table>
+                <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
                 <a-form layout="horizontal" ref="formRef" :model="formTenderDetail" :rules="rules"
                     :label-col="{ span: 4 }" :wrapper-col="{ span: 6 }">
                     <div class="not-quote">
@@ -349,6 +350,7 @@
                                     <span>Fee</span>
                                     <a-input v-model:value="formTenderDetail.fee"
                                         style="width: 100%; border: 2px solid var(--border-item)"></a-input>
+                                    <RobotOutlined class="ia-check" v-show="iaCheck.includes('fee_margen')" />
                                 </div>
                             </a-col>
                         </a-row>
@@ -414,6 +416,7 @@
                                     </template>
                                 </template>
                             </a-table>
+                            <RobotOutlined class="ia-check" v-show="iaCheck.includes('tire_type_name')" />
                         </div>
 
                         <a-row style="margin-top: 2%; align-content: center; padding-left: 2%" :gutter="24">
@@ -464,7 +467,6 @@
                                         <a-select v-model:value="formTenderDetail.brand" placeholder="..."
                                             style="width:100%" :options="optionsBrand" allow-clear show-search
                                             :filter-option="filterOption"></a-select>
-
                                         <RobotOutlined class="ia-check" v-show="iaCheck.includes('brand')" />
                                     </div>
                                 </div>
