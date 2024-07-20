@@ -169,19 +169,19 @@ export default {
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }
-            try {
-                const idRole = await getRoles({ name: 'Agent' });
-                const agentsResponse = await getUsers({ roles: idRole.results[0].id });
-                const transformedAgents = agentsResponse.results.map((item) => {
-                    return {
-                        ...item,
-                        fullName: item.username,
-                    };
-                });
-                agents.value = transformedAgents;
-            } catch (error) {
-                console.error("Error fetching agents:", error);
-            }
+            // try {
+            //     const idRole = await getRoles({ name: 'Agent' });
+            //     const agentsResponse = await getUsers({ roles: idRole.results[0].id });
+            //     const transformedAgents = agentsResponse.results.map((item) => {
+            //         return {
+            //             ...item,
+            //             fullName: item.username,
+            //         };
+            //     });
+            //     agents.value = transformedAgents;
+            // } catch (error) {
+            //     console.error("Error fetching agents:", error);
+            // }
         };
 
 
@@ -209,9 +209,25 @@ export default {
             return state;
         }
         onMounted(() => {
-            getFetchData();
+            // getFetchData();
+            getLists();
 
         });
+        const getLists = async () => {
+            try {
+                const idRole = await getRoles({ name: 'Agent' });
+                const agentsResponse = await getUsers({ roles: idRole.results[0].id });
+                const transformedAgents = agentsResponse.results.map((item) => {
+                    return {
+                        ...item,
+                        fullName: item.username,
+                    };
+                });
+                agents.value = transformedAgents;
+            } catch (error) {
+                console.error("Error fetching agents:", error);
+            }
+        };
         const getFetchData = () => {
             routeName.value = route.path;
 
@@ -313,6 +329,7 @@ export default {
             handleTableChange,
             total,
             pageCurrent,
+            getLists,
         }
     }
 }
