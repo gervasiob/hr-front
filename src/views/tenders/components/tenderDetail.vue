@@ -196,9 +196,11 @@
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
                     <a-descriptions-item label="TOTAL: "><span class="collapse-item">{{
-                            formatCurrency(quoteData.total_quoted) }}</span>
-                        <RobotOutlined style="margin-left: '10px'; color: white"
+                        formatCurrency(quoteData.total_quoted) }}</span>
+
+                        <RobotOutlined :style="{ marginLeft: '10px', color: 'white' }"
                             v-show="iaCheck.includes('total_quoted')" />
+
                     </a-descriptions-item>
                 </a-descriptions>
             </template>
