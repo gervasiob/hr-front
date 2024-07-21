@@ -15,6 +15,6 @@ export async function deleteStocks(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
 export async function getCostStock(params) {
-    return await apiRequest('get', 'cost_stock/', params);
+    return await apiRequest('get', 'stock_total/', params);
 }
 

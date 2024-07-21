@@ -90,7 +90,7 @@ export default {
           key: index
         }));
         total.value = response.count;
-        console.log('params', params)
+
         if (Object.keys(params).length === 0) {
           const responseList = await getPlatformList();
           platformList.value = responseList;

@@ -118,13 +118,13 @@ export const menuList = [
                 label: 'COSTOS',
                 title: 'COSTOS',
             },
-            {
-                key: 'Orders',
-                path: '/adm/orders',
-                name: 'Ordenes de Compra',
-                label: 'ORDEN DE COMPRA',
-                title: 'ORDEN DE COMPRA',
-            },
+            // {
+            //     key: 'Orders',
+            //     path: '/adm/orders',
+            //     name: 'Ordenes de Compra',
+            //     label: 'ORDEN DE COMPRA',
+            //     title: 'ORDEN DE COMPRA',
+            // },
             {
                 key: 'criterias',
                 path: '/adm/criterias',

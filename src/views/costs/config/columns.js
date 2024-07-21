@@ -9,18 +9,23 @@ export const tableColumns = [
     {
         title: 'Codigo',
         dataIndex: 'code',
-        sorter: (a, b) => a.code - b.code,
+        // sorter: (a, b) => a.code.localeCompare(b.code),
     },
     
     {
         title: 'Detalle',
         dataIndex: 'detail',
-        sorter: (a, b) => a.detail - b.detail,
+        // sorter: (a, b) => a.detail.localeCompare(b.detail),
     },
     {
         title: 'Modelo',
         dataIndex: 'model',
-        sorter: (a, b) => a.model - b.model,
+        // sorter: (a, b) => a.model.localeCompare(b.model),
+    },
+    {
+        title: 'Marca',
+        dataIndex: 'product_brand',
+        // sorter: (a, b) => a.product_brand.localeCompare(b.product_brand),
     },
     {
         title: 'Stock',
@@ -33,14 +38,9 @@ export const tableColumns = [
         sorter: (a, b) => a.cost_amount - b.cost_amount,
     },
     {
-        title: 'Marca',
-        dataIndex: 'product_brand',
-        sorter: (a, b) => a.product_brand - b.product_brand,
-    },
-    {
         title: 'Activo',
         dataIndex: 'is_active',
-        sorter: (a, b) => a.is_active - b.is_active,
+        // sorter: (a, b) => a.is_active.localeCompare(b.is_active),
     },
     // {
     //     title: 'marca tiempo',

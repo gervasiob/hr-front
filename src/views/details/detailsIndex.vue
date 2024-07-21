@@ -1,18 +1,7 @@
 <template>
   <div class="filters">
-    <a-form layout="horizontal" ref="formRef" :model="filterInputs">
+    <!-- <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <!-- <a-col :span="12">
-          <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
-                :label="aseguradora.label">
-                {{ aseguradora.label }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="Detalle" name="sku">
@@ -24,42 +13,23 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <!-- <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
-            </a-form-item>
-          </a-col> -->
         </a-row>
-
-        <!-- <a-col :span="6">
-          <a-form-item label="Licitación id" name="tender_id">
-            <a-input v-model:value="filterInputs.id" allowClear />
-          </a-form-item>
-        </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
         <a-col :span="16" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
       </a-row>
-    </a-form>
+    </a-form> -->
   </div>
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+    :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['product_id', 'sku', 'quote_id','quantity', 'price','amount_wo_iva','total_amount'].includes(column.dataIndex)">
+      <template
+        v-if="['product_id', 'sku', 'quote_id', 'quantity', 'price', 'amount_wo_iva', 'total_amount'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -68,12 +38,12 @@
           </template>
         </div>
       </template>
-      <template v-if="['created_at' , 'updated_at' ].includes(column.dataIndex)">
+      <template v-if="['created_at', 'updated_at'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
-            {{ new Date(text).toLocaleString('es-AR', {year: 'numeric', month: '2-digit', day: '2-digit'})}}, 
+            {{ new Date(text).toLocaleString('es-AR', { year: 'numeric', month: '2-digit', day: '2-digit' }) }},
           </template>
         </div>
       </template>
@@ -100,6 +70,7 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getDetails, addDetails, updateDetails, deleteDetails } from '@/api/details/details.js';
@@ -108,7 +79,6 @@ export default {
 
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
@@ -124,24 +94,53 @@ export default {
       try {
         const response = await getDetails(params);
 
-        console.log("response");
-        console.log(response);
-
-        console.log(dataSource.value)
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
-        const responseList = await getDetails();
-        detailsList.value = responseList;
-        console.log(dataSource.value)
+        total.value = response.count;
+        if (Object.keys(params).length === 0) {
+          const responseList = await getDetails();
+          detailsList.value = responseList;
+        }
+
+        return dataSource.value;
 
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
 
-
+    const pageCurrent = ref(1);
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'page_size',
+      },
+    });
+    const pagination = computed(() => ({
+      total: total.value,	//Acá hay que traer el count desde la respuesta
+      current: current.value,
+      pageSize: 10,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
+      run({
+        page_size: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
     const onSearch = () => {
       fetchData(filterInputs.value);
     };
@@ -200,7 +199,7 @@ export default {
       if (!record.comercial_name || !record.vendor_type) {
         onDelete(key);
       }
-      };
+    };
     const count = computed(() => {
       if (dataSource.value) {
         return dataSource.value.length + 1
@@ -252,6 +251,10 @@ export default {
       count,
       onDelete,
       detailsList,
+      current,
+      total,
+      pagination,
+      handleTableChange,
     }
   }
 }
