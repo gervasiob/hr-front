@@ -2,17 +2,6 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <!-- <a-col :span="12">
-          <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su bús9queda" v-model:value="filterInputs.company_id" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
-                :label="aseguradora.label">
-                {{ aseguradora.label }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="Plataforma" name="name">
@@ -25,28 +14,7 @@
               </a-select>
             </a-form-item>
           </a-col>
-          <!-- <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
-            </a-form-item>
-          </a-col> -->
         </a-row>
-
-        <!-- <a-col :span="6">
-          <a-form-item label="Licitación id" name="tender_id">
-            <a-input v-model:value="filterInputs.id" allowClear />
-          </a-form-item>
-        </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
         <a-col :span="16" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -107,7 +75,7 @@ export default {
 
     const columns = tableColumns;
     const platformList = ref([]);
-    const pageCurrent = ref(1);
+
     const customHeaderRow = (column) => {
       return {
         class: 'custom-header',
@@ -122,7 +90,7 @@ export default {
           key: index
         }));
         total.value = response.count;
-        console.log('params', params)
+
         if (Object.keys(params).length === 0) {
           const responseList = await getPlatformList();
           platformList.value = responseList;
@@ -133,6 +101,7 @@ export default {
         console.error("Error fetching quotes:", error);
       }
     };
+    const pageCurrent = ref(1);
     const total = ref(10);
     const {
       data: dataSource,
@@ -144,7 +113,7 @@ export default {
       formatResult: res => res.results,
       pagination: {
         currentKey: 'page',
-        pageSizeKey: 'results',
+        pageSizeKey: 'page_size',
       },
     });
     const pagination = computed(() => ({
@@ -155,7 +124,7 @@ export default {
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
       run({
-        results: pag.pageSize,
+        page_size: pag.pageSize,
         page: pag?.current,
         sortField: sorter.field,
         sortOrder: sorter.order,

@@ -1,30 +1,26 @@
 <template>
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
+
+
       <a-row :gutter="24">
-        <!-- <a-col :span="12">
-          <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
-                :label="aseguradora.label">
-                {{ aseguradora.label }}
-              </a-select-option>
-            </a-select>
+        <a-col :span="6">
+          <a-form-item label="SKU" name="sku">
+            <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 250px;" />
           </a-form-item>
-        </a-col> -->
-        <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item label="ID" name="id">
-              <a-input v-model:value="filterInputs.sku" allowClear style="width: 250px;" /> 
-            </a-form-item>
-          </a-col>
-          <!-- <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
-            </a-form-item>
-          </a-col> -->
-        </a-row>
+        </a-col>
+        <a-col :span="6">
+          <a-form-item label="Detalle" name="detail">
+            <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 250px;" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="6">
+          <a-form-item label="Marca" name="marca">
+            <a-input v-model:value="filterInputs.product_brand__icontains" allowClear style="width: 250px;" />
+          </a-form-item>
+        </a-col>
+
+
 
         <!-- <a-col :span="6">
           <a-form-item label="Licitación id" name="tender_id">
@@ -41,7 +37,7 @@
             </a-select>
           </a-form-item>
         </a-col> -->
-        <a-col :span="16" style="text-align: right">
+        <a-col :span="6" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -51,15 +47,35 @@
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+    :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['id', 'code', 'detail','model','cost_stock', 'cost_amount','product_brand','is_active'].includes(column.dataIndex)">
+      <template
+        v-if="['id', 'code', 'detail', 'model', 'cost_stock', 'cost_amount', 'product_brand'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
             {{ text }}
+          </template>
+        </div>
+      </template>
+      <template v-if="['is_active'].includes(column.dataIndex)">
+        <div>
+
+          <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
+            v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
+            :filter-option="filterOption" style="width: 200px;">
+            <a-select-option :value="true">
+              Sí
+            </a-select-option>
+            <a-select-option :value="false">
+              No
+            </a-select-option>
+          </a-select>
+          <template v-else>
+            {{ text === 'true' ? 'Sí' : 'No' }}
           </template>
         </div>
       </template>
@@ -74,9 +90,9 @@
           </span>
           <span v-else>
             <a @click="edit(record.key)">Edit</a>
-            <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
+            <!-- <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
-            </a-popconfirm>
+            </a-popconfirm> -->
           </span>
         </div>
       </template>
@@ -86,6 +102,7 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getCosts, addCosts, updateCosts, deleteCosts } from '@/api/costs/costs.js';
@@ -94,7 +111,6 @@ export default {
 
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
@@ -108,21 +124,47 @@ export default {
     };
     const fetchData = async (params = {}) => {
       try {
-        const response = await getCostStock(params);
-
-        console.log("response");
-        console.log(response);
-
-        console.log(dataSource.value)
-        dataSource.value = response.map((item, index) => ({
+        const response = await getCosts(params);
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
+        total.value = response.count;
+        return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-
+    const pageCurrent = ref(1);
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'page_size',
+      },
+    });
+    const pagination = computed(() => ({
+      total: total.value,	//Acá hay que traer el count desde la respuesta
+      current: current.value,
+      pageSize: 10,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
+      run({
+        page_size: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
 
     const onSearch = () => {
       fetchData(filterInputs.value);
@@ -138,7 +180,6 @@ export default {
 
     onMounted(() => {
       fetchData();
-
     });
 
     const editableData = reactive({});
@@ -197,7 +238,7 @@ export default {
       dataSource.value.push(newData);
       editableData[newKey] = cloneDeep(newData);
       // Esperar a que el DOM se actualice y luego desplazarse
-    
+
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -232,6 +273,10 @@ export default {
       count,
       onDelete,
       costsList,
+      current,
+      total,
+      pagination,
+      handleTableChange,
     }
   }
 }

@@ -14,7 +14,7 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label="Roles" name="name">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.roles__icontains" allowClear
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.roles" allowClear
               show-search :filter-option="filterOption">
               <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
                 {{ item.name }}
@@ -29,21 +29,6 @@
             <a-input v-model:value="filterInputs.id" allowClear />
           </a-form-item>
         </a-col>
-        <!-- <a-col :span="6">
-          <a-form-item label="Licitación id" name="tender_id">
-            <a-input v-model:value="filterInputs.id" allowClear />
-          </a-form-item>
-        </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
         <a-col :span="16" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -54,7 +39,8 @@
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+    :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
       <template v-if="['username', 'email'].includes(column.dataIndex)">
@@ -108,6 +94,7 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getRoleList } from '@/api/roles/roles.js';
@@ -118,7 +105,6 @@ export default {
 
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
@@ -132,28 +118,53 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
+      console.log('params', params)
       try {
         const response = await getUsers(params);
-
-
-        console.log("response");
-        console.log(response);
-
-        console.log(dataSource.value)
         dataSource.value = response.results.map((users, index) => ({
           ...users,
           key: index
         }));
-
+        total.value = response.count;
         if (Object.keys(params).length === 0) {
           userList.value = await getUserList();
           roleList.value = await getRoleList();
         }
+        return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-
+    const pageCurrent = ref(1);
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'page_size',
+      },
+    });
+    const pagination = computed(() => ({
+      total: total.value,
+      current: current.value,
+      pageSize: 10,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
+      run({
+        page_size: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
 
     const onSearch = () => {
       fetchData(filterInputs.value);
@@ -195,14 +206,13 @@ export default {
           color = 'grey';
           break
       }
-      if (id >5) {
+      if (id > 5) {
         color = 'green';
       }
       return color;
     }
     onMounted(() => {
       fetchData();
-
     });
 
     const editableData = reactive({});
@@ -298,6 +308,10 @@ export default {
       userList,
       getRoleName,
       getRoleColor,
+      current,
+      total,
+      pagination,
+      handleTableChange,
     }
   }
 }

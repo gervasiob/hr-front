@@ -2,45 +2,20 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <!-- <a-col :span="12">
-          <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
-                :label="aseguradora.label">
-                {{ aseguradora.label }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="SKU" name="sku">
-              <a-input v-model:value="filterInputs.sku" allowClear style="width: 300px;" /> 
+              <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 300px;" /> 
             </a-form-item>
           </a-col>
-          <!-- <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
+          <a-col :span="12">
+            <a-form-item label="Producto" name="producto">
+              <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 300px;" /> 
             </a-form-item>
-          </a-col> -->
+          </a-col>
         </a-row>
 
-        <!-- <a-col :span="6">
-          <a-form-item label="Licitación id" name="tender_id">
-            <a-input v-model:value="filterInputs.id" allowClear />
-          </a-form-item>
-        </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
+  
         <a-col :span="16" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -50,11 +25,11 @@
   </div>
 
   <!-- Table -->
-  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['sku', 'product_name', 'id_geo','quantity'].includes(column.dataIndex)">
+      <template v-if="['sku', 'producto', 'stock'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -74,9 +49,9 @@
           </span>
           <span v-else>
             <a @click="edit(record.key)">Edit</a>
-            <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
+            <!-- <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
-            </a-popconfirm>
+            </a-popconfirm> -->
           </span>
         </div>
       </template>

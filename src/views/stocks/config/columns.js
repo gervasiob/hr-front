@@ -8,22 +8,17 @@ export const tableColumns = [
     },
     {
         title: 'Nombre de Producto',
-        dataIndex: 'product_name',
-        sorter: (a, b) => a.product_name.localeCompare(b.product_name),
+        dataIndex: 'producto',
+        sorter: (a, b) => a.producto.localeCompare(b.producto),
     },
     
     {
-        title: 'Cantidad',
-        dataIndex: 'quantity',
-        sorter: (a, b) => a.quantity - b.quantity,
+        title: 'Stock',
+        dataIndex: 'stock',
+        sorter: (a, b) => a.stock - b.stock,
     },
-    {
-        title: 'ID',
-        dataIndex: 'id_geo',
-        sorter: (a, b) => a.id_geo - b.id_geo,
-    },
-    {
-        title: 'Operation',
-        dataIndex: 'operation',     
-    },
+    // {
+    //     title: 'Operation',
+    //     dataIndex: 'operation',     
+    // },
 ];
