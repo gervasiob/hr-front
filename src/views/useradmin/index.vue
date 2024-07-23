@@ -168,6 +168,7 @@ export default {
       if (data.id > 0) {
         const params = {
           name: data.name,
+          roles: [data.roles],
         }
         updateRoles(data.id, params).then(() => {
           fetchData();
