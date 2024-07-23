@@ -236,7 +236,7 @@ export default {
           fetchData();
         });
       } else {
-        const { id, ...dataWithoutId } = params;
+        const { id, ...dataWithoutId } = data;
         addUsers(dataWithoutId).then(() => {
           fetchData();
         });
