@@ -226,16 +226,17 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
-      if (data.id > 0) {
-        const params = {
+      const params = {
           ...data,
           roles: [data.roles]
-        }
+      }
+      if (data.id > 0) {
+        
         updateUsers(data.id, params).then(() => {
           fetchData();
         });
       } else {
-        const { id, ...dataWithoutId } = data;
+        const { id, ...dataWithoutId } = params;
         addUsers(dataWithoutId).then(() => {
           fetchData();
         });
