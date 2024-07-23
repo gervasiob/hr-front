@@ -485,7 +485,7 @@
                             <div>
                                 <a-input v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0;" />
+                                    style="margin: -5px 0" />
                                 <template v-else>
                                     {{ text }}
                                 </template>
@@ -546,6 +546,13 @@
                             </template>
                         </template>
                         <template v-if="column.dataIndex === 'price'">
+                            <a-input v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                            <template v-else>
+                                {{ formatCurrency(record.price) }}
+                            </template>
+                        </template>
+                        <template v-if="column.dataIndex === 'price_wo_iva'">
                             <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
                             <template v-else>

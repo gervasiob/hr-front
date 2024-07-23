@@ -24,7 +24,7 @@
     <template #bodyCell="{ column, text, record }">
 
       <template
-        v-if="['product_id', 'sku', 'quote_id', 'quantity', 'price', 'amount_wo_iva', 'total_amount'].includes(column.dataIndex)">
+        v-if="['product_id', 'sku', 'quote_id', 'quantity', 'price_wo_iva', 'price', 'amount_wo_iva', 'total_amount'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
