@@ -77,7 +77,7 @@
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Sede" name="sede" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Sucursal" name="sucursal" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-input v-model:value="formTenderDetail.tender_data.sede">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
@@ -98,7 +98,7 @@
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Agente" name="agent">
+            <a-form-item label="Gestor" name="agent">
                 <a-select placeholder="Ingrese su búsqueda" style="width: 200px" v-model:value="formTenderDetail.agent"
                     allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -149,22 +149,34 @@
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.domain }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.domain" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Chasis" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.chasis }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.chasis" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Marca" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.brand }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.brand" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.vehicle }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.vehicle_year }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Fecha" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.claim_date }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.claim_date" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Plataforma" class="a-descriptions-item">
                 <div class="item-d">{{ formTenderDetail.platform }}</div>
@@ -175,17 +187,32 @@
     <a-collapse class="collapse-class">
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
-                <a-descriptions-item label="Sede">
-                    <div class="item-d">{{ formTenderDetail.tender_data.sede }}</div>
+                <a-descriptions-item label="Sucursal">
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.sede" :readonly="handleEdit" />
+                    </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Nombre Cliente">
-                    <div class="item-d">{{ formTenderDetail.tender_data.name }}</div>
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.name" :readonly="handleEdit" />
+                    </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Teléfono">
-                    <div class="item-d">{{ formTenderDetail.tender_data.phone }}</div>
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit" />
+                    </div>
                 </a-descriptions-item>
-                <a-descriptions-item label="Operador">
-                    <div class="item-d">{{ formTenderDetail.tender_data.operador }}</div>
+                <a-descriptions-item label="Gestor">
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-select placeholder="Ingrese su búsqueda"
+                            v-model:value="formTenderDetail.tender_data.operador" allowClear show-search
+                            :filter-option="filterOption">
+                            <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
+                                :label="(item.fullName)">
+                                {{ item.fullName }}
+                            </a-select-option>
+                        </a-select>
+                    </div>
                 </a-descriptions-item>
             </a-descriptions>
         </a-collapse-panel>
@@ -195,13 +222,6 @@
                     :labelStyle="{ fontWeight: 'bold', color: 'white', fontStyle: 'Italic' }">
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
-                    <a-descriptions-item label="TOTAL: "><span class="collapse-item">{{
-                        formatCurrency(quoteData.total_quoted) }}</span>
-
-                        <RobotOutlined :style="{ marginLeft: '10px', color: 'white' }"
-                            v-show="iaCheck.includes('total_quoted')" />
-
-                    </a-descriptions-item>
                 </a-descriptions>
             </template>
             <div class="collapse-body">
@@ -231,101 +251,13 @@
                 </a-modal>
                 <!-- <vue-image-lightbox :images="[imageUrl]" :index="currentImageIndex" @close="isModalVisible = false"
                     v-if="isModalVisible" /> -->
-                <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-                <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
-                    <template #bodyCell="{ column, text, record }">
-                        <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
-                            <div>
-                                <a-input v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0;" />
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['type'].includes(column.dataIndex)">
-                            <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0;width: 150px;" @focus="focus" @change="handleChange">
-                                    <a-select-option value="Neumatico">Neumáticos</a-select-option>
-                                    <a-select-option value="Llantas">Llantas</a-select-option>
-                                </a-select>
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['vendor_id'].includes(column.dataIndex)">
-                            <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange">
-                                    <a-select-option value="Proveedor 1">Proveedor 1</a-select-option>
-                                    <a-select-option value="Proveedor 2">Proveedor 2</a-select-option>
-                                </a-select>
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['po'].includes(column.dataIndex)">
-                            <div>
-                                <a-checkbox v-model:checked="editableData[record.key][column.dataIndex]"
-                                    v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"></a-checkbox>
-                                <template v-else>
-                                    <a-checkbox :checked="text" :disabled="true"></a-checkbox>
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="column.dataIndex === 'amount_wo_iva'">
-                            <a-input v-if="editableData[record.key]"
-                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                            <template v-else>
-                                {{ formatCurrency(record.amount_wo_iva) }}
-                            </template>
-                        </template>
-                        <template v-if="column.dataIndex === 'price'">
-                            <a-input v-if="editableData[record.key]"
-                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                            <template v-else>
-                                {{ formatCurrency(record.price) }}
-                            </template>
-                        </template>
-                        <template v-else-if="column.dataIndex === 'total'">
-                            <div>
-                                {{ formatCurrency(record.price * record.quantity) }}
-                            </div>
-                        </template>
 
-                        <template v-else-if="column.dataIndex === 'operation'">
-                            <div class="editable-row-operations">
-                                <span v-if="editableData[record.key]">
-                                    <a-typography-link @click="save(record.key)">Save</a-typography-link>
-                                    <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
-                                        <a>Cancel</a>
-                                    </a-popconfirm>
-
-                                </span>
-                                <span v-else>
-                                    <a @click="edit(record.key)">Edit</a>
-                                    <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
-                                        @confirm="onDelete(record.key)">
-                                        <a>Eliminar</a>
-                                    </a-popconfirm>
-                                </span>
-                            </div>
-                        </template>
-                    </template>
-                </a-table>
-                <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
                 <a-form layout="horizontal" ref="formRef" :model="formTenderDetail" :rules="rules"
                     :label-col="{ span: 4 }" :wrapper-col="{ span: 6 }">
                     <div class="not-quote">
                         <a-form-item label="NO COTIZAR">
                             <a-switch v-model:checked="formTenderDetail.not_quote"
-                                style="background-color: var(--border-item); border: none;" />
+                                style="background-color: var(--border-item); border: none; margin: 1%;" />
                         </a-form-item>
                     </div>
                     <div v-show="!formTenderDetail.not_quote">
@@ -535,6 +467,118 @@
                     </a-form>
 
                 </div>
+
+
+                <!-- Total -->
+                <div class="total-item">
+                    <span>TOTAL A ADJUDICAR: {{
+                        formatCurrency(quoteData.total_quoted) }}</span>
+
+                    <RobotOutlined :style="{ marginLeft: '10px', color: 'white' }"
+                        v-show="iaCheck.includes('total_quoted')" />
+
+                </div>
+                <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+                <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
+                    <template #bodyCell="{ column, text, record }">
+                        <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
+                            <div>
+                                <a-input v-if="editableData[record.key]"
+                                    v-model:value="editableData[record.key][column.dataIndex]"
+                                    style="margin: -5px 0;" />
+                                <template v-else>
+                                    {{ text }}
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="['type'].includes(column.dataIndex)">
+                            <div>
+                                <a-select ref="select" v-if="editableData[record.key]"
+                                    v-model:value="editableData[record.key][column.dataIndex]"
+                                    style="margin: -5px 0;width: 190px;" @focus="focus" @change="handleChange"
+                                    :options="groupList">
+                                    <!-- <template #dropdownRender="{ menuNode: menu }">
+                                        <v-nodes :vnodes="menu" />
+                                        <a-divider style="margin: 4px 0" />
+                                        <a-space style="padding: 4px 8px">
+                                            <a-input ref="inputRef" v-model:value="name" placeholder="Otros" />
+                                            <a-button type="text" @click="addItem">
+                                                <template #icon>
+                                                    <PlusOutlined />
+                                                </template>
+            Agregar
+            </a-button>
+            </a-space>
+            </template> -->
+                                </a-select>
+                                <template v-else>
+                                    {{ text }}
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="['vendor_id'].includes(column.dataIndex)">
+                            <div>
+                                <a-select ref="select" v-if="editableData[record.key]"
+                                    v-model:value="editableData[record.key][column.dataIndex]"
+                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange">
+                                    <a-select-option value="Proveedor 1">Proveedor 1</a-select-option>
+                                    <a-select-option value="Proveedor 2">Proveedor 2</a-select-option>
+                                </a-select>
+                                <template v-else>
+                                    {{ text }}
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="['po'].includes(column.dataIndex)">
+                            <div>
+                                <a-checkbox v-model:checked="editableData[record.key][column.dataIndex]"
+                                    v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"></a-checkbox>
+                                <template v-else>
+                                    <a-checkbox :checked="text" :disabled="true"></a-checkbox>
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="column.dataIndex === 'amount_wo_iva'">
+                            <a-input v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                            <template v-else>
+                                {{ formatCurrency(record.amount_wo_iva) }}
+                            </template>
+                        </template>
+                        <template v-if="column.dataIndex === 'price'">
+                            <a-input v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                            <template v-else>
+                                {{ formatCurrency(record.price) }}
+                            </template>
+                        </template>
+                        <template v-else-if="column.dataIndex === 'total'">
+                            <div>
+                                {{ formatCurrency(record.price * record.quantity) }}
+                            </div>
+                        </template>
+
+                        <template v-else-if="column.dataIndex === 'operation'">
+                            <div class="editable-row-operations">
+                                <span v-if="editableData[record.key]">
+                                    <a-typography-link @click="save(record.key)">Save</a-typography-link>
+                                    <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
+                                        <a>Cancel</a>
+                                    </a-popconfirm>
+
+                                </span>
+                                <span v-else>
+                                    <a @click="edit(record.key)">Edit</a>
+                                    <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
+                                        @confirm="onDelete(record.key)">
+                                        <a>Eliminar</a>
+                                    </a-popconfirm>
+                                </span>
+                            </div>
+                        </template>
+                    </template>
+                </a-table>
+                <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
                     v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'">
@@ -571,7 +615,7 @@
 
 <script>
 import { cloneDeep } from 'lodash-es';
-import { ref, onMounted, watch, reactive, toRaw, computed } from 'vue';
+import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
@@ -580,7 +624,7 @@ import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
-    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, DAYTONAS, QUOTE_DETAILS, ASEGURADORAS
+    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, DAYTONAS, QUOTE_DETAILS, ASEGURADORAS, GROUPS,
 } from '@/common/common';
 import { dataTable } from './data';
 import { formRules } from '../config/rules.js';
@@ -589,11 +633,12 @@ import { getUsers } from '@/api/users/users.js';
 import { getPlatformList } from '@/api/platforms/platforms.js';
 import { getRoles } from '@/api/roles/roles.js';
 import { getVendors } from '@/api/vendors/vendors.js';
-import { RobotOutlined } from '@ant-design/icons-vue';
+import { RobotOutlined, PlusOutlined } from '@ant-design/icons-vue';
 export default {
     name: 'TenderDetail',
     components: {
         RobotOutlined,
+        PlusOutlined,
     },
     setup() {
         const route = useRoute();
@@ -625,6 +670,7 @@ export default {
         const error = ref(null);
         const type = ref('Edit');
         const aseguradoraList = ASEGURADORAS;
+        const groupList = GROUPS;
         const roles = ref(100); // Define roles como un ref para que sea reactivo
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
         const iaCheck = ref([]);
@@ -680,6 +726,17 @@ export default {
         const platformList = ref([]);
         const isModalVisible = ref(false);
         const currentImageIndex = ref(0);
+        const VNodes = defineComponent({
+            props: {
+                vnodes: {
+                    type: Object,
+                    required: true,
+                },
+            },
+            render() {
+                return this.vnodes;
+            },
+        });
         const edit = key => {
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
         };
@@ -1071,6 +1128,8 @@ export default {
         onMounted(() => {
             tenderId.value = route.params.id;
             console.log('tender value', tenderId.value)
+            getUsersList();
+            getPlatformsListData();
             if (tenderId.value) {
                 console.log('edit')
                 type.value = 'Edit';
@@ -1078,8 +1137,6 @@ export default {
             } else {
                 console.log('add')
                 type.value = 'Add';
-                getUsersList();
-                getPlatformsListData();
                 formTenderDetail.value = {
                     not_quote: false,
                     delivery_time: 1,
@@ -1137,12 +1194,13 @@ export default {
             }
         };
         const handleChangeAseguradora = async () => {
-
+            console.log('aseguradora change')
             if (formTenderDetail.value.company_id) {
                 const aseguradora = aseguradoraList.find((item) => item.value === formTenderDetail.value.company_id)
                 const assurance = await getVendors({ comercial_name: aseguradora.label, vendor_type: 1 });
                 if (assurance.count > 0) {
                     formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
+                    console.log('assurance', assurance)
                 }
                 else {
                     formTenderDetail.value.fee = 0;
@@ -1155,6 +1213,24 @@ export default {
             iaCheck.value = originalPartsString.split(',').map(part => part.trim());
             console.log('ia check value', iaCheck.value);
         }
+        const handleEdit = computed(() => {
+            if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E') {
+                return false;
+            }
+            return true;
+        })
+        const inputRef = ref();
+        const name = ref();
+        let index = 0;
+        const addItem = e => {
+            e.preventDefault();
+            groupList.push(name.value || `New item ${(index += 1)}`);
+            name.value = '';
+            setTimeout(() => {
+                inputRef.value?.focus();
+            }, 0);
+            console.log('addItem');
+        };
         watch(
             () => route.path,
             (_newValue) => {
@@ -1238,6 +1314,12 @@ export default {
             router,
             handleChangeAseguradora,
             iaCheck,
+            handleEdit,
+            groupList,
+            VNodes,
+            inputRef,
+            addItem,
+            name,
         }
     }
 }
@@ -1271,8 +1353,38 @@ export default {
     height: 50px;
     text-align: center;
     align-content: center;
-
 }
+
+.item-d input {
+    border: none;
+    /* Optional: remove the border of the input */
+    width: 100%;
+    /* Optional: make the input take the full width of the container */
+    height: 100%;
+    /* Optional: make the input take the full height of the container */
+    text-align: center;
+    /* Optional: center the text inside the input */
+    border-radius: 20px;
+    /* Optional: apply border-radius to the input */
+}
+
+.item-d select {
+    border: none;
+    /* Optional: remove the border of the input */
+    width: 100%;
+    /* Optional: make the input take the full width of the container */
+    height: 100%;
+    /* Optional: make the input take the full height of the container */
+    text-align: center;
+    /* Optional: center the text inside the input */
+    border-radius: 20px;
+    /* Optional: apply border-radius to the input */
+}
+
+.item-d:not(.no-background) input {
+    background-color: var(--soft-back);
+}
+
 
 .editable-add-btn {
     margin-bottom: 8px;
@@ -1403,7 +1515,11 @@ export default {
     background-color: var(--principal) !important;
 }
 
-.not-quote {}
+.not-quote {
+    background-color: var(--soft-back);
+    width: 50%;
+}
+
 
 .form-item-container {
     display: flex;
@@ -1471,5 +1587,12 @@ export default {
 .ia-check {
     margin-left: 10px;
     color: var(--principal)
+}
+
+.total-item {
+    font-style: italic;
+    background-color: var(--soft-back);
+    margin-bottom: 1%;
+    padding: 1%;
 }
 </style>
