@@ -5,17 +5,17 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="SKU" name="sku">
-              <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 300px;" /> 
+              <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 300px;" />
             </a-form-item>
           </a-col>
           <a-col :span="12">
             <a-form-item label="Producto" name="producto">
-              <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 300px;" /> 
+              <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 300px;" />
             </a-form-item>
           </a-col>
         </a-row>
 
-  
+
         <a-col :span="16" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -26,7 +26,8 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+    :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
       <template v-if="['sku', 'producto', 'stock'].includes(column.dataIndex)">
@@ -61,6 +62,7 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getStocks, addStocks, updateStocks, deleteStocks, getCostStock } from '@/api/stocks/stocks.js';
@@ -69,7 +71,6 @@ export default {
 
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
@@ -85,20 +86,47 @@ export default {
       try {
         const response = await getCostStock(params);
 
-        console.log("response");
-        console.log(response);
-
-        console.log(dataSource.value)
-        dataSource.value = response.map((item, index) => ({
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
+        total.value = response.count;
+        return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
 
-
+    const pageCurrent = ref(1);
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'page_size',
+      },
+    });
+    const pagination = computed(() => ({
+      total: total.value,	//Acá hay que traer el count desde la respuesta
+      current: current.value,
+      pageSize: 10,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
+      run({
+        page_size: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
     const onSearch = () => {
       fetchData(filterInputs.value);
     };
@@ -172,7 +200,7 @@ export default {
       dataSource.value.push(newData);
       editableData[newKey] = cloneDeep(newData);
       // Esperar a que el DOM se actualice y luego desplazarse
-    
+
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -207,6 +235,10 @@ export default {
       count,
       onDelete,
       stocksList,
+      current,
+      total,
+      pagination,
+      handleTableChange,
     }
   }
 }
