@@ -57,7 +57,8 @@
 
   <!-- Table -->
   <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource">
+  <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
+    @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
       <template v-if="['name', 'comercial_name', 'subsidiary', 'cuit', 'mail', 'phone', 'wapp', 'user', 'password', 'address', 'city', 'province', 'cp',
@@ -111,6 +112,7 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vendors/vendors.js';
@@ -119,7 +121,6 @@ export default {
 
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({
       vendor_type: 0,
@@ -140,24 +141,47 @@ export default {
     const fetchData = async (params = {}) => {
       try {
         const response = await getVendors(params);
-
-        console.log("response");
-        console.log(response);
-
-        console.log(dataSource.value)
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
-        // const responseList = await getVendors();
 
-        console.log(dataSource.value)
-
+        total.value = response.count;
+        return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-
+    const pageCurrent = ref(1);
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'page_size',
+      },
+    });
+    const pagination = computed(() => ({
+      total: total.value,	//Acá hay que traer el count desde la respuesta
+      current: current.value,
+      pageSize: 10,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
+      run({
+        page_size: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
 
     const onSearch = () => {
       fetchData(filterInputs.value);
@@ -173,7 +197,6 @@ export default {
 
     onMounted(() => {
       fetchData(filterInputs.value);
-
     });
 
     const editableData = reactive({});
@@ -280,6 +303,10 @@ export default {
       onDelete,
       vendorsList,
       getName,
+      current,
+      total,
+      pagination,
+      handleTableChange,
     }
   }
 }

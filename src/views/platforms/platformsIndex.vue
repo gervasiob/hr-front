@@ -95,7 +95,7 @@ export default {
           const responseList = await getPlatformList();
           platformList.value = responseList;
         }
-        console.log(dataSource.value)
+
         return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
