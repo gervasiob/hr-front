@@ -1,16 +1,11 @@
 <template>
   <div class="filters">
-    <!-- <a-form layout="horizontal" ref="formRef" :model="filterInputs">
+    <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
         <a-row :gutter="24">
           <a-col :span="12">
-            <a-form-item label="Detalle" name="sku">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in stocksList" :key="index" :value="item.name" :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
+            <a-form-item label="SKU" name="sku">
+              <a-input v-model:value="filterInputs.sku__icontains" allowClear style="width: 300px;" />
             </a-form-item>
           </a-col>
         </a-row>
@@ -19,7 +14,7 @@
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
       </a-row>
-    </a-form> -->
+    </a-form>
   </div>
 
   <!-- Table -->
