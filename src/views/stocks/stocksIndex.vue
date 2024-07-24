@@ -16,7 +16,7 @@
       
 
 
-        <a-col :span="8" style="text-align: right">
+        <a-col :span="6" :offset="6" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
