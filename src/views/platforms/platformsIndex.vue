@@ -15,7 +15,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-col :span="8" :offset="8">
+        <a-col :span="8" :offset="6">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
