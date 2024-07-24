@@ -30,6 +30,9 @@ export const tableColumns = [
         title: 'PRECIO S/IVA',
         key: 'price_wo_iva',
         dataIndex: 'price_wo_iva',
+        render: (text, record) => {
+            return parseFloat(record.price / (1.21)).toFixed(2);
+        },
     },
     {
         title: 'PRECIO C/IVA',

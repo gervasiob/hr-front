@@ -164,16 +164,17 @@ export default {
       formatResult: res => res.results,
       pagination: {
         currentKey: 'page',
-        pageSizeKey: 'page_size',
+        pageSizeKey: 'results',
       },
     });
     const pagination = computed(() => ({
       total: total.value,	//Acá hay que traer el count desde la respuesta
       current: current.value,
-      pageSize: 10,
+      pageSize: pageSize.value,
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
+      filters = filterInputs.value;
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -209,10 +210,8 @@ export default {
       const data = dataSource.value.filter(item => key === item.key)[0];
       Object.assign(data, editableData[key]);
       delete editableData[key];
-      console.log(data)
-      if (data.url === "") {
-        data.url = null;
-      }
+
+
       if (data.id > 0) {
         const params = {
           ...data,

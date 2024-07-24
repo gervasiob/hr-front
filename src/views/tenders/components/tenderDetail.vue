@@ -109,7 +109,8 @@
             </a-form-item>
             <a-form-item label="Plataforma" name="platform">
                 <a-select placeholder="Ingrese su búsqueda" style="width: 250px"
-                    v-model:value="formTenderDetail.platform" allowClear show-search :filter-option="filterOption">
+                    v-model:value="formTenderDetail.platform" allowClear show-search :filter-option="filterOption"
+                    @change="handleChangeAseguradora">
                     <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
                         :label="(item.name)">
                         {{ item.name }}
@@ -296,8 +297,7 @@
                             <a-table :columns="columnsQuote" :data-source="dataQuoteSource" bordered
                                 :pagination="false">
                                 <template #bodyCell="{ column, text, record }">
-                                    <template
-                                        v-if="['tire_type_name', 'Llanta', 'Neumatico'].includes(column.dataIndex)">
+                                    <template v-if="['Llanta', 'Neumatico', 'tire_type_name'].includes(column.dataIndex)">
                                         <div>
                                             <a-input v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
@@ -314,19 +314,26 @@
                                             </template>
                                         </div>
                                     </template>
-                                    <template v-if="['type'].includes(column.dataIndex)">
+                                    <!-- <template v-if="['tire_type_name'].includes(column.dataIndex)">
                                         <div>
                                             <a-select ref="select" v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" @focus="focus" @change="handleChange">
-                                                <a-select-option value="Neumaticos">Neumáticos</a-select-option>
-                                                <a-select-option value="Llantas">Llantas</a-select-option>
+                                                <a-select-option value="Auxilio">Auxilio</a-select-option>
+                                                <a-select-option value="Delantera derecha">Delantera
+                                                    derecha</a-select-option>
+                                                <a-select-option value="Delantera izquierda">Delantera
+                                                    izquierda</a-select-option>
+                                                <a-select-option value="Trasera derecha">Trasera
+                                                    derecha</a-select-option>
+                                                <a-select-option value="Trasera izquierda">Trasera
+                                                    izquierda</a-select-option>
                                             </a-select>
                                             <template v-else>
                                                 {{ text }}
                                             </template>
                                         </div>
-                                    </template>
+                                    </template> -->
 
                                     <template v-else-if="column.dataIndex === 'operation'">
                                         <div class="editable-row-operations">
@@ -484,8 +491,7 @@
                         <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
                             <div>
                                 <a-input v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0" />
+                                    v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0" />
                                 <template v-else>
                                     {{ text }}
                                 </template>
@@ -520,9 +526,12 @@
                             <div>
                                 <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange">
-                                    <a-select-option value="Proveedor 1">Proveedor 1</a-select-option>
-                                    <a-select-option value="Proveedor 2">Proveedor 2</a-select-option>
+                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange"
+                                    allow-clear show-search :filter-option="filterOption">
+                                    <a-select-option v-for="(item, index) in vendorList" :key="index" :value="item.name"
+                                        :label="(item.name)">
+                                        {{ item.name }}
+                                    </a-select-option>
                                 </a-select>
                                 <template v-else>
                                     {{ text }}
@@ -538,13 +547,6 @@
                                 </template>
                             </div>
                         </template>
-                        <template v-if="column.dataIndex === 'amount_wo_iva'">
-                            <a-input v-if="editableData[record.key]"
-                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                            <template v-else>
-                                {{ formatCurrency(record.amount_wo_iva) }}
-                            </template>
-                        </template>
                         <template v-if="column.dataIndex === 'price'">
                             <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
@@ -553,15 +555,24 @@
                             </template>
                         </template>
                         <template v-if="column.dataIndex === 'price_wo_iva'">
-                            <a-input v-if="editableData[record.key]"
+                            <!-- <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                            <template v-else>
-                                {{ formatCurrency(record.price) }}
-                            </template>
+                            <template v-else> -->
+                            <div>
+                                {{ formatCurrency(record.price / 1.21) }}
+                            </div>
+                            <!-- </template> -->
+                        </template>
+                        <template v-if="column.dataIndex === 'amount_wo_iva'">
+                            <div>
+                                {{ formatCurrency(record.price / 1.21 * record.quantity) }}
+                            </div>
                         </template>
                         <template v-else-if="column.dataIndex === 'total'">
                             <div>
-                                {{ formatCurrency(record.price * record.quantity) }}
+                                {{ formatCurrency(record.price / 1.21 * record.quantity * (1 + formTenderDetail.fee /
+                                100))
+                                }}
                             </div>
                         </template>
 
@@ -637,9 +648,9 @@ import { dataTable } from './data';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { getUsers } from '@/api/users/users.js';
-import { getPlatformList } from '@/api/platforms/platforms.js';
+import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
 import { getRoles } from '@/api/roles/roles.js';
-import { getVendors } from '@/api/vendors/vendors.js';
+import { getVendors, getVendorList } from '@/api/vendors/vendors.js';
 import { RobotOutlined, PlusOutlined } from '@ant-design/icons-vue';
 export default {
     name: 'TenderDetail',
@@ -682,6 +693,7 @@ export default {
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
         const iaCheck = ref([]);
         const estadoList = TENDER_STATES;
+        const vendorList = ref([]);
         const optionsDaytonas = DAYTONAS.map(daytona => ({
             label: `${daytona.businessName} - ${daytona.completeAddress}`,
             value: daytona.idClaimsProvider
@@ -925,6 +937,13 @@ export default {
                         formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
                     }
                 }
+                if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.platform) {
+                    const platform = await getPlatforms({ name__icontains: formTenderDetail.value.platform });
+                    console.log('platform', platform);
+                    if (platform.count > 0) {
+                        formTenderDetail.value.fee += platform.results[0].fee;
+                    }
+                }
 
                 //Marca con IA:
                 if (formTenderDetail.value.original_parts) {
@@ -1124,6 +1143,11 @@ export default {
             } catch (error) {
                 console.error("Error fetching agents:", error);
             }
+            try {
+                vendorList.value = await getVendorList();
+            } catch (error) {
+                console.error("Error fetching vendor list:", error);
+            }
         };
         const getPlatformsListData = async () => {
             try {
@@ -1191,9 +1215,6 @@ export default {
                     item.neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
                     return item;
                 });
-
-                console.log("data", dataQuoteSource.value)
-                console.log("newcost", newCost.value.spare_tire_amounts[0].cost_amount)
             } catch (err) {
                 error.value = err;
             } finally {
@@ -1201,24 +1222,34 @@ export default {
             }
         };
         const handleChangeAseguradora = async () => {
-            console.log('aseguradora change')
             if (formTenderDetail.value.company_id) {
                 const aseguradora = aseguradoraList.find((item) => item.value === formTenderDetail.value.company_id)
                 const assurance = await getVendors({ comercial_name: aseguradora.label, vendor_type: 1 });
                 if (assurance.count > 0) {
                     formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
-                    console.log('assurance', assurance)
                 }
                 else {
                     formTenderDetail.value.fee = 0;
                 }
             }
+            if (formTenderDetail.value.platform) {
+                const platform = await getPlatforms({ name__icontains: formTenderDetail.value.platform });
+                if (platform.count > 0) {
+                    if (platform.count > 0) {
+                        formTenderDetail.value.fee += platform.results[0].fee;
+                    }
+                }
+            }
         }
         const handleIACheck = (value) => {
             console.log('valor recibido IA', value)
-            const originalPartsString = value;
-            iaCheck.value = originalPartsString.split(',').map(part => part.trim());
-            console.log('ia check value', iaCheck.value);
+            if (formTenderDetail.value.quote_state === 'N') {
+                const originalPartsString = value;
+                iaCheck.value = originalPartsString.split(',').map(part => part.trim());
+                console.log('ia check value', iaCheck.value);
+            } else {
+                iaCheck.value = [];
+            }
         }
         const handleEdit = computed(() => {
             if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E') {
@@ -1327,6 +1358,7 @@ export default {
             inputRef,
             addItem,
             name,
+            vendorList,
         }
     }
 }

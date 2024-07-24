@@ -14,7 +14,7 @@
             <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 250px;" />
           </a-form-item>
         </a-col>
-        <a-col :span="6">
+        <a-col :span="5" :offset="1">
           <a-form-item label="Marca" name="marca">
             <a-input v-model:value="filterInputs.product_brand__icontains" allowClear style="width: 250px;" />
           </a-form-item>
@@ -75,7 +75,7 @@
             </a-select-option>
           </a-select>
           <template v-else>
-            {{ text === 'true' ? 'Sí' : 'No' }}
+            {{ text === true ? 'Sí' : 'No' }}
           </template>
         </div>
       </template>
