@@ -1,7 +1,7 @@
 <template>
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
-      <a-row :gutter="24">
+
         <a-row :gutter="24">
           <a-col :span="8">
             <a-form-item label="Plataforma" name="name">
@@ -14,7 +14,6 @@
               </a-select>
             </a-form-item>
           </a-col>
-        </a-row>
         <a-col :span="8" :offset="6">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
