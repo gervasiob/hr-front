@@ -6,17 +6,17 @@
       <a-row :gutter="24">
         <a-col :span="6">
           <a-form-item label="SKU" name="sku">
-            <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 250px;" />
+            <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 200px;" />
           </a-form-item>
         </a-col>
         <a-col :span="6">
           <a-form-item label="Detalle" name="detail">
-            <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 250px;" />
+            <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 200px;" />
           </a-form-item>
         </a-col>
         <a-col :span="5" :offset="1">
           <a-form-item label="Marca" name="marca">
-            <a-input v-model:value="filterInputs.product_brand__icontains" allowClear style="width: 250px;" />
+            <a-input v-model:value="filterInputs.product_brand__icontains" allowClear style="width: 200px;" />
           </a-form-item>
         </a-col>
 
