@@ -195,7 +195,7 @@ export default {
             };
         };
         const fetchData = async (params = {}) => {
-            dataSource.value = [];
+
             try {
                 const response = await getQuotesSummary(params);
                 dataSource.value = response.results.filter(item => item.claim_id !== null);
