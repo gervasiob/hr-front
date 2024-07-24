@@ -1,19 +1,19 @@
 <template>
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
-      <a-row :gutter="24">
+      
         <a-row :gutter="24">
           <a-col :span="6">
             <a-form-item label="SKU" name="sku">
-              <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 300px;" />
+              <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 200px;" />
             </a-form-item>
           </a-col>
-          <a-col :span="6" :offset="6">
+          <a-col :span="6">
             <a-form-item label="Producto" name="producto">
-              <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 300px;" />
+              <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 200px;" />
             </a-form-item>
           </a-col>
-        </a-row>
+      
 
 
         <a-col :span="8" style="text-align: right">
