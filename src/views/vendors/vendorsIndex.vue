@@ -14,7 +14,7 @@
           </a-form-item>
         </a-col> -->
       
-          <a-col :span="12">
+          <a-col :span="8">
             <a-form-item label="Tipo" name="name">
               <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear
                 show-search :filter-option="filterOption" style="width: 300px;">
@@ -47,7 +47,7 @@
             </a-select>
           </a-form-item>
         </a-col> -->
-        <a-col :span="8" style="text-align: right">
+        <a-col :span="8" :offset="6" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
