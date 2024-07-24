@@ -6,7 +6,7 @@
       <a-row :gutter="24">
         <a-col :span="6">
           <a-form-item label="SKU" name="sku">
-            <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 200px;" />
+            <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 150px;" />
           </a-form-item>
         </a-col>
         <a-col :span="6">
