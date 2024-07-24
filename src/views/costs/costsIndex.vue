@@ -229,7 +229,7 @@ export default {
       return 0;
     });
     const handleAdd = () => {
-      const newKey = `${count.value}`;
+      const newKey = `${0}`;
       const newData = {
         key: newKey,
         id: '',
