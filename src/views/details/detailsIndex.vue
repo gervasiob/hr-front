@@ -118,7 +118,7 @@ export default {
       formatResult: res => res.results,
       pagination: {
         currentKey: 'page',
-        pageSizeKey: 'page_size',
+        pageSizeKey: 'results',
       },
     });
     const pagination = computed(() => ({

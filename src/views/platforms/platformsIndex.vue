@@ -3,7 +3,7 @@
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
         <a-row :gutter="24">
-          <a-col :span="14">
+          <a-col :span="8">
             <a-form-item label="Plataforma" name="name">
               <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
                 :filter-option="filterOption" style="width: 300px;">
@@ -15,7 +15,7 @@
             </a-form-item>
           </a-col>
         </a-row>
-        <a-col :span="10" style="text-align: right">
+        <a-col :span="8" :offset="8">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>

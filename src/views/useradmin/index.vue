@@ -14,8 +14,8 @@
         </a-col>
         <a-col :span="12">
           <a-form-item label="Roles" name="name">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.roles" allowClear
-              show-search :filter-option="filterOption">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.roles" allowClear show-search
+              :filter-option="filterOption">
               <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
                 {{ item.name }}
               </a-select-option>
@@ -225,18 +225,24 @@ export default {
       const data = dataSource.value.filter(item => key === item.key)[0];
       Object.assign(data, editableData[key]);
       delete editableData[key];
-      console.log(data)
+      let rolesParam = [];
+      if (Array.isArray(data.roles)) {
+        rolesParam = data.roles;
+      } else {
+        rolesParam.push(data.roles)
+      }
+    
       const params = {
-          ...data,
-          roles: [data.roles]
+        ...data,
+        roles: rolesParam,
       }
       if (data.id > 0) {
-        
+
         updateUsers(data.id, params).then(() => {
           fetchData();
         });
       } else {
-        const { id, ...dataWithoutId } = data;
+        const { id, ...dataWithoutId } = params;
         addUsers(dataWithoutId).then(() => {
           fetchData();
         });
@@ -264,7 +270,7 @@ export default {
       return 0;
     });
     const handleAdd = () => {
-      const newKey = `${count.value}`;
+      const newKey = `${0}`;
       const newData = {
         key: newKey,
         id: '',

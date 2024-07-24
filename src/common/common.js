@@ -27,7 +27,7 @@ export const TENDER_STATES = [
     {
         label: 'Adjudicado',
         value: 'A',
-        color: 'var(--principal)' // Rojo
+        color: 'volcano' // Rojo
     },
     {
         label: 'Entregado',
@@ -37,7 +37,7 @@ export const TENDER_STATES = [
     {
         label: 'Evaluado',
         value: 'E',
-        color: 'lime',
+        color: 'purple',
     },
     {
         label: 'Cancelado',

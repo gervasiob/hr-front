@@ -3,12 +3,12 @@
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
         <a-row :gutter="24">
-          <a-col :span="12">
+          <a-col :span="6">
             <a-form-item label="SKU" name="sku">
               <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 300px;" />
             </a-form-item>
           </a-col>
-          <a-col :span="12">
+          <a-col :span="6" :offset="6">
             <a-form-item label="Producto" name="producto">
               <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 300px;" />
             </a-form-item>
@@ -16,7 +16,7 @@
         </a-row>
 
 
-        <a-col :span="16" style="text-align: right">
+        <a-col :span="8" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>

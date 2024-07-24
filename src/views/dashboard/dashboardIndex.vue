@@ -35,12 +35,19 @@
     </div>
     <div class="clean-contanier">
         <a-row :gutter="24">
-            <a-col :span="12">
+            <a-col :span="24">
                 <div class="graph-2">
                     <QuotesAggregationChart :chart-data="quotesAggregationData" />
                 </div>
             </a-col>
-            <a-col :span="12">
+            <!-- <a-col :span="12">
+                <div class="graph-2">
+                    <QuotesAchievementChart :chart-data="quotesAchievementData" />
+                </div>
+            </a-col> -->
+        </a-row>
+        <a-row style="margin-top: 1%;">
+            <a-col :span="24">
                 <div class="graph-2">
                     <QuotesAchievementChart :chart-data="quotesAchievementData" />
                 </div>
@@ -49,12 +56,12 @@
     </div>
     <div class="clean-contanier">
         <a-row :gutter="24">
-            <a-col :span="6">
+            <!-- <a-col :span="6">
                 <div class="graph-2">Grafico 5</div>
             </a-col>
             <a-col :span="9">
                 <div class="graph-2">Grafico 6</div>
-            </a-col>
+            </a-col> -->
             <a-col :span="9">
                 <div class="graph-2">
                     <TireTypeNameChart :chart-data="tireTypeNameData" />

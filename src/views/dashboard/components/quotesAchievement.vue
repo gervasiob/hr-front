@@ -35,7 +35,7 @@ export default {
             const myChart = echarts.init(chartDom);
             myChart.setOption({
                 title: {
-                    text: 'Achievement de Licitaciones',
+                    text: 'Licitaciones Ganadas',
                     id: 2,
                 },
                 tooltip: {
@@ -51,12 +51,23 @@ export default {
                     data: companyName,
                     show: true,
                     top: 40,
+                    textStyle: {
+                        overflow: 'truncate',
+                        ellipsis: '...',
+                        width: 85,
+                    },
+                    type: 'scroll',
+                    orient: 'vertical',
+                    right: 5,
+                    padding: [0, 10],
+
                 },
                 grid: {
-                    height: '220px',
-                    width: '450px',
-                    top: 150,
+                    // height: '220px',
+                    // width: '400px',
+                    top: 40,
                     left: 170,
+                    right: 150,
 
                 },
                 yAxis: [
