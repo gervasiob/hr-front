@@ -13,7 +13,7 @@
             </a-select>
           </a-form-item>
         </a-col> -->
-        <a-row :gutter="24">
+      
           <a-col :span="12">
             <a-form-item label="Tipo" name="name">
               <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear
@@ -30,7 +30,7 @@
               <a-input v-model:value="filterInputs.claim_id" allowClear />
             </a-form-item>
           </a-col> -->
-        </a-row>
+      
 
         <!-- <a-col :span="6">
           <a-form-item label="Licitación id" name="tender_id">
@@ -47,7 +47,7 @@
             </a-select>
           </a-form-item>
         </a-col> -->
-        <a-col :span="16" style="text-align: right">
+        <a-col :span="8" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
