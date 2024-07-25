@@ -38,7 +38,7 @@
   </div>
 
   <!-- Table -->
-  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -265,18 +265,20 @@ export default {
     };
     const count = computed(() => {
       if (dataSource.value) {
-        return dataSource.value.length + 1
+        return dataSource.value.length
       }
       return 0;
     });
     const handleAdd = () => {
-      const newKey = `${0}`;
+      console.log('count', count.value)
+      const newKey = `${count.value}`;
       const newData = {
         key: newKey,
         id: '',
         username: '',
       };
       dataSource.value.push(newData);
+      console.log('data', dataSource.value)
       editableData[newKey] = cloneDeep(newData);
     };
     const onDelete = key => {

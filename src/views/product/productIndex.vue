@@ -53,7 +53,7 @@
   </div>
 
   <!-- Table -->
-  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 

@@ -46,7 +46,7 @@
   </div>
 
   <!-- Table -->
-  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -112,7 +112,9 @@ export default {
   setup() {
     const formRef = ref();
     const formState = reactive({});
-    const filterInputs = ref({});
+    const filterInputs = ref({
+      is_active: true,
+    });
 
     const columns = tableColumns;
     const costsList = ref([]);
@@ -210,6 +212,7 @@ export default {
     const cancel = (key) => {
       console.log('cancel', key)
       if (key === undefined) {
+        console.log('undefined')
         onDelete(key);
         delete editableData[key];
         return;
@@ -217,7 +220,8 @@ export default {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.sku || !record.product_name) {
+      if (!record.code || !record.detail) {
+        console.log('undefined')
         onDelete(key);
       }
       delete editableData[key];

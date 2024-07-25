@@ -18,7 +18,7 @@
   </div>
 
   <!-- Table -->
-  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -191,7 +191,7 @@ export default {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.comercial_name || !record.vendor_type) {
+      if (!record.sku || !record.quantity === undefined) {
         onDelete(key);
       }
     };

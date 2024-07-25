@@ -60,16 +60,6 @@ export const TENDER_STATES = [
         color: '#2B7D73',
     },
     {
-        label: 'Pendiente de cobranza',
-        value: 'L',
-        color: '#FFFF00' // Amarillo
-    },
-    {
-        label: 'Factura Procesada',
-        value: 'M',
-        color: '#008000' // Verde
-    },
-    {
         label: 'Pendiente',
         value: 'N',
         color: 'gold'
@@ -78,16 +68,6 @@ export const TENDER_STATES = [
         label: 'Solicitud Cambio de Costo',
         value: 'O',
         color: '#789E15',
-    },
-    {
-        label: 'Pagado',
-        value: 'P',
-        color: '#0000FF' // Azul
-    },
-    {
-        label: 'Documentación',
-        value: 'Q',
-        color: '#A52A2A' // Marrón
     },
     {
         label: 'Rechazado',
@@ -100,11 +80,6 @@ export const TENDER_STATES = [
         color: '#C361CA',
     },
     {
-        label: 'Facturado',
-        value: 'T',
-        color: '#00FF00' // Verde claro
-    },
-    {
         label: 'Licitado',
         value: 'V',
         color: 'blue'
@@ -113,11 +88,6 @@ export const TENDER_STATES = [
         label: 'Adjudicado/Rechazado',
         value: 'W',
         color: '#A52A2A',
-    },
-    {
-        label: 'Aprobado para Facturar',
-        value: 'Y',
-        color: '#FF1493' // Rosa fuerte
     },
 ];
 export const PRIORITY_VALUES = [

@@ -13,24 +13,23 @@
             </a-select>
           </a-form-item>
         </a-col> -->
-      
-          <a-col :span="8">
-            <a-form-item label="Tipo" name="name">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear
-                show-search :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value"
-                  :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <!-- <a-col :span="12">
+
+        <a-col :span="8">
+          <a-form-item label="Tipo" name="name">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear show-search
+              :filter-option="filterOption" style="width: 300px;">
+              <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value" :label="item.name">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <!-- <a-col :span="12">
             <a-form-item label="Rol Id" name="rol_id">
               <a-input v-model:value="filterInputs.claim_id" allowClear />
             </a-form-item>
           </a-col> -->
-      
+
 
         <!-- <a-col :span="6">
           <a-form-item label="Licitación id" name="tender_id">
@@ -56,12 +55,12 @@
   </div>
 
   <!-- Table -->
-  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
     @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['name', 'comercial_name', 'subsidiary', 'cuit', 'mail', 'phone', 'wapp', 'user', 'password', 'address', 'city', 'province', 'cp',
+      <template v-if="['name', 'social_name', 'subsidiary', 'cuit', 'mail', 'phone', 'wapp', 'user', 'password', 'address', 'city', 'province', 'cp',
         'maps_link', 'freight', 'additional_percentage', 'additional_amount', 'fee_margen', 'fee_financial', 'vendor_state', 'vendor_obs', 'product_feedback'
       ].includes(column.dataIndex)">
         <div>
@@ -111,7 +110,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, computed } from 'vue';
+import { reactive, ref, onMounted, computed, nextTick } from 'vue';
 import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
@@ -143,7 +142,8 @@ export default {
         const response = await getVendors(params);
         dataSource.value = response.results.map((item, index) => ({
           ...item,
-          key: index
+          key: index,
+          user: null,
         }));
 
         total.value = response.count;
@@ -229,6 +229,7 @@ export default {
     const cancel = (key) => {
       console.log('cancel', key)
       if (key === undefined) {
+        console.log('undefined')
         onDelete(key);
         delete editableData[key];
         return;
@@ -236,28 +237,32 @@ export default {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.comercial_name || !record.vendor_type) {
+      if (!record.social_name || record.vendor_type === undefined) {
         onDelete(key);
       }
       delete editableData[key];
     };
     const count = computed(() => {
-      if (dataSource.value) {
-        return dataSource.value.length + 1
+      if (total.value) {
+        return total.value + 1
       }
       return 0;
     });
     const handleAdd = () => {
-      const newKey = `${0}`;
+      const newKey = `${count.value}`;
       const newData = {
         key: newKey,
         id: '',
         name: '',
       };
-      dataSource.value.push(newData);
-      editableData[newKey] = cloneDeep(newData);
-      // Esperar a que el DOM se actualice y luego desplazarse
 
+ 
+      dataSource.value.unshift(newData); // Agrega el nuevo registro al principio
+      console.log('data', dataSource.value)
+      editableData[newKey] = cloneDeep(newData);
+
+      // Ajusta la paginación para mostrar la primera página
+     
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];

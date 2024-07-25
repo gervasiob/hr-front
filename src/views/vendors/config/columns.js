@@ -11,8 +11,8 @@ export const tableColumns = [
     },
     {
         title: 'Nombre',
-        dataIndex: 'comercial_name',
-        sorter: (a, b) => a.name.localeCompare(b.name),
+        dataIndex: 'social_name',
+        sorter: (a, b) => a.social_name.localeCompare(b.social_name),
         fixed: 'left',
         width: 210,
     },

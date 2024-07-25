@@ -99,7 +99,7 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Gestor" name="agent">
-                <a-select placeholder="Ingrese su búsqueda" style="width: 200px" v-model:value="formTenderDetail.agent"
+                <a-select placeholder="Ingrese su búsqueda" style="width: 200px" v-model:value="formTenderDetail.user"
                     allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                         :label="(item.fullName)">
@@ -206,7 +206,7 @@
                 <a-descriptions-item label="Gestor">
                     <div class="item-d" :class="{ 'no-background': handleEdit }">
                         <a-select placeholder="Ingrese su búsqueda"
-                            v-model:value="formTenderDetail.tender_data.operador" allowClear show-search
+                            v-model:value="formTenderDetail.user" allowClear show-search
                             :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                                 :label="(item.fullName)">
@@ -999,9 +999,9 @@ export default {
                         }
                         if (type.value === 'Add') {
                             console.log('Add')
+                            console.log('add form', formTenderDetail.value)
                             fullParams = {
                                 ...fullParams,
-                                user: formTenderDetail.value.agent,
                                 company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
                             }
                             addQuotes(fullParams);

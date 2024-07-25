@@ -132,16 +132,11 @@ export default {
     const cancel = (key) => {
       console.log('cancel', key)
       if (key === undefined) {
-        onDelete(key);
         delete editableData[key];
         return;
       }
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
-      delete editableData[key];
-      if (!record.comercial_name || !record.vendor_type) {
-        onDelete(key);
-      }
       delete editableData[key];
     };
     const count = computed(() => {
@@ -162,20 +157,6 @@ export default {
       // Esperar a que el DOM se actualice y luego desplazarse
     
     };
-    const onDelete = key => {
-      const data = dataSource.value.filter(item => key === item.key)[0];
-      if (data.id) {
-        const params = {
-          name: data.name,
-        }
-        deleteCriterial(data.id, params).then(() => {
-          fetchData();
-        });
-      }
-      const newData = dataSource.value.filter(item => item.key !== key);
-      dataSource.value = newData;
-
-    };
     return {
       formRef,
       formState,
@@ -193,7 +174,6 @@ export default {
       save,
       handleAdd,
       count,
-      onDelete,
       criteriasList,
     }
   }
