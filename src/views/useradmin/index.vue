@@ -258,7 +258,7 @@ export default {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.username || !record.email) {
+      if (!record.username) {
         onDelete(key);
       }
       delete editableData[key];
