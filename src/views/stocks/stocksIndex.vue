@@ -1,19 +1,19 @@
 <template>
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
-      
-        <a-row :gutter="24">
-          <a-col :span="6">
-            <a-form-item label="SKU" name="sku">
-              <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 200px;" />
-            </a-form-item>
-          </a-col>
-          <a-col :span="6">
-            <a-form-item label="Producto" name="producto">
-              <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 200px;" />
-            </a-form-item>
-          </a-col>
-      
+
+      <a-row :gutter="24">
+        <a-col :span="6">
+          <a-form-item label="SKU" name="sku">
+            <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 200px;" />
+          </a-form-item>
+        </a-col>
+        <a-col :span="6">
+          <a-form-item label="Producto" name="producto">
+            <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 200px;" />
+          </a-form-item>
+        </a-col>
+
 
 
         <a-col :span="6" :offset="6" style="text-align: right">
@@ -171,15 +171,16 @@ export default {
     };
     const cancel = (key) => {
       console.log('cancel', key)
-      if (key === undefined) {
+      if (key === undefined && key < 0) {
+        console.log('key', key)
         onDelete(key);
         delete editableData[key];
         return;
       }
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
-      delete editableData[key];
-      if (!record.sku || !record.product_name) {
+      if (!record.sku || !record.producto) {
+        console.log('falta sku o producto')
         onDelete(key);
       }
       delete editableData[key];
@@ -202,20 +203,20 @@ export default {
       // Esperar a que el DOM se actualice y luego desplazarse
 
     };
-    const onDelete = key => {
-      const data = dataSource.value.filter(item => key === item.key)[0];
-      if (data.id) {
-        const params = {
-          name: data.name,
-        }
-        deletePlatforms(data.id, params).then(() => {
-          fetchData();
-        });
-      }
-      const newData = dataSource.value.filter(item => item.key !== key);
-      dataSource.value = newData;
+    // const onDelete = key => {
+    //   const data = dataSource.value.filter(item => key === item.key)[0];
+    //   if (data.id) {
+    //     const params = {
+    //       name: data.name,
+    //     }
+    //     deletePlatforms(data.id, params).then(() => {
+    //       fetchData();
+    //     });
+    //   }
+    //   const newData = dataSource.value.filter(item => item.key !== key);
+    //   dataSource.value = newData;
 
-    };
+    // };
     return {
       formRef,
       formState,
@@ -233,7 +234,6 @@ export default {
       save,
       handleAdd,
       count,
-      onDelete,
       stocksList,
       current,
       total,
