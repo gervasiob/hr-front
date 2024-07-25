@@ -13,23 +13,21 @@
             </a-select>
           </a-form-item>
         </a-col> -->
-        <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item label="Roles" name="name">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption">
-                <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.id" :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-          <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
-            </a-form-item>
-          </a-col>
-        </a-row>
+        <a-col :span="8">
+          <a-form-item label="Roles" name="name">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
+              :filter-option="filterOption">
+              <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.name" :label="item.name">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="Rol Id" name="id">
+            <a-input v-model:value="filterInputs.id" allowClear />
+          </a-form-item>
+        </a-col>
 
         <!-- <a-col :span="6">
           <a-form-item label="Licitación id" name="tender_id">
@@ -46,7 +44,7 @@
             </a-select>
           </a-form-item>
         </a-col> -->
-        <a-col :span="16" style="text-align: right">
+        <a-col :span="8" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -55,7 +53,7 @@
   </div>
 
   <!-- Table -->
-  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
@@ -93,7 +91,7 @@
 import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getRoles, addRoles, updateRoles, deleteRoles } from '@/api/roles/roles.js';
+import { getRoles, addRoles, updateRoles, deleteRoles, getRoleList } from '@/api/roles/roles.js';
 
 export default {
   name: 'RolesList',
@@ -115,18 +113,13 @@ export default {
     const fetchData = async (params = {}) => {
       try {
         const response = await getRoles(params);
-
-        console.log("response");
-        console.log(response);
-
-        console.log(dataSource.value)
-        dataSource.value = response.map((item, index) => ({
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
-
-        roleList.value = response;
-        console.log(dataSource.value)
+        if (Object.keys(params).length === 0) {
+          roleList.value = await getRoleList();
+        }
 
       } catch (error) {
         console.error("Error fetching quotes:", error);
@@ -186,7 +179,7 @@ export default {
       return 0;
     });
     const handleAdd = () => {
-      const newKey = `${count.value}`;
+      const newKey = `${0}`;
       const newData = {
         key: newKey,
         id: '',

@@ -1,34 +1,14 @@
 <template>
   <div class="filters">
-    <a-form layout="horizontal" ref="formRef" :model="filterInputs">
-
-        <a-row :gutter="24">
-          <a-col :span="8">
-            <a-form-item label="Plataforma" name="name">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
-                  :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
-        <a-col :span="8" :offset="6">
-          <a-button type="primary" danger @click="onSearch">Buscar</a-button>
-          <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
-        </a-col>
-      </a-row>
-    </a-form>
+      
   </div>
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
-    :loading="loading" @change="handleTableChange">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['name', 'url', 'fee'].includes(column.dataIndex)">
+      <template v-if="['points','validation_points','invalidation_points','sort_order'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -48,9 +28,9 @@
           </span>
           <span v-else>
             <a @click="edit(record.key)">Edit</a>
-            <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
+            <!-- <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
-            </a-popconfirm>
+            </a-popconfirm> -->
           </span>
         </div>
       </template>
@@ -60,20 +40,20 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
-import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms, getPlatformList } from '@/api/platforms/platforms.js'
+import { getCriterias, addCriterias, updateCriterias, deleteCriterias } from '@/api/criterial/criterial.js';
 export default {
-  name: 'PlatformsList',
+  name: 'criteriasList',
 
   setup() {
     const formRef = ref();
+    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
     const columns = tableColumns;
-    const platformList = ref([]);
+    const criteriasList = ref([]);
 
     const customHeaderRow = (column) => {
       return {
@@ -82,54 +62,26 @@ export default {
     };
     const fetchData = async (params = {}) => {
       try {
-        const response = await getPlatforms(params);
+        const response = await getCriterias(params);
 
+        console.log("response");
+        console.log(response);
+
+        console.log(dataSource.value)
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
-        total.value = response.count;
+        const responseList = await getCriterias();
+        criteriasList.value = responseList;
+        console.log(dataSource.value)
 
-        if (Object.keys(params).length === 0) {
-          const responseList = await getPlatformList();
-          platformList.value = responseList;
-        }
-
-        return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-    const pageCurrent = ref(1);
-    const total = ref(10);
-    const {
-      data: dataSource,
-      run,
-      loading,
-      current,
-      pageSize,
-    } = usePagination(fetchData, {
-      formatResult: res => res.results,
-      pagination: {
-        currentKey: 'page',
-        pageSizeKey: 'page_size',
-      },
-    });
-    const pagination = computed(() => ({
-      total: total.value,	//Acá hay que traer el count desde la respuesta
-      current: current.value,
-      pageSize: 10,
-    }));
-    const handleTableChange = (pag, filters, sorter) => {
-      pageCurrent.value = pag?.current;
-      run({
-        page_size: pag.pageSize,
-        page: pag?.current,
-        sortField: sorter.field,
-        sortOrder: sorter.order,
-        ...filters,
-      });
-    };
+
+
     const onSearch = () => {
       fetchData(filterInputs.value);
     };
@@ -156,38 +108,36 @@ export default {
     const save = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
       Object.assign(data, editableData[key]);
-      delete editableData[key];
-      console.log(data)
-      if (data.url === "") {
-        data.url = null;
+      let valueControl = parseFloat(data.validation_points) +parseFloat(data.invalidation_points);
+
+      if(valueControl > 1 || valueControl < 1){
+        alert('La suma entre puntos de validación y de invalidación debe ser igual a 1');
+        return;
       }
       if (data.id > 0) {
         const params = {
           ...data,
         }
-        updatePlatforms(data.id, params).then(() => {
+        updateCriterias(data.id, params).then(() => {
           fetchData();
         });
       } else {
         const { id, ...dataWithoutId } = data;
-        addPlatforms(dataWithoutId).then(() => {
+        addCriterias(dataWithoutId).then(() => {
           fetchData();
         });
       }
+      delete editableData[key];
     };
     const cancel = (key) => {
       console.log('cancel', key)
       if (key === undefined) {
-        onDelete(key);
         delete editableData[key];
         return;
       }
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.name) {
-        onDelete(key);
-      }
     };
     const count = computed(() => {
       if (dataSource.value) {
@@ -196,7 +146,7 @@ export default {
       return 0;
     });
     const handleAdd = () => {
-      const newKey = `${0}`;
+      const newKey = `${count.value}`;
       const newData = {
         key: newKey,
         id: '',
@@ -205,21 +155,7 @@ export default {
       dataSource.value.push(newData);
       editableData[newKey] = cloneDeep(newData);
       // Esperar a que el DOM se actualice y luego desplazarse
-
-    };
-    const onDelete = key => {
-      const data = dataSource.value.filter(item => key === item.key)[0];
-      if (data.id) {
-        const params = {
-          name: data.name,
-        }
-        deletePlatforms(data.id, params).then(() => {
-          fetchData();
-        });
-      }
-      const newData = dataSource.value.filter(item => item.key !== key);
-      dataSource.value = newData;
-
+    
     };
     return {
       formRef,
@@ -238,12 +174,7 @@ export default {
       save,
       handleAdd,
       count,
-      onDelete,
-      platformList,
-      current,
-      total,
-      pagination,
-      handleTableChange,
+      criteriasList,
     }
   }
 }

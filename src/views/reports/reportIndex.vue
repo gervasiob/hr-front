@@ -103,7 +103,8 @@
         </a-row>
     </div>
     <!-- Table -->
-    <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+    <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+        :loading="loading" @change="handleTableChange">
         <template #headerCell="{ column }">
             <template v-if="column.key === 'id'">
                 <span>
@@ -148,6 +149,7 @@
 
 <script>
 import { reactive, ref, onMounted, onUnmounted, computed, watch } from 'vue';
+import { usePagination } from 'vue-request';
 import { useRoute } from 'vue-router';
 import { tableColumns } from './config/columns.js';
 import { ASEGURADORAS, TENDER_STATES, TIRE_BRANDS, MODELS } from '@/common/common'
@@ -160,7 +162,6 @@ export default {
     setup() {
         const expand = ref(false);
         const formRef = ref();
-        const dataSource = ref([]);
         const route = useRoute();
         let routeName = ref();
         const rulesRef = reactive({
@@ -194,15 +195,48 @@ export default {
             };
         };
         const fetchData = async (params = {}) => {
-            dataSource.value = [];
+
             try {
                 const response = await getQuotesSummary(params);
-                dataSource.value = response.filter(item => item.claim_id !== null);
-
+                dataSource.value = response.results.filter(item => item.claim_id !== null);
+                if (Object.keys(params).length === 0) {
+                    getUserList();
+                }
+                return dataSource.value;
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }
 
+        };
+        const pageCurrent = ref(1);
+        const total = ref(10);
+        const {
+            data: dataSource,
+            run,
+            loading,
+            current,
+            pageSize,
+        } = usePagination(fetchData, {
+            formatResult: res => res.results,
+            pagination: {
+                currentKey: 'page',
+                pageSizeKey: 'page_size',
+            },
+        });
+        const pagination = computed(() => ({
+            total: total.value,	//Acá hay que traer el count desde la respuesta
+            current: current.value,
+            pageSize: 10,
+        }));
+        const handleTableChange = (pag, filters, sorter) => {
+            pageCurrent.value = pag?.current;
+            run({
+                page_size: pag.pageSize,
+                page: pag?.current,
+                sortField: sorter.field,
+                sortOrder: sorter.order,
+                ...filters,
+            });
         };
         const onSearch = () => {
             let params = filterInputs.value;
@@ -258,7 +292,6 @@ export default {
         }
         onMounted(() => {
             getFetchData();
-            getUserList();
         });
         const getUserList = async () => {
             try {
@@ -298,6 +331,10 @@ export default {
             modelList,
             onExport,
             tenderFilters,
+            current,
+            total,
+            pagination,
+            handleTableChange,
         }
     }
 }

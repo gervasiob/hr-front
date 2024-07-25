@@ -2,34 +2,51 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <a-col :span="12">
-          <a-form-item label="Usuario" name="username">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.username" allowClear show-search
+        <!-- <a-col :span="12">
+          <a-form-item label="Aseguradora" name="aseguradora">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
               :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in userList" :key="index" :value="item.name" :label="item.name">
+              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
+                :label="aseguradora.label">
+                {{ aseguradora.label }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col> -->
+
+        <a-col :span="8">
+          <a-form-item label="Tipo" name="name">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear show-search
+              :filter-option="filterOption" style="width: 300px;">
+              <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value" :label="item.name">
                 {{ item.name }}
               </a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="12">
-          <a-form-item label="Roles" name="name">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.roles" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
-                {{ item.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
-      <a-row :gutter="24">
-        <a-col :span="6">
-          <a-form-item label="ID de Usuario" name="id">
+        <!-- <a-col :span="12">
+            <a-form-item label="Rol Id" name="rol_id">
+              <a-input v-model:value="filterInputs.claim_id" allowClear />
+            </a-form-item>
+          </a-col> -->
+
+
+        <!-- <a-col :span="6">
+          <a-form-item label="Licitación id" name="tender_id">
             <a-input v-model:value="filterInputs.id" allowClear />
           </a-form-item>
-        </a-col>
-        <a-col :span="16" style="text-align: right">
+        </a-col> -->
+        <!-- <a-col :span="6">
+          <a-form-item label="Agente" name="agent">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
+              :filter-option="filterOption">
+              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
+                {{ item.fullName }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col> -->
+        <a-col :span="8" :offset="6" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -39,11 +56,13 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
-    :loading="loading" @change="handleTableChange">
+  <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
+    @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['username', 'email'].includes(column.dataIndex)">
+      <template v-if="['name', 'social_name', 'subsidiary', 'cuit', 'mail', 'phone', 'wapp', 'user', 'password', 'address', 'city', 'province', 'cp',
+        'maps_link', 'freight', 'additional_percentage', 'additional_amount', 'fee_margen', 'fee_financial', 'vendor_state', 'vendor_obs', 'product_feedback'
+      ].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -52,21 +71,19 @@
           </template>
         </div>
       </template>
-      <template v-if="['roles'].includes(column.dataIndex)">
+      <template v-if="['vendor_type'].includes(column.dataIndex)">
         <div>
+          <!-- <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />  -->
           <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
             v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
-            :filter-option="filterOption">
-            <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
+            :filter-option="filterOption" style="width: 200px;">
+            <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value" :label="item.name">
               {{ item.name }}
             </a-select-option>
           </a-select>
           <template v-else>
-            <span>
-              <a-tag :color="getRoleColor(text)">
-                {{ getRoleName(text) }}
-              </a-tag>
-            </span>
+            {{ getName(text) }}
 
           </template>
         </div>
@@ -76,7 +93,7 @@
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
             <a-typography-link @click="save(record.key)">Save</a-typography-link>
-            <a-popconfirm title="Sure to cancel?" @confirm="cancel(record.key)">
+            <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
               <a>Cancel</a>
             </a-popconfirm>
           </span>
@@ -93,24 +110,27 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, computed } from 'vue';
+import { reactive, ref, onMounted, computed, nextTick } from 'vue';
 import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getRoleList } from '@/api/roles/roles.js';
-import { getUsers, getUserList, addUsers, updateUsers, deleteUsers } from '@/api/users/users.js';
-
+import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vendors/vendors.js';
 export default {
-  name: 'UserList',
+  name: 'VendorsList',
 
   setup() {
     const formRef = ref();
     const formState = reactive({});
-    const filterInputs = ref({});
+    const filterInputs = ref({
+      vendor_type: 0,
+    });
 
     const columns = tableColumns;
-    const roleList = ref([]);
-    const userList = ref([]);
+    const vendorsList = ref([
+      { value: 0, name: 'Proveedor' },
+      { value: 1, name: 'Comp. Aseguradora' },
+      { value: 2, name: 'Sucursal' },
+    ]);
 
     const customHeaderRow = (column) => {
       return {
@@ -118,18 +138,15 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
-      console.log('params', params)
       try {
-        const response = await getUsers(params);
-        dataSource.value = response.results.map((users, index) => ({
-          ...users,
-          key: index
+        const response = await getVendors(params);
+        dataSource.value = response.results.map((item, index) => ({
+          ...item,
+          key: index,
+          user: null,
         }));
+
         total.value = response.count;
-        if (Object.keys(params).length === 0) {
-          userList.value = await getUserList();
-          roleList.value = await getRoleList();
-        }
         return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
@@ -147,16 +164,17 @@ export default {
       formatResult: res => res.results,
       pagination: {
         currentKey: 'page',
-        pageSizeKey: 'page_size',
+        pageSizeKey: 'results',
       },
     });
     const pagination = computed(() => ({
-      total: total.value,
+      total: total.value,	//Acá hay que traer el count desde la respuesta
       current: current.value,
-      pageSize: 10,
+      pageSize: pageSize.value,
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
+      filters = filterInputs.value;
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -177,42 +195,9 @@ export default {
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
-    const getRoleName = (id) => {
-      let role = roleList.value.find((item) => item.value === id[0]);
-      if (role) {
-        return role.name;
-      }
-      return 'Sin rol';
-    }
-    const getRoleColor = (id) => {
-      let color = 'grey';
-      switch (id[0]) {
-        case 1:
-          color = 'blue';
-          break
-        case 2:
-          color = 'red';
-          break
-        case 3:
-          color = 'pink';
-          break
-        case 4:
-          color = 'cyan';
-          break
-        case 5:
-          color = 'orange';
-          break
-        default:
-          color = 'grey';
-          break
-      }
-      if (id > 5) {
-        color = 'green';
-      }
-      return color;
-    }
+
     onMounted(() => {
-      fetchData();
+      fetchData(filterInputs.value);
     });
 
     const editableData = reactive({});
@@ -225,32 +210,26 @@ export default {
       const data = dataSource.value.filter(item => key === item.key)[0];
       Object.assign(data, editableData[key]);
       delete editableData[key];
-      let rolesParam = [];
-      if (Array.isArray(data.roles)) {
-        rolesParam = data.roles;
-      } else {
-        rolesParam.push(data.roles)
-      }
-    
-      const params = {
-        ...data,
-        roles: rolesParam,
-      }
-      if (data.id > 0) {
 
-        updateUsers(data.id, params).then(() => {
-          fetchData();
+
+      if (data.id > 0) {
+        const params = {
+          ...data,
+        }
+        updateVendors(data.id, params).then(() => {
+          fetchData(filterInputs.value);
         });
       } else {
-        const { id, ...dataWithoutId } = params;
-        addUsers(dataWithoutId).then(() => {
-          fetchData();
+        const { id, ...dataWithoutId } = data;
+        addVendors(dataWithoutId).then(() => {
+          fetchData(filterInputs.value);
         });
       }
     };
     const cancel = (key) => {
       console.log('cancel', key)
       if (key === undefined) {
+        console.log('undefined')
         onDelete(key);
         delete editableData[key];
         return;
@@ -258,28 +237,32 @@ export default {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.username || !record.email) {
+      if (!record.social_name || record.vendor_type === undefined) {
         onDelete(key);
       }
       delete editableData[key];
     };
     const count = computed(() => {
-      if (dataSource.value) {
-        return dataSource.value.length
+      if (total.value) {
+        return total.value + 1
       }
       return 0;
     });
     const handleAdd = () => {
-      console.log('count', count.value)
       const newKey = `${count.value}`;
       const newData = {
         key: newKey,
         id: '',
-        username: '',
+        name: '',
       };
-      dataSource.value.push(newData);
+
+ 
+      dataSource.value.unshift(newData); // Agrega el nuevo registro al principio
       console.log('data', dataSource.value)
       editableData[newKey] = cloneDeep(newData);
+
+      // Ajusta la paginación para mostrar la primera página
+     
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -287,14 +270,23 @@ export default {
         const params = {
           name: data.name,
         }
-        deleteUsers(data.id, params).then(() => {
-          fetchData();
+        deleteVendors(data.id, params).then(() => {
+          fetchData(filterInputs.value);
         });
       }
       const newData = dataSource.value.filter(item => item.key !== key);
       dataSource.value = newData;
-      fetchData();
+
     };
+    const getName = (item) => {
+      const vendor = vendorsList.value.find((vendor) => vendor.value === item);
+      if (vendor) {
+
+        return vendor.name
+      } else {
+        return '';
+      }
+    }
     return {
       formRef,
       formState,
@@ -310,13 +302,11 @@ export default {
       edit,
       cancel,
       save,
-      roleList,
       handleAdd,
       count,
       onDelete,
-      userList,
-      getRoleName,
-      getRoleColor,
+      vendorsList,
+      getName,
       current,
       total,
       pagination,

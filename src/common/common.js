@@ -27,87 +27,67 @@ export const TENDER_STATES = [
     {
         label: 'Adjudicado',
         value: 'A',
-        color: 'var(--principal)' // Rojo
+        color: 'volcano' // Rojo
     },
     {
         label: 'Entregado',
         value: 'D',
-        color: '#FFA500' // Naranja
+        color: 'green' // Naranja
     },
     {
         label: 'Evaluado',
         value: 'E',
-        color: 'lime',
+        color: 'purple',
+    },
+    {
+        label: 'Cancelado',
+        value: 'C',
+        color: 'red',
+    },
+    {
+        label: 'Ganado',
+        value: 'U',
+        color: '#F50085',
     },
     {
         label: 'Rechazado/Sin Resolucion',
         value: 'G',
-        color: 'default' // Rechazado
+        color: '#79979B',
     },
     {
         label: 'Documentación Observada',
         value: 'J',
-        color: '#800080' // Púrpura
+        color: '#2B7D73',
     },
     {
-        label: 'Pendiente de cobranza',
-        value: 'L',
-        color: '#FFFF00' // Amarillo
-    },
-    {
-        label: 'Factura Procesada',
-        value: 'M',
-        color: '#008000' // Verde
-    },
-    {
-        label: 'Pendiente Cotizar',
+        label: 'Pendiente',
         value: 'N',
         color: 'gold'
     },
     {
         label: 'Solicitud Cambio de Costo',
         value: 'O',
-        color: '#00FFFF' // Cian
+        color: '#789E15',
     },
     {
-        label: 'Pagado',
-        value: 'P',
-        color: '#0000FF' // Azul
-    },
-    {
-        label: 'Documentación',
-        value: 'Q',
-        color: '#A52A2A' // Marrón
-    },
-    {
-        label: 'Factura Observada',
+        label: 'Rechazado',
         value: 'R',
         color: 'default' // Rechazado
     },
     {
         label: 'Adjudicado Pendiente',
         value: 'S',
-        color: '#808080' // Gris
+        color: '#C361CA',
     },
     {
-        label: 'Facturado',
-        value: 'T',
-        color: '#00FF00' // Verde claro
-    },
-    {
-        label: 'Cotizado',
+        label: 'Licitado',
         value: 'V',
         color: 'blue'
     },
     {
         label: 'Adjudicado/Rechazado',
         value: 'W',
-        color: '#FFC0CB' // Rosa
-    },
-    {
-        label: 'Aprobado para Facturar',
-        value: 'Y',
-        color: '#FF1493' // Rosa fuerte
+        color: '#A52A2A',
     },
 ];
 export const PRIORITY_VALUES = [
@@ -264,4 +244,17 @@ export const DAYTONAS = [
 export const QUOTE_DETAILS = [
     { value: 'modelo exacto', label: "Modelo Exacto" },
     { value: 'S', label: "Modelo Similar" },
+];
+export const GROUPS = [
+    { value: 'Neumatico', label: "Neumático" },
+    { value: 'Llanta', label: "Llanta" },
+    { value: 'Bulones', label: "Bulones" },
+    { value: 'Centros', label: "Centros" },
+    { value: 'Malacate', label: "Malacate" },
+    { value: 'Taza de llanta', label: "Taza de llanta" },
+    { value: 'Llave de rueda', label: "Llave de rueda" },
+    { value: 'Sensor de presion', label: "Sensor de presión" },
+    { value: 'Valvula', label: "Válvula" },
+    { value: 'Balanceo', label: "Balanceo" },
+    { value: 'Otros', label: "Otros" },
 ];

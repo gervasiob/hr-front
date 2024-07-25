@@ -1,35 +1,22 @@
 <template>
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
-      <a-row :gutter="24">
-        <a-col :span="12">
-          <a-form-item label="Usuario" name="username">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.username" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in userList" :key="index" :value="item.name" :label="item.name">
-                {{ item.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-        <a-col :span="12">
-          <a-form-item label="Roles" name="name">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.roles" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
-                {{ item.name }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col>
-      </a-row>
+
       <a-row :gutter="24">
         <a-col :span="6">
-          <a-form-item label="ID de Usuario" name="id">
-            <a-input v-model:value="filterInputs.id" allowClear />
+          <a-form-item label="SKU" name="sku">
+            <a-input v-model:value="filterInputs.code__icontains" allowClear style="width: 200px;" />
           </a-form-item>
         </a-col>
-        <a-col :span="16" style="text-align: right">
+        <a-col :span="6">
+          <a-form-item label="Producto" name="producto">
+            <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 200px;" />
+          </a-form-item>
+        </a-col>
+
+
+
+        <a-col :span="6" :offset="6" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -43,7 +30,7 @@
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['username', 'email'].includes(column.dataIndex)">
+      <template v-if="['sku', 'producto', 'stock'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -52,39 +39,20 @@
           </template>
         </div>
       </template>
-      <template v-if="['roles'].includes(column.dataIndex)">
-        <div>
-          <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
-            v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
-            :filter-option="filterOption">
-            <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
-              {{ item.name }}
-            </a-select-option>
-          </a-select>
-          <template v-else>
-            <span>
-              <a-tag :color="getRoleColor(text)">
-                {{ getRoleName(text) }}
-              </a-tag>
-            </span>
-
-          </template>
-        </div>
-      </template>
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
             <a-typography-link @click="save(record.key)">Save</a-typography-link>
-            <a-popconfirm title="Sure to cancel?" @confirm="cancel(record.key)">
+            <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
               <a>Cancel</a>
             </a-popconfirm>
           </span>
           <span v-else>
             <a @click="edit(record.key)">Edit</a>
-            <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
+            <!-- <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
-            </a-popconfirm>
+            </a-popconfirm> -->
           </span>
         </div>
       </template>
@@ -97,11 +65,9 @@ import { reactive, ref, onMounted, computed } from 'vue';
 import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getRoleList } from '@/api/roles/roles.js';
-import { getUsers, getUserList, addUsers, updateUsers, deleteUsers } from '@/api/users/users.js';
-
+import { getStocks, addStocks, updateStocks, deleteStocks, getCostStock } from '@/api/stocks/stocks.js';
 export default {
-  name: 'UserList',
+  name: 'StocksList',
 
   setup() {
     const formRef = ref();
@@ -109,8 +75,7 @@ export default {
     const filterInputs = ref({});
 
     const columns = tableColumns;
-    const roleList = ref([]);
-    const userList = ref([]);
+    const stocksList = ref([]);
 
     const customHeaderRow = (column) => {
       return {
@@ -118,23 +83,20 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
-      console.log('params', params)
       try {
-        const response = await getUsers(params);
-        dataSource.value = response.results.map((users, index) => ({
-          ...users,
+        const response = await getCostStock(params);
+
+        dataSource.value = response.results.map((item, index) => ({
+          ...item,
           key: index
         }));
         total.value = response.count;
-        if (Object.keys(params).length === 0) {
-          userList.value = await getUserList();
-          roleList.value = await getRoleList();
-        }
         return dataSource.value;
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
+
     const pageCurrent = ref(1);
     const total = ref(10);
     const {
@@ -151,7 +113,7 @@ export default {
       },
     });
     const pagination = computed(() => ({
-      total: total.value,
+      total: total.value,	//Acá hay que traer el count desde la respuesta
       current: current.value,
       pageSize: 10,
     }));
@@ -165,7 +127,6 @@ export default {
         ...filters,
       });
     };
-
     const onSearch = () => {
       fetchData(filterInputs.value);
     };
@@ -177,42 +138,10 @@ export default {
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
-    const getRoleName = (id) => {
-      let role = roleList.value.find((item) => item.value === id[0]);
-      if (role) {
-        return role.name;
-      }
-      return 'Sin rol';
-    }
-    const getRoleColor = (id) => {
-      let color = 'grey';
-      switch (id[0]) {
-        case 1:
-          color = 'blue';
-          break
-        case 2:
-          color = 'red';
-          break
-        case 3:
-          color = 'pink';
-          break
-        case 4:
-          color = 'cyan';
-          break
-        case 5:
-          color = 'orange';
-          break
-        default:
-          color = 'grey';
-          break
-      }
-      if (id > 5) {
-        color = 'green';
-      }
-      return color;
-    }
+
     onMounted(() => {
       fetchData();
+
     });
 
     const editableData = reactive({});
@@ -225,76 +154,69 @@ export default {
       const data = dataSource.value.filter(item => key === item.key)[0];
       Object.assign(data, editableData[key]);
       delete editableData[key];
-      let rolesParam = [];
-      if (Array.isArray(data.roles)) {
-        rolesParam = data.roles;
-      } else {
-        rolesParam.push(data.roles)
-      }
-    
-      const params = {
-        ...data,
-        roles: rolesParam,
-      }
+      console.log(data)
       if (data.id > 0) {
-
-        updateUsers(data.id, params).then(() => {
+        const params = {
+          ...data,
+        }
+        updateStocks(data.id, params).then(() => {
           fetchData();
         });
       } else {
-        const { id, ...dataWithoutId } = params;
-        addUsers(dataWithoutId).then(() => {
+        const { id, ...dataWithoutId } = data;
+        addStocks(dataWithoutId).then(() => {
           fetchData();
         });
       }
     };
     const cancel = (key) => {
       console.log('cancel', key)
-      if (key === undefined) {
+      if (key === undefined && key < 0) {
+        console.log('key', key)
         onDelete(key);
         delete editableData[key];
         return;
       }
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
-      delete editableData[key];
-      if (!record.username || !record.email) {
+      if (!record.sku || !record.producto) {
+        console.log('falta sku o producto')
         onDelete(key);
       }
       delete editableData[key];
     };
     const count = computed(() => {
       if (dataSource.value) {
-        return dataSource.value.length
+        return dataSource.value.length + 1
       }
       return 0;
     });
     const handleAdd = () => {
-      console.log('count', count.value)
       const newKey = `${count.value}`;
       const newData = {
         key: newKey,
         id: '',
-        username: '',
+        name: '',
       };
       dataSource.value.push(newData);
-      console.log('data', dataSource.value)
       editableData[newKey] = cloneDeep(newData);
+      // Esperar a que el DOM se actualice y luego desplazarse
+
     };
-    const onDelete = key => {
-      const data = dataSource.value.filter(item => key === item.key)[0];
-      if (data.id) {
-        const params = {
-          name: data.name,
-        }
-        deleteUsers(data.id, params).then(() => {
-          fetchData();
-        });
-      }
-      const newData = dataSource.value.filter(item => item.key !== key);
-      dataSource.value = newData;
-      fetchData();
-    };
+    // const onDelete = key => {
+    //   const data = dataSource.value.filter(item => key === item.key)[0];
+    //   if (data.id) {
+    //     const params = {
+    //       name: data.name,
+    //     }
+    //     deletePlatforms(data.id, params).then(() => {
+    //       fetchData();
+    //     });
+    //   }
+    //   const newData = dataSource.value.filter(item => item.key !== key);
+    //   dataSource.value = newData;
+
+    // };
     return {
       formRef,
       formState,
@@ -310,13 +232,9 @@ export default {
       edit,
       cancel,
       save,
-      roleList,
       handleAdd,
       count,
-      onDelete,
-      userList,
-      getRoleName,
-      getRoleColor,
+      stocksList,
       current,
       total,
       pagination,

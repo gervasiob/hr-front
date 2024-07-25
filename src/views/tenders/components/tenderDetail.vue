@@ -1,7 +1,8 @@
 <template>
     <div>
         <div class="header-1">
-            <h1 class="title-1">DETALLE DE COTIZACIÓN</h1>
+            <h1 class="title-1" v-if="type === 'Add'">DETALLE DE NUEVA COTIZACIÓN</h1>
+            <h1 class="title-1" v-else>DETALLE DE COTIZACIÓN</h1>
         </div>
         <div class="header-2">
             <h1>DATOS DEL SINIESTRO</h1>
@@ -14,8 +15,9 @@
                 <a-input class="input-item" v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
             <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.company_id" allowClear
-                    show-search :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" style="width: 200px"
+                    v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption"
+                    @change="handleChangeAseguradora">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
                         :value="aseguradora.value" :label="aseguradora.label">
                         {{ aseguradora.label }}
@@ -23,8 +25,8 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Estado" name="estado">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.quote_state" allowClear
-                    show-search :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" style="width: 200px"
+                    v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
                         :label="item.label">
                         {{ item.label }}
@@ -75,7 +77,7 @@
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Sede" name="sede" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Sucursal" name="sucursal" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-input v-model:value="formTenderDetail.tender_data.sede">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
@@ -96,9 +98,9 @@
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Agente" name="agent">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.agent" allowClear
-                    show-search :filter-option="filterOption">
+            <a-form-item label="Gestor" name="agent">
+                <a-select placeholder="Ingrese su búsqueda" style="width: 200px" v-model:value="formTenderDetail.user"
+                    allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                         :label="(item.fullName)">
                         {{ item.fullName }}
@@ -106,8 +108,9 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Plataforma" name="platform">
-                <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.platform" allowClear
-                    show-search :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" style="width: 250px"
+                    v-model:value="formTenderDetail.platform" allowClear show-search :filter-option="filterOption"
+                    @change="handleChangeAseguradora">
                     <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
                         :label="(item.name)">
                         {{ item.name }}
@@ -147,22 +150,34 @@
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.domain }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.domain" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Chasis" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.chasis }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.chasis" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Marca" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.brand }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.brand" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.vehicle }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.vehicle_year }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Fecha" class="a-descriptions-item">
-                <div class="item-d">{{ formTenderDetail.tender_data.claim_date }}</div>
+                <div class="item-d" :class="{ 'no-background': handleEdit }">
+                    <a-input v-model:value="formTenderDetail.tender_data.claim_date" :readonly="handleEdit" />
+                </div>
             </a-descriptions-item>
             <a-descriptions-item label="Plataforma" class="a-descriptions-item">
                 <div class="item-d">{{ formTenderDetail.platform }}</div>
@@ -173,17 +188,32 @@
     <a-collapse class="collapse-class">
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
-                <a-descriptions-item label="Sede">
-                    <div class="item-d">{{ formTenderDetail.tender_data.sede }}</div>
+                <a-descriptions-item label="Sucursal">
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.sede" :readonly="handleEdit" />
+                    </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Nombre Cliente">
-                    <div class="item-d">{{ formTenderDetail.tender_data.name }}</div>
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.name" :readonly="handleEdit" />
+                    </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Teléfono">
-                    <div class="item-d">{{ formTenderDetail.tender_data.phone }}</div>
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit" />
+                    </div>
                 </a-descriptions-item>
-                <a-descriptions-item label="Operador">
-                    <div class="item-d">{{ formTenderDetail.tender_data.operador }}</div>
+                <a-descriptions-item label="Gestor">
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-select placeholder="Ingrese su búsqueda"
+                            v-model:value="formTenderDetail.user" allowClear show-search
+                            :filter-option="filterOption">
+                            <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
+                                :label="(item.fullName)">
+                                {{ item.fullName }}
+                            </a-select-option>
+                        </a-select>
+                    </div>
                 </a-descriptions-item>
             </a-descriptions>
         </a-collapse-panel>
@@ -193,8 +223,6 @@
                     :labelStyle="{ fontWeight: 'bold', color: 'white', fontStyle: 'Italic' }">
                     <a-descriptions-item label="COTIZACIÓN"><span class="collapse-item">
                             INFORME</span></a-descriptions-item>
-                    <a-descriptions-item label="TOTAL: "><span class="collapse-item">{{
-                        formatCurrency(quoteData.total_quoted) }}</span></a-descriptions-item>
                 </a-descriptions>
             </template>
             <div class="collapse-body">
@@ -224,100 +252,13 @@
                 </a-modal>
                 <!-- <vue-image-lightbox :images="[imageUrl]" :index="currentImageIndex" @close="isModalVisible = false"
                     v-if="isModalVisible" /> -->
-                <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-                <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
-                    <template #bodyCell="{ column, text, record }">
-                        <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
-                            <div>
-                                <a-input v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0;" />
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['type'].includes(column.dataIndex)">
-                            <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0;width: 150px;" @focus="focus" @change="handleChange">
-                                    <a-select-option value="Neumatico">Neumáticos</a-select-option>
-                                    <a-select-option value="Llantas">Llantas</a-select-option>
-                                </a-select>
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['vendor_id'].includes(column.dataIndex)">
-                            <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange">
-                                    <a-select-option value="Proveedor 1">Proveedor 1</a-select-option>
-                                    <a-select-option value="Proveedor 2">Proveedor 2</a-select-option>
-                                </a-select>
-                                <template v-else>
-                                    {{ text }}
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="['po'].includes(column.dataIndex)">
-                            <div>
-                                <a-checkbox v-model:checked="editableData[record.key][column.dataIndex]"
-                                    v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"></a-checkbox>
-                                <template v-else>
-                                    <a-checkbox :checked="text" :disabled="true"></a-checkbox>
-                                </template>
-                            </div>
-                        </template>
-                        <template v-if="column.dataIndex === 'amount_wo_iva'">
-                            <a-input v-if="editableData[record.key]"
-                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                            <template v-else>
-                                {{ formatCurrency(record.amount_wo_iva) }}
-                            </template>
-                        </template>
-                        <template v-if="column.dataIndex === 'price'">
-                            <a-input v-if="editableData[record.key]"
-                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                            <template v-else>
-                                {{ formatCurrency(record.price) }}
-                            </template>
-                        </template>
-                        <template v-else-if="column.dataIndex === 'total'">
-                            <div>
-                                {{ formatCurrency(record.price * record.quantity) }}
-                            </div>
-                        </template>
 
-                        <template v-else-if="column.dataIndex === 'operation'">
-                            <div class="editable-row-operations">
-                                <span v-if="editableData[record.key]">
-                                    <a-typography-link @click="save(record.key)">Save</a-typography-link>
-                                    <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
-                                        <a>Cancel</a>
-                                    </a-popconfirm>
-
-                                </span>
-                                <span v-else>
-                                    <a @click="edit(record.key)">Edit</a>
-                                    <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
-                                        @confirm="onDelete(record.key)">
-                                        <a>Eliminar</a>
-                                    </a-popconfirm>
-                                </span>
-                            </div>
-                        </template>
-                    </template>
-                </a-table>
                 <a-form layout="horizontal" ref="formRef" :model="formTenderDetail" :rules="rules"
                     :label-col="{ span: 4 }" :wrapper-col="{ span: 6 }">
                     <div class="not-quote">
                         <a-form-item label="NO COTIZAR">
                             <a-switch v-model:checked="formTenderDetail.not_quote"
-                                style="background-color: var(--border-item); border: none;" />
+                                style="background-color: var(--border-item); border: none; margin: 1%;" />
                         </a-form-item>
                     </div>
                     <div v-show="!formTenderDetail.not_quote">
@@ -344,6 +285,7 @@
                                     <span>Fee</span>
                                     <a-input v-model:value="formTenderDetail.fee"
                                         style="width: 100%; border: 2px solid var(--border-item)"></a-input>
+                                    <RobotOutlined class="ia-check" v-show="iaCheck.includes('fee_margen')" />
                                 </div>
                             </a-col>
                         </a-row>
@@ -355,8 +297,7 @@
                             <a-table :columns="columnsQuote" :data-source="dataQuoteSource" bordered
                                 :pagination="false">
                                 <template #bodyCell="{ column, text, record }">
-                                    <template
-                                        v-if="['tire_type_name', 'Llanta', 'Neumatico'].includes(column.dataIndex)">
+                                    <template v-if="['Llanta', 'Neumatico', 'tire_type_name'].includes(column.dataIndex)">
                                         <div>
                                             <a-input v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
@@ -373,19 +314,26 @@
                                             </template>
                                         </div>
                                     </template>
-                                    <template v-if="['type'].includes(column.dataIndex)">
+                                    <!-- <template v-if="['tire_type_name'].includes(column.dataIndex)">
                                         <div>
                                             <a-select ref="select" v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
                                                 style="margin: -5px 0" @focus="focus" @change="handleChange">
-                                                <a-select-option value="Neumaticos">Neumáticos</a-select-option>
-                                                <a-select-option value="Llantas">Llantas</a-select-option>
+                                                <a-select-option value="Auxilio">Auxilio</a-select-option>
+                                                <a-select-option value="Delantera derecha">Delantera
+                                                    derecha</a-select-option>
+                                                <a-select-option value="Delantera izquierda">Delantera
+                                                    izquierda</a-select-option>
+                                                <a-select-option value="Trasera derecha">Trasera
+                                                    derecha</a-select-option>
+                                                <a-select-option value="Trasera izquierda">Trasera
+                                                    izquierda</a-select-option>
                                             </a-select>
                                             <template v-else>
                                                 {{ text }}
                                             </template>
                                         </div>
-                                    </template>
+                                    </template> -->
 
                                     <template v-else-if="column.dataIndex === 'operation'">
                                         <div class="editable-row-operations">
@@ -409,15 +357,17 @@
                                     </template>
                                 </template>
                             </a-table>
+                            <RobotOutlined class="ia-check" v-show="iaCheck.includes('tire_type_name')" />
                         </div>
 
-                        <a-row style="margin-top: 2%;" :gutter="24">
+                        <a-row style="margin-top: 2%; align-content: center; padding-left: 2%" :gutter="24">
                             <a-col :span="3">
                                 <div class="">
                                     <span>Ancho</span>
                                     <a-select v-model:value="formTenderDetail.tire_width" style="width: 100%"
                                         :options="optionsTireWidth" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
+                                    <RobotOutlined class="ia-check" v-show="iaCheck.includes('tire_width')" />
                                 </div>
                             </a-col>
                             <a-col :span="3">
@@ -426,6 +376,7 @@
                                     <a-select v-model:value="formTenderDetail.tire_height" style="width: 100%"
                                         placeholder="..." :options="optionsTireHeight" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
+                                    <RobotOutlined class="ia-check" v-show="iaCheck.includes('tire_height')" />
                                 </div>
                             </a-col>
                             <a-col :span="3">
@@ -434,6 +385,7 @@
                                     <a-select v-model:value="formTenderDetail.tire_tread" style="width: 100%"
                                         placeholder="..." :options="optionsTireTread" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
+                                    <RobotOutlined class="ia-check" v-show="iaCheck.includes('tire_tread')" />
                                 </div>
                             </a-col>
                             <a-col :span="10" :offset="5">
@@ -444,14 +396,19 @@
                                 </div>
                             </a-col>
                         </a-row>
-                        <a-row :gutter="24">
+                        <a-row style="margin-top: 2%; align-content: center; padding-left: 2%" :gutter="24">
                             <a-col :span="8">
                                 <div class="form-item-container">
+                                    <!-- <a-badge-ribbon text="IA" color="volcano" v-show="true"><span>Marca</span>
+                                    </a-badge-ribbon> -->
                                     <span>Marca</span>
                                     <div class="input-select">
+                                        <!-- <a-badge-ribbon text="IA" color="volcano" v-show="true">
+ </a-badge-ribbon> -->
                                         <a-select v-model:value="formTenderDetail.brand" placeholder="..."
                                             style="width:100%" :options="optionsBrand" allow-clear show-search
                                             :filter-option="filterOption"></a-select>
+                                        <RobotOutlined class="ia-check" v-show="iaCheck.includes('brand')" />
                                     </div>
                                 </div>
                                 <div class="form-item-container">
@@ -460,6 +417,7 @@
                                         <a-select v-model:value="formTenderDetail.tire_model" style="width: 100%"
                                             placeholder="..." :options="optionsModel" allow-clear show-search
                                             :filter-option="filterOption"></a-select>
+                                        <RobotOutlined class="ia-check" v-show="iaCheck.includes('modelo_rueda')" />
                                     </div>
                                 </div>
                                 <div class="form-item-container">
@@ -468,6 +426,7 @@
                                         <a-select v-model:value="formTenderDetail.llanta_type" style="width: 100%"
                                             placeholder="..." :options="optionsLlantaType" allow-clear show-search
                                             :filter-option="filterOption"></a-select>
+                                        <RobotOutlined class="ia-check" v-show="iaCheck.includes('llanta_type')" />
                                     </div>
                                 </div>
 
@@ -489,7 +448,7 @@
                             </a-col>
                             <a-col :span="10">
                                 <div class="form-item-container">
-                                    <span>Estoy Cotizando</span>
+                                    <span>Cotizando</span>
                                     <a-select v-model:value="formTenderDetail.tire_quoted" style="width: 100%"
                                         placeholder="..." :options="optionsQuoteDetails" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
@@ -500,13 +459,11 @@
                                         mode="multiple" placeholder="Please select" :options="optionsDaytonas"
                                         allow-clear show-search :filter-option="filterOption"></a-select>
                                 </div>
-
                             </a-col>
                         </a-row>
-
                     </div>
-                    <div class="form-item-container label-top">
-                        <span>Observaciones</span>
+                    <div class="form-item-obs label-top" style="margin-top: 1%; padding-left: 2%; padding-right: 2%">
+                        <span style="min-width: 140px">Observaciones</span>
                         <a-textarea v-model:value="formTenderDetail.obs" :rows="4"
                             style=" border: 2px solid var(--border-item)" />
                     </div>
@@ -517,6 +474,129 @@
                     </a-form>
 
                 </div>
+
+
+                <!-- Total -->
+                <div class="total-item">
+                    <span>TOTAL A ADJUDICAR: {{
+                        formatCurrency(quoteData.total_quoted) }}</span>
+
+                    <RobotOutlined :style="{ marginLeft: '10px', color: 'white' }"
+                        v-show="iaCheck.includes('total_quoted')" />
+
+                </div>
+                <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+                <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
+                    <template #bodyCell="{ column, text, record }">
+                        <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
+                            <div>
+                                <a-input v-if="editableData[record.key]"
+                                    v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0" />
+                                <template v-else>
+                                    {{ text }}
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="['type'].includes(column.dataIndex)">
+                            <div>
+                                <a-select ref="select" v-if="editableData[record.key]"
+                                    v-model:value="editableData[record.key][column.dataIndex]"
+                                    style="margin: -5px 0;width: 190px;" @focus="focus" @change="handleChange"
+                                    :options="groupList">
+                                    <!-- <template #dropdownRender="{ menuNode: menu }">
+                                        <v-nodes :vnodes="menu" />
+                                        <a-divider style="margin: 4px 0" />
+                                        <a-space style="padding: 4px 8px">
+                                            <a-input ref="inputRef" v-model:value="name" placeholder="Otros" />
+                                            <a-button type="text" @click="addItem">
+                                                <template #icon>
+                                                    <PlusOutlined />
+                                                </template>
+            Agregar
+            </a-button>
+            </a-space>
+            </template> -->
+                                </a-select>
+                                <template v-else>
+                                    {{ text }}
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="['vendor_id'].includes(column.dataIndex)">
+                            <div>
+                                <a-select ref="select" v-if="editableData[record.key]"
+                                    v-model:value="editableData[record.key][column.dataIndex]"
+                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange"
+                                    allow-clear show-search :filter-option="filterOption">
+                                    <a-select-option v-for="(item, index) in vendorList" :key="index" :value="item.name"
+                                        :label="(item.name)">
+                                        {{ item.name }}
+                                    </a-select-option>
+                                </a-select>
+                                <template v-else>
+                                    {{ text }}
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="['po'].includes(column.dataIndex)">
+                            <div>
+                                <a-checkbox v-model:checked="editableData[record.key][column.dataIndex]"
+                                    v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"></a-checkbox>
+                                <template v-else>
+                                    <a-checkbox :checked="text" :disabled="true"></a-checkbox>
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="column.dataIndex === 'price'">
+                            <a-input v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                            <template v-else>
+                                {{ formatCurrency(record.price) }}
+                            </template>
+                        </template>
+                        <template v-if="column.dataIndex === 'price_wo_iva'">
+                            <!-- <a-input v-if="editableData[record.key]"
+                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                            <template v-else> -->
+                            <div>
+                                {{ formatCurrency(record.price / 1.21) }}
+                            </div>
+                            <!-- </template> -->
+                        </template>
+                        <template v-if="column.dataIndex === 'amount_wo_iva'">
+                            <div>
+                                {{ formatCurrency(record.price / 1.21 * record.quantity) }}
+                            </div>
+                        </template>
+                        <template v-else-if="column.dataIndex === 'total'">
+                            <div>
+                                {{ formatCurrency(record.price / 1.21 * record.quantity * (1 + formTenderDetail.fee /
+                                100))
+                                }}
+                            </div>
+                        </template>
+
+                        <template v-else-if="column.dataIndex === 'operation'">
+                            <div class="editable-row-operations">
+                                <span v-if="editableData[record.key]">
+                                    <a-typography-link @click="save(record.key)">Save</a-typography-link>
+                                    <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
+                                        <a>Cancel</a>
+                                    </a-popconfirm>
+
+                                </span>
+                                <span v-else>
+                                    <a @click="edit(record.key)">Edit</a>
+                                    <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
+                                        @confirm="onDelete(record.key)">
+                                        <a>Eliminar</a>
+                                    </a-popconfirm>
+                                </span>
+                            </div>
+                        </template>
+                    </template>
+                </a-table>
+                <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
                     v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'">
@@ -553,7 +633,7 @@
 
 <script>
 import { cloneDeep } from 'lodash-es';
-import { ref, onMounted, watch, reactive, toRaw, computed } from 'vue';
+import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
@@ -562,15 +642,22 @@ import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
-    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, DAYTONAS, QUOTE_DETAILS, ASEGURADORAS
+    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, DAYTONAS, QUOTE_DETAILS, ASEGURADORAS, GROUPS,
 } from '@/common/common';
 import { dataTable } from './data';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { getUsers } from '@/api/users/users.js';
-import { getPlatforms } from '@/api/platforms/platforms.js';
+import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
+import { getRoles } from '@/api/roles/roles.js';
+import { getVendors, getVendorList } from '@/api/vendors/vendors.js';
+import { RobotOutlined, PlusOutlined } from '@ant-design/icons-vue';
 export default {
     name: 'TenderDetail',
+    components: {
+        RobotOutlined,
+        PlusOutlined,
+    },
     setup() {
         const route = useRoute();
         const router = useRouter(); // Importar el router   
@@ -601,10 +688,12 @@ export default {
         const error = ref(null);
         const type = ref('Edit');
         const aseguradoraList = ASEGURADORAS;
-        const roles = ref(2); // Define roles como un ref para que sea reactivo
+        const groupList = GROUPS;
+        const roles = ref(100); // Define roles como un ref para que sea reactivo
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
-
+        const iaCheck = ref([]);
         const estadoList = TENDER_STATES;
+        const vendorList = ref([]);
         const optionsDaytonas = DAYTONAS.map(daytona => ({
             label: `${daytona.businessName} - ${daytona.completeAddress}`,
             value: daytona.idClaimsProvider
@@ -656,6 +745,17 @@ export default {
         const platformList = ref([]);
         const isModalVisible = ref(false);
         const currentImageIndex = ref(0);
+        const VNodes = defineComponent({
+            props: {
+                vnodes: {
+                    type: Object,
+                    required: true,
+                },
+            },
+            render() {
+                return this.vnodes;
+            },
+        });
         const edit = key => {
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
         };
@@ -752,16 +852,14 @@ export default {
             try {
                 const response = await getTendersIndex({ claim_id: id });
                 if (response.length > 0) {
-                    tenderData.value = response[0];
+                    tenderData.value = response.results[0];
                 }
                 console.log('tenderData.value', tenderData.value)
-                const agentsResponse = await getUsers({ roles: roles.value });
-                console.log('agent response', agentsResponse)
                 const params = {
                     claim_id: id,
                 };
                 const quoteResponse = await getQuotes(params);
-                quoteData.value = quoteResponse[0];
+                quoteData.value = quoteResponse.results[0];
                 quoteId.value = quoteData.value.id;
                 if (Array.isArray(quoteData.value.details)) {
                     quoteData.value.details.map((item) => {
@@ -777,7 +875,7 @@ export default {
 
 
                 let records = [];
-                records = quoteResponse[0].tire_type_name;
+                records = quoteResponse.results[0].tire_type_name;
                 if (Array.isArray(records)) {
                     records.map((item) => {
                         dataQuoteSource.value.push(
@@ -814,14 +912,11 @@ export default {
                     tire_model: parseInt(quoteData.value.tire_model),
                     llanta_type: llantaType,
                 };
-                console.log('quoteDAtaVAlue', quoteDataValue)
                 if (quoteData.value.image_data) {
                     imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
                     imageUrl.value = imageData.value;
                 }
                 formTenderDetail.value = quoteDataValue;
-                console.log('form Tender Detail nuevos datos - quoteDataValue', quoteDataValue)
-                console.log('form Tender Detail nuevos datos - formTEnderDetail', formTenderDetail.value)
                 if (!formTenderDetail.value.daytona_ids) {
                     formTenderDetail.value.daytona_ids = [];
                 }
@@ -833,6 +928,27 @@ export default {
                 }
                 if (!formTenderDetail.value.llanta_type) {
                     formTenderDetail.value.llanta_type = '';
+                }
+                //Trae Fee de la Aseguradora
+                if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.company_id) {
+                    const assurance = await getVendors({ comercial_name: formTenderDetail.value.company_name, vendor_type: 1 });
+                    console.log('assurance', assurance)
+                    if (assurance.count > 0) {
+                        formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
+                    }
+                }
+                if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.platform) {
+                    const platform = await getPlatforms({ name__icontains: formTenderDetail.value.platform });
+                    console.log('platform', platform);
+                    if (platform.count > 0) {
+                        formTenderDetail.value.fee += platform.results[0].fee;
+                    }
+                }
+
+                //Marca con IA:
+                if (formTenderDetail.value.original_parts) {
+                    console.log('E original parts check IA changes')
+                    handleIACheck(formTenderDetail.value.original_parts);
                 }
 
             } catch (error) {
@@ -873,7 +989,7 @@ export default {
                             ...params,
                             details: dataSource.value,
                             tire_type_name: dataQuoteSource.value,
-                            total_quoted: quoteData.value.total_quoted, 
+                            total_quoted: quoteData.value.total_quoted,
                         }
                         console.log(fullParams)
                         let response;
@@ -883,9 +999,9 @@ export default {
                         }
                         if (type.value === 'Add') {
                             console.log('Add')
+                            console.log('add form', formTenderDetail.value)
                             fullParams = {
                                 ...fullParams,
-                                user: formTenderDetail.value.agent,
                                 company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
                             }
                             addQuotes(fullParams);
@@ -1015,30 +1131,36 @@ export default {
         };
         const getUsersList = async () => {
             try {
-                const agentsResponse = await getUsers({ roles: roles.value });
-                console.log(agentsResponse)
-                const transformedAgents = agentsResponse.map((item) => {
+                const idRole = await getRoles({ name: 'Agent' });
+                const agentsResponse = await getUsers({ roles: idRole.results[0].id });
+                const transformedAgents = agentsResponse.results.map((item) => {
                     return {
                         ...item,
                         fullName: item.username,
                     };
                 });
                 agents.value = transformedAgents;
-
             } catch (error) {
-                console.log('error in get user list', error)
+                console.error("Error fetching agents:", error);
             }
-        }
-        const getPlatformsList = async () => {
             try {
-                platformList.value = await getPlatforms();
+                vendorList.value = await getVendorList();
             } catch (error) {
-                console.log('error in get user list', error)
+                console.error("Error fetching vendor list:", error);
+            }
+        };
+        const getPlatformsListData = async () => {
+            try {
+                platformList.value = await getPlatformList();
+            } catch (error) {
+                console.log('error in get platform list', error)
             }
         }
         onMounted(() => {
             tenderId.value = route.params.id;
             console.log('tender value', tenderId.value)
+            getUsersList();
+            getPlatformsListData();
             if (tenderId.value) {
                 console.log('edit')
                 type.value = 'Edit';
@@ -1046,9 +1168,6 @@ export default {
             } else {
                 console.log('add')
                 type.value = 'Add';
-                getUsersList();
-                getPlatformsList();
-                console.log('platform list', platformList.value)
                 formTenderDetail.value = {
                     not_quote: false,
                     delivery_time: 1,
@@ -1096,14 +1215,59 @@ export default {
                     item.neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
                     return item;
                 });
-
-                console.log("data", dataQuoteSource.value)
-                console.log("newcost", newCost.value.spare_tire_amounts[0].cost_amount)
             } catch (err) {
                 error.value = err;
             } finally {
                 loading.value = false;
             }
+        };
+        const handleChangeAseguradora = async () => {
+            if (formTenderDetail.value.company_id) {
+                const aseguradora = aseguradoraList.find((item) => item.value === formTenderDetail.value.company_id)
+                const assurance = await getVendors({ comercial_name: aseguradora.label, vendor_type: 1 });
+                if (assurance.count > 0) {
+                    formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
+                }
+                else {
+                    formTenderDetail.value.fee = 0;
+                }
+            }
+            if (formTenderDetail.value.platform) {
+                const platform = await getPlatforms({ name__icontains: formTenderDetail.value.platform });
+                if (platform.count > 0) {
+                    if (platform.count > 0) {
+                        formTenderDetail.value.fee += platform.results[0].fee;
+                    }
+                }
+            }
+        }
+        const handleIACheck = (value) => {
+            console.log('valor recibido IA', value)
+            if (formTenderDetail.value.quote_state === 'N') {
+                const originalPartsString = value;
+                iaCheck.value = originalPartsString.split(',').map(part => part.trim());
+                console.log('ia check value', iaCheck.value);
+            } else {
+                iaCheck.value = [];
+            }
+        }
+        const handleEdit = computed(() => {
+            if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E') {
+                return false;
+            }
+            return true;
+        })
+        const inputRef = ref();
+        const name = ref();
+        let index = 0;
+        const addItem = e => {
+            e.preventDefault();
+            groupList.push(name.value || `New item ${(index += 1)}`);
+            name.value = '';
+            setTimeout(() => {
+                inputRef.value?.focus();
+            }, 0);
+            console.log('addItem');
         };
         watch(
             () => route.path,
@@ -1184,8 +1348,17 @@ export default {
             roles,
             getUsersList,
             platformList,
-            getPlatformsList,
+            getPlatformsListData,
             router,
+            handleChangeAseguradora,
+            iaCheck,
+            handleEdit,
+            groupList,
+            VNodes,
+            inputRef,
+            addItem,
+            name,
+            vendorList,
         }
     }
 }
@@ -1219,8 +1392,38 @@ export default {
     height: 50px;
     text-align: center;
     align-content: center;
-
 }
+
+.item-d input {
+    border: none;
+    /* Optional: remove the border of the input */
+    width: 100%;
+    /* Optional: make the input take the full width of the container */
+    height: 100%;
+    /* Optional: make the input take the full height of the container */
+    text-align: center;
+    /* Optional: center the text inside the input */
+    border-radius: 20px;
+    /* Optional: apply border-radius to the input */
+}
+
+.item-d select {
+    border: none;
+    /* Optional: remove the border of the input */
+    width: 100%;
+    /* Optional: make the input take the full width of the container */
+    height: 100%;
+    /* Optional: make the input take the full height of the container */
+    text-align: center;
+    /* Optional: center the text inside the input */
+    border-radius: 20px;
+    /* Optional: apply border-radius to the input */
+}
+
+.item-d:not(.no-background) input {
+    background-color: var(--soft-back);
+}
+
 
 .editable-add-btn {
     margin-bottom: 8px;
@@ -1351,12 +1554,23 @@ export default {
     background-color: var(--principal) !important;
 }
 
-.not-quote {}
+.not-quote {
+    background-color: var(--soft-back);
+    width: 50%;
+}
+
 
 .form-item-container {
     display: flex;
     align-items: center;
     padding-right: 5%;
+    white-space: nowrap;
+    margin-bottom: 2%;
+}
+
+.form-item-obs {
+    display: flex;
+    align-items: center;
     white-space: nowrap;
     margin-bottom: 2%;
 }
@@ -1381,6 +1595,7 @@ export default {
 :deep(.ant-input-affix-wrapper) {
     border: 2px solid var(--border-item) !important;
 }
+
 .input-item {
     border: 2px solid var(--border-item) !important;
 }
@@ -1406,5 +1621,17 @@ export default {
 .mg-bottom .ant-form-item {
     margin-bottom: 10px;
     width: 15%;
+}
+
+.ia-check {
+    margin-left: 10px;
+    color: var(--principal)
+}
+
+.total-item {
+    font-style: italic;
+    background-color: var(--soft-back);
+    margin-bottom: 1%;
+    padding: 1%;
 }
 </style>
