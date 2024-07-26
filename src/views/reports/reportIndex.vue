@@ -37,7 +37,7 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
-                    <a-form-item label="Agente" name="agent">
+                    <a-form-item label="Operador" name="agent">
                         <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.user" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -123,7 +123,7 @@
             </template>
             <template v-if="column.key === 'total_quoted'">
                 <span>
-                    {{ record.total_quoted }}</span>
+                    {{ formatCurrency(record.total_quoted) }}</span>
             </template>
             <template v-else-if="column.key === 'quote_state'">
                 <span>
@@ -155,6 +155,7 @@ import { tableColumns } from './config/columns.js';
 import { ASEGURADORAS, TENDER_STATES, TIRE_BRANDS, MODELS } from '@/common/common'
 import { Form } from 'ant-design-vue';
 import { getQuotesSummary, exportQuotes } from '@/api/quotes/quotes.js';
+import { getRoles } from '@/api/roles/roles.js';
 import { getUsers } from '@/api/users/users.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 export default {
@@ -199,9 +200,9 @@ export default {
             try {
                 const response = await getQuotesSummary(params);
                 dataSource.value = response.results.filter(item => item.claim_id !== null);
-                if (Object.keys(params).length === 0) {
-                    getUserList();
-                }
+
+                getUserList();
+
                 return dataSource.value;
             } catch (error) {
                 console.error("Error fetching quotes:", error);
@@ -295,7 +296,15 @@ export default {
         });
         const getUserList = async () => {
             try {
-                agents.value = await getUsers({ roles: roles.value });
+                const idRole = await getRoles({ name: 'Agent' });
+                const agentsResponse = await getUsers({ roles: idRole.results[0].id });
+                const transformedAgents = agentsResponse.results.map((item) => {
+                    return {
+                        ...item,
+                        fullName: item.username,
+                    };
+                });
+                agents.value = transformedAgents;
             } catch (error) {
                 console.error("Error fetching agents:", error);
             }
