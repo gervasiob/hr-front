@@ -76,7 +76,7 @@
                 </router-link>
             </template>
             <template v-if="column.key === 'total_quoted'">
-                <span class="right-align">
+                <span style="text-align: end !important;">
                     {{ formatCurrency(record.total_quoted) }}</span>
             </template>
             <template v-else-if="column.key === 'quote_state'">
@@ -384,9 +384,5 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
     background-color: var(--secondary) !important;
     color: black !important;
-}
-
-.right-align {
-    text-align: end !important;
 }
 </style>
