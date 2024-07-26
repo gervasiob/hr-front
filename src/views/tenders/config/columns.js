@@ -1,5 +1,13 @@
 import { ASEGURADORAS, TENDER_STATES, PRIORITY_VALUES } from "@/common/common";
-
+import { formatCurrency, formatNumber } from '@/utils/utils.js';
+const customCurrencyFormat = (record, index, column) => {
+    record.total_quoted = formatCurrency(record.total_quoted)
+    return {
+        style: {
+            textAlign: 'right',
+        },
+    }
+}
 export const tableColumns = [
     {
         title: '#',
@@ -25,7 +33,8 @@ export const tableColumns = [
         title: 'Cotización',
         dataIndex: 'total_quoted',
         key: 'total_quoted',
-        sorter: (a, b) => a.cotizacion - b.cotizacion,
+        sorter: (a, b) => a.total_quoted - b.total_quoted,
+        customCell: customCurrencyFormat,
 
     },
     {
