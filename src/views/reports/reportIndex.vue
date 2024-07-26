@@ -121,10 +121,7 @@
                     </a-button>
                 </router-link>
             </template>
-            <template v-if="column.key === 'total_quoted'">
-                <span>
-                    {{ formatCurrency(record.total_quoted) }}</span>
-            </template>
+
             <template v-else-if="column.key === 'quote_state'">
                 <span>
                     <a-tag v-for="tag in record.quote_state" :key="tag" :color="getState(tag).color">
@@ -132,17 +129,6 @@
                     </a-tag>
                 </span>
             </template>
-            <!-- <template v-else-if="column.key === 'action'">
-                <span>
-                    <a>Invite 一 {{ record.name }}</a>
-                    <a-divider type="vertical" />
-                    <a>Delete</a>
-                    <a-divider type="vertical" />
-                    <a class="ant-dropdown-link">
-                        More actions
-                    </a>
-                </span>
-            </template> -->
         </template>
     </a-table>
 </template>
@@ -200,7 +186,7 @@ export default {
             try {
                 const response = await getQuotesSummary(params);
                 dataSource.value = response.results.filter(item => item.claim_id !== null);
-
+                total.value = response.count;
                 getUserList();
 
                 return dataSource.value;
