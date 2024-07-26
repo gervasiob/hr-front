@@ -25,7 +25,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Estado" name="estado">
-                <a-select placeholder="Ingrese su búsqueda" style="min-width: 100px"
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 130px"
                     v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
                         :label="item.label">
