@@ -10,6 +10,6 @@ import localStoragePlugin from './plugins/localStoragePlugin';
 
 const app = createApp(App);
 
-app.use(ZoomOnHover);
+app.use(localStoragePlugin);
 app.use(router);
 app.use(Antd).mount('#app');
