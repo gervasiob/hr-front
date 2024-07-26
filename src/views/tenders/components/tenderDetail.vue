@@ -15,7 +15,7 @@
                 <a-input class="input-item" v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
             <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-select placeholder="Ingrese su búsqueda" style="width: 200px"
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 100px"
                     v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption"
                     @change="handleChangeAseguradora">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
@@ -25,7 +25,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Estado" name="estado">
-                <a-select placeholder="Ingrese su búsqueda" style="width: 200px"
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 130px"
                     v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
                         :label="item.label">
@@ -99,8 +99,8 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Gestor" name="agent">
-                <a-select placeholder="Ingrese su búsqueda" style="width: 200px" v-model:value="formTenderDetail.user"
-                    allowClear show-search :filter-option="filterOption">
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 100px"
+                    v-model:value="formTenderDetail.user" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                         :label="(item.fullName)">
                         {{ item.fullName }}
@@ -108,7 +108,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Plataforma" name="platform">
-                <a-select placeholder="Ingrese su búsqueda" style="width: 250px"
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 100px"
                     v-model:value="formTenderDetail.platform" allowClear show-search :filter-option="filterOption"
                     @change="handleChangeAseguradora">
                     <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
@@ -205,9 +205,8 @@
                 </a-descriptions-item>
                 <a-descriptions-item label="Gestor">
                     <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-select placeholder="Ingrese su búsqueda"
-                            v-model:value="formTenderDetail.user" allowClear show-search
-                            :filter-option="filterOption">
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.user" allowClear
+                            show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                                 :label="(item.fullName)">
                                 {{ item.fullName }}
@@ -297,7 +296,8 @@
                             <a-table :columns="columnsQuote" :data-source="dataQuoteSource" bordered
                                 :pagination="false">
                                 <template #bodyCell="{ column, text, record }">
-                                    <template v-if="['Llanta', 'Neumatico', 'tire_type_name'].includes(column.dataIndex)">
+                                    <template
+                                        v-if="['Llanta', 'Neumatico', 'tire_type_name'].includes(column.dataIndex)">
                                         <div>
                                             <a-input v-if="editableQuoteData[record.key]"
                                                 v-model:value="editableQuoteData[record.key][column.dataIndex]"
