@@ -37,7 +37,7 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
-                    <a-form-item label="Operador" name="agent">
+                    <a-form-item label="Gestor" name="agent">
                         <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.user" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -296,7 +296,7 @@ export default {
         });
         const getUserList = async () => {
             try {
-                const idRole = await getRoles({ name: 'Agent' });
+                const idRole = await getRoles({ name: 'Agente' });
                 const agentsResponse = await getUsers({ roles: idRole.results[0].id });
                 const transformedAgents = agentsResponse.results.map((item) => {
                     return {
