@@ -2,10 +2,10 @@
     <a-form layout="inline" ref="formRef" :model="formState" @finish="handleFinish" @finishFailed="handleFinishFailed"
         :rules="formRules">
         <a-form-item v-for="(item, index) in fields" :key="index" :label="item.label" :name="item.name">
-            <component :is="getComponentType(item.type)" v-model:value="formState[item.name]"
+            <!-- <component :is="getComponentType(item.type)" v-model:value="formState[item.name]"
                 :placeholder="`Ingrese ${item.label.toLowerCase()}`" v-bind="getComponentProps(item)" :mode="item.mode"
                 class="input-item">
-            </component>
+            </component> -->
         </a-form-item>
     </a-form>
 </template>
