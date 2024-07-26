@@ -296,7 +296,7 @@ export default {
         });
         const getUserList = async () => {
             try {
-                const idRole = await getRoles({ name: 'Agent' });
+                const idRole = await getRoles({ name: 'Agente' });
                 const agentsResponse = await getUsers({ roles: idRole.results[0].id });
                 const transformedAgents = agentsResponse.results.map((item) => {
                     return {
