@@ -1,14 +1,14 @@
 <template>
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
-    
-        <a-row :gutter="24">
-          <a-col :span="6">
-            <a-form-item label="SKU" name="sku">
-              <a-input v-model:value="filterInputs.sku__icontains" allowClear style="width: 300px;" />
-            </a-form-item>
-          </a-col>
-    
+
+      <a-row :gutter="24">
+        <a-col :span="6">
+          <a-form-item label="SKU" name="sku">
+            <a-input v-model:value="filterInputs.sku__icontains" allowClear style="width: 300px;" />
+          </a-form-item>
+        </a-col>
+
         <a-col :span="6" :offset="6" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -19,6 +19,12 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+  <div>
+    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+    <a-modal v-model:open="open" title="Plataforma" @ok="handleOk" @cancel="handleCancel">
+      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+    </a-modal>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -69,9 +75,15 @@ import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getDetails, addDetails, updateDetails, deleteDetails } from '@/api/details/details.js';
+
+import { modalFields } from './config/modalFields.js';
+import ModalPlatform from '@/components/modal/modalPlatform.vue';
+
 export default {
   name: 'detailsList',
-
+  components: {
+    ModalPlatform,
+  },
   setup() {
     const formRef = ref();
     const formState = reactive({});
@@ -227,6 +239,37 @@ export default {
       dataSource.value = newData;
 
     };
+
+    const modalFielsProps = modalFields;
+    const formComponent = ref(null);
+    const open = ref(false);
+    const showModal = () => {
+      open.value = true;
+    };
+
+    const handleOk = () => {
+      if (formComponent.value) {
+        formComponent.value.handleFinish().then(() => {
+          open.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+    const handleCancel = () => {
+      if (formComponent.value) {
+        formComponent.value.resetForm();  // Llama al método para reiniciar el formulario
+      }
+      isVisible.value = false;  // Cierra el modal
+    };
+
+    const handleFormFinish = (form) => {
+      formState.value = form;
+      addDetails(formState.value).then(() => {
+        formState.value = {};
+        fetchData();
+      });
+    };
     return {
       formRef,
       formState,
@@ -250,6 +293,13 @@ export default {
       total,
       pagination,
       handleTableChange,
+      open,
+      showModal,
+      handleOk,
+      handleFormFinish,
+      formComponent,
+      modalFielsProps,
+      handleCancel,
     }
   }
 }
@@ -304,5 +354,9 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
   background-color: var(--secondary) !important;
   color: black !important;
+}
+
+.editable-add-btn {
+  margin-bottom: 1%;
 }
 </style>

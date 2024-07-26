@@ -2,48 +2,16 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <!-- <a-col :span="12">
-          <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
-                :label="aseguradora.label">
-                {{ aseguradora.label }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="SKU" name="sku">
               <a-input v-model:value="filterInputs.sku" allowClear />
             </a-form-item>
-            <a-form-item label="Nombre" name="name"> 
+            <a-form-item label="Nombre" name="name">
               <a-input v-model:value="filterInputs.nome" allowClear />
             </a-form-item>
           </a-col>
-          <!-- <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
-            </a-form-item>
-          </a-col> -->
         </a-row>
-
-        <!-- <a-col :span="6">
-          <a-form-item label="Licitación id" name="tender_id">
-            <a-input v-model:value="filterInputs.id" allowClear />
-          </a-form-item>
-        </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
         <a-col :span="16" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -53,11 +21,17 @@
   </div>
 
   <!-- Table -->
-  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+
+  <div>
+    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+    <a-modal v-model:open="open" title="Plataforma" @ok="handleOk" @cancel="handleCancel">
+      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+    </a-modal>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['sku', 'name', 'group','type','quantity','amount'].includes(column.dataIndex)">
+      <template v-if="['sku', 'name', 'group', 'type', 'quantity', 'amount'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -92,9 +66,15 @@ import { reactive, ref, onMounted, computed } from 'vue';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getProduct, addProduct, updateProduct, deleteProduct } from '@/api/product/product.js';
+
+import { modalFields } from './config/modalFields.js';
+import ModalPlatform from '@/components/modal/modalPlatform.vue';
+
 export default {
   name: 'productList',
-
+  components: {
+    ModalPlatform,
+  },
   setup() {
     const formRef = ref();
     const dataSource = ref([]);
@@ -207,7 +187,7 @@ export default {
       dataSource.value.push(newData);
       editableData[newKey] = cloneDeep(newData);
       // Esperar a que el DOM se actualice y luego desplazarse
-    
+
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -222,6 +202,37 @@ export default {
       const newData = dataSource.value.filter(item => item.key !== key);
       dataSource.value = newData;
 
+    };
+
+    const modalFielsProps = modalFields;
+    const formComponent = ref(null);
+    const open = ref(false);
+    const showModal = () => {
+      open.value = true;
+    };
+
+    const handleOk = () => {
+      if (formComponent.value) {
+        formComponent.value.handleFinish().then(() => {
+          open.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+    const handleCancel = () => {
+      if (formComponent.value) {
+        formComponent.value.resetForm();  // Llama al método para reiniciar el formulario
+      }
+      isVisible.value = false;  // Cierra el modal
+    };
+
+    const handleFormFinish = (form) => {
+      formState.value = form;
+      addUsers(formState.value).then(() => {
+        formState.value = {};
+        fetchData();
+      });
     };
     return {
       formRef,
@@ -242,6 +253,13 @@ export default {
       count,
       onDelete,
       productList,
+      open,
+      showModal,
+      handleOk,
+      handleFormFinish,
+      formComponent,
+      modalFielsProps,
+      handleCancel,
     }
   }
 }

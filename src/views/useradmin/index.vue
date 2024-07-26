@@ -39,6 +39,12 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+  <div>
+    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+    <a-modal v-model:open="open" title="Plataforma" @ok="handleOk" @cancel="handleCancel">
+      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+    </a-modal>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -56,15 +62,15 @@
         <div>
           <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
             v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
-            :filter-option="filterOption">
-            <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
+            :filter-option="filterOption" mode="multiple">
+            <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name" >
               {{ item.name }}
             </a-select-option>
           </a-select>
           <template v-else>
             <span>
-              <a-tag :color="getRoleColor(text)">
-                {{ getRoleName(text) }}
+              <a-tag :color="getRoleColor(item)" v-for="(item, index) in text" :key="index">
+                {{ getRoleName(item) }}
               </a-tag>
             </span>
 
@@ -100,14 +106,18 @@ import { tableColumns } from './config/columns.js';
 import { getRoleList } from '@/api/roles/roles.js';
 import { getUsers, getUserList, addUsers, updateUsers, deleteUsers } from '@/api/users/users.js';
 
+import { modalFields } from './config/modalFields.js';
+import ModalPlatform from '@/components/modal/modalPlatform.vue';
+
 export default {
   name: 'UserList',
-
+  components: {
+    ModalPlatform,
+  },
   setup() {
     const formRef = ref();
     const formState = reactive({});
     const filterInputs = ref({});
-
     const columns = tableColumns;
     const roleList = ref([]);
     const userList = ref([]);
@@ -178,7 +188,7 @@ export default {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
     const getRoleName = (id) => {
-      let role = roleList.value.find((item) => item.value === id[0]);
+      let role = roleList.value.find((item) => item.value === id);
       if (role) {
         return role.name;
       }
@@ -186,7 +196,7 @@ export default {
     }
     const getRoleColor = (id) => {
       let color = 'grey';
-      switch (id[0]) {
+      switch (id) {
         case 1:
           color = 'blue';
           break
@@ -231,7 +241,7 @@ export default {
       } else {
         rolesParam.push(data.roles)
       }
-    
+
       const params = {
         ...data,
         roles: rolesParam,
@@ -295,6 +305,37 @@ export default {
       dataSource.value = newData;
       fetchData();
     };
+
+    const modalFielsProps = modalFields;
+    const formComponent = ref(null);
+    const open = ref(false);
+    const showModal = () => {
+      open.value = true;
+    };
+
+    const handleOk = () => {
+      if (formComponent.value) {
+        formComponent.value.handleFinish().then(() => {
+          open.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+    const handleCancel = () => {
+      if (formComponent.value) {
+        formComponent.value.resetForm();  // Llama al método para reiniciar el formulario
+      }
+      isVisible.value = false;  // Cierra el modal
+    };
+
+    const handleFormFinish = (form) => {
+      formState.value = form;
+      addUsers(formState.value).then(() => {
+        formState.value = {};
+        fetchData();
+      });
+    };
     return {
       formRef,
       formState,
@@ -321,6 +362,13 @@ export default {
       total,
       pagination,
       handleTableChange,
+      open,
+      showModal,
+      handleOk,
+      handleFormFinish,
+      formComponent,
+      modalFielsProps,
+      handleCancel,
     }
   }
 }
@@ -375,5 +423,9 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
   background-color: var(--secondary) !important;
   color: black !important;
+}
+
+.editable-add-btn {
+  margin-bottom: 1%;
 }
 </style>
