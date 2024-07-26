@@ -76,8 +76,8 @@
                 </router-link>
             </template>
             <template v-if="column.key === 'total_quoted'">
-                <span>
-                    {{ record.total_quoted }}</span>
+                <span style="text-align: end">
+                    {{ formatCurrency(record.total_quoted) }}</span>
             </template>
             <template v-else-if="column.key === 'quote_state'">
                 <span>

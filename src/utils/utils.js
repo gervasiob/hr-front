@@ -1,6 +1,7 @@
 // utils.js o en el script del componente
 export function formatCurrency(value) {
-    if (!value) return '';
+    if (!value && value != 0) return '';
+
     return new Intl.NumberFormat('es-AR', {
         style: 'currency',
         currency: 'ARS'
