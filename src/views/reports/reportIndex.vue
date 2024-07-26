@@ -37,7 +37,7 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
-                    <a-form-item label="Operador" name="agent">
+                    <a-form-item label="Gestor" name="agent">
                         <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.user" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
