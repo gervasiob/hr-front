@@ -1,8 +1,6 @@
 <template>
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
-
-
       <a-row :gutter="24">
         <a-col :span="6">
           <a-form-item label="SKU" name="sku">
