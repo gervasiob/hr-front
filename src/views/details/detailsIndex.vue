@@ -21,7 +21,7 @@
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <div>
     <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
-    <a-modal v-model:open="open" title="Plataforma" @ok="handleOk" @cancel="handleCancel">
+    <a-modal v-model:open="open" title="Detalle - Movimiento" @ok="handleOk" @cancel="handleCancel">
       <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
     </a-modal>
   </div>
@@ -286,7 +286,7 @@ export default {
       if (formComponent.value) {
         formComponent.value.resetForm();  // Llama al método para reiniciar el formulario
       }
-      isVisible.value = false;  // Cierra el modal
+      open.value = false;
     };
 
     const handleFormFinish = (form) => {

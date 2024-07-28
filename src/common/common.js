@@ -258,3 +258,8 @@ export const GROUPS = [
     { value: 'Balanceo', label: "Balanceo" },
     { value: 'Otros', label: "Otros" },
 ];
+export const VENDOR_TYPE = [
+    { value: 0, label: 'Proveedor' },
+    { value: 1, label: 'Cía Aseguradora' },
+    { value: 2, label: 'Sucursal Daytona' },
+];
