@@ -271,7 +271,7 @@ export default {
       if (formComponent.value) {
         formComponent.value.resetForm();  // Llama al método para reiniciar el formulario
       }
-      isVisible.value = false;  // Cierra el modal
+      open.value = false; // Cierra el modal
     };
 
     const handleFormFinish = (form) => {

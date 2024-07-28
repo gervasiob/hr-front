@@ -56,6 +56,12 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+  <div>
+    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+    <a-modal v-model:open="open" title="Prov - Aseg - Suc" @ok="handleOk" @cancel="handleCancel">
+      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+    </a-modal>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
     @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -115,9 +121,16 @@ import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vendors/vendors.js';
+
+
+import { modalFields } from './config/modalFields.js';
+import ModalPlatform from '@/components/modal/modalPlatform.vue';
+
 export default {
   name: 'VendorsList',
-
+  components: {
+    ModalPlatform,
+  },
   setup() {
     const formRef = ref();
     const formState = reactive({});
@@ -295,6 +308,36 @@ export default {
         return '';
       }
     }
+    const modalFielsProps = modalFields;
+    const formComponent = ref(null);
+    const open = ref(false);
+    const showModal = () => {
+      open.value = true;
+    };
+
+    const handleOk = () => {
+      if (formComponent.value) {
+        formComponent.value.handleFinish().then(() => {
+          open.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+    const handleCancel = () => {
+      if (formComponent.value) {
+        formComponent.value.resetForm();  // Llama al método para reiniciar el formulario
+      }
+      open.value = false;
+    };
+
+    const handleFormFinish = (form) => {
+      formState.value = form;
+      addVendors(formState.value).then(() => {
+        formState.value = {};
+        fetchData();
+      });
+    };
     return {
       formRef,
       formState,
@@ -319,6 +362,13 @@ export default {
       total,
       pagination,
       handleTableChange,
+      open,
+      showModal,
+      handleOk,
+      handleFormFinish,
+      formComponent,
+      modalFielsProps,
+      handleCancel,
     }
   }
 }
@@ -373,5 +423,9 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
   background-color: var(--secondary) !important;
   color: black !important;
+}
+
+.editable-add-btn {
+  margin-bottom: 1%;
 }
 </style>
