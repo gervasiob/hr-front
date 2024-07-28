@@ -138,8 +138,13 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
+
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getVendors(params);
+        const response = await getVendors(fullParams);
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index,
@@ -164,17 +169,19 @@ export default {
       formatResult: res => res.results,
       pagination: {
         currentKey: 'page',
-        pageSizeKey: 'results',
+        pageSizeKey: 'page_size',
       },
     });
     const pagination = computed(() => ({
-      total: total.value,	//Acá hay que traer el count desde la respuesta
+      defaultCurrent: 1,
+      defaultPageSize: 10,
+      total: total.value,
       current: current.value,
+      pageSizeOptions: ["10", "50", "100"],
       pageSize: pageSize.value,
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
-      filters = filterInputs.value;
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -185,19 +192,21 @@ export default {
     };
 
     const onSearch = () => {
-      fetchData(filterInputs.value);
+      current.value = 1;
     };
     const resetFilters = () => {
       formRef.value.resetFields();
-      filterInputs.value = {};
-      fetchData();
+      filterInputs.value = {
+        vendor_type: 0,
+      };
+      current.value = 1;
     };
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
 
     onMounted(() => {
-      fetchData(filterInputs.value);
+
     });
 
     const editableData = reactive({});
@@ -213,6 +222,7 @@ export default {
 
 
       if (data.id > 0) {
+        if (data.comercial_name === '') { data.comercial_name = null }
         const params = {
           ...data,
         }
@@ -227,9 +237,7 @@ export default {
       }
     };
     const cancel = (key) => {
-      console.log('cancel', key)
       if (key === undefined) {
-        console.log('undefined')
         onDelete(key);
         delete editableData[key];
         return;
@@ -256,13 +264,13 @@ export default {
         name: '',
       };
 
- 
+
       dataSource.value.unshift(newData); // Agrega el nuevo registro al principio
       console.log('data', dataSource.value)
       editableData[newKey] = cloneDeep(newData);
 
       // Ajusta la paginación para mostrar la primera página
-     
+
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];

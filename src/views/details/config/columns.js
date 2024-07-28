@@ -1,7 +1,5 @@
-import { ASEGURADORAS, TENDER_STATES, PRIORITY_VALUES } from "@/common/common";
-import { formatCurrency, formatNumber } from '@/utils/utils.js';
 const customPrice = (record, index, column) => {
-    record.price = formatCurrency(record.price)
+
     return {
         style: {
             textAlign: 'right',
@@ -9,7 +7,7 @@ const customPrice = (record, index, column) => {
     }
 }
 const customAmountWO = (record, index, column) => {
-    record.amount_wo_iva = formatCurrency(record.amount_wo_iva)
+
     return {
         style: {
             textAlign: 'right',
@@ -17,7 +15,7 @@ const customAmountWO = (record, index, column) => {
     }
 }
 const customTotal = (record, index, column) => {
-    record.total_amount = formatCurrency(record.total_amount)
+
     return {
         style: {
             textAlign: 'right',
@@ -44,6 +42,7 @@ export const tableColumns = [
         title: 'Cantidad',
         dataIndex: 'quantity',
         sorter: (a, b) => a.quantity - b.quantity,
+        customCell: customPrice,
     },
     {
         title: 'Precio',

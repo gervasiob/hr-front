@@ -30,12 +30,32 @@
     <template #bodyCell="{ column, text, record }">
 
       <template
-        v-if="['product_id', 'sku', 'quote_id', 'quantity', 'price_wo_iva', 'price', 'amount_wo_iva', 'total_amount'].includes(column.dataIndex)">
+        v-if="['product_id', 'sku', 'quote_id'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
             {{ text }}
+          </template>
+        </div>
+      </template>
+      <template
+        v-if="[ 'quantity'].includes(column.dataIndex)">
+        <div>
+          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />
+          <template v-else>
+            {{ formatNumber (text) }}
+          </template>
+        </div>
+      </template>
+      <template
+        v-if="['price_wo_iva', 'price', 'amount_wo_iva', 'total_amount'].includes(column.dataIndex)">
+        <div>
+          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />
+          <template v-else>
+            {{ formatCurrency (text) }}
           </template>
         </div>
       </template>
@@ -75,6 +95,7 @@ import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getDetails, addDetails, updateDetails, deleteDetails } from '@/api/details/details.js';
+import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
@@ -98,15 +119,19 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getDetails(params);
+        const response = await getDetails(fullParams);
 
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
         total.value = response.count;
-        if (Object.keys(params).length === 0) {
+        if (Object.keys(filterInputs.value).length === 0) {
           const responseList = await getDetails();
           detailsList.value = responseList;
         }
@@ -130,16 +155,20 @@ export default {
       formatResult: res => res.results,
       pagination: {
         currentKey: 'page',
-        pageSizeKey: 'results',
+        pageSizeKey: 'page_size',
       },
     });
     const pagination = computed(() => ({
-      total: total.value,	//Acá hay que traer el count desde la respuesta
+      defaultCurrent: 1,
+      defaultPageSize: 10,
+      total: total.value,
       current: current.value,
-      pageSize: 10,
+      pageSizeOptions: ["10", "50", "100"],
+      pageSize: pageSize.value,
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
+
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -149,21 +178,18 @@ export default {
       });
     };
     const onSearch = () => {
-      fetchData(filterInputs.value);
+      current.value = 1;
     };
     const resetFilters = () => {
       formRef.value.resetFields();
       filterInputs.value = {};
-      fetchData();
+      current.value = 1;
     };
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
 
-    onMounted(() => {
-      fetchData();
-
-    });
+    onMounted(() => { });
 
     const editableData = reactive({});
     const edit = key => {
@@ -300,6 +326,8 @@ export default {
       formComponent,
       modalFielsProps,
       handleCancel,
+      formatCurrency,
+      formatNumber,
     }
   }
 }

@@ -146,37 +146,26 @@ export default {
             params = {
                 ...params,
                 page: pageCurrent.value,
+                ...filterInputs.value
             }
             try {
                 const response = await getQuotesSummary(params);
                 dataSource.value = response.results.filter(item => item.claim_id !== null);
                 total.value = response.count;
+                return dataSource.value;
             } catch (error) {
                 console.error("Error fetching quotes:", error);
             }
-            // try {
-            //     const idRole = await getRoles({ name: 'Agent' });
-            //     const agentsResponse = await getUsers({ roles: idRole.results[0].id });
-            //     const transformedAgents = agentsResponse.results.map((item) => {
-            //         return {
-            //             ...item,
-            //             fullName: item.username,
-            //         };
-            //     });
-            //     agents.value = transformedAgents;
-            // } catch (error) {
-            //     console.error("Error fetching agents:", error);
-            // }
         };
 
 
         const onSearch = () => {
-            fetchData(filterInputs.value);
+            current.value = 1;
         };
         const resetFilters = () => {
             formRef.value.resetFields();
-            filterInputs.value = {};
-            fetchData();
+            filterInputs.value = { quote_state: 'N' };
+            current.value = 1;
         };
         const filterOption = (input, option) => {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -194,8 +183,8 @@ export default {
             return state;
         }
         onMounted(() => {
-            // getFetchData();
             getLists();
+            getFetchData();
 
         });
         const getLists = async () => {
@@ -240,8 +229,7 @@ export default {
             filterInputs.value.quote_state = 'N';
             filterInputs.value.priority = cardKey;
             dataSource.value = [];
-            pageCurrent.value = 1;
-            fetchData(filterInputs.value);
+            current.value = 1;
         };
         const {
             data: dataSource,
@@ -249,22 +237,26 @@ export default {
             loading,
             current,
             pageSize,
-        } = usePagination(getFetchData, {
+        } = usePagination(fetchData, {
             formatResult: res => res.data.results,
             pagination: {
                 currentKey: 'page',
-                pageSizeKey: 'results',
+                pageSizeKey: 'page_size',
             },
         });
         const pagination = computed(() => ({
+            defaultCurrent: 1,
+            defaultPageSize: 10,
             total: total.value,
             current: current.value,
+            pageSizeOptions: ["10", "50", "100"],
             pageSize: pageSize.value,
         }));
         const handleTableChange = (pag, filters, sorter) => {
             pageCurrent.value = pag?.current;
+
             run({
-                results: pag.pageSize,
+                page_size: pag.pageSize,
                 page: pag?.current,
                 sortField: sorter.field,
                 sortOrder: sorter.order,
