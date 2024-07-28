@@ -54,6 +54,12 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+  <div>
+    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+    <a-modal v-model:open="open" title="Rol" @ok="handleOk" @cancel="handleCancel">
+      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+    </a-modal>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
     <template #bodyCell="{ column, text, record }">
 
@@ -89,16 +95,21 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getRoles, addRoles, updateRoles, deleteRoles, getRoleList } from '@/api/roles/roles.js';
 
+import { modalFields } from './config/modalFields.js';
+import ModalPlatform from '@/components/modal/modalPlatform.vue';
+
 export default {
   name: 'RolesList',
-
+  components: {
+    ModalPlatform,
+  },
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
@@ -111,37 +122,74 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getRoles(params);
+        const response = await getRoles(fullParams);
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
-        if (Object.keys(params).length === 0) {
+        total.value = response.count;
+        if (Object.keys(filterInputs.value).length === 0) {
           roleList.value = await getRoleList();
         }
+        return dataSource.value;
+
 
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
-
-
     const onSearch = () => {
-      fetchData(filterInputs.value);
+      current.value = 1;
     };
     const resetFilters = () => {
       formRef.value.resetFields();
       filterInputs.value = {};
-      fetchData();
+      current.value = 1;
     };
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
+    const pageCurrent = ref(1);
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'page_size',
+      },
+    });
+    const pagination = computed(() => ({
+      defaultCurrent: 1,
+      defaultPageSize: 10,
+      total: total.value,
+      current: current.value,
+      pageSizeOptions: ["10", "50", "100"],
+      pageSize: pageSize.value,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
+
+      run({
+        page_size: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
 
     onMounted(() => {
-      fetchData();
-
     });
 
     const editableData = reactive({});
@@ -202,6 +250,37 @@ export default {
       dataSource.value = newData;
 
     };
+
+    const modalFielsProps = modalFields;
+    const formComponent = ref(null);
+    const open = ref(false);
+    const showModal = () => {
+      open.value = true;
+    };
+
+    const handleOk = () => {
+      if (formComponent.value) {
+        formComponent.value.handleFinish().then(() => {
+          open.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+    const handleCancel = () => {
+      if (formComponent.value) {
+        formComponent.value.resetForm();  // Llama al método para reiniciar el formulario
+      }
+      isVisible.value = false;  // Cierra el modal
+    };
+
+    const handleFormFinish = (form) => {
+      formState.value = form;
+      addRoles(formState.value).then(() => {
+        formState.value = {};
+        fetchData();
+      });
+    };
     return {
       formRef,
       formState,
@@ -221,6 +300,17 @@ export default {
       handleAdd,
       count,
       onDelete,
+      current,
+      total,
+      pagination,
+      handleTableChange,
+      open,
+      showModal,
+      handleOk,
+      handleFormFinish,
+      formComponent,
+      modalFielsProps,
+      handleCancel,
     }
   }
 }
@@ -275,5 +365,9 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
   background-color: var(--secondary) !important;
   color: black !important;
+}
+
+.editable-add-btn {
+  margin-bottom: 1%;
 }
 </style>

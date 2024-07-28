@@ -1,7 +1,6 @@
-import { ASEGURADORAS, TENDER_STATES, PRIORITY_VALUES } from "@/common/common";
-import { formatCurrency, formatNumber } from '@/utils/utils.js';
+
 const customCurrencyFormat = (record, index, column) => {
-    record.cost_amount = formatCurrency(record.cost_amount)
+ 
     return {
         style: {
             textAlign: 'right',
@@ -39,6 +38,7 @@ export const tableColumns = [
         title: 'Stock',
         dataIndex: 'cost_stock',
         sorter: (a, b) => a.cost_stock - b.cost_stock,
+        customCell: customCurrencyFormat,
       
     },
     {

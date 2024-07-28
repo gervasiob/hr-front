@@ -156,7 +156,7 @@ const otherRoutes = [
     {
         key: 'Ordenes de Compra',
         name: 'ordersIndex',
-        path: '/adm/costs',
+        path: '/adm/orders',
         component: () => import('@/views/orders/ordersIndex.vue'),
     },
     {   

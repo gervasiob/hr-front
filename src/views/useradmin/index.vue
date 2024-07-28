@@ -63,7 +63,7 @@
           <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
             v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
             :filter-option="filterOption" mode="multiple">
-            <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name" >
+            <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
               {{ item.name }}
             </a-select-option>
           </a-select>
@@ -128,15 +128,18 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
-      console.log('params', params)
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getUsers(params);
+        const response = await getUsers(fullParams);
         dataSource.value = response.results.map((users, index) => ({
           ...users,
           key: index
         }));
         total.value = response.count;
-        if (Object.keys(params).length === 0) {
+        if (Object.keys(filterInputs.value).length === 0) {
           userList.value = await getUserList();
           roleList.value = await getRoleList();
         }
@@ -161,12 +164,16 @@ export default {
       },
     });
     const pagination = computed(() => ({
+      defaultCurrent: 1,
+      defaultPageSize: 10,
       total: total.value,
       current: current.value,
-      pageSize: 10,
+      pageSizeOptions: ["10", "50", "100"],
+      pageSize: pageSize.value,
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
+
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -177,12 +184,13 @@ export default {
     };
 
     const onSearch = () => {
-      fetchData(filterInputs.value);
+      current.value = 1;
     };
     const resetFilters = () => {
       formRef.value.resetFields();
       filterInputs.value = {};
-      fetchData();
+      current.value = 1;
+
     };
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -222,7 +230,7 @@ export default {
       return color;
     }
     onMounted(() => {
-      fetchData();
+
     });
 
     const editableData = reactive({});

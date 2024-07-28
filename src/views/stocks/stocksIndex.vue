@@ -83,8 +83,12 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getCostStock(params);
+        const response = await getCostStock(fullParams);
 
         dataSource.value = response.results.map((item, index) => ({
           ...item,
@@ -113,12 +117,16 @@ export default {
       },
     });
     const pagination = computed(() => ({
-      total: total.value,	//Acá hay que traer el count desde la respuesta
+      defaultCurrent: 1,
+      defaultPageSize: 10,
+      total: total.value,
       current: current.value,
-      pageSize: 10,
+      pageSizeOptions: ["10", "50", "100"],
+      pageSize: pageSize.value,
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
+
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -127,21 +135,19 @@ export default {
         ...filters,
       });
     };
-    const onSearch = () => {
-      fetchData(filterInputs.value);
-    };
     const resetFilters = () => {
       formRef.value.resetFields();
       filterInputs.value = {};
-      fetchData();
+      current.value = 1;
+    };
+    const onSearch = () => {
+      current.value = 1;
     };
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
 
     onMounted(() => {
-      fetchData();
-
     });
 
     const editableData = reactive({});

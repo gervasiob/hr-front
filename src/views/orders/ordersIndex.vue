@@ -16,7 +16,7 @@
         <a-row :gutter="24">
           <a-col :span="12">
             <a-form-item label="Razon Social" name="razon_social">
-              <a-input v-model:value="filterInputs.sku" allowClear style="width: 300px;" /> 
+              <a-input v-model:value="filterInputs.razon_social__icontains" allowClear style="width: 300px;" />
             </a-form-item>
           </a-col>
           <!-- <a-col :span="12">
@@ -50,11 +50,12 @@
   </div>
 
   <!-- Table -->
-  <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+    :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['razon_social', 'cuit', 'provincia','sede'].includes(column.dataIndex)">
+      <template v-if="['razon_social', 'cuit', 'provincia', 'sede'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -63,7 +64,7 @@
           </template>
         </div>
       </template>
-     
+
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
@@ -86,15 +87,15 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getOrders, addOrders, updateOrders, deleteOrders} from '@/api/orders/orders.js'
+import { getOrders, addOrders, updateOrders, deleteOrders } from '@/api/orders/orders.js'
 export default {
   name: 'ordersList',
 
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
 
@@ -107,42 +108,78 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getOrders(params);
+        const response = await getOrders(fullParams);
 
-        console.log("response");
-        console.log(response);
-
-        console.log(dataSource.value)
-        dataSource.value = response.map((item, index) => ({
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
-        const responseList = await getOrders();
-        ordersList.value = responseList;
-        console.log(dataSource.value)
+        total.value = response.count;
+        if (Object.keys(params).length === 0) {
+          const responseList = await getOrders();
+          ordersList.value = responseList;
+        }
+
+       
+        return dataSource.value;
 
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
+    const pageCurrent = ref(1);
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'page_size',
+      },
+    });
+    const pagination = computed(() => ({
+      defaultCurrent: 1,
+      defaultPageSize: 10,
+      total: total.value,
+      current: current.value,
+      pageSizeOptions: ["10", "50", "100"],
+      pageSize: pageSize.value,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
 
+      run({
+        page_size: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
 
     const onSearch = () => {
-      fetchData(filterInputs.value);
+      current.value = 1;
     };
     const resetFilters = () => {
       formRef.value.resetFields();
       filterInputs.value = {};
-      fetchData();
+      current.value = 1;
     };
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
 
     onMounted(() => {
-      fetchData();
-
     });
 
     const editableData = reactive({});
@@ -186,7 +223,7 @@ export default {
       if (!record.razon_social || !record.cuit) {
         onDelete(key);
       }
-      };
+    };
     const count = computed(() => {
       if (dataSource.value) {
         return dataSource.value.length + 1
@@ -238,6 +275,10 @@ export default {
       count,
       onDelete,
       ordersList,
+      current,
+      total,
+      pagination,
+      handleTableChange,
     }
   }
 }

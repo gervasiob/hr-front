@@ -112,9 +112,11 @@ export default {
 
 
     const onSearch = () => {
+      current.value = 1;
       fetchData(filterInputs.value);
     };
     const resetFilters = () => {
+      current.value = 1;
       formRef.value.resetFields();
       filterInputs.value = {};
       fetchData();
