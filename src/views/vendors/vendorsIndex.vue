@@ -59,7 +59,8 @@
   <div>
     <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
     <a-modal v-model:open="open" title="Prov - Aseg - Suc" @ok="handleOk" @cancel="handleCancel">
-      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps"
+        :formData="formDataProps" />
     </a-modal>
   </div>
   <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
@@ -104,7 +105,7 @@
             </a-popconfirm>
           </span>
           <span v-else>
-            <a @click="edit(record.key)">Edit</a>
+            <a @click="handleEdit(record.key)">Edit</a>
             <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
             </a-popconfirm>
@@ -279,7 +280,6 @@ export default {
 
 
       dataSource.value.unshift(newData); // Agrega el nuevo registro al principio
-      console.log('data', dataSource.value)
       editableData[newKey] = cloneDeep(newData);
 
       // Ajusta la paginación para mostrar la primera página
@@ -338,6 +338,36 @@ export default {
         fetchData();
       });
     };
+    let formDataProps = {};
+    const handleEdit = (key) => {
+      const data = dataSource.value.filter(item => key === item.key)[0];
+      console.log('data', data)
+      // try {
+      //   const params = {
+      //     id: data.id,
+      //   }
+      formDataProps = 14;
+      formComponent.value = { name: 'social_name', value: 14}
+      open.value = true;
+      //   await getVendors(params).then((res) => {
+      //     console.log('res', res.results)
+      //     // formDataProps = res.results[0];
+      //     // formComponent.value = res.results[0];
+      //     formDataProps = {id:1}
+      //     if (formDataProps) {
+      //       // Clonar los datos para evitar modificaciones directas
+      //       console.log('from data. value', formDataProps)
+
+      //       open.value = true;
+      //     } else {
+      //       console.error("No se encontraron datos para la clave especificada.");
+      //     }
+      //   })
+      // } catch (error) {
+
+      // }
+
+    };
     return {
       formRef,
       formState,
@@ -369,6 +399,8 @@ export default {
       formComponent,
       modalFielsProps,
       handleCancel,
+      formDataProps,
+      handleEdit,
     }
   }
 }
