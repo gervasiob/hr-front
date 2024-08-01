@@ -77,13 +77,6 @@
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Sucursal" name="sucursal" :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tender_data.sede">
-                    <template #prefix>
-                        <UserOutlined class="site-form-item-icon" />
-                    </template>
-                </a-input>
-            </a-form-item>
             <a-form-item label="Nombre Cliente" name="name" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-input v-model:value="formTenderDetail.tender_data.name">
                     <template #prefix>
@@ -93,6 +86,20 @@
             </a-form-item>
             <a-form-item label="Teléfono" name="phone" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-input v-model:value="formTenderDetail.tender_data.phone">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Localidad" name="city" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.city">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Provincia" name="province" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.province">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
@@ -188,11 +195,6 @@
     <a-collapse class="collapse-class">
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
-                <a-descriptions-item label="Sucursal">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.sede" :readonly="handleEdit" />
-                    </div>
-                </a-descriptions-item>
                 <a-descriptions-item label="Nombre Cliente">
                     <div class="item-d" :class="{ 'no-background': handleEdit }">
                         <a-input v-model:value="formTenderDetail.tender_data.name" :readonly="handleEdit" />
@@ -201,6 +203,16 @@
                 <a-descriptions-item label="Teléfono">
                     <div class="item-d" :class="{ 'no-background': handleEdit }">
                         <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit" />
+                    </div>
+                </a-descriptions-item>
+                <a-descriptions-item label="Localidad">
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.city" :readonly="handleEdit" />
+                    </div>
+                </a-descriptions-item>
+                <a-descriptions-item label="Provincia">
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.province" :readonly="handleEdit" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Gestor">
@@ -456,8 +468,12 @@
                                 <div class="form-item-container">
                                     <span>Sucursal</span>
                                     <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%"
-                                        mode="multiple" placeholder="Please select" :options="optionsDaytonas"
-                                        allow-clear show-search :filter-option="filterOption"></a-select>
+                                        mode="multiple" placeholder="Please select"  allow-clear
+                                        show-search :filter-option="filterOption">
+                                        <a-select-option v-for="(item, index) in sucursalList" :key="index"
+                                            :value="item.name" :label="(item.name)">
+                                            {{ item.name }}
+                                        </a-select-option></a-select>
                                 </div>
                             </a-col>
                         </a-row>
@@ -650,7 +666,7 @@ import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { getUsers } from '@/api/users/users.js';
 import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
 import { getRoles } from '@/api/roles/roles.js';
-import { getVendors, getVendorList } from '@/api/vendors/vendors.js';
+import { getVendors, getVendorList, getSucursalList } from '@/api/vendors/vendors.js';
 import { RobotOutlined, PlusOutlined } from '@ant-design/icons-vue';
 export default {
     name: 'TenderDetail',
@@ -694,10 +710,15 @@ export default {
         const iaCheck = ref([]);
         const estadoList = TENDER_STATES;
         const vendorList = ref([]);
-        const optionsDaytonas = DAYTONAS.map(daytona => ({
-            label: `${daytona.businessName} - ${daytona.completeAddress}`,
-            value: daytona.idClaimsProvider
-        }));
+        const sucursalList = ref([]);
+        // const optionsDaytonas = DAYTONAS.map(daytona => ({
+        //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
+        //     value: daytona.idClaimsProvider
+        // }));
+        // const optionsDaytonas = sucursalList.map(daytona => ({
+        //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
+        //     value: daytona.idClaimsProvider
+        // }));
         const formTenderDetail = ref({
             not_quote: false,
             delivery_time: '',
@@ -1145,6 +1166,7 @@ export default {
             }
             try {
                 vendorList.value = await getVendorList();
+                sucursalList.value = await getSucursalList();
             } catch (error) {
                 console.error("Error fetching vendor list:", error);
             }
@@ -1307,7 +1329,7 @@ export default {
             optionsTireHeight,
             optionsTireTread,
             filterOption,
-            optionsDaytonas,
+            // optionsDaytonas,
             optionsQuoteDetails,
             handleAdd,
             count,
@@ -1359,6 +1381,7 @@ export default {
             addItem,
             name,
             vendorList,
+            sucursalList,
         }
     }
 }

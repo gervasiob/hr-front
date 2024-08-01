@@ -1,4 +1,6 @@
 <template>
+    <div>{{ fieldValues }}</div>
+
     <a-form layout="inline" ref="formRef" :model="formState" @finish="handleFinish" @finishFailed="handleFinishFailed"
         :rules="formRules">
         <a-form-item v-for="(item, index) in fields" :key="index" :label="item.label" :name="item.name">
@@ -11,15 +13,20 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 
 export default {
     name: 'ModalPlatform',
     props: {
+        formData: {
+            type: Object,
+            default: () => ({}),
+        },
         modalFields: {
             type: Object,
             default: [],
-        }
+        },
+
     },
     setup(props, { emit }) {
         const formState = reactive({});
@@ -44,6 +51,8 @@ export default {
             console.log('errors', errors);
         };
         const fields = props.modalFields;
+        let fieldValues = props.formData;
+        console.log('props', props)
         const formRules = props.modalFields.reduce((rules, field) => {
             if (field.rules) {
                 rules[field.name] = field.rules[field.name] || [];
@@ -81,6 +90,10 @@ export default {
             }
             return props;
         };
+        watch(() => props.formData, (newData) => {
+            console.log('newData', newData)
+            fieldValues = newData;
+        }, { immediate: true });
 
         return {
             formState,
@@ -92,6 +105,7 @@ export default {
             formRules,
             formRef,
             resetForm,
+            fieldValues,
         };
     }
 

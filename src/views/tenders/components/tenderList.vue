@@ -146,6 +146,7 @@ export default {
             params = {
                 ...params,
                 page: pageCurrent.value,
+                ordering: '-created_at',
                 ...filterInputs.value
             }
             try {
