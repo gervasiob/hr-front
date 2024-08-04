@@ -10,6 +10,16 @@ const customCurrencyFormat = (record, index, column) => {
 }
 export const tableColumns = [
     {
+        title: 'Fecha',
+        dataIndex: 'claim_date',
+        key: 'claim_date',
+        sorter: (a, b) => {
+            const dateA = new Date(a.claim_date);
+            const dateB = new Date(b.claim_date);
+            return dateA - dateB; // Devuelve un número negativo, cero o positivo
+        },
+    },
+    {
         title: '#',
         dataIndex: 'id',
         key: 'id',
@@ -20,6 +30,12 @@ export const tableColumns = [
         dataIndex: 'claim_id',
         key: 'claim_id',
         sorter: (a, b) => a.claim_id - b.claim_id,
+    },
+    {
+        title: 'Patente',
+        dataIndex: 'domain',
+        key: 'domain',
+        sorter: (a, b) => a.domain.localeCompare(b.domain),
     },
     {
         title: 'Aseguradora',

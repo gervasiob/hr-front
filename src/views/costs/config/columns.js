@@ -1,7 +1,14 @@
-import { ASEGURADORAS, TENDER_STATES, PRIORITY_VALUES } from "@/common/common";
 
+const customCurrencyFormat = (record, index, column) => {
+ 
+    return {
+        style: {
+            textAlign: 'right',
+        },
+    }
+}
 export const tableColumns = [
-      {
+    {
         title: '#',
         dataIndex: 'id',
         sorter: (a, b) => a.id - b.id,
@@ -11,7 +18,7 @@ export const tableColumns = [
         dataIndex: 'code',
         // sorter: (a, b) => a.code.localeCompare(b.code),
     },
-    
+
     {
         title: 'Detalle',
         dataIndex: 'detail',
@@ -31,11 +38,14 @@ export const tableColumns = [
         title: 'Stock',
         dataIndex: 'cost_stock',
         sorter: (a, b) => a.cost_stock - b.cost_stock,
+        customCell: customCurrencyFormat,
+      
     },
     {
         title: 'Importe',
         dataIndex: 'cost_amount',
         sorter: (a, b) => a.cost_amount - b.cost_amount,
+        customCell: customCurrencyFormat,
     },
     {
         title: 'Activo',
@@ -54,6 +64,6 @@ export const tableColumns = [
     // },
     {
         title: 'Operation',
-        dataIndex: 'operation',     
+        dataIndex: 'operation',
     },
 ];

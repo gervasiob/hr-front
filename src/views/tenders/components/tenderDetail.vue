@@ -15,7 +15,7 @@
                 <a-input class="input-item" v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
             <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-select placeholder="Ingrese su búsqueda" style="min-width: 100px"
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 120px"
                     v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption"
                     @change="handleChangeAseguradora">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
@@ -77,13 +77,6 @@
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Sucursal" name="sucursal" :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tender_data.sede">
-                    <template #prefix>
-                        <UserOutlined class="site-form-item-icon" />
-                    </template>
-                </a-input>
-            </a-form-item>
             <a-form-item label="Nombre Cliente" name="name" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-input v-model:value="formTenderDetail.tender_data.name">
                     <template #prefix>
@@ -93,6 +86,20 @@
             </a-form-item>
             <a-form-item label="Teléfono" name="phone" :rules="[{ required: false, message: 'Ingrese un valor' }]">
                 <a-input v-model:value="formTenderDetail.tender_data.phone">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Localidad" name="city" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.city">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Provincia" name="province" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+                <a-input v-model:value="formTenderDetail.tender_data.province">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
@@ -188,11 +195,6 @@
     <a-collapse class="collapse-class">
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
-                <a-descriptions-item label="Sucursal">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.sede" :readonly="handleEdit" />
-                    </div>
-                </a-descriptions-item>
                 <a-descriptions-item label="Nombre Cliente">
                     <div class="item-d" :class="{ 'no-background': handleEdit }">
                         <a-input v-model:value="formTenderDetail.tender_data.name" :readonly="handleEdit" />
@@ -201,6 +203,16 @@
                 <a-descriptions-item label="Teléfono">
                     <div class="item-d" :class="{ 'no-background': handleEdit }">
                         <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit" />
+                    </div>
+                </a-descriptions-item>
+                <a-descriptions-item label="Localidad">
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.city" :readonly="handleEdit" />
+                    </div>
+                </a-descriptions-item>
+                <a-descriptions-item label="Provincia">
+                    <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <a-input v-model:value="formTenderDetail.tender_data.province" :readonly="handleEdit" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Gestor">
@@ -456,8 +468,12 @@
                                 <div class="form-item-container">
                                     <span>Sucursal</span>
                                     <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%"
-                                        mode="multiple" placeholder="Please select" :options="optionsDaytonas"
-                                        allow-clear show-search :filter-option="filterOption"></a-select>
+                                        mode="single" placeholder="Please select" allow-clear show-search
+                                        :filter-option="filterOption">
+                                        <a-select-option v-for="(item, index) in sucursalList" :key="index"
+                                            :value="item.value" :label="(item.name)">
+                                            {{ item.name }}
+                                        </a-select-option></a-select>
                                 </div>
                             </a-col>
                         </a-row>
@@ -528,13 +544,13 @@
                                     v-model:value="editableData[record.key][column.dataIndex]"
                                     style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange"
                                     allow-clear show-search :filter-option="filterOption">
-                                    <a-select-option v-for="(item, index) in vendorList" :key="index" :value="item.name"
-                                        :label="(item.name)">
+                                    <a-select-option v-for="(item, index) in vendorList" :key="index"
+                                        :value="item.value" :label="(item.name)">
                                         {{ item.name }}
                                     </a-select-option>
                                 </a-select>
                                 <template v-else>
-                                    {{ text }}
+                                    {{ getLabelList(text, vendorList) }}
                                 </template>
                             </div>
                         </template>
@@ -543,15 +559,28 @@
                                 <a-checkbox v-model:checked="editableData[record.key][column.dataIndex]"
                                     v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"></a-checkbox>
                                 <template v-else>
-                                    <a-checkbox :checked="text" :disabled="true"></a-checkbox>
+                                    <div class="checkbox">
+                                        <a-checkbox :checked="text" :disabled="true"></a-checkbox>
+                                        <div class="icono" v-show="record.po_id">
+                                            <router-link :to="{ name: 'OrderDetail', params: { id: record.po_id } }">
+                                                <a-button type="primary" :disabled="!text">
+                                                    PDF
+                                                </a-button>
+                                            </router-link>
+                                            <!-- <a-button type="primary" :disabled="!text"
+                                                @click="handlePdf(record.po_id)">PDF</a-button> -->
+                                            <!-- <FilePdfOutlined :style="{ color: text ? 'blue' : '', fontSize: '24px' }">
+                                            </FilePdfOutlined> -->
+                                        </div>
+                                    </div>
                                 </template>
                             </div>
                         </template>
-                        <template v-if="column.dataIndex === 'price'">
+                        <template v-if="column.dataIndex === 'price_final'">
                             <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
                             <template v-else>
-                                {{ formatCurrency(record.price) }}
+                                {{ formatCurrency(record.price_final) }}
                             </template>
                         </template>
                         <template v-if="column.dataIndex === 'price_wo_iva'">
@@ -559,19 +588,20 @@
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
                             <template v-else> -->
                             <div>
-                                {{ formatCurrency(record.price / 1.21) }}
+                                {{ formatCurrency(record.price_final / 1.21) }}
                             </div>
                             <!-- </template> -->
                         </template>
                         <template v-if="column.dataIndex === 'amount_wo_iva'">
                             <div>
-                                {{ formatCurrency(record.price / 1.21 * record.quantity) }}
+                                {{ formatCurrency(record.price_final / 1.21 * record.quantity) }}
                             </div>
                         </template>
                         <template v-else-if="column.dataIndex === 'total'">
                             <div>
-                                {{ formatCurrency(record.price / 1.21 * record.quantity * (1 + formTenderDetail.fee /
-                                100))
+                                {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
+                                    formTenderDetail.fee /
+                                    100))
                                 }}
                             </div>
                         </template>
@@ -597,6 +627,18 @@
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
+
+                <a-row class="footer-oc">
+                    <!-- <a-col :offset="10">
+                        <a-button type="primary" @click="handleGenerateOc">Generar OC</a-button>
+                    </a-col> -->
+                    <a-col :offset="18">
+                        <div class="total-oc"> <span>TOTAL OC: {{
+                            formatCurrency(totalPo) }}</span>
+                        </div>
+                    </a-col>
+                </a-row>
+
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
                     v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'">
@@ -633,7 +675,7 @@
 
 <script>
 import { cloneDeep } from 'lodash-es';
-import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent } from 'vue';
+import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
@@ -650,13 +692,15 @@ import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { getUsers } from '@/api/users/users.js';
 import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
 import { getRoles } from '@/api/roles/roles.js';
-import { getVendors, getVendorList } from '@/api/vendors/vendors.js';
-import { RobotOutlined, PlusOutlined } from '@ant-design/icons-vue';
+import { getVendors, getVendorList, getSucursalList } from '@/api/vendors/vendors.js';
+import { RobotOutlined, PlusOutlined, FilePdfOutlined } from '@ant-design/icons-vue';
+import { addOrders } from '@/api/orders/orders.js';
 export default {
     name: 'TenderDetail',
     components: {
         RobotOutlined,
         PlusOutlined,
+        FilePdfOutlined,
     },
     setup() {
         const route = useRoute();
@@ -694,10 +738,15 @@ export default {
         const iaCheck = ref([]);
         const estadoList = TENDER_STATES;
         const vendorList = ref([]);
-        const optionsDaytonas = DAYTONAS.map(daytona => ({
-            label: `${daytona.businessName} - ${daytona.completeAddress}`,
-            value: daytona.idClaimsProvider
-        }));
+        const sucursalList = ref([]);
+        // const optionsDaytonas = DAYTONAS.map(daytona => ({
+        //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
+        //     value: daytona.idClaimsProvider
+        // }));
+        // const optionsDaytonas = sucursalList.map(daytona => ({
+        //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
+        //     value: daytona.idClaimsProvider
+        // }));
         const formTenderDetail = ref({
             not_quote: false,
             delivery_time: '',
@@ -712,7 +761,7 @@ export default {
             obs: '',
             tire_type_name: '',
             tire_quoted: '',
-            daytona_ids: [],
+            daytona_ids: null,
             quote_detail: '',
             quote_state: '',
             spare_tire_amount: 0,
@@ -763,7 +812,12 @@ export default {
             editableQuoteData[key] = cloneDeep(dataQuoteSource.value.filter(item => key === item.key)[0]);
         };
         const save = key => {
+            errorMessage.value = "";
             const record = dataSource.value.find(item => key === item.key);
+            const data = editableData[key];
+            if (!data.sku || !data.type || !data.vendor_id || parseFloat(data.price_final) < 0.01 || parseFloat(data.quantity) < 0.01) {
+                return errorMessage.value = 'Debe existir un Sku, un grupo, un precio unitario, una cantidad y seleccionar un Proveedor';
+            }
             Object.assign(record, editableData[key]);
             record.total = record.price * record.quantity;
             delete editableData[key];
@@ -773,7 +827,7 @@ export default {
             if (key === undefined) {
                 onDelete(key);
                 delete editableQuoteData[key];
-                return;
+                return errorMessage.value = '';
             }
             const record = dataSource.value.find(item => key === item.key);
             Object.assign(record, editableData[key]);
@@ -854,7 +908,6 @@ export default {
                 if (response.length > 0) {
                     tenderData.value = response.results[0];
                 }
-                console.log('tenderData.value', tenderData.value)
                 const params = {
                     claim_id: id,
                 };
@@ -862,13 +915,18 @@ export default {
                 quoteData.value = quoteResponse.results[0];
                 quoteId.value = quoteData.value.id;
                 if (Array.isArray(quoteData.value.details)) {
-                    quoteData.value.details.map((item) => {
-                        dataSource.value.push(item)
-                    })
-                    dataSource.value = quoteData.value.details.map((item, index) => ({
-                        ...item,
-                        key: index
-                    }));
+                    const filteredDetails = quoteData.value.details.filter(detail =>
+                        detail.hasOwnProperty('vendor_id') && detail.vendor_id !== null
+                    );
+                    if (filteredDetails.length > 0) {
+                        // filteredDetails.map((item) => {
+                        //     dataSource.value.push(item)
+                        // })
+                        dataSource.value = filteredDetails.map((item, index) => ({
+                            ...item,
+                            key: index,
+                        }));
+                    }
                 } else {
                     dataSource.value.push(quoteData.value.details);
                 }
@@ -918,7 +976,7 @@ export default {
                 }
                 formTenderDetail.value = quoteDataValue;
                 if (!formTenderDetail.value.daytona_ids) {
-                    formTenderDetail.value.daytona_ids = [];
+                    formTenderDetail.value.daytona_ids = null;
                 }
                 if (!formTenderDetail.value.brand) {
                     formTenderDetail.value.brand = [];
@@ -966,63 +1024,87 @@ export default {
             return state ? state.label : stateValue;
         };
         const filterOption = (input, option) => {
-            console.log(input)
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
+
+        const getLabelList = (value, list) => {
+            return list.find((item) => item.value === value).name;
+        }
         const onSave = async (value) => {
             isLoading.value = true;
             errorMessage.value = '';
-            console.log(formTenderDetail.value, 'on save')
-            formRef.value
-                .validate().then(async () => {
-                    try {
-                        const params = formTenderDetail.value; // O ajusta según necesites
-                        console.log('formTernder details ', formTenderDetail.value)
-                        let brandObject = optionsBrand.find((item) => item.value === formTenderDetail.value.brand);
+            try {
+                // Validar el formulario
+                await formRef.value.validate();
 
-                        if (brandObject) {
-                            params.brand = brandObject.label;
-                            console.log('params', params)
-                        }
-                        params.quote_state = value;
-                        let fullParams = {
-                            ...params,
-                            details: dataSource.value,
-                            tire_type_name: dataQuoteSource.value,
-                            total_quoted: quoteData.value.total_quoted,
-                        }
-                        console.log(fullParams)
-                        let response;
-                        if (type.value === 'Edit') {
-                            console.log('Edit')
-                            response = updateQuotes(quoteId.value, fullParams);
-                        }
-                        if (type.value === 'Add') {
-                            console.log('Add')
-                            console.log('add form', formTenderDetail.value)
-                            fullParams = {
-                                ...fullParams,
-                                company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
-                            }
-                            addQuotes(fullParams);
-                            tenderId.value = formTenderDetail.value.claim_id;
-                            const path = 'licitaciones/' + tenderId.value;
-                            router.push({ path });
-                        }
-                        dataSource.value = [];
-                        dataQuoteSource.value = [];
-                    } catch (error) {
-                        console.error('Error updating quotes:', error);
-                        errorMessage.value = 'Error actualizando las cotizaciones: ' + error;
-                    } finally {
-                        isLoading.value = false;
+                // Preparar los parámetros
+                const params = { ...formTenderDetail.value };
+                let brandObject = optionsBrand.find((item) => item.value === formTenderDetail.value.brand);
+
+                if (brandObject) {
+                    params.brand = brandObject.label;
+                }
+
+                params.quote_state = value;
+
+                const details = dataSource.value.map((item) => ({
+                    ...item,
+                    po: item.po || false,
+                    price_oc: parseFloat(item.price_final / 1.21 * (1 + formTenderDetail.value.fee / 100)).toFixed(2),
+                }));
+
+                let fullParams = {
+                    ...params,
+                    details,
+                    tire_type_name: dataQuoteSource.value,
+                    total_quoted: quoteData.value.total_quoted,
+                };
+
+                let response;
+
+                // Editar o agregar cotización según el tipo
+                if (type.value === 'Edit') {
+                    console.log('Edit');
+                    response = await updateQuotes(quoteId.value, fullParams);
+                } else if (type.value === 'Add') {
+                    console.log('Add');
+                    console.log('add form', formTenderDetail.value);
+                    fullParams = {
+                        ...fullParams,
+                        company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
+                    };
+                    response = await addQuotes(fullParams);
+                    tenderId.value = formTenderDetail.value.claim_id;
+                    const path = 'licitaciones/' + tenderId.value;
+                    router.push({ path });
+                }
+
+                // Verificar el estado de la promesa
+                if (response) {
+                    console.log('response', response);
+                    // Realiza acciones adicionales si es necesario
+                }
+            } catch (error) {
+                errorMessage.value = 'Error actualizando las cotizaciones, no se ha guardado el objeto: ' + error;
+                console.log('error', error)
+                if (error.response.hasOwnProperty('data')) {
+                    if (error.response.data.hasOwnProperty('error')) {
+                        errorMessage.value += '\n' + error.response.data.error;
                     }
-
-                    console.log('Save:', toRaw(formTenderDetail.value));
-                })
+                }
+            } finally {
+                isLoading.value = false;
+                console.log('finally')
+                if (errorMessage.value === '') {
+                    setTimeout(() => {
+                        location.reload();
+                    }, 3000); // 3000 ms = 3 segundos
+                }
+            }
 
 
         };
+
         const onCancel = () => {
             isLoading.value = true;
             errorMessage.value = '';
@@ -1145,6 +1227,7 @@ export default {
             }
             try {
                 vendorList.value = await getVendorList();
+                sucursalList.value = await getSucursalList();
             } catch (error) {
                 console.error("Error fetching vendor list:", error);
             }
@@ -1182,7 +1265,7 @@ export default {
                     obs: '',
                     tire_type_name: 'Auxilio',
                     tire_quoted: 'modelo exacto',
-                    daytona_ids: [],
+                    daytona_ids: null,
                     quote_detail: '',
                     quote_state: 'N',
                     spare_tire_amount: 0,
@@ -1208,8 +1291,6 @@ export default {
                 }
                 const costResponse = await getTireCost(params);
                 newCost.value = costResponse;
-                console.log("cost response")
-                console.log(costResponse)
 
                 dataQuoteSource.value = dataQuoteSource.value.map((item) => {
                     item.neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
@@ -1269,6 +1350,82 @@ export default {
             }, 0);
             console.log('addItem');
         };
+        // PDF
+        const handlePdf = (index) => {
+            console.log('va al pdf', index)
+        }
+        const totalPo = computed(() => {
+            if (dataSource.value && Array.isArray(dataSource.value)) {
+                return dataSource.value.reduce((acc, item) => {
+                    let subTotal = 0;
+                    if (item.po) {
+                        subTotal = item.price_final / 1.21 * item.quantity * (1 + formTenderDetail.value.fee /
+                            100);
+                    }
+                    return acc + (subTotal || 0);
+                }, 0);
+            }
+            return 0;
+        });
+        const handleGenerateOc = () => {
+            console.log('generar OC')
+            // Agrupar por vendor
+            const filteredData = dataSource.value.filter((item) => item.po === true);
+            console.log('filtered Data', filteredData)
+            if (filteredData) {
+                const groupedData = filteredData.reduce((acc, item) => {
+                    // Si el vendor no existe en el acumulador, inicializarlo como un array vacío
+                    if (!acc[item.vendor_id]) {
+                        acc[item.vendor_id] = [];
+                    }
+                    // Agregar el item actual al array correspondiente del vendor
+                    acc[item.vendor_id].push(item);
+                    return acc;
+                }, {});
+
+                // Convertir el objeto de grupos en un array de sub-arrays
+                const groupedArray = Object.values(groupedData);
+
+                // Enviar cada sub-array a la función postOc
+                groupedArray.forEach(async subArray => {
+                    console.log(subArray)
+                    const filter = {
+                        social_name: subArray[0].vendor_id,
+                    }
+                    console.log('filter', filter)
+                    const vendor = await getVendors(filter);
+                    const vendorData = vendor.results[0];
+                    console.log('vendor', vendor)
+                    const params = {
+                        order: {
+                            cuit: vendorData.cuit,
+                            RazonSocial: vendorData.social_name,
+                            Direccion: vendorData.address ? vendorData.address : '',
+                            Ciudad: vendorData.city ? vendorData.city : '',
+                            Provincia: vendorData.province ? vendorData.province : '',
+                            Email: vendorData.mail ? vendorData.mail : '',
+                            Telefono: vendorData.phone ? vendorData.phone : '',
+                            Fechaentrega: new Date(),
+                            Sede: formTenderDetail.value.daytona_ids,
+                            Ordenid: formTenderDetail.value.claim_id,
+                            Nota1: '',
+                            Nota2: '',
+                            Nota3: '',
+                        },
+                        itemDetails: subArray.map((item) => {
+                            return {
+                                Sku: item.sku,
+                                Cantidad: item.quantity,
+                                Descripcion: item.description,
+                                CostoUnitario: item.price,
+                            }
+                        })
+                    }
+                    addOrders(params);
+                });
+            }
+        }
+
         watch(
             () => route.path,
             (_newValue) => {
@@ -1307,7 +1464,7 @@ export default {
             optionsTireHeight,
             optionsTireTread,
             filterOption,
-            optionsDaytonas,
+            // optionsDaytonas,
             optionsQuoteDetails,
             handleAdd,
             count,
@@ -1359,6 +1516,12 @@ export default {
             addItem,
             name,
             vendorList,
+            sucursalList,
+            h,
+            handlePdf,
+            totalPo,
+            handleGenerateOc,
+            getLabelList,
         }
     }
 }
@@ -1633,5 +1796,22 @@ export default {
     background-color: var(--soft-back);
     margin-bottom: 1%;
     padding: 1%;
+}
+
+.checkbox {
+    display: flex;
+}
+
+.checkbox .icono {
+    margin-left: 30px;
+}
+
+.total-oc {
+    background-color: var(--soft-back);
+
+}
+
+.footer-oc {
+    margin-top: 1%;
 }
 </style>

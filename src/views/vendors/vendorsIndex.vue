@@ -56,6 +56,13 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+  <div>
+    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+    <a-modal v-model:open="open" title="Prov - Aseg - Suc" @ok="handleOk" @cancel="handleCancel">
+      <ModalPlatform ref="formComponent" :modalFields="modalFielsProps" :formData="formDataProps"
+        @form-finish="handleFormFinish" />
+    </a-modal>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
     @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -115,9 +122,16 @@ import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vendors/vendors.js';
+
+
+import { modalFields } from './config/modalFields.js';
+import ModalPlatform from '@/components/modal/modalPlatform.vue';
+
 export default {
   name: 'VendorsList',
-
+  components: {
+    ModalPlatform,
+  },
   setup() {
     const formRef = ref();
     const formState = reactive({});
@@ -138,8 +152,13 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
+
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getVendors(params);
+        const response = await getVendors(fullParams);
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index,
@@ -164,17 +183,19 @@ export default {
       formatResult: res => res.results,
       pagination: {
         currentKey: 'page',
-        pageSizeKey: 'results',
+        pageSizeKey: 'page_size',
       },
     });
     const pagination = computed(() => ({
-      total: total.value,	//Acá hay que traer el count desde la respuesta
+      defaultCurrent: 1,
+      defaultPageSize: 10,
+      total: total.value,
       current: current.value,
+      pageSizeOptions: ["10", "50", "100"],
       pageSize: pageSize.value,
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
-      filters = filterInputs.value;
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -185,19 +206,21 @@ export default {
     };
 
     const onSearch = () => {
-      fetchData(filterInputs.value);
+      current.value = 1;
     };
     const resetFilters = () => {
       formRef.value.resetFields();
-      filterInputs.value = {};
-      fetchData();
+      filterInputs.value = {
+        vendor_type: 0,
+      };
+      current.value = 1;
     };
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
     };
 
     onMounted(() => {
-      fetchData(filterInputs.value);
+
     });
 
     const editableData = reactive({});
@@ -213,6 +236,7 @@ export default {
 
 
       if (data.id > 0) {
+        if (data.comercial_name === '') { data.comercial_name = null }
         const params = {
           ...data,
         }
@@ -227,9 +251,7 @@ export default {
       }
     };
     const cancel = (key) => {
-      console.log('cancel', key)
       if (key === undefined) {
-        console.log('undefined')
         onDelete(key);
         delete editableData[key];
         return;
@@ -256,13 +278,12 @@ export default {
         name: '',
       };
 
- 
+
       dataSource.value.unshift(newData); // Agrega el nuevo registro al principio
-      console.log('data', dataSource.value)
       editableData[newKey] = cloneDeep(newData);
 
       // Ajusta la paginación para mostrar la primera página
-     
+
     };
     const onDelete = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -287,6 +308,66 @@ export default {
         return '';
       }
     }
+    const modalFielsProps = modalFields;
+    const formComponent = ref(null);
+    const open = ref(false);
+    const showModal = () => {
+      open.value = true;
+    };
+
+    const handleOk = () => {
+      if (formComponent.value) {
+        formComponent.value.handleFinish().then(() => {
+          open.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+    const handleCancel = () => {
+      if (formComponent.value) {
+        formComponent.value.resetForm();  // Llama al método para reiniciar el formulario
+      }
+      open.value = false;
+    };
+
+    const handleFormFinish = (form) => {
+      formState.value = form;
+      addVendors(formState.value).then(() => {
+        formState.value = {};
+        fetchData();
+      });
+    };
+    let formDataProps = {};
+    const handleEdit = (key) => {
+      const data = dataSource.value.filter(item => key === item.key)[0];
+      console.log('data', data)
+      // try {
+      //   const params = {
+      //     id: data.id,
+      //   }
+      formDataProps = {id: 14};
+      formComponent.value = { name: 'social_name', value: 14}
+      open.value = true;
+      //   await getVendors(params).then((res) => {
+      //     console.log('res', res.results)
+      //     // formDataProps = res.results[0];
+      //     // formComponent.value = res.results[0];
+      //     formDataProps = {id:1}
+      //     if (formDataProps) {
+      //       // Clonar los datos para evitar modificaciones directas
+      //       console.log('from data. value', formDataProps)
+
+      //       open.value = true;
+      //     } else {
+      //       console.error("No se encontraron datos para la clave especificada.");
+      //     }
+      //   })
+      // } catch (error) {
+
+      // }
+
+    };
     return {
       formRef,
       formState,
@@ -311,6 +392,15 @@ export default {
       total,
       pagination,
       handleTableChange,
+      open,
+      showModal,
+      handleOk,
+      handleFormFinish,
+      formComponent,
+      modalFielsProps,
+      handleCancel,
+      formDataProps,
+      handleEdit,
     }
   }
 }
@@ -365,5 +455,9 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
   background-color: var(--secondary) !important;
   color: black !important;
+}
+
+.editable-add-btn {
+  margin-bottom: 1%;
 }
 </style>

@@ -36,8 +36,8 @@ export const tableColumns = [
     },
     {
         title: 'PRECIO C/IVA',
-        key: 'price',
-        dataIndex: 'price',
+        key: 'price_final',
+        dataIndex: 'price_final',
     },
     {
         title: 'CANTIDAD',

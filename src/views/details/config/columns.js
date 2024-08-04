@@ -1,5 +1,27 @@
-import { ASEGURADORAS, TENDER_STATES, PRIORITY_VALUES } from "@/common/common";
+const customPrice = (record, index, column) => {
 
+    return {
+        style: {
+            textAlign: 'right',
+        },
+    }
+}
+const customAmountWO = (record, index, column) => {
+
+    return {
+        style: {
+            textAlign: 'right',
+        },
+    }
+}
+const customTotal = (record, index, column) => {
+
+    return {
+        style: {
+            textAlign: 'right',
+        },
+    }
+}
 export const tableColumns = [
     {
         title: '#',
@@ -20,34 +42,40 @@ export const tableColumns = [
         title: 'Cantidad',
         dataIndex: 'quantity',
         sorter: (a, b) => a.quantity - b.quantity,
+        customCell: customPrice,
     },
     {
         title: 'Precio',
         dataIndex: 'price',
-        sorter: (a, b) => a.price - b.price,     
+        sorter: (a, b) => a.price - b.price,
+        customCell: customPrice,
     },
     {
         title: 'Precio S/IVA',
         dataIndex: 'amount_wo_iva',
-        sorter: (a, b) => a.amount_wo_iva - b.amount_wo_iva,     
+        sorter: (a, b) => a.amount_wo_iva - b.amount_wo_iva,
+        customCell: customAmountWO,
+ 
     },
     {
         title: 'Precio Total',
         dataIndex: 'total_amount',
-        sorter: (a, b) => a.total_amount - b.total_amount,     
+        sorter: (a, b) => a.total_amount - b.total_amount,
+        customCell: customTotal,
+   
     },
     {
         title: 'Fecha de Creación',
         dataIndex: 'created_at',
-        sorter: (a, b) => a.created_at -b.created_at
+        sorter: (a, b) => a.created_at - b.created_at
     },
     {
         title: 'Fecha de Actualización',
         dataIndex: 'updated_at',
-        sorter: (a, b) => a.updated_at - b.updated_at  
+        sorter: (a, b) => a.updated_at - b.updated_at
     },
     {
         title: 'Operation',
-        dataIndex: 'operation',     
+        dataIndex: 'operation',
     },
 ];

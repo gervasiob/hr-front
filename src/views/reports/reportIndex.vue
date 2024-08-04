@@ -160,9 +160,7 @@ export default {
             ],
         });
         const formState = reactive({});
-        const filterInputs = ref({
-            tender_data: {},
-        });
+        const filterInputs = ref({});
         const tenderFilters = ref({})
         const useForm = Form.useForm;
         const { resetFields, validate, validateInfos } = useForm(formRef, rulesRef);
@@ -182,9 +180,12 @@ export default {
             };
         };
         const fetchData = async (params = {}) => {
-
+            const fullParams = {
+                ...params,
+                ...filterInputs.value,
+            }
             try {
-                const response = await getQuotesSummary(params);
+                const response = await getQuotesSummary(fullParams);
                 dataSource.value = response.results.filter(item => item.claim_id !== null);
                 total.value = response.count;
                 getUserList();
@@ -211,12 +212,16 @@ export default {
             },
         });
         const pagination = computed(() => ({
-            total: total.value,	//Acá hay que traer el count desde la respuesta
+            defaultCurrent: 1,
+            defaultPageSize: 10,
+            total: total.value,
             current: current.value,
-            pageSize: 10,
+            pageSizeOptions: ["10", "50", "100"],
+            pageSize: pageSize.value,
         }));
         const handleTableChange = (pag, filters, sorter) => {
             pageCurrent.value = pag?.current;
+
             run({
                 page_size: pag.pageSize,
                 page: pag?.current,
@@ -226,6 +231,7 @@ export default {
             });
         };
         const onSearch = () => {
+            current.value = 1;
             let params = filterInputs.value;
             if (tenderFilters.value.car_brand) {
                 params = {
@@ -260,7 +266,7 @@ export default {
         const resetFilters = () => {
             formRef.value.resetFields();
             filterInputs.value = {};
-            fetchData();
+            current.value = 1;
         };
         const filterOption = (input, option) => {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -278,7 +284,6 @@ export default {
             return state;
         }
         onMounted(() => {
-            getFetchData();
         });
         const getUserList = async () => {
             try {

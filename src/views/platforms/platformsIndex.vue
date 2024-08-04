@@ -2,18 +2,17 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
 
-        <a-row :gutter="24">
-          <a-col :span="8">
-            <a-form-item label="Plataforma" name="name">
-              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
-                :filter-option="filterOption" style="width: 300px;">
-                <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
-                  :label="item.name">
-                  {{ item.name }}
-                </a-select-option>
-              </a-select>
-            </a-form-item>
-          </a-col>
+      <a-row :gutter="24">
+        <a-col :span="8">
+          <a-form-item label="Plataforma" name="name">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.name" allowClear show-search
+              :filter-option="filterOption" style="width: 300px;">
+              <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name" :label="item.name">
+                {{ item.name }}
+              </a-select-option>
+            </a-select>
+          </a-form-item>
+        </a-col>
         <a-col :span="8" :offset="6">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -24,6 +23,12 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+  <div>
+    <a-button class="editable-add-btn" @click="showModal">Agregar Item</a-button>
+    <a-modal v-model:open="open" title="Plataforma" @ok="handleOk">
+      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+    </a-modal>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -63,26 +68,36 @@ import { reactive, ref, onMounted, computed } from 'vue';
 import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms, getPlatformList } from '@/api/platforms/platforms.js'
+import { getPlatforms, addPlatforms, updatePlatforms, deletePlatforms, getPlatformList } from '@/api/platforms/platforms.js';
+
+import { modalFields } from './config/modalFields.js';
+import ModalPlatform from '@/components/modal/modalPlatform.vue';
+
 export default {
   name: 'PlatformsList',
-
+  components: {
+    ModalPlatform,
+  },
   setup() {
     const formRef = ref();
     const formState = reactive({});
     const filterInputs = ref({});
-
+    const formComponent = ref(null);
     const columns = tableColumns;
     const platformList = ref([]);
-
+    const modalFielsProps = modalFields;
     const customHeaderRow = (column) => {
       return {
         class: 'custom-header',
       };
     };
     const fetchData = async (params = {}) => {
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getPlatforms(params);
+        const response = await getPlatforms(fullParams);
 
         dataSource.value = response.results.map((item, index) => ({
           ...item,
@@ -116,12 +131,16 @@ export default {
       },
     });
     const pagination = computed(() => ({
-      total: total.value,	//Acá hay que traer el count desde la respuesta
+      defaultCurrent: 1,
+      defaultPageSize: 10,
+      total: total.value,
       current: current.value,
-      pageSize: 10,
+      pageSizeOptions: ["10", "50", "100"],
+      pageSize: pageSize.value,
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
+
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -130,13 +149,14 @@ export default {
         ...filters,
       });
     };
+
     const onSearch = () => {
-      fetchData(filterInputs.value);
+      current.value = 1;
     };
     const resetFilters = () => {
       formRef.value.resetFields();
       filterInputs.value = {};
-      fetchData();
+      current.value = 1;
     };
     const filterOption = (input, option) => {
       return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
@@ -221,6 +241,27 @@ export default {
       dataSource.value = newData;
 
     };
+    const open = ref(false);
+    const showModal = () => {
+      open.value = true;
+    };
+
+    const handleOk = () => {
+      if (formComponent.value) {
+        formComponent.value.handleFinish().then(() => {
+          open.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+    const handleFormFinish = (form) => {
+      formState.value = form;
+      addPlatforms(formState.value).then(() => {
+        formState.value = {};
+        fetchData();
+      });
+    };
     return {
       formRef,
       formState,
@@ -244,6 +285,12 @@ export default {
       total,
       pagination,
       handleTableChange,
+      open,
+      showModal,
+      handleOk,
+      handleFormFinish,
+      formComponent,
+      modalFielsProps,
     }
   }
 }
@@ -298,5 +345,9 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
   background-color: var(--secondary) !important;
   color: black !important;
+}
+
+.editable-add-btn {
+  margin-bottom: 1%;
 }
 </style>
