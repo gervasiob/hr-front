@@ -105,7 +105,7 @@
             </a-popconfirm>
           </span>
           <span v-else>
-            <a @click="handleEdit(record.key)">Edit</a>
+            <a @click="edit(record.key)">Edit</a>
             <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
             </a-popconfirm>
