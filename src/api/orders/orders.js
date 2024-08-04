@@ -6,7 +6,7 @@ export async function getOrders(params, id = null) {
     return await apiRequest('get', ENDPOINT, params, id);
 }
 export async function addOrders(params) {
-    return await apiRequest('post', ENDPOINT, params);
+    return await apiRequest('post', 'crear_oc', params);
 }
 
 export async function updateOrders(id, params) {

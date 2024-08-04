@@ -23,18 +23,27 @@ export const modalFields = [
         label: 'Modelo',
         type: 'input',
         default: '',
+        rules: {
+            model: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
     {
         name: 'cost_stock',
         label: 'Stock Inicial',
         type: 'input',
         default: 0,
+        rules: {
+            cost_stock: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
     {
         name: 'cost_amount',
         label: 'Costo',
         type: 'input',
         default: 0,
+        rules: {
+            cost_amount: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
     {
         name: 'product_brand',
@@ -61,5 +70,8 @@ export const modalFields = [
             { name: 'Sí', value: true },
             { name: 'No', value: false },
         ],
+        rules: {
+            is_active: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
 ];

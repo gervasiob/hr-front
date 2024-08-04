@@ -13,7 +13,11 @@ export const tableColumns = [
         title: 'Fecha',
         dataIndex: 'claim_date',
         key: 'claim_date',
-        // sorter: (a, b) => a.claim_date - b.claim_date,
+        sorter: (a, b) => {
+            const dateA = new Date(a.claim_date);
+            const dateB = new Date(b.claim_date);
+            return dateA - dateB; // Devuelve un número negativo, cero o positivo
+        },
     },
     {
         title: '#',
