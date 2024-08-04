@@ -145,7 +145,6 @@ export default {
         const fetchData = async (params) => {
             params = {
                 ...params,
-                page: pageCurrent.value,
                 ordering: '-created_at',
                 ...filterInputs.value
             }
@@ -239,7 +238,7 @@ export default {
             current,
             pageSize,
         } = usePagination(fetchData, {
-            formatResult: res => res.data.results,
+            formatResult: res => res.results,
             pagination: {
                 currentKey: 'page',
                 pageSizeKey: 'page_size',

@@ -59,8 +59,8 @@
   <div>
     <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
     <a-modal v-model:open="open" title="Prov - Aseg - Suc" @ok="handleOk" @cancel="handleCancel">
-      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps"
-        :formData="formDataProps" />
+      <ModalPlatform ref="formComponent" :modalFields="modalFielsProps" :formData="formDataProps"
+        @form-finish="handleFormFinish" />
     </a-modal>
   </div>
   <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
@@ -346,7 +346,7 @@ export default {
       //   const params = {
       //     id: data.id,
       //   }
-      formDataProps = 14;
+      formDataProps = {id: 14};
       formComponent.value = { name: 'social_name', value: 14}
       open.value = true;
       //   await getVendors(params).then((res) => {

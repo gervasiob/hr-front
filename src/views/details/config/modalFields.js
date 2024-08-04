@@ -10,15 +10,21 @@ export const modalFields = [
     },
     {
         name: 'quote_id',
-        label: 'Número de Siniestro',
+        label: 'Número Siniestro',
         type: 'input',
         default: 0,
+        rules: {
+            quote_id: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
     {
         name: 'description',
         label: 'Description',
         type: 'input',
         default: '',
+        rules: {
+            description: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
     {
         name: 'quantity',

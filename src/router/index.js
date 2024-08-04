@@ -94,6 +94,12 @@ const otherRoutes = [
         component: () => import('@/views/tenders/components/tenderDetail.vue'),
     },
     {
+        key: 'order-detail',
+        name: 'OrderDetail',
+        path: '/Order-detail/:id',
+        component: () => import('@/views/orders/components/orderDetail.vue'),
+    },
+    {
         key: 'cost',
         name: 'CostIndex',
         path: '/costos',
