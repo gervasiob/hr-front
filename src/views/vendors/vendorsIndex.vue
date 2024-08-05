@@ -105,7 +105,7 @@
             </a-popconfirm>
           </span>
           <span v-else>
-            <a @click="edit(record.key)">Edit</a>
+            <a @click="handleEdit(record.key)">Edit</a>
             <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
             </a-popconfirm>
@@ -333,39 +333,34 @@ export default {
 
     const handleFormFinish = (form) => {
       formState.value = form;
-      addVendors(formState.value).then(() => {
-        formState.value = {};
-        fetchData();
-      });
+      console.log('form', form)
+      if (form.hasOwnProperty('id')) {
+        if (form.id) {
+          //edit
+          if (form.comercial_name === '') { form.comercial_name = null }
+          const params = {
+            ...form,
+          }
+          updateVendors(form.id, params).then(() => {
+            fetchData(filterInputs.value);
+          });
+        }
+        else {
+          // add
+          addVendors(formState.value).then(() => {
+            formState.value = {};
+            fetchData();
+          });
+        }
+      }
+    
     };
-    let formDataProps = {};
+    let formDataProps = ref({});
     const handleEdit = (key) => {
       const data = dataSource.value.filter(item => key === item.key)[0];
       console.log('data', data)
-      // try {
-      //   const params = {
-      //     id: data.id,
-      //   }
-      formDataProps = {id: 14};
-      formComponent.value = { name: 'social_name', value: 14}
+      formDataProps.value = {...data};
       open.value = true;
-      //   await getVendors(params).then((res) => {
-      //     console.log('res', res.results)
-      //     // formDataProps = res.results[0];
-      //     // formComponent.value = res.results[0];
-      //     formDataProps = {id:1}
-      //     if (formDataProps) {
-      //       // Clonar los datos para evitar modificaciones directas
-      //       console.log('from data. value', formDataProps)
-
-      //       open.value = true;
-      //     } else {
-      //       console.error("No se encontraron datos para la clave especificada.");
-      //     }
-      //   })
-      // } catch (error) {
-
-      // }
 
     };
     return {
