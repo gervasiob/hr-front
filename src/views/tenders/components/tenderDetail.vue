@@ -419,7 +419,7 @@
  </a-badge-ribbon> -->
                                         <a-select v-model:value="formTenderDetail.brand" placeholder="..."
                                             style="width:100%" :options="optionsBrand" allow-clear show-search
-                                            :filter-option="filterOption"></a-select>
+                                            :filter-option="filterOption" @change="handleChangeBrand"></a-select>
                                         <RobotOutlined class="ia-check" v-show="iaCheck.includes('brand')" />
                                     </div>
                                 </div>
@@ -519,19 +519,6 @@
                                     v-model:value="editableData[record.key][column.dataIndex]"
                                     style="margin: -5px 0;width: 190px;" @focus="focus" @change="handleChange"
                                     :options="groupList">
-                                    <!-- <template #dropdownRender="{ menuNode: menu }">
-                                        <v-nodes :vnodes="menu" />
-                                        <a-divider style="margin: 4px 0" />
-                                        <a-space style="padding: 4px 8px">
-                                            <a-input ref="inputRef" v-model:value="name" placeholder="Otros" />
-                                            <a-button type="text" @click="addItem">
-                                                <template #icon>
-                                                    <PlusOutlined />
-                                                </template>
-            Agregar
-            </a-button>
-            </a-space>
-            </template> -->
                                 </a-select>
                                 <template v-else>
                                     {{ text }}
@@ -567,10 +554,6 @@
                                                     PDF
                                                 </a-button>
                                             </router-link>
-                                            <!-- <a-button type="primary" :disabled="!text"
-                                                @click="handlePdf(record.po_id)">PDF</a-button> -->
-                                            <!-- <FilePdfOutlined :style="{ color: text ? 'blue' : '', fontSize: '24px' }">
-                                            </FilePdfOutlined> -->
                                         </div>
                                     </div>
                                 </template>
@@ -988,20 +971,7 @@ export default {
                     formTenderDetail.value.llanta_type = '';
                 }
                 //Trae Fee de la Aseguradora
-                if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.company_id) {
-                    const assurance = await getVendors({ comercial_name: formTenderDetail.value.company_name, vendor_type: 1 });
-                    console.log('assurance', assurance)
-                    if (assurance.count > 0) {
-                        formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
-                    }
-                }
-                if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.platform) {
-                    const platform = await getPlatforms({ name__icontains: formTenderDetail.value.platform });
-                    console.log('platform', platform);
-                    if (platform.count > 0) {
-                        formTenderDetail.value.fee += platform.results[0].fee;
-                    }
-                }
+                calcularFee();
 
                 //Marca con IA:
                 if (formTenderDetail.value.original_parts) {
@@ -1013,7 +983,22 @@ export default {
                 console.error('Error fetching tender data:', error);
             }
         };
-
+        const calcularFee = async () => {
+            if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.company_id) {
+                const assurance = await getVendors({ comercial_name: formTenderDetail.value.company_name, vendor_type: 1 });
+                console.log('assurance', assurance)
+                if (assurance.count > 0) {
+                    formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
+                }
+            }
+            if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.platform) {
+                const platform = await getPlatforms({ name__icontains: formTenderDetail.value.platform });
+                console.log('platform', platform);
+                if (platform.count > 0) {
+                    formTenderDetail.value.fee += platform.results[0].fee;
+                }
+            }
+        }
         const getStateColor = (stateValue) => {
             const state = TENDER_STATES.find(s => s.value === stateValue);
             return state ? state.color : 'default';
@@ -1425,7 +1410,18 @@ export default {
                 });
             }
         }
-
+        // Logica cambio de cubierta
+        const handleChangeBrand = () => {
+            console.log('brand', formTenderDetail.value.brand)
+            const tireBrand = formTenderDetail.value.brand;
+            if (tireBrand === 1 || tireBrand === 6) {
+                console.log('modifica fee a 0')
+                formTenderDetail.value.fee = 0;
+            } else {
+                console.log('calcula fee')
+                calcularFee()
+            }
+        }
         watch(
             () => route.path,
             (_newValue) => {
@@ -1522,6 +1518,7 @@ export default {
             totalPo,
             handleGenerateOc,
             getLabelList,
+            handleChangeBrand,
         }
     }
 }
