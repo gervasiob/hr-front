@@ -6,7 +6,7 @@
                 <a-col :span="8"> </a-col>
                 <a-col :span="8">X</a-col>
                 <a-col :span="8">
-                    <h4>Orden de Compra N° {{ poData.id }}</h4>
+                    <h4>Orden de Compra N° {{ poData.orden_id }}</h4>
                     <span>Fecha de Emisión {{ new Date(poData.created_at).toLocaleDateString('es-AR', {
                         day: '2-digit',
                         month: '2-digit',
