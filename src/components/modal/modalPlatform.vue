@@ -1,6 +1,4 @@
 <template>
-    <div>{{ fieldValues }}</div>
-
     <a-form layout="inline" ref="formRef" :model="formState" @finish="handleFinish" @finishFailed="handleFinishFailed"
         :rules="formRules">
         <a-form-item v-for="(item, index) in fields" :key="index" :label="item.label" :name="item.name">
@@ -52,7 +50,6 @@ export default {
         };
         const fields = props.modalFields;
         let fieldValues = props.formData;
-        console.log('props', props)
         const formRules = props.modalFields.reduce((rules, field) => {
             if (field.rules) {
                 rules[field.name] = field.rules[field.name] || [];
@@ -64,6 +61,7 @@ export default {
             props.modalFields.forEach(field => {
                 formState[field.name] = field.default;
             });
+            syncFormState(props.formData);
         };
 
         onMounted(() => {
@@ -90,9 +88,19 @@ export default {
             }
             return props;
         };
+        // Función para sincronizar formState con formData
+        const syncFormState = (data) => {
+            for (const key in data) {
+                if (Object.prototype.hasOwnProperty.call(data, key)) {
+                    formState[key] = data[key];
+                }
+            }
+        };
         watch(() => props.formData, (newData) => {
-            console.log('newData', newData)
-            fieldValues = newData;
+            if (newData) {
+                fieldValues = newData;
+                syncFormState(newData);
+            }
         }, { immediate: true });
 
         return {
@@ -114,7 +122,7 @@ export default {
 
 <style scoped>
 :deep(.ant-form-item-label) {
-    min-width: 140px;
+    min-width: 150px;
     text-align: start;
 }
 
