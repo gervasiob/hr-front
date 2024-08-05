@@ -64,6 +64,14 @@
           </template>
         </div>
       </template>
+      <template v-if="['orden_id'].includes(column.dataIndex)">
+
+        <router-link :to="{ name: 'OrderDetail', params: { id: record.id } }">
+          <a-button type="primary" :disabled="!text">
+            {{ text }}
+          </a-button>
+        </router-link>
+      </template>
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
