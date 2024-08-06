@@ -98,6 +98,7 @@ import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
 import { getRoles } from '@/api/roles/roles.js';
 import { getUsers } from '@/api/users/users.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
+
 export default {
     name: 'TenderList',
     props: {
