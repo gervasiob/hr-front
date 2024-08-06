@@ -24,7 +24,7 @@
                 </a-col>
               </a-row>
               <a-row>
-                <a-col > <a-switch v-model:checked="notificationOn" @change="handleChangeCheck">
+                <a-col> <a-switch v-model:checked="notificationOn" @change="handleChangeCheck">
                     <template #checkedChildren><check-outlined /></template>
                     <template #unCheckedChildren><close-outlined /></template>
                   </a-switch></a-col>
@@ -53,6 +53,7 @@ import { useRouter, useRoute } from 'vue-router';
 import { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { notification } from 'ant-design-vue';
 import { getQuoteStateChanges, getQuoteStateChangesTimestamp } from '@/api/quotes/quotes.js';
+import { message } from 'ant-design-vue';
 
 
 export default {
@@ -154,7 +155,9 @@ export default {
 
     onMounted(() => {
       items.value = menuList.filter((item) => item.key === 'login');
-
+      window.addEventListener('message-info', handleMessageInfo);
+      window.addEventListener('message-success', handleMessageSuccess);
+      window.addEventListener('message-error', handleMessageError);
       if (notificationOn.value) {
         intervalId.value = setInterval(fetchData, minutesAdjudicated * 60 * 1000);
         fetchData();
@@ -162,6 +165,9 @@ export default {
 
       onUnmounted(() => {
         clearInterval(intervalId.value);
+        window.removeEventListener('message-info', handleMessageInfo);
+        window.removeEventListener('message-success', handleMessageSuccess);
+        window.removeEventListener('message-error', handleMessageError);
       });
     })
 
@@ -177,6 +183,19 @@ export default {
         clearInterval(intervalId.value);
       }
       localStorage.setItem('notificationOn', notificationOn.value);
+    }
+
+    // Notificaciones
+    const [messageApi, contextHolder] = message.useMessage();
+    const handleMessageInfo = (event) => {
+      console.log('mensaje', event)
+      message.info(event.detail);
+    }
+    const handleMessageSuccess = (event) => {
+      message.success(event.detail);
+    }
+    const handleMessageError = (event) => {
+      message.error(event.detail);
     }
 
     watch(() => route.path, (newPath) => {

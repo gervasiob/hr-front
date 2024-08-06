@@ -1077,10 +1077,12 @@ export default {
                         errorMessage.value += '\n' + error.response.data.error;
                     }
                 }
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage }));
             } finally {
                 isLoading.value = false;
                 console.log('finally')
                 if (errorMessage.value === '') {
+                    window.dispatchEvent(new CustomEvent('message-success', { detail: 'Licitación Guardada. Aguarda que la página se recargue' }));
                     setTimeout(() => {
                         location.reload();
                     }, 3000); // 3000 ms = 3 segundos
