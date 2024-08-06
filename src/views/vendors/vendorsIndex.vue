@@ -331,35 +331,53 @@ export default {
       open.value = false;
     };
 
-    const handleFormFinish = (form) => {
+    const handleFormFinish = async (form) => {
       formState.value = form;
-      console.log('form', form)
-      if (form.hasOwnProperty('id')) {
-        if (form.id) {
-          //edit
-          if (form.comercial_name === '') { form.comercial_name = null }
+      console.log('form handleFormFinish', form);
+
+      try {
+        if (form.hasOwnProperty('id') && form.id) {
+          // Caso de edición
+          console.log('Edit mode', form);
+          if (form.comercial_name === '') {
+            form.comercial_name = null;
+          }
+
           const params = {
             ...form,
-          }
-          updateVendors(form.id, params).then(() => {
-            fetchData(filterInputs.value);
-          });
+          };
+
+          await updateVendors(form.id, params);
+          console.log('Vendor updated successfully');
+          window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+          formComponent.value.resetForm();
+          formState.value = {};
+          formDataProps.value = {};
+
+        } else {
+          // Caso de adición
+          console.log('Add mode', formState.value);
+          await addVendors(formState.value);
+          console.log('Vendor added successfully');
+          window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro agregado con éxito' }));
+          formComponent.value.resetForm();
+          formState.value = {}; // Reinicia el estado del formulario
+          formDataProps.value = {};
+
         }
-        else {
-          // add
-          addVendors(formState.value).then(() => {
-            formState.value = {};
-            fetchData();
-          });
-        }
+
+        // Vuelve a cargar los datos después de la operación
+        fetchData(filterInputs.value);
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
       }
-    
     };
     let formDataProps = ref({});
     const handleEdit = (key) => {
       const data = dataSource.value.filter(item => key === item.key)[0];
       console.log('data', data)
-      formDataProps.value = {...data};
+      formDataProps.value = { ...data };
       open.value = true;
 
     };

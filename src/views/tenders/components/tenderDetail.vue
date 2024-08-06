@@ -544,7 +544,8 @@
                         <template v-if="['po'].includes(column.dataIndex)">
                             <div>
                                 <a-checkbox v-model:checked="editableData[record.key][column.dataIndex]"
-                                    v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"></a-checkbox>
+                                    v-if="editableData[record.key]" style="margin: -5px 0" @focus="focus"
+                                    v-show="formTenderDetail.quote_state === 'A'"></a-checkbox>
                                 <template v-else>
                                     <div class="checkbox">
                                         <a-checkbox :checked="text" :disabled="true"></a-checkbox>
@@ -583,8 +584,8 @@
                         <template v-else-if="column.dataIndex === 'total'">
                             <div>
                                 {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
-                                    formTenderDetail.fee /
-                                    100))
+                                formTenderDetail.fee /
+                                100))
                                 }}
                             </div>
                         </template>
@@ -617,7 +618,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -651,6 +652,15 @@
                         </a-col>
                     </a-row>
                 </div>
+            </div>
+            <!-- Botones en estado Adjudicado -->
+            <div v-if="formTenderDetail.quote_state === 'A'">
+                <a-row>
+                    <a-col :span="8" :offset="8">
+                        <a-button type="primary" size="large" @click="onSave('A')" :loading="isLoading">Generar
+                            OC</a-button>
+                    </a-col>
+                </a-row>
             </div>
         </a-collapse-panel>
     </a-collapse>
