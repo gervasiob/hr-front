@@ -1290,7 +1290,7 @@ export default {
                 newCost.value = costResponse;
 
                 dataQuoteSource.value = dataQuoteSource.value.map((item) => {
-                    item.neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
+                    item.Neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
                     return item;
                 });
             } catch (err) {
