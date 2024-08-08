@@ -501,7 +501,10 @@
                         v-show="iaCheck.includes('total_quoted')" />
 
                 </div>
-                <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button>
+                <div v-if="formTenderDetail.quote_state !== 'U'">
+                    <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR
+                        ITEM</a-button>
+                </div>
                 <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
                         <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
@@ -584,44 +587,36 @@
                         <template v-else-if="column.dataIndex === 'total'">
                             <div>
                                 {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
-                                formTenderDetail.fee /
-                                100))
+                                    formTenderDetail.fee /
+                                    100))
                                 }}
                             </div>
                         </template>
 
                         <template v-else-if="column.dataIndex === 'operation'">
-                            <div class="editable-row-operations">
-                                <span v-if="editableData[record.key]">
-                                    <a-typography-link @click="save(record.key)">Save</a-typography-link>
-                                    <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
-                                        <a>Cancel</a>
-                                    </a-popconfirm>
+                            <template v-if="formTenderDetail.quote_state !== 'U'">
+                                <div class=" editable-row-operations">
+                                    <span v-if="editableData[record.key]">
+                                        <a-typography-link @click="save(record.key)">Save</a-typography-link>
+                                        <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
+                                            <a>Cancel</a>
+                                        </a-popconfirm>
 
-                                </span>
-                                <span v-else>
-                                    <a @click="edit(record.key)">Edit</a>
-                                    <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
-                                        @confirm="onDelete(record.key)">
-                                        <a>Eliminar</a>
-                                    </a-popconfirm>
-                                </span>
-                            </div>
+                                    </span>
+                                    <span v-else>
+                                        <a @click="edit(record.key)">Edit</a>
+                                        <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
+                                            @confirm="onDelete(record.key)">
+                                            <a>Eliminar</a>
+                                        </a-popconfirm>
+                                    </span>
+                                </div>
+                            </template>
                         </template>
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
 
-                <a-row class="footer-oc">
-                    <!-- <a-col :offset="10">
-                        <a-button type="primary" @click="handleGenerateOc">Generar OC</a-button>
-                    </a-col> -->
-                    <a-col :offset="18">
-                        <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
-                        </div>
-                    </a-col>
-                </a-row>
 
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
@@ -655,6 +650,16 @@
             </div>
             <!-- Botones en estado Adjudicado -->
             <div v-if="formTenderDetail.quote_state === 'A'">
+                <a-row class="footer-oc">
+                    <!-- <a-col :offset="10">
+                        <a-button type="primary" @click="handleGenerateOc">Generar OC</a-button>
+                    </a-col> -->
+                    <a-col :offset="18">
+                        <div class="total-oc"> <span>TOTAL OC: {{
+                            formatCurrency(totalPo) }}</span>
+                        </div>
+                    </a-col>
+                </a-row>
                 <a-row>
                     <a-col :span="8" :offset="8">
                         <a-button type="primary" size="large" @click="onSave('A')" :loading="isLoading">Generar
@@ -1026,8 +1031,13 @@ export default {
             return list.find((item) => item.value === value).name;
         }
         const onSave = async (value) => {
-            isLoading.value = true;
+         
             errorMessage.value = '';
+            if (!formTenderDetail.value.daytona_ids) {
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar al menos una sucursal' }));
+                return;
+            }
+            isLoading.value = true;
             try {
                 // Validar el formulario
                 await formRef.value.validate();
@@ -1290,7 +1300,7 @@ export default {
                 newCost.value = costResponse;
 
                 dataQuoteSource.value = dataQuoteSource.value.map((item) => {
-                    item.neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
+                    item.Neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
                     return item;
                 });
             } catch (err) {
@@ -1817,10 +1827,13 @@ export default {
 
 .total-oc {
     background-color: var(--soft-back);
+    font-size: larger;
+    font-weight: bolder !important;
 
 }
 
 .footer-oc {
     margin-top: 1%;
+
 }
 </style>

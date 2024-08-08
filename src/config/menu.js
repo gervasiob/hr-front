@@ -58,7 +58,7 @@ export const menuList = [
     {
         key: 'administracion',
         icon: () => h(SettingOutlined),
-        label: 'ADMINISTRACION',
+        label: 'CONFIGURACION',
         title: 'Administracion',
         children: [
             {
@@ -138,7 +138,7 @@ export const menuList = [
     {
         key: 'config',
         icon: () => h(SettingOutlined),
-        label: 'CONFIGURACION',
+        label: 'CARGA DATOS',
         title: 'Configuración',
         children: [
             {
