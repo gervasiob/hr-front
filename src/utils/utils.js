@@ -8,6 +8,6 @@ export function formatCurrency(value) {
     }).format(value);
 }
 export function formatNumber(value) {
-    if (!value) return '';
+    if (!value) return 0;
     return new Intl.NumberFormat('es-AR').format(value);
 }
