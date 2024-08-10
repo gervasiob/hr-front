@@ -43,7 +43,7 @@ export const menuList = [
                 key: 'licitacionesSucursal',
                 path: '/Sucursal',
                 name: 'Licitaciones Sucursal',
-                label: 'LICITACIONES SUCURSAL',
+                label: 'LICITACIONES ADJUDICADAS',
                 title: 'LICITACIONES SUCURSAL',
             },
             {
