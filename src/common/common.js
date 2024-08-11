@@ -85,6 +85,11 @@ export const TENDER_STATES = [
         color: 'blue'
     },
     {
+        label: 'Listo para Licitar',
+        value: 'Z',
+        color: '#162957'
+    },
+    {
         label: 'Adjudicado/Rechazado',
         value: 'W',
         color: '#A52A2A',

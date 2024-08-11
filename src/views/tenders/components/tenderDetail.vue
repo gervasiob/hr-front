@@ -642,7 +642,7 @@
                                 Presupuesto</a-button>
                         </a-col>
                         <a-col :span="8" :offset="8">
-                            <a-button type="primary" size="large" class="hover-button" @click="onSave('V')"
+                            <a-button type="primary" size="large" class="hover-button" @click="onSave('Z')"
                                 :loading="isLoading">Licitar</a-button>
                         </a-col>
                     </a-row>
@@ -1031,7 +1031,7 @@ export default {
             return list.find((item) => item.value === value).name;
         }
         const onSave = async (value) => {
-         
+
             errorMessage.value = '';
             if (!formTenderDetail.value.daytona_ids) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar al menos una sucursal' }));
