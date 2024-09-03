@@ -1,6 +1,10 @@
 import axios from 'axios';
 const stage = import.meta.env.VITE_STAGE;
 export let BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
+const token = localStorage.getItem('token');
+if (token) {
+    axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+}
 // console.log('stage', stage)
 // if (stage === 'DEV') {
 //     BASE_URL = import.meta.env.VITE_BACKEND_DEV_BASE_URL;
@@ -31,4 +35,21 @@ export async function apiRequest(method, endpoint, params, id = null) {
     }
 }
 
+export async function getToken(credentials) {
+    const url_endpoint = `${BASE_URL}login/`;
+    try {
+        const response = await axios.post(url_endpoint, credentials);
+        const token = response.data.token;
+        const userId = response.data.user_id;
+        const email = response.data.email;
+        localStorage.setItem('token', token);
+        localStorage.setItem('user_id', userId);
+        localStorage.setItem('email', email);
+        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        return token;
+    } catch (error) {
+        console.error('Error logging in:', error);
+        throw error;
+    }
+}
 export default apiClient;
