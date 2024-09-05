@@ -58,6 +58,16 @@
           </template>
         </div>
       </template>
+
+      <template v-if="['password'].includes(column.dataIndex)">
+        <div>
+          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />
+          <template v-else>
+      
+          </template>
+        </div>
+      </template>
       <template v-if="['roles'].includes(column.dataIndex)">
         <div>
           <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
@@ -136,6 +146,7 @@ export default {
         const response = await getUsers(fullParams);
         dataSource.value = response.results.map((users, index) => ({
           ...users,
+          password: '',
           key: index
         }));
         total.value = response.count;
@@ -241,6 +252,7 @@ export default {
     };
     const save = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
+      console.log('data', data)
       Object.assign(data, editableData[key]);
       delete editableData[key];
       let rolesParam = [];

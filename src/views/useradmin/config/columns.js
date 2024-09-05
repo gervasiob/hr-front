@@ -26,6 +26,10 @@ export const tableColumns = [
         dataIndex: 'roles',
     },
     {
+        title: 'Nueva Password',
+        dataIndex: 'password',
+    },
+    {
         title: 'Operation',
         dataIndex: 'operation',     
     },
