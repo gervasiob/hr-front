@@ -42,10 +42,14 @@ export async function getToken(credentials) {
         const token = response.data.token;
         const userId = response.data.user_id;
         const email = response.data.email;
+        const roles = response.data.roles;
+        const name = response.data.name;
         localStorage.setItem('token', token);
         localStorage.setItem('user_id', userId);
         localStorage.setItem('email', email);
-        axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+        localStorage.setItem('roles', JSON.stringify(roles));
+        localStorage.setItem('name', name);
+        axios.defaults.headers.common['Authorization'] = `Token ${token}`;
         return token;
     } catch (error) {
         console.error('Error logging in:', error);
