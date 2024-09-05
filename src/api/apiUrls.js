@@ -3,7 +3,6 @@ const stage = import.meta.env.VITE_STAGE;
 export let BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
 const token = localStorage.getItem('token');
 if (token) {
-    console.log('token', token)
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
 }
 // console.log('stage', stage)
