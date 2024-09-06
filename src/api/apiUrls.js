@@ -56,4 +56,25 @@ export async function getToken(credentials) {
         throw error;
     }
 }
+export async function validateToken(credentials) {
+    const url_endpoint = `${BASE_URL}user-token/`;
+    try {
+        const response = await axios.post(url_endpoint, credentials);
+
+        const userId = response.data.user_id;
+        const email = response.data.email;
+        const roles = response.data.roles;
+        const name = response.data.name;
+        axios.defaults.headers.common['Authorization'] = `Token ${credentials}`;
+        localStorage.setItem('user_id', userId);
+        localStorage.setItem('email', email);
+        localStorage.setItem('roles', JSON.stringify(roles));
+        localStorage.setItem('name', name);
+        console.log('validate token', roles)
+        return token;
+    } catch (error) {
+        console.error('Error check token: ', error);
+        throw error;
+    }
+}
 export default apiClient;

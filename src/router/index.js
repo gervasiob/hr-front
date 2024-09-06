@@ -1,4 +1,5 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { validateToken } from '@/api/apiUrls';
 
 const baseHome = '/home';
 const basicAuth = ['Admin', 'Usuario'];
@@ -166,7 +167,7 @@ const otherRoutes = [
         path: '/adm/details',
         component: () => import('@/views/details/detailsIndex.vue'),
         meta: { roles: ['Admin'] },
-        
+
     },
     {
         key: 'criterias',
@@ -213,7 +214,32 @@ export const router = createRouter({
     strict: true,
     scrollBehavior: () => ({ left: 0, top: 0 }),
 });
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
+    console.log('to', to)
+    if ( to.path === '/login')
+    {
+        next();
+        return;
+    }
+    const token = localStorage.getItem('token');
+
+    console.log('token en router', token)
+    if (token && token !== 'undefined') {
+        console.log('token válido', token);
+        try {
+            const resp = await validateToken(token);  // Valida el token en el backend
+            console.log('respuesta validate', resp);
+
+        } catch (error) {
+            console.error('Error al validar el token:', error);
+            next({ path: '/login' });  // Si hay un error al validar, redirigir
+            return;
+        }
+    } else {
+        console.log('Token inválido o no encontrado');
+        next({ path: '/login' });  // Redirigir si no hay token
+        return;
+    }
     const userRoles = JSON.parse(localStorage.getItem('roles')); // Obtener rol del usuario (o desde Vuex/estado)
     console.log('user role en el router', userRoles)
     if (to.meta.roles) {
