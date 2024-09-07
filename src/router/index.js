@@ -76,6 +76,12 @@ export const menuList = [
         component: () => import('@/views/tenders/index.vue'),
         meta: { roles: basicAuth },
     },
+    {
+        key: 'licitacionesPerdidas',
+        path: '/Perdidas',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: { roles: ['Admin'] },
+    },
 ];
 export const adm = [
     {

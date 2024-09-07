@@ -302,7 +302,7 @@
                         </a-row>
 
                         <div style="align-content: center; padding: 2%">
-                            <a-button class="editable-add-btn" style="margin-bottom: 8px"
+                            <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn" style="margin-bottom: 8px"
                                 @click="handleDetailAdd">AGREGAR
                                 ITEM</a-button>
                             <a-table :columns="columnsQuote" :data-source="dataQuoteSource" bordered
@@ -347,7 +347,7 @@
                                         </div>
                                     </template> -->
 
-                                    <template v-else-if="column.dataIndex === 'operation'">
+                                    <template v-else-if="column.dataIndex === 'operation' && formTenderDetail.quote_state !== 'LO'">
                                         <div class="editable-row-operations">
                                             <span v-if="editableQuoteData[record.key]">
                                                 <a-typography-link
@@ -502,10 +502,10 @@
 
                 </div>
                 <div v-if="formTenderDetail.quote_state !== 'U'">
-                    <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR
+                    <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR
                         ITEM</a-button>
                 </div>
-                <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
+                <a-table  :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
                         <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
                             <div>
@@ -594,7 +594,7 @@
                         </template>
 
                         <template v-else-if="column.dataIndex === 'operation'">
-                            <template v-if="formTenderDetail.quote_state !== 'U'">
+                            <template v-if="formTenderDetail.quote_state !== 'U' && formTenderDetail.quote_state !== 'LO'">
                                 <div class=" editable-row-operations">
                                     <span v-if="editableData[record.key]">
                                         <a-typography-link @click="save(record.key)">Save</a-typography-link>
@@ -645,6 +645,17 @@
                             <a-button type="primary" size="large" class="hover-button" @click="onSave('Z')"
                                 :loading="isLoading">Licitar</a-button>
                         </a-col>
+                    </a-row>
+                </div>
+                <div v-if="formTenderDetail.quote_state !=='LO' && userRoles.includes('Admin')" class="boton">
+                    <a-row>
+                        <a-col :span="8">
+                            <a-button type="primary" size="large" danger @click="onSave('LO')"
+                                :loading="isLoading">Pasar a
+                                Perdida
+                            </a-button>
+                        </a-col>
+                        
                     </a-row>
                 </div>
             </div>
@@ -737,6 +748,7 @@ export default {
         const estadoList = TENDER_STATES;
         const vendorList = ref([]);
         const sucursalList = ref([]);
+        const userRoles = localStorage.getItem('roles');
         // const optionsDaytonas = DAYTONAS.map(daytona => ({
         //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
         //     value: daytona.idClaimsProvider
@@ -1028,6 +1040,8 @@ export default {
         };
 
         const getLabelList = (value, list) => {
+            console.log('value',value)
+            console.log('list',list)
             return list.find((item) => item.value === value).name;
         }
         const onSave = async (value) => {
@@ -1541,6 +1555,7 @@ export default {
             handleGenerateOc,
             getLabelList,
             handleChangeBrand,
+            userRoles,
         }
     }
 }
@@ -1833,6 +1848,10 @@ export default {
 }
 
 .footer-oc {
+    margin-top: 1%;
+
+}
+.boton {
     margin-top: 1%;
 
 }

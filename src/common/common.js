@@ -94,6 +94,11 @@ export const TENDER_STATES = [
         value: 'W',
         color: '#A52A2A',
     },
+    {
+        label: 'Perdida',
+        value: 'LO',
+        color: '#C5C308',
+    },
 ];
 export const PRIORITY_VALUES = [
     {
