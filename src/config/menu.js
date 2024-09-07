@@ -58,6 +58,13 @@ export const menuList = [
                 title: 'LICITACIONES NO PENDIENTES',
                 roles: basicAuth,
             },
+            {
+                key: 'licitacionesPerdidas',
+                path: '/Perdidas',
+                name: 'Licitaciones Perdidas',
+                label: 'LISTADO DE PERDIDAS',
+                roles: ['Admin'],
+            },
         ]
     },
     {
