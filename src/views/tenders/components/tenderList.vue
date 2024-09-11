@@ -78,7 +78,7 @@
             <template v-else-if="column.key === 'quote_state'">
                 <span>
                     <a-tag :color="getState(record.quote_state).color">
-                        {{ getState(record.quote_state).label.toUpperCase() }}
+                        {{ getState(record.quote_state  ).label.toUpperCase() }}
                     </a-tag>
                 </span>
             </template>

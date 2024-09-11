@@ -2,7 +2,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 import { validateToken } from '@/api/apiUrls';
 
 const baseHome = '/home';
-const basicAuth = ['Admin', 'Usuario'];
+const basicAuth = ['Admin', 'Usuario', 'Agente'];
 export const RootRoute = {
     key: 'root',
     label: 'Root',

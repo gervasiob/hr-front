@@ -1,7 +1,7 @@
 import { h } from 'vue';
 import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
 
-const basicAuth = ['Admin', 'Usuario'];
+const basicAuth = ['Admin', 'Usuario', 'Agente'];
 export const menuList = [
     {
         key: 'login',
