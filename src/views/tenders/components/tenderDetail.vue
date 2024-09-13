@@ -642,7 +642,7 @@
                                 Presupuesto</a-button>
                         </a-col>
                         <a-col :span="8" :offset="8">
-                            <a-button type="primary" size="large" class="hover-button" @click="onSave('Z')"
+                            <a-button type="primary" size="large" class="hover-button" @click="onSave('V')"
                                 :loading="isLoading">Licitar</a-button>
                         </a-col>
                     </a-row>
