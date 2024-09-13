@@ -302,8 +302,8 @@
                         </a-row>
 
                         <div style="align-content: center; padding: 2%">
-                            <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn" style="margin-bottom: 8px"
-                                @click="handleDetailAdd">AGREGAR
+                            <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn"
+                                style="margin-bottom: 8px" @click="handleDetailAdd">AGREGAR
                                 ITEM</a-button>
                             <a-table :columns="columnsQuote" :data-source="dataQuoteSource" bordered
                                 :pagination="false">
@@ -347,7 +347,8 @@
                                         </div>
                                     </template> -->
 
-                                    <template v-else-if="column.dataIndex === 'operation' && formTenderDetail.quote_state !== 'LO'">
+                                    <template
+                                        v-else-if="column.dataIndex === 'operation' && formTenderDetail.quote_state !== 'LO'">
                                         <div class="editable-row-operations">
                                             <span v-if="editableQuoteData[record.key]">
                                                 <a-typography-link
@@ -502,10 +503,11 @@
 
                 </div>
                 <div v-if="formTenderDetail.quote_state !== 'U'">
-                    <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR
+                    <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn"
+                        style="margin-bottom: 8px" @click="handleAdd">AGREGAR
                         ITEM</a-button>
                 </div>
-                <a-table  :columns="columns" :data-source="dataSource" bordered :pagination="false">
+                <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
                         <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
                             <div>
@@ -594,7 +596,8 @@
                         </template>
 
                         <template v-else-if="column.dataIndex === 'operation'">
-                            <template v-if="formTenderDetail.quote_state !== 'U' && formTenderDetail.quote_state !== 'LO'">
+                            <template
+                                v-if="formTenderDetail.quote_state !== 'U' && formTenderDetail.quote_state !== 'LO'">
                                 <div class=" editable-row-operations">
                                     <span v-if="editableData[record.key]">
                                         <a-typography-link @click="save(record.key)">Save</a-typography-link>
@@ -647,7 +650,7 @@
                         </a-col>
                     </a-row>
                 </div>
-                <div v-if="formTenderDetail.quote_state !=='LO' && userRoles.includes('Admin')" class="boton">
+                <div v-if="formTenderDetail.quote_state !== 'LO' && userRoles.includes('Admin')" class="boton">
                     <a-row>
                         <a-col :span="8">
                             <a-button type="primary" size="large" danger @click="onSave('LO')"
@@ -655,7 +658,7 @@
                                 Perdida
                             </a-button>
                         </a-col>
-                        
+
                     </a-row>
                 </div>
             </div>
@@ -693,23 +696,20 @@ import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
-    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, DAYTONAS, QUOTE_DETAILS, ASEGURADORAS, GROUPS,
+    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, ASEGURADORAS, GROUPS,
 } from '@/common/common';
-import { dataTable } from './data';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { getUsers } from '@/api/users/users.js';
 import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
 import { getRoles } from '@/api/roles/roles.js';
 import { getVendors, getVendorList, getSucursalList } from '@/api/vendors/vendors.js';
-import { RobotOutlined, PlusOutlined, FilePdfOutlined } from '@ant-design/icons-vue';
+import { RobotOutlined } from '@ant-design/icons-vue';
 import { addOrders } from '@/api/orders/orders.js';
 export default {
     name: 'TenderDetail',
     components: {
         RobotOutlined,
-        PlusOutlined,
-        FilePdfOutlined,
     },
     setup() {
         const route = useRoute();
@@ -760,8 +760,6 @@ export default {
         const formTenderDetail = ref({
             not_quote: false,
             delivery_time: '',
-            original_parts: '',
-            spare_tire_amount: '',
             brand: '',
             tire_model: '',
             llanta_type: '',
@@ -868,9 +866,7 @@ export default {
         const calculateTireType = () => {
             // Obtener datos
             let tireValue = 0;
-            let tireQuantity = 0;
             let llantaValue = 0;
-            let llantaQuantity = 0;
             let freight = 0;
             let fee = 0;
             const tireValues = Object.values(dataSource.value);
@@ -925,7 +921,7 @@ export default {
                 quoteData.value = quoteResponse.results[0];
                 quoteId.value = quoteData.value.id;
                 if (Array.isArray(quoteData.value.details)) {
-                    const filteredDetails = quoteData.value.details.filter(detail =>
+                    const filteredDetails = quoteData.value.details.filter((detail) =>
                         detail.hasOwnProperty('vendor_id') && detail.vendor_id !== null
                     );
                     if (filteredDetails.length > 0) {
@@ -1040,9 +1036,10 @@ export default {
         };
 
         const getLabelList = (value, list) => {
-            console.log('value',value)
-            console.log('list',list)
-            return list.find((item) => item.value === value).name;
+            if (value) {
+                return list.find((item) => item.value === value).name;
+            }
+            return '';
         }
         const onSave = async (value) => {
 
@@ -1276,7 +1273,6 @@ export default {
                     not_quote: false,
                     delivery_time: 1,
                     original_parts: '',
-                    spare_tire_amount: '',
                     brand: 1,
                     tire_model: 1,
                     llanta_type: 'ALEACION',
@@ -1303,6 +1299,10 @@ export default {
             error.value = null;
             newCost.value = { spare_tire_amount: [] };
             const brandName = optionsBrand.find((item) => item.value === formTenderDetail.value.brand).label;
+            if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar los datos de neumatico y marca' }));
+                return;
+            }
             try {
                 const params = {
                     tire_width: formTenderDetail.value.tire_width,
@@ -1312,10 +1312,27 @@ export default {
                 }
                 const costResponse = await getTireCost(params);
                 newCost.value = costResponse;
-
-                dataQuoteSource.value = dataQuoteSource.value.map((item) => {
-                    item.Neumatico = newCost.value.spare_tire_amounts[0].cost_amount;
-                    return item;
+                const newKey = `${count.value}`;
+                dataSource.value.push({
+                    type: 'Neumático',
+                    key: newKey,
+                    sku: newCost.value.spare_tire_amounts[0].sku, // Usa otro valor si es necesario
+                    id: newCost.value.spare_tire_amounts[0].id,  // Usa otro valor si es necesario
+                    llanta_type: newCost.value.spare_tire_amounts[0].detail, // Usa otro valor si es necesario
+                    price_final: newCost.value.spare_tire_amounts[0].cost_amount,
+                    quantity: 1,
+                    vendor_id: '',
+                });
+                const newKeyLlanta = `${count.value}`;
+                dataSource.value.push({
+                    type: 'Llanta',
+                    key: newKeyLlanta,
+                    sku: '', 
+                    id: 0,
+                    llanta_type: '',
+                    price_final: 0,
+                    quantity: 1,
+                    vendor_id: '',
                 });
             } catch (err) {
                 error.value = err;
@@ -1851,6 +1868,7 @@ export default {
     margin-top: 1%;
 
 }
+
 .boton {
     margin-top: 1%;
 
