@@ -15,7 +15,7 @@ if (token) {
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
-    timeout: 40000,
+    timeout: 50000,
 });
 
 export async function apiRequest(method, endpoint, params, id = null) {

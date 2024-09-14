@@ -178,7 +178,7 @@
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
                 <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit" />
+                    <a-input v-model:value="formTenderDetail.tender_data.vehicle_year" :readonly="handleEdit" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Fecha" class="a-descriptions-item">
@@ -456,7 +456,7 @@
                                         </template>
                                     </a-descriptions>
                                 </div> -->
-                                <a-button type="primary" @click="handleGetCost()" :loading="isLoading">Buscar
+                                <a-button type="primary" @click="handleGetCost()" :loading="isLoadingCost">Buscar
                                     Costo</a-button>
                             </a-col>
                             <a-col :span="10">
@@ -467,14 +467,14 @@
                                         :filter-option="filterOption"></a-select>
                                 </div>
                                 <div class="form-item-container">
-                                    <span>Sucursal</span>
-                                    <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%"
-                                        mode="single" placeholder="Please select" allow-clear show-search
-                                        :filter-option="filterOption">
-                                        <a-select-option v-for="(item, index) in sucursalList" :key="index"
-                                            :value="item.value" :label="(item.name)">
-                                            {{ item.name }}
-                                        </a-select-option></a-select>
+                                    <span style="color: red;">* Sucursal</span>
+                                        <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%"
+                                            mode="single" placeholder="Please select" allow-clear show-search
+                                            :filter-option="filterOption">
+                                            <a-select-option v-for="(item, index) in sucursalList" :key="index"
+                                                :value="item.value" :label="(item.name)">
+                                                {{ item.name }}
+                                            </a-select-option></a-select>
                                 </div>
                             </a-col>
                         </a-row>
@@ -494,6 +494,7 @@
 
 
                 <!-- Total -->
+
                 <div class="total-item">
                     <span>TOTAL A ADJUDICAR: {{
                         formatCurrency(quoteData.total_quoted) }}</span>
@@ -509,10 +510,33 @@
                 </div>
                 <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
-                        <template v-if="['sku', 'llanta_type', 'quantity'].includes(column.dataIndex)">
+                        <template v-if="['quantity'].includes(column.dataIndex)">
                             <div>
                                 <a-input v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0" />
+                                <template v-else>
+                                    {{ text }}
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="['sku'].includes(column.dataIndex)">
+                            <div>
+                                <a-select ref="select" v-if="editableData[record.key]"
+                                    v-model:value="editableData[record.key][column.dataIndex]"
+                                    style="margin: -5px 0;width: 120px;" @focus="focus"
+                                    @change="handleChangeSku(editableData[record.key][column.dataIndex], record.key)"
+                                    :options="skuList" show-search :filter-option="filterOptionName">
+                                </a-select>
+                                <template v-else>
+                                    {{ text }}
+                                </template>
+                            </div>
+                        </template>
+                        <template v-if="['llanta_type'].includes(column.dataIndex)">
+                            <div>
+                                <template v-if="editableData[record.key]">
+                                    {{ editableData[record.key].llanta_type }}
+                                </template>
                                 <template v-else>
                                     {{ text }}
                                 </template>
@@ -523,7 +547,7 @@
                                 <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
                                     style="margin: -5px 0;width: 190px;" @focus="focus" @change="handleChange"
-                                    :options="groupList">
+                                    :options="groupList" show-search :filter-option="filterOption">
                                 </a-select>
                                 <template v-else>
                                     {{ text }}
@@ -567,7 +591,8 @@
                         </template>
                         <template v-if="column.dataIndex === 'price_final'">
                             <a-input v-if="editableData[record.key]"
-                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
+                                v-model:value="editableData[record.key][column.dataIndex]"
+                                style="margin: -5px 0; width: 100px;" />
                             <template v-else>
                                 {{ formatCurrency(record.price_final) }}
                             </template>
@@ -589,8 +614,8 @@
                         <template v-else-if="column.dataIndex === 'total'">
                             <div>
                                 {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
-                                    formTenderDetail.fee /
-                                    100))
+                                formTenderDetail.fee /
+                                100))
                                 }}
                             </div>
                         </template>
@@ -619,7 +644,9 @@
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
-
+                <!-- <div>
+                    <a-button type="primary" @click="handleGetStock()" :loading="isLoading">Verificar Stock</a-button>
+                </div> -->
 
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
@@ -670,7 +697,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -691,7 +718,7 @@ import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent, h } 
 import { useRoute, useRouter } from 'vue-router';
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
-import { getTireCost } from '@/api/costs/costs.js';
+import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
 import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
 import {
@@ -738,6 +765,7 @@ export default {
         const optionsTireTread = TIRE_TREAD;
         const optionsQuoteDetails = QUOTE_DETAILS;
         const loading = ref(false);
+        const isLoadingCost = ref(false);
         const error = ref(null);
         const type = ref('Edit');
         const aseguradoraList = ASEGURADORAS;
@@ -748,6 +776,9 @@ export default {
         const estadoList = TENDER_STATES;
         const vendorList = ref([]);
         const sucursalList = ref([]);
+        const descriptionList = ref([]);
+        const skuList = ref([]);
+        const llantaTypeDescription = ref('');
         const userRoles = localStorage.getItem('roles');
         // const optionsDaytonas = DAYTONAS.map(daytona => ({
         //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
@@ -815,6 +846,7 @@ export default {
         });
         const edit = key => {
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+
         };
         const editQuote = key => {
             editableQuoteData[key] = cloneDeep(dataQuoteSource.value.filter(item => key === item.key)[0]);
@@ -1034,10 +1066,21 @@ export default {
         const filterOption = (input, option) => {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
+        const filterOptionName = (input, option) => {
+            if (!input || !option.hasOwnProperty('name')) {
+                return;
+            }
+            return option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        };
 
         const getLabelList = (value, list) => {
+            console.log('value', value)
+            console.log('list', list)
             if (value) {
-                return list.find((item) => item.value === value).name;
+                const item = list.find((item) => item.value === value);
+                if (item) {
+                    return item.name;
+                }
             }
             return '';
         }
@@ -1172,6 +1215,17 @@ export default {
         const handleChangeDeliveryTime = () => {
             console.log('handle dT');
         }
+        const handleChangeSku = async (item, key) => {
+            const params = {
+                code: item,
+            }
+            const res = await getCosts(params);
+            const description = res.results[0].detail;  // Obtén la descripción del resultado
+            const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
+            editableData[key]['llanta_type'] = description;
+            editableData[key]['price_final'] = price_final;
+            console.log('handle sku', res.results[0]);
+        }
         const handleModalCancel = () => {
             console.log('handle Cancel Modal');
             isModalVisible.value = false;
@@ -1205,7 +1259,8 @@ export default {
                 vendor: '',
                 po: false,
                 price: 0,
-                quantity: 0,
+                price_final: 0,
+                quantity: 1,
                 total: 0,
             };
             dataSource.value.push(newData);
@@ -1257,11 +1312,37 @@ export default {
                 console.log('error in get platform list', error)
             }
         }
+        const getDescriptionListData = async () => {
+            try {
+                const res = await getDescriptionList();
+                descriptionList.value = res.filter((item) => {
+                    if (item.value && item.name) {
+                        return item;
+                    }
+                })
+            } catch (error) {
+                console.log('error in get description list', error)
+            }
+        }
+        const getSkuListData = async () => {
+            try {
+                const res = await getSkuList();
+                skuList.value = res.filter((item) => {
+                    if (item.value && item.name) {
+                        return item;
+                    }
+                })
+            } catch (error) {
+                console.log('error in get sku list', error)
+            }
+        }
         onMounted(() => {
             tenderId.value = route.params.id;
             console.log('tender value', tenderId.value)
             getUsersList();
             getPlatformsListData();
+            getDescriptionListData();
+            getSkuListData();
             if (tenderId.value) {
                 console.log('edit')
                 type.value = 'Edit';
@@ -1295,7 +1376,7 @@ export default {
             }
         });
         const handleGetCost = async () => {
-            loading.value = true;
+            isLoadingCost.value = true;
             error.value = null;
             newCost.value = { spare_tire_amount: [] };
             const brandName = optionsBrand.find((item) => item.value === formTenderDetail.value.brand).label;
@@ -1323,21 +1404,31 @@ export default {
                     quantity: 1,
                     vendor_id: '',
                 });
+                if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
+                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar los datos de llanta, modelo y marca' }));
+                    return;
+                }
+                const llantaParams = {
+                    llanta_type: 'Llanta',
+                    brand: formTenderDetail.value.tender_data.brand,
+                    vehicle: formTenderDetail.value.tender_data.vehicle,
+                }
+                const llantaResponse = await getLlantaCost(llantaParams);
                 const newKeyLlanta = `${count.value}`;
                 dataSource.value.push({
                     type: 'Llanta',
                     key: newKeyLlanta,
-                    sku: '', 
-                    id: 0,
-                    llanta_type: '',
-                    price_final: 0,
+                    sku: llantaResponse.spare_tire_amounts[0].sku,
+                    id: llantaResponse.spare_tire_amounts[0].id,
+                    llanta_type: llantaResponse.spare_tire_amounts[0].detail,
+                    price_final: llantaResponse.spare_tire_amounts[0].cost_amount,
                     quantity: 1,
                     vendor_id: '',
                 });
             } catch (err) {
                 error.value = err;
             } finally {
-                loading.value = false;
+                isLoadingCost.value = false;
             }
         };
         const handleChangeAseguradora = async () => {
@@ -1475,6 +1566,54 @@ export default {
                 calcularFee()
             }
         }
+
+        //Verificar stock
+        const handleGetStock = async () => {
+            // loading.value = true;
+            // error.value = null;
+            // newCost.value = { spare_tire_amount: [] };
+            // const brandName = optionsBrand.find((item) => item.value === formTenderDetail.value.brand).label;
+            // if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
+            //     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar los datos de neumatico y marca' }));
+            //     return;
+            // }
+            // try {
+            //     const params = {
+            //         tire_width: formTenderDetail.value.tire_width,
+            //         tire_height: formTenderDetail.value.tire_height,
+            //         tire_tread: formTenderDetail.value.tire_tread,
+            //         brand: brandName,
+            //     }
+            //     const costResponse = await getTireCost(params);
+            //     newCost.value = costResponse;
+            //     const newKey = `${count.value}`;
+            //     dataSource.value.push({
+            //         type: 'Neumático',
+            //         key: newKey,
+            //         sku: newCost.value.spare_tire_amounts[0].sku, // Usa otro valor si es necesario
+            //         id: newCost.value.spare_tire_amounts[0].id,  // Usa otro valor si es necesario
+            //         llanta_type: newCost.value.spare_tire_amounts[0].detail, // Usa otro valor si es necesario
+            //         price_final: newCost.value.spare_tire_amounts[0].cost_amount,
+            //         quantity: 1,
+            //         vendor_id: '',
+            //     });
+            //     const newKeyLlanta = `${count.value}`;
+            //     dataSource.value.push({
+            //         type: 'Llanta',
+            //         key: newKeyLlanta,
+            //         sku: '',
+            //         id: 0,
+            //         llanta_type: '',
+            //         price_final: 0,
+            //         quantity: 1,
+            //         vendor_id: '',
+            //     });
+            // } catch (err) {
+            //     error.value = err;
+            // } finally {
+            //     loading.value = false;
+            // }
+        };
         watch(
             () => route.path,
             (_newValue) => {
@@ -1573,6 +1712,13 @@ export default {
             getLabelList,
             handleChangeBrand,
             userRoles,
+            handleGetStock,
+            isLoadingCost,
+            descriptionList,
+            skuList,
+            filterOptionName,
+            handleChangeSku,
+            llantaTypeDescription,
         }
     }
 }
