@@ -172,7 +172,6 @@ export default {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
         const getState = (tag) => {
-            console.log("tag",tag)
             let state = TENDER_STATES.find((item) => item.value === tag);
             if (!state) {
                 state = {

@@ -468,13 +468,13 @@
                                 </div>
                                 <div class="form-item-container">
                                     <span style="color: red;">* Sucursal</span>
-                                        <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%"
-                                            mode="single" placeholder="Please select" allow-clear show-search
-                                            :filter-option="filterOption">
-                                            <a-select-option v-for="(item, index) in sucursalList" :key="index"
-                                                :value="item.value" :label="(item.name)">
-                                                {{ item.name }}
-                                            </a-select-option></a-select>
+                                    <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%"
+                                        mode="single" placeholder="Please select" allow-clear show-search
+                                        :filter-option="filterOption">
+                                        <a-select-option v-for="(item, index) in sucursalList" :key="index"
+                                            :value="item.value" :label="(item.name)">
+                                            {{ item.name }}
+                                        </a-select-option></a-select>
                                 </div>
                             </a-col>
                         </a-row>
@@ -515,7 +515,10 @@
                                 <a-input v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0" />
                                 <template v-else>
-                                    {{ text }}
+                                    <div
+                                        :style="{ backgroundColor: record.noStock ? '#eeaab0' : 'white', textAlign: 'right' }">
+                                        {{ text }}
+                                    </div>
                                 </template>
                             </div>
                         </template>
@@ -592,30 +595,31 @@
                         <template v-if="column.dataIndex === 'price_final'">
                             <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]"
-                                style="margin: -5px 0; width: 100px;" />
+                                style="margin: -5px 0; width: 100px" />
                             <template v-else>
-                                {{ formatCurrency(record.price_final) }}
+                                <div style="text-align: right;">
+                                    {{ formatCurrency(record.price_final) }}</div>
                             </template>
                         </template>
                         <template v-if="column.dataIndex === 'price_wo_iva'">
                             <!-- <a-input v-if="editableData[record.key]"
                                 v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
                             <template v-else> -->
-                            <div>
+                            <div style="text-align: right;">
                                 {{ formatCurrency(record.price_final / 1.21) }}
                             </div>
                             <!-- </template> -->
                         </template>
                         <template v-if="column.dataIndex === 'amount_wo_iva'">
-                            <div>
+                            <div style="text-align: right;">
                                 {{ formatCurrency(record.price_final / 1.21 * record.quantity) }}
                             </div>
                         </template>
                         <template v-else-if="column.dataIndex === 'total'">
-                            <div>
+                            <div style="text-align: right;">
                                 {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
-                                formTenderDetail.fee /
-                                100))
+                                    formTenderDetail.fee /
+                                    100))
                                 }}
                             </div>
                         </template>
@@ -644,9 +648,13 @@
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
-                <!-- <div>
+                <div class="btn-check">
                     <a-button type="primary" @click="handleGetStock()" :loading="isLoading">Verificar Stock</a-button>
-                </div> -->
+                    <div class="stock-table" v-show="dataStock.length > 0">
+                        <a-table :dataSource="dataStock" :columns="columnsStock" :pagination="false" />
+
+                    </div>
+                </div>
 
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
@@ -697,7 +705,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -716,23 +724,30 @@
 import { cloneDeep } from 'lodash-es';
 import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+
 import { getTendersIndex } from '@/api/tenders/tenders.js';
+import { getUsers } from '@/api/users/users.js';
+import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
+import { getRoles } from '@/api/roles/roles.js';
+import { getVendors, getVendorList, getSucursalList } from '@/api/vendors/vendors.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
+import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
+import { getCostStock } from '@/api/stocks/stocks.js';
+
 import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
+import { tableStockColumns } from '../config/columnsStock.js';
+
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
     TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, ASEGURADORAS, GROUPS,
 } from '@/common/common';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
-import { getUsers } from '@/api/users/users.js';
-import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
-import { getRoles } from '@/api/roles/roles.js';
-import { getVendors, getVendorList, getSucursalList } from '@/api/vendors/vendors.js';
+
 import { RobotOutlined } from '@ant-design/icons-vue';
-import { addOrders } from '@/api/orders/orders.js';
+
 export default {
     name: 'TenderDetail',
     components: {
@@ -756,6 +771,7 @@ export default {
         const newCost = ref({ spare_tire_amount: [] });
         const columns = tableColumns;
         const columnsQuote = tableQuoteColumns;
+        const columnsStock = tableStockColumns;
         const optionsDeliveryTime = DELIVERY_TIMES;
         const optionsBrand = TIRE_BRANDS;
         const optionsModel = MODELS;
@@ -780,6 +796,7 @@ export default {
         const skuList = ref([]);
         const llantaTypeDescription = ref('');
         const userRoles = localStorage.getItem('roles');
+        const dataStock = ref([]);
         // const optionsDaytonas = DAYTONAS.map(daytona => ({
         //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
         //     value: daytona.idClaimsProvider
@@ -856,12 +873,14 @@ export default {
             const record = dataSource.value.find(item => key === item.key);
             const data = editableData[key];
             if (!data.sku || !data.type || !data.vendor_id || parseFloat(data.price_final) < 0.01 || parseFloat(data.quantity) < 0.01) {
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe existir un Sku, un grupo, un precio unitario, una cantidad y seleccionar un Proveedor' }));
                 return errorMessage.value = 'Debe existir un Sku, un grupo, un precio unitario, una cantidad y seleccionar un Proveedor';
             }
             Object.assign(record, editableData[key]);
             record.total = record.price * record.quantity;
             delete editableData[key];
             calculateTireType();
+            handleGetStock();
         };
         const cancel = key => {
             if (key === undefined) {
@@ -957,16 +976,15 @@ export default {
                         detail.hasOwnProperty('vendor_id') && detail.vendor_id !== null
                     );
                     if (filteredDetails.length > 0) {
-                        // filteredDetails.map((item) => {
-                        //     dataSource.value.push(item)
-                        // })
                         dataSource.value = filteredDetails.map((item, index) => ({
                             ...item,
                             key: index,
+                            noStock: false,
                         }));
                     }
                 } else {
-                    dataSource.value.push(quoteData.value.details);
+                    const details = { ...quoteData.value.details, noStock: false };
+                    dataSource.value.push(details);
                 }
 
 
@@ -1382,6 +1400,7 @@ export default {
             const brandName = optionsBrand.find((item) => item.value === formTenderDetail.value.brand).label;
             if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar los datos de neumatico y marca' }));
+                isLoadingCost.value = false;
                 return;
             }
             try {
@@ -1406,6 +1425,7 @@ export default {
                 });
                 if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar los datos de llanta, modelo y marca' }));
+                    isLoadingCost.value = false;
                     return;
                 }
                 const llantaParams = {
@@ -1568,52 +1588,64 @@ export default {
         }
 
         //Verificar stock
-        const handleGetStock = async () => {
-            // loading.value = true;
-            // error.value = null;
-            // newCost.value = { spare_tire_amount: [] };
-            // const brandName = optionsBrand.find((item) => item.value === formTenderDetail.value.brand).label;
-            // if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
-            //     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar los datos de neumatico y marca' }));
-            //     return;
-            // }
-            // try {
-            //     const params = {
-            //         tire_width: formTenderDetail.value.tire_width,
-            //         tire_height: formTenderDetail.value.tire_height,
-            //         tire_tread: formTenderDetail.value.tire_tread,
-            //         brand: brandName,
-            //     }
-            //     const costResponse = await getTireCost(params);
-            //     newCost.value = costResponse;
-            //     const newKey = `${count.value}`;
-            //     dataSource.value.push({
-            //         type: 'Neumático',
-            //         key: newKey,
-            //         sku: newCost.value.spare_tire_amounts[0].sku, // Usa otro valor si es necesario
-            //         id: newCost.value.spare_tire_amounts[0].id,  // Usa otro valor si es necesario
-            //         llanta_type: newCost.value.spare_tire_amounts[0].detail, // Usa otro valor si es necesario
-            //         price_final: newCost.value.spare_tire_amounts[0].cost_amount,
-            //         quantity: 1,
-            //         vendor_id: '',
-            //     });
-            //     const newKeyLlanta = `${count.value}`;
-            //     dataSource.value.push({
-            //         type: 'Llanta',
-            //         key: newKeyLlanta,
-            //         sku: '',
-            //         id: 0,
-            //         llanta_type: '',
-            //         price_final: 0,
-            //         quantity: 1,
-            //         vendor_id: '',
-            //     });
-            // } catch (err) {
-            //     error.value = err;
-            // } finally {
-            //     loading.value = false;
-            // }
+        const handleGetStock = () => {
+            loading.value = true;
+            error.value = null;
+            newCost.value = { spare_tire_amount: [] };
+
+            const data = dataSource.value.filter((item) => item.sku);
+
+            if (data.length === 0) {
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: No existe información para consultar' }));
+                error.value = 'validacion';
+                loading.value = false;
+                return;
+            }
+
+            // Crear una lista de promesas para todas las llamadas a la API
+            const promises = data.map((item) => {
+                return getCostStock({ code: item.sku })
+                    .then((res) => {
+                        if (res && res.results.length > 0) {
+                            const stockData = res.results[0];
+                            const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
+                            // Actualizar los valores de la respuesta
+                            if (dataSourceItem) {
+                                dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
+                               
+                                return {
+                                    sku: stockData.sku,
+                                    producto: stockData.producto,
+                                    stock: stockData.stock,
+                                    minimum_stock: stockData.minimum_stock,
+                                    available_stock: stockData.available_stock,
+                                };
+                            }
+
+                        }
+                    })
+                    .catch((err) => {
+                        // Manejar errores por cada SKU
+                        console.error(`Error fetching stock for SKU ${item.sku}:`, err);
+                    });
+            });
+
+            // Ejecutar todas las promesas en paralelo
+            Promise.all(promises)
+                .then((results) => {
+                    dataStock.value = results.filter(Boolean); // Filtramos cualquier resultado `undefined`
+                })
+                .catch((err) => {
+                    // Manejo de errores global
+                    error.value = err;
+                    console.error('Error fetching stocks:', err);
+                })
+                .finally(() => {
+                    loading.value = false;
+                });
         };
+
+
         watch(
             () => route.path,
             (_newValue) => {
@@ -1719,6 +1751,8 @@ export default {
             filterOptionName,
             handleChangeSku,
             llantaTypeDescription,
+            dataStock,
+            columnsStock,
         }
     }
 }
@@ -2018,5 +2052,13 @@ export default {
 .boton {
     margin-top: 1%;
 
+}
+
+.btn-check {
+    margin-top: 1%;
+}
+
+.stock-table {
+    margin-top: 1%;
 }
 </style>
