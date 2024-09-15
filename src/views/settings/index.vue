@@ -4,7 +4,10 @@
         :show-upload-list="true" action="https://dft-back-dev-2484ff5ddb07.herokuapp.com/upload/"
         :before-upload="beforeUpload" @change="handleChange" @drop="handleDrop">
         <div v-if="imageUrl">
-            <span>{{ imageUrl }}</span>
+
+            <p class="ant-upload-text">Archivo cargado con éxito</p>
+            <p class="ant-upload-hint">Puede arrastrar uno nuevo si desea</p>
+
         </div>
         <div v-else>
             <loading-outlined v-if="loading"></loading-outlined>
@@ -17,24 +20,26 @@
             </div>
         </div>
     </a-upload-dragger>
+
 </template>
 
 <script>
 import { ref } from 'vue';
 import { message } from 'ant-design-vue';
-import { PlusOutlined, LoadingOutlined, InboxOutlined } from '@ant-design/icons-vue';
+import { LoadingOutlined, InboxOutlined, DownloadOutlined } from '@ant-design/icons-vue';
 
 export default {
     name: 'CostIndex',
     components: {
-        PlusOutlined,
         LoadingOutlined,
-        InboxOutlined
+        InboxOutlined,
+        DownloadOutlined,
     },
     setup() {
         const fileList = ref([]);
         const loading = ref(false);
         const imageUrl = ref('');
+        const downloadFile = ref('');
 
         function getBase64(img, callback) {
             const reader = new FileReader();
@@ -50,10 +55,11 @@ export default {
             if (info.file.status === 'done') {
                 // Get this url from response in real world.
                 getBase64(info.file.originFileObj, base64Url => {
+                    downloadFile.value = 'Archivo Cargado.\nPuede hacer click para descargar el archivo importado'
                     imageUrl.value = base64Url;
                     loading.value = false;
                 });
-                message.success('File uploaded successfully');
+                message.success('Archivo Cargado Exitosamente');
             }
             if (info.file.status === 'error') {
                 loading.value = false;
@@ -90,23 +96,26 @@ export default {
             imageUrl,
             handleChange,
             beforeUpload,
-            handleDrop
+            handleDrop,
+            downloadFile,
         };
     }
 };
 </script>
 
 <style scoped>
-.avatar-uploader > .ant-upload {
-  width: 128px;
-  height: 128px;
+.avatar-uploader>.ant-upload {
+    width: 128px;
+    height: 128px;
 }
+
 .ant-upload-select-picture-card i {
-  font-size: 32px;
-  color: #999;
+    font-size: 32px;
+    color: #999;
 }
+
 .ant-upload-select-picture-card .ant-upload-text {
-  margin-top: 8px;
-  color: #666;
+    margin-top: 8px;
+    color: #666;
 }
 </style>
