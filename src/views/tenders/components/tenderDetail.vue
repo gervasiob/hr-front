@@ -648,13 +648,13 @@
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
-                <!-- <div class="btn-check">
+                <div class="btn-check">
                     <a-button type="primary" @click="handleGetStock()" :loading="isLoading">Verificar Stock</a-button>
                     <div class="stock-table" v-show="dataStock.length > 0">
                         <a-table :dataSource="dataStock" :columns="columnsStock" :pagination="false" />
 
                     </div>
-                </div> -->
+                </div>
 
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
@@ -1458,7 +1458,7 @@ export default {
                         vendor_id: '',
                     });
                 }
-                // handleGetStock();
+                handleGetStock();
             } catch (err) {
                 error.value = err;
             } finally {
