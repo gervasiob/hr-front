@@ -77,8 +77,8 @@
             </template>
             <template v-else-if="column.key === 'quote_state'">
                 <span>
-                    <a-tag v-for="tag in record.quote_state" :key="tag" :color="getState(tag).color">
-                        {{ getState(tag).label.toUpperCase() }}
+                    <a-tag :color="getState(record.quote_state).color">
+                        {{ getState(record.quote_state  ).label.toUpperCase() }}
                     </a-tag>
                 </span>
             </template>
@@ -221,6 +221,10 @@ export default {
             }
             if (routeName.value === '/Evaluadas') {
                 filterInputs.value.quote_state = 'E';
+                fetchData(filterInputs.value);
+            }
+            if (routeName.value === '/Perdidas') {
+                filterInputs.value.quote_state = 'LO';
                 fetchData(filterInputs.value);
             }
         };

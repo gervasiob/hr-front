@@ -1,7 +1,8 @@
 import { createRouter, createWebHistory } from 'vue-router';
+import { validateToken } from '@/api/apiUrls';
 
 const baseHome = '/home';
-
+const basicAuth = ['Admin', 'Usuario', 'Agente'];
 export const RootRoute = {
     key: 'root',
     label: 'Root',
@@ -26,6 +27,7 @@ export const RootRoute = {
                 affix: true,
                 hideMenu: true,
                 componentName: 'HomeIndex',
+
             }
         }
     ]
@@ -46,26 +48,39 @@ export const menuList = [
         name: 'Nueva Licitacion',
         path: '/nueva-licitacion',
         component: () => import('@/views/tenders/components/tenderDetail.vue'),
+        meta: { roles: basicAuth }, // Solo 'admin' y 'user' tienen acceso
+
     },
     {
         key: 'licitaciones',
         path: '/Licitaciones',
         component: () => import('@/views/tenders/index.vue'),
+        meta: { roles: basicAuth }, // Solo 'test' tiene acceso
+
     },
     {
         key: 'licitacionesEvaluadas',
         path: '/Evaluadas',
         component: () => import('@/views/tenders/index.vue'),
+        meta: { roles: basicAuth },
     },
     {
         key: 'licitacionesNoPendientes',
         path: '/No-pendientes',
         component: () => import('@/views/tenders/index.vue'),
+        meta: { roles: basicAuth },
     },
     {
         key: 'licitacionesSucursal',
         path: '/Sucursal',
         component: () => import('@/views/tenders/index.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'licitacionesPerdidas',
+        path: '/Perdidas',
+        component: () => import('@/views/tenders/index.vue'),
+        meta: { roles: ['Admin'] },
     },
 ];
 export const adm = [
@@ -76,6 +91,8 @@ export const adm = [
         title: 'Administracion de Roles',
         name: 'Administracion de Roles',
         component: () => import('@/views/roles/index.vue'),
+        meta: { roles: ['Admin'] },
+
     },
     {
         path: '/adm/users',
@@ -84,6 +101,7 @@ export const adm = [
         title: 'Administracion de Usuarios',
         name: 'Administracion de Usuarios',
         component: () => import('@/views/useradmin/index.vue'),
+        meta: { roles: ['Admin'] },
     },
 ]
 const otherRoutes = [
@@ -92,48 +110,56 @@ const otherRoutes = [
         name: 'TenderDetail',
         path: '/Licitaciones/:id',
         component: () => import('@/views/tenders/components/tenderDetail.vue'),
+        meta: { roles: basicAuth },
     },
     {
         key: 'order-detail',
         name: 'OrderDetail',
         path: '/Order-detail/:id',
         component: () => import('@/views/orders/components/orderDetail.vue'),
+        meta: { roles: basicAuth },
     },
     {
         key: 'cost',
         name: 'CostIndex',
         path: '/costos',
         component: () => import('@/views/settings/index.vue'),
+        meta: { roles: basicAuth },
     },
     {
         key: 'report',
         name: 'ReportIndex',
         path: '/reports',
         component: () => import('@/views/reports/reportIndex.vue'),
+        meta: { roles: ['Admin'] },
     },
     {
         key: 'dashboard',
         name: 'DashboardIndex',
         path: '/dashboard',
         component: () => import('@/views/dashboard/dashboardIndex.vue'),
+        meta: { roles: ['Admin'] },
     },
     {
         key: 'platforms',
         name: 'PlatformsIndex',
         path: '/adm/platforms',
         component: () => import('@/views/platforms/platformsIndex.vue'),
+        meta: { roles: ['Admin'] },
     },
     {
         key: 'vendors',
         name: 'VendorsIndex',
         path: '/adm/vendors',
         component: () => import('@/views/vendors/vendorsIndex.vue'),
+        meta: { roles: ['Admin'] },
     },
     {
         key: 'stocks',
         name: 'stocksIndex',
         path: '/adm/stocks',
         component: () => import('@/views/stocks/stocksIndex.vue'),
+        meta: { roles: ['Admin'] },
     },
     // {
     //     key: 'products',
@@ -146,30 +172,36 @@ const otherRoutes = [
         name: 'detailsIndex',
         path: '/adm/details',
         component: () => import('@/views/details/detailsIndex.vue'),
+        meta: { roles: ['Admin'] },
+
     },
     {
         key: 'criterias',
         name: 'criterialIndex',
         path: '/adm/criterias',
         component: () => import('@/views/criterial/criterialIndex.vue'),
+        meta: { roles: ['Admin'] },
     },
     {
         key: 'Costo',
         name: 'costsIndex',
         path: '/adm/costs',
         component: () => import('@/views/costs/costsIndex.vue'),
+        meta: { roles: ['Admin'] },
     },
     {
         key: 'Ordenes de Compra',
         name: 'ordersIndex',
         path: '/adm/orders',
         component: () => import('@/views/orders/ordersIndex.vue'),
+        meta: { roles: ['Admin'] },
     },
-    {   
+    {
         key: 'logout',
         path: '/logout',
         name: 'Logout',
         redirect: '/login',
+        meta: { roles: basicAuth },
     },
 ]
 export const basicRoutes = [
@@ -187,6 +219,48 @@ export const router = createRouter({
     routes: basicRoutes,
     strict: true,
     scrollBehavior: () => ({ left: 0, top: 0 }),
+});
+router.beforeEach(async (to, from, next) => {
+    console.log('to', to)
+    if ( to.path === '/login')
+    {
+        next();
+        return;
+    }
+    const token = localStorage.getItem('token');
+
+    console.log('token en router', token)
+    if (token && token !== 'undefined') {
+        console.log('token válido', token);
+        try {
+            const resp = await validateToken(token);  // Valida el token en el backend
+            console.log('respuesta validate', resp);
+
+        } catch (error) {
+            console.error('Error al validar el token:', error);
+            next({ path: '/login' });  // Si hay un error al validar, redirigir
+            return;
+        }
+    } else {
+        console.log('Token inválido o no encontrado');
+        next({ path: '/login' });  // Redirigir si no hay token
+        return;
+    }
+    const userRoles = JSON.parse(localStorage.getItem('roles')); // Obtener rol del usuario (o desde Vuex/estado)
+    console.log('user role en el router', userRoles)
+    if (to.meta.roles) {
+        // Verificar si el usuario tiene uno de los roles permitidos
+        const hasAccess = to.meta.roles.some((role) => userRoles.includes(role));
+        console.log('to meta roles', to.meta.roles)
+        console.log('has Access', hasAccess)
+        if (hasAccess) {
+            next();  // Permitir el acceso
+        } else {
+            next({ path: '/login' });  // Redirigir si no tiene acceso
+        }
+    } else {
+        next();  // Si la ruta no tiene roles definidos, permitir el acceso
+    }
 });
 
 export default router;

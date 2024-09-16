@@ -85,9 +85,19 @@ export const TENDER_STATES = [
         color: 'blue'
     },
     {
+        label: 'Listo para Licitar',
+        value: 'Z',
+        color: '#162957'
+    },
+    {
         label: 'Adjudicado/Rechazado',
         value: 'W',
         color: '#A52A2A',
+    },
+    {
+        label: 'Perdida',
+        value: 'LO',
+        color: '#C5C308',
     },
 ];
 export const PRIORITY_VALUES = [

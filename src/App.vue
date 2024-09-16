@@ -154,7 +154,18 @@ export default {
     }
 
     onMounted(() => {
-      items.value = menuList.filter((item) => item.key === 'login');
+      console.log('roles', localStorage.getItem('roles'))
+      const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga los roles del usuario
+
+      // Si está en la ruta de login, muestra solo el menú de login
+      if (route.path === '/login') {
+        items.value = menuList.filter((item) => item.key === 'login');
+        loginRoute.value = true;
+      } else {
+        // Filtra los menús según los roles del usuario
+        items.value = filterMenuByRoles(menuList, userRoles);
+        loginRoute.value = false;
+      }
       window.addEventListener('message-info', handleMessageInfo);
       window.addEventListener('message-success', handleMessageSuccess);
       window.addEventListener('message-error', handleMessageError);
@@ -198,12 +209,32 @@ export default {
       message.error(event.detail);
     }
 
+    // Función para filtrar los menús basados en roles
+    function filterMenuByRoles(menuList, userRoles) {
+      return menuList
+        .filter(menu => {
+          // Verifica si el menú es accesible por al menos uno de los roles del usuario
+          return menu.roles ? menu.roles.some(role => userRoles.includes(role)) : true;
+        })
+        .map(menu => {
+          if (menu.children) {
+            // Si el menú tiene hijos, también filtra los hijos por roles
+            return {
+              ...menu,
+              children: filterMenuByRoles(menu.children, userRoles)
+            };
+          }
+          return menu;
+        });
+    }
     watch(() => route.path, (newPath) => {
+      console.log('roles en wath', JSON.parse(localStorage.getItem('roles')))
+      const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga roles actualizados
       if (newPath === '/login') {
         items.value = menuList.filter((item) => item.key === 'login');
         loginRoute.value = true;
       } else {
-        items.value = menuList.filter((item) => item.key !== 'login');
+        items.value = filterMenuByRoles(menuList, userRoles); // Filtra los menús según los roles
         loginRoute.value = false;
       }
     }, { immediate: true });

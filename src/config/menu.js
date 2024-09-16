@@ -1,9 +1,7 @@
 import { h } from 'vue';
 import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import TenderIndex from '../views/tenders/index.vue';
-import useradmin from '../views/useradmin/index.vue';
 
-import tenderDetail from '@/views/tenders/components/tenderDetail.vue';
+const basicAuth = ['Admin', 'Usuario', 'Agente'];
 export const menuList = [
     {
         key: 'login',
@@ -11,12 +9,14 @@ export const menuList = [
         icon: () => h(AppstoreOutlined),
         label: 'LOGIN',
         title: 'Login',
+        roles: ['guest'] // Solo visible para invitados (no logueados)
     },
     {
         key: 'licitacionesMenu',
         icon: () => h(MailOutlined),
         label: 'LICITACIONES',
         title: 'Licitaciones',
+        roles: basicAuth, // Visible solo para admin y usuarios normales
         children: [
             {
                 key: 'nuevaLicitacion',
@@ -24,6 +24,7 @@ export const menuList = [
                 name: 'Nueva Licitacion',
                 label: 'NUEVA LICITACIÓN',
                 title: 'NUEVA LICITACIÓN',
+                roles: basicAuth, // Visible solo para admin y usuarios normales
             },
             {
                 key: 'licitaciones',
@@ -31,6 +32,7 @@ export const menuList = [
                 name: 'Licitaciones Pendientes',
                 label: 'LICITACIONES PENDIENTES',
                 title: 'LICITACIONES PENDIENTES',
+                roles: basicAuth, // Visible solo para admin y usuarios normales
             },
             {
                 key: 'licitacionesEvaluadas',
@@ -38,6 +40,7 @@ export const menuList = [
                 name: 'Licitaciones Evaluadas',
                 label: 'LICITACIONES EVALUADAS',
                 title: 'LICITACIONES EVALUADAS',
+                roles: basicAuth,
             },
             {
                 key: 'licitacionesSucursal',
@@ -45,6 +48,7 @@ export const menuList = [
                 name: 'Licitaciones Sucursal',
                 label: 'LICITACIONES ADJUDICADAS',
                 title: 'LICITACIONES SUCURSAL',
+                roles: basicAuth,
             },
             {
                 key: 'licitacionesNoPendientes',
@@ -52,6 +56,14 @@ export const menuList = [
                 name: 'Licitaciones no Pendientes',
                 label: 'LISTADO DE LICITACIONES',
                 title: 'LICITACIONES NO PENDIENTES',
+                roles: basicAuth,
+            },
+            {
+                key: 'licitacionesPerdidas',
+                path: '/Perdidas',
+                name: 'Licitaciones Perdidas',
+                label: 'LISTADO DE PERDIDAS',
+                roles: ['Admin'],
             },
         ]
     },
@@ -60,6 +72,7 @@ export const menuList = [
         icon: () => h(SettingOutlined),
         label: 'CONFIGURACION',
         title: 'Administracion',
+        roles: ['Admin'],
         children: [
             {
                 key: 'roles',
@@ -140,6 +153,7 @@ export const menuList = [
         icon: () => h(SettingOutlined),
         label: 'CARGA DATOS',
         title: 'Configuración',
+        roles: basicAuth,
         children: [
             {
                 key: 'costos',
@@ -157,6 +171,7 @@ export const menuList = [
         icon: () => h(AppstoreOutlined),
         label: 'REPORTES',
         title: 'REPORTES',
+        roles: ['Admin'],
     },
     {
         key: 'dashboard',
@@ -164,6 +179,7 @@ export const menuList = [
         icon: () => h(AppstoreOutlined),
         label: 'DASHBOARD',
         title: 'DASHBOARD',
+        roles: ['Admin'],
     },
     {
         key: 'logout',
@@ -171,5 +187,6 @@ export const menuList = [
         icon: () => h(AppstoreOutlined),
         label: 'LOGOUT',
         title: 'LOGOUT',
+        roles: basicAuth,
     },
 ];

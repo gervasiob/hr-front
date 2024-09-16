@@ -8,6 +8,12 @@ import { router } from '@/router';
 
 import localStoragePlugin from './plugins/localStoragePlugin';
 
+// import axios from 'axios';
+
+// const token = localStorage.getItem('token');
+// if (token) {
+//     axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+// }
 const app = createApp(App);
 
 app.use(localStoragePlugin);
