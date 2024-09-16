@@ -648,13 +648,13 @@
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
-                <div class="btn-check">
+                <!-- <div class="btn-check">
                     <a-button type="primary" @click="handleGetStock()" :loading="isLoading">Verificar Stock</a-button>
                     <div class="stock-table" v-show="dataStock.length > 0">
                         <a-table :dataSource="dataStock" :columns="columnsStock" :pagination="false" />
 
                     </div>
-                </div>
+                </div> -->
 
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
@@ -1413,16 +1413,21 @@ export default {
                 const costResponse = await getTireCost(params);
                 newCost.value = costResponse;
                 const newKey = `${count.value}`;
-                dataSource.value.push({
-                    type: 'Neumático',
-                    key: newKey,
-                    sku: newCost.value.spare_tire_amounts[0].sku, // Usa otro valor si es necesario
-                    id: newCost.value.spare_tire_amounts[0].id,  // Usa otro valor si es necesario
-                    llanta_type: newCost.value.spare_tire_amounts[0].detail, // Usa otro valor si es necesario
-                    price_final: newCost.value.spare_tire_amounts[0].cost_amount,
-                    quantity: 1,
-                    vendor_id: '',
-                });
+                const skuN = newCost.value.spare_tire_amounts[0].sku;
+                if (dataSource.value.find((item) => item.sku === skuN)) {
+                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Neumático SKU ya existente N°: ' + skuN }));
+                } else {
+                    dataSource.value.push({
+                        type: 'Neumático',
+                        key: newKey,
+                        sku: skuN, // Usa otro valor si es necesario
+                        id: newCost.value.spare_tire_amounts[0].id,  // Usa otro valor si es necesario
+                        llanta_type: newCost.value.spare_tire_amounts[0].detail, // Usa otro valor si es necesario
+                        price_final: newCost.value.spare_tire_amounts[0].cost_amount,
+                        quantity: 1,
+                        vendor_id: '',
+                    });
+                }
                 if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar los datos de llanta, modelo y marca' }));
                     isLoadingCost.value = false;
@@ -1434,17 +1439,26 @@ export default {
                     vehicle: formTenderDetail.value.tender_data.vehicle,
                 }
                 const llantaResponse = await getLlantaCost(llantaParams);
-                const newKeyLlanta = `${count.value}`;
-                dataSource.value.push({
-                    type: 'Llanta',
-                    key: newKeyLlanta,
-                    sku: llantaResponse.spare_tire_amounts[0].sku,
-                    id: llantaResponse.spare_tire_amounts[0].id,
-                    llanta_type: llantaResponse.spare_tire_amounts[0].detail,
-                    price_final: llantaResponse.spare_tire_amounts[0].cost_amount,
-                    quantity: 1,
-                    vendor_id: '',
-                });
+                const newKeyLlanta = `${count.value}` + 1;
+                const skuL = llantaResponse.spare_tire_amounts[0].sku;
+
+                if (dataSource.value.find((item) => item.sku === skuL)) {
+                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Llanta SKU ya existente N°: ' + skuL }));
+                } else if (dataSource.value.find((item) => item.type === 'Llanta') && !skuL) {
+                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Llanta Duplicada con SKU nulo' }));
+                } else {
+                    dataSource.value.push({
+                        type: 'Llanta',
+                        key: newKeyLlanta,
+                        sku: skuL,
+                        id: llantaResponse.spare_tire_amounts[0].id,
+                        llanta_type: llantaResponse.spare_tire_amounts[0].detail,
+                        price_final: llantaResponse.spare_tire_amounts[0].cost_amount,
+                        quantity: 1,
+                        vendor_id: '',
+                    });
+                }
+                // handleGetStock();
             } catch (err) {
                 error.value = err;
             } finally {
@@ -1612,7 +1626,7 @@ export default {
                             // Actualizar los valores de la respuesta
                             if (dataSourceItem) {
                                 dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
-                               
+
                                 return {
                                     sku: stockData.sku,
                                     producto: stockData.producto,
