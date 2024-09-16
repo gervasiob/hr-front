@@ -1,6 +1,7 @@
 import axios from 'axios';
+
 const stage = import.meta.env.VITE_STAGE;
-export let BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
+export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
@@ -12,6 +13,7 @@ if (token) {
 // if (stage === 'UAT') {
 //     BASE_URL = import.meta.env.VITE_BACKEND_UAT_BASE_URL;
 // }
+
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
