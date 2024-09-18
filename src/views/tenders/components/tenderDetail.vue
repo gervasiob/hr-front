@@ -19,8 +19,8 @@
                     v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption"
                     @change="handleChangeAseguradora">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
-                        :value="aseguradora.value" :label="aseguradora.label">
-                        {{ aseguradora.label }}
+                        :value="aseguradora.value" :label="aseguradora.name">
+                        {{ aseguradora.name }}
                     </a-select-option>
                 </a-select>
             </a-form-item>
@@ -729,7 +729,7 @@ import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getUsers } from '@/api/users/users.js';
 import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
 import { getRoles } from '@/api/roles/roles.js';
-import { getVendors, getVendorList, getSucursalList } from '@/api/vendors/vendors.js';
+import { getVendors, getVendorList, getSucursalList, getAssuranceList } from '@/api/vendors/vendors.js';
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
@@ -784,7 +784,8 @@ export default {
         const isLoadingCost = ref(false);
         const error = ref(null);
         const type = ref('Edit');
-        const aseguradoraList = ASEGURADORAS;
+        const aseguradoraList = ref({});
+
         const groupList = GROUPS;
         const roles = ref(100); // Define roles como un ref para que sea reactivo
         const agents = ref([]); // Define agents como un ref para almacenar los agentes
@@ -1354,6 +1355,18 @@ export default {
                 console.log('error in get sku list', error)
             }
         }
+        const getAssurnanceListData = async () => {
+            try {
+                const res = await getAssuranceList();
+                aseguradoraList.value = res.filter((item) => {
+                    if (item.value && item.name) {
+                        return item;
+                    }
+                })
+            } catch (error) {
+                console.log('error in get assurance list', error)
+            }
+        }
         onMounted(() => {
             tenderId.value = route.params.id;
             console.log('tender value', tenderId.value)
@@ -1361,6 +1374,7 @@ export default {
             getPlatformsListData();
             getDescriptionListData();
             getSkuListData();
+            getAssurnanceListData();
             if (tenderId.value) {
                 console.log('edit')
                 type.value = 'Edit';
