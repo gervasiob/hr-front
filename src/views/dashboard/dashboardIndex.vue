@@ -91,6 +91,8 @@
 <script>
 import { onMounted, ref } from 'vue';
 import { getQuotesAchievement, getQuotesAggregation, getQuotesAchievementPercentage, getTireTipeNameSummary, getQuotesValues } from '@/api/dashboard/dashboard';
+import { getQuotesDashboard } from '@/api/dashboard/dashboard';
+
 import QuotesAchievementChart from './components/quotesAchievement.vue';
 import QuotesAggregationChart from './components/quotesAggregation.vue';
 import TireTypeNameChart from './components/tireTypeName.vue';
@@ -111,18 +113,22 @@ export default {
         const quotesValuesData = ref({});
         const wonQuotesData = ref({});
         const tenderQuotesData = ref({});
+        const adjudicatedByCompany = ref([]);
+
         const fetchData = async (params = {}) => {
             try {
                 quotesAchievementData.value = await getQuotesAchievement(params);
-                console.log('achivement', quotesAchievementData)
+                // console.log('achivement', quotesAchievementData)
                 quotesAggregationData.value = await getQuotesAggregation(params);
-                console.log('aggregation', quotesAggregationData)
+                // console.log('aggregation', quotesAggregationData)
                 const responsec = await getQuotesAchievementPercentage(params);
-                console.log('percentage', responsec)
+                // console.log('percentage', responsec)
                 tireTypeNameData.value = await getTireTipeNameSummary(params);
-                console.log('summary', tireTypeNameData)
+                // console.log('summary', tireTypeNameData)
+                const response = await getQuotesDashboard(params);
+                console.log('response dashboard', response)
                 quotesValuesData.value = await getQuotesValues(params);
-                console.log('quotes-values', quotesValuesData.value)
+                // console.log('quotes-values', quotesValuesData.value)
 
                 wonQuotesData.value = {
                     quantity: quotesValuesData.value.won_quotes_quantity,
