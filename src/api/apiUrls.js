@@ -1,7 +1,8 @@
 import axios from 'axios';
 
 const stage = import.meta.env.VITE_STAGE;
-export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
+// export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
+export let BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
