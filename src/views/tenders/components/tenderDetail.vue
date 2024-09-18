@@ -15,7 +15,7 @@
                 <a-input class="input-item" v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
             <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-select placeholder="Ingrese su búsqueda" style="min-width: 120px"
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
                     v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption"
                     @change="handleChangeAseguradora">
                     <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index"
@@ -25,7 +25,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Estado" name="estado">
-                <a-select placeholder="Ingrese su búsqueda" style="min-width: 130px"
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
                     v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
                         :label="item.label">
@@ -1481,8 +1481,8 @@ export default {
         };
         const handleChangeAseguradora = async () => {
             if (formTenderDetail.value.company_id) {
-                const aseguradora = aseguradoraList.find((item) => item.value === formTenderDetail.value.company_id)
-                const assurance = await getVendors({ comercial_name: aseguradora.label, vendor_type: 1 });
+                const aseguradora = aseguradoraList.value.find((item) => item.value === formTenderDetail.value.company_id)
+                const assurance = await getVendors({ comercial_name: aseguradora.name, vendor_type: 1 });
                 if (assurance.count > 0) {
                     formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
                 }
