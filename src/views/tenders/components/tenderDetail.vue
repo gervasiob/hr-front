@@ -1480,10 +1480,15 @@ export default {
             }
         };
         const handleChangeAseguradora = async () => {
+            console.log('ingresa al change')
             if (formTenderDetail.value.company_id) {
+                console.log('ingresa al if', formTenderDetail.value.company_id )
                 const aseguradora = aseguradoraList.value.find((item) => item.value === formTenderDetail.value.company_id)
+                console.log('aseguradora', aseguradora)
                 const assurance = await getVendors({ comercial_name: aseguradora.name, vendor_type: 1 });
+                console.log('assurance', assurance)
                 if (assurance.count > 0) {
+                    console.log('ingresa al if count > 0')
                     formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
                 }
                 else {
