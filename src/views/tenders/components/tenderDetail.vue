@@ -561,7 +561,7 @@
                             <div>
                                 <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange"
+                                    style="margin: -5px 0; width: 150px" @focus="focus"
                                     allow-clear show-search :filter-option="filterOption">
                                     <a-select-option v-for="(item, index) in vendorList" :key="index"
                                         :value="item.value" :label="(item.name)">
@@ -582,7 +582,7 @@
                                     <div class="checkbox">
                                         <a-checkbox :checked="text" :disabled="true"></a-checkbox>
                                         <div class="icono" v-show="record.po_id">
-                                            <router-link :to="{ name: 'OrderDetail', params: { id: record.po_id } }">
+                                            <router-link :to="{ name: 'OrderDetail', params: { id: record.po_id ? record.po_id : 1 } }">
                                                 <a-button type="primary" :disabled="!text">
                                                     PDF
                                                 </a-button>
@@ -1149,7 +1149,7 @@ export default {
                     console.log('add form', formTenderDetail.value);
                     fullParams = {
                         ...fullParams,
-                        company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
+                        company_name: aseguradoraList.value.find((item) => item.value === fullParams.company_id).label,
                     };
                     response = await addQuotes(fullParams);
                     tenderId.value = formTenderDetail.value.claim_id;
@@ -1165,12 +1165,12 @@ export default {
             } catch (error) {
                 errorMessage.value = 'Error actualizando las cotizaciones, no se ha guardado el objeto: ' + error;
                 console.log('error', error)
-                if (error.response.hasOwnProperty('data')) {
-                    if (error.response.data.hasOwnProperty('error')) {
-                        errorMessage.value += '\n' + error.response.data.error;
-                    }
-                }
-                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage }));
+                // if (error.response.hasOwnProperty('data')) {
+                //     if (error.response.data.hasOwnProperty('error')) {
+                //         errorMessage.value += '\n' + error.response.data.error;
+                //     }
+                // }
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage.value }));
             } finally {
                 isLoading.value = false;
                 console.log('finally')
