@@ -9,12 +9,12 @@
         </div>
     </div>
     <div v-show="type === 'Add'" class="form-item-container mg-bottom">
-        <a-form :model="formTenderDetail" name="horizontal_login" layout="inline" autocomplete="off">
-            <a-form-item label="Nro Siniestro" name="claim_id"
-                :rules="[{ required: false, message: 'Ingrese un valor' }]">
+        <a-form :model="formTenderDetail" ref="formRefAdd" name="horizontal_login" :rules="rules" layout="inline"
+            autocomplete="off">
+            <a-form-item label="Nro Siniestro" name="claim_id">
                 <a-input class="input-item" v-model:value="formTenderDetail.claim_id" />
             </a-form-item>
-            <a-form-item label="Compañía" name="company_id" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Compañía" name="company_id">
                 <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
                     v-model:value="formTenderDetail.company_id" allowClear show-search :filter-option="filterOption"
                     @change="handleChangeAseguradora">
@@ -24,7 +24,7 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item label="Estado" name="estado">
+            <a-form-item label="Estado" name="quote_state">
                 <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
                     v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
@@ -33,80 +33,78 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item label="Dominio" name="domain" :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-input v-model:value="formTenderDetail.tender_data.domain">
+            <a-form-item label="Dominio" name="add_domain">
+                <a-input v-model:value="formTenderDetail.add_domain">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Chasis" name="chasis" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Chasis" name="chasis">
                 <a-input v-model:value="formTenderDetail.tender_data.chasis">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Marca" name="brand" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Marca" name="marca">
                 <a-input v-model:value="formTenderDetail.tender_data.brand">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Modelo" name="vehicle" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Modelo" name="vehicle">
                 <a-input v-model:value="formTenderDetail.tender_data.vehicle">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Año Vehículo" name="vehicle_year"
-                :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Año Vehículo" name="vehicle_year">
                 <a-input v-model:value="formTenderDetail.tender_data.vehicle_year">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Fecha Siniestro" name="claim_date"
-                :rules="[{ required: false, message: 'Ingrese un valor' }]">
-                <a-input type="date" v-model:value="formTenderDetail.tender_data.claim_date">
+            <a-form-item label="Fecha Siniestro" name="add_claim_date">
+                <a-input type="date" v-model:value="formTenderDetail.add_claim_date">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Nombre Cliente" name="name" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Nombre Cliente" name="name">
                 <a-input v-model:value="formTenderDetail.tender_data.name">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Teléfono" name="phone" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Teléfono" name="phone">
                 <a-input v-model:value="formTenderDetail.tender_data.phone">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Localidad" name="city" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Localidad" name="city">
                 <a-input v-model:value="formTenderDetail.tender_data.city">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Provincia" name="province" :rules="[{ required: false, message: 'Ingrese un valor' }]">
+            <a-form-item label="Provincia" name="province">
                 <a-input v-model:value="formTenderDetail.tender_data.province">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Gestor" name="agent">
-                <a-select placeholder="Ingrese su búsqueda" style="min-width: 100px"
+            <a-form-item label="Gestor" name="user">
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 150px"
                     v-model:value="formTenderDetail.user" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                         :label="(item.fullName)">
@@ -115,7 +113,7 @@
                 </a-select>
             </a-form-item>
             <a-form-item label="Plataforma" name="platform">
-                <a-select placeholder="Ingrese su búsqueda" style="min-width: 100px"
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 150px"
                     v-model:value="formTenderDetail.platform" allowClear show-search :filter-option="filterOption"
                     @change="handleChangeAseguradora">
                     <a-select-option v-for="(item, index) in platformList" :key="index" :value="item.name"
@@ -561,8 +559,8 @@
                             <div>
                                 <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0; width: 150px" @focus="focus" @change="handleChange"
-                                    allow-clear show-search :filter-option="filterOption">
+                                    style="margin: -5px 0; width: 150px" @focus="focus" allow-clear show-search
+                                    :filter-option="filterOption">
                                     <a-select-option v-for="(item, index) in vendorList" :key="index"
                                         :value="item.value" :label="(item.name)">
                                         {{ item.name }}
@@ -582,7 +580,8 @@
                                     <div class="checkbox">
                                         <a-checkbox :checked="text" :disabled="true"></a-checkbox>
                                         <div class="icono" v-show="record.po_id">
-                                            <router-link :to="{ name: 'OrderDetail', params: { id: record.po_id } }">
+                                            <router-link
+                                                :to="{ name: 'OrderDetail', params: { id: record.po_id ? record.po_id : 1 } }">
                                                 <a-button type="primary" :disabled="!text">
                                                     PDF
                                                 </a-button>
@@ -759,6 +758,7 @@ export default {
         const routeName = ref(route.path);
         const isLoading = ref(false);
         const formRef = ref();
+        const formRefAdd = ref();
         const rules = formRules;
         const errorMessage = ref('');
         let tenderId = ref(route.params.id);
@@ -1110,13 +1110,18 @@ export default {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar al menos una sucursal' }));
                 return;
             }
+
             isLoading.value = true;
             try {
                 // Validar el formulario
+                if (type.value === 'Add') {
+                    await formRefAdd.value.validate();
+                }
                 await formRef.value.validate();
 
                 // Preparar los parámetros
                 const params = { ...formTenderDetail.value };
+
                 let brandObject = optionsBrand.find((item) => item.value === formTenderDetail.value.brand);
 
                 if (brandObject) {
@@ -1142,14 +1147,15 @@ export default {
 
                 // Editar o agregar cotización según el tipo
                 if (type.value === 'Edit') {
-                    console.log('Edit');
                     response = await updateQuotes(quoteId.value, fullParams);
                 } else if (type.value === 'Add') {
-                    console.log('Add');
-                    console.log('add form', formTenderDetail.value);
                     fullParams = {
                         ...fullParams,
-                        company_name: aseguradoraList.find((item) => item.value === fullParams.company_id).label,
+                        tender_data: {
+                            domain: fullParams.add_domain,
+                            claim_date: fullParams.add_claim_date,
+                        },
+                        company_name: aseguradoraList.value.find((item) => item.value === fullParams.company_id).name,
                     };
                     response = await addQuotes(fullParams);
                     tenderId.value = formTenderDetail.value.claim_id;
@@ -1163,17 +1169,17 @@ export default {
                     // Realiza acciones adicionales si es necesario
                 }
             } catch (error) {
-                errorMessage.value = 'Error actualizando las cotizaciones, no se ha guardado el objeto: ' + error;
-                console.log('error', error)
-                if (error.response.hasOwnProperty('data')) {
-                    if (error.response.data.hasOwnProperty('error')) {
+                errorMessage.value = 'Error actualizando las cotizaciones, no se ha guardado el objeto: ';
+                if (error.response && Object.prototype.hasOwnProperty.call(error.response, 'data')) {
+                    if (Object.prototype.hasOwnProperty.call(error.response.data, 'error')) {
                         errorMessage.value += '\n' + error.response.data.error;
                     }
+                } else {
+                    errorMessage.value = errorMessage.value + '\nVerifique los campos obligatorios.';
                 }
-                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage }));
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage.value }));
             } finally {
                 isLoading.value = false;
-                console.log('finally')
                 if (errorMessage.value === '') {
                     window.dispatchEvent(new CustomEvent('message-success', { detail: 'Licitación Guardada. Aguarda que la página se recargue' }));
                     setTimeout(() => {
@@ -1482,7 +1488,7 @@ export default {
         const handleChangeAseguradora = async () => {
             console.log('ingresa al change')
             if (formTenderDetail.value.company_id) {
-                console.log('ingresa al if', formTenderDetail.value.company_id )
+                console.log('ingresa al if', formTenderDetail.value.company_id)
                 const aseguradora = aseguradoraList.value.find((item) => item.value === formTenderDetail.value.company_id)
                 console.log('aseguradora', aseguradora)
                 const assurance = await getVendors({ comercial_name: aseguradora.name, vendor_type: 1 });
@@ -1727,6 +1733,7 @@ export default {
             errorMessage,
             quoteId,
             formRef,
+            formRefAdd,
             rules,
             onLicitar,
             dataQuoteSource,

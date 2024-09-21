@@ -1,4 +1,44 @@
+const validateNumber = (rule, value) => {
+    if (!value) {
+        return Promise.resolve(); // Si está vacío, lo maneja la regla 'required'
+    }
+    // Validar si es un número
+    if (!/^\d+$/.test(value)) {
+        return Promise.reject('El valor debe ser un número');
+    }
+    return Promise.resolve();
+};
 export const formRules = {
+    claim_id: [
+        { required: true, message: 'Ingrese un valor' },
+        { validator: validateNumber, message: 'El valor debe ser un número' }
+    ],
+    company_id: [
+        { required: true, message: 'Ingrese un valor' }
+    ],
+    quote_state: [
+        { required: true, message: 'Ingrese un valor' }
+    ],
+    add_domain: [
+        { required: true, message: 'Ingrese un valor' }
+    ],
+    chasis: [
+        { required: false, message: 'Ingrese un valor' }
+    ],
+    marca: [
+        { required: false, message: 'Ingrese un valor' }
+    ],
+
+    add_claim_date: [
+        { required: true, message: 'Ingrese un valor' }
+    ],
+
+    user: [
+        { required: true, message: 'Ingrese un valor' }
+    ],
+    platform: [
+        { required: true, message: 'Ingrese un valor' }
+    ],
     brand: [
         {
             required: true,
