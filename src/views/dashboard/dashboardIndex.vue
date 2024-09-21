@@ -70,6 +70,42 @@
         </a-row>
     </div>
 
+    <div>
+        <h3 style="color:black">Tablero de Compañias</h3>
+        <a-table :columns="columnsCompanies" :data-source="dataSourceCompanies" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Tablero de Plataforma</h3>
+        <a-table :columns="columnsPlatforms" :data-source="dataSourcePlatforms" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking de Neumáticos Más Vendidos Adjudicados</h3>
+        <a-table :columns="columnsTopSkuNeumatico" :data-source="dataSourceTopSkuNeumatico" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking de Neumáticos Más Vendidos Oc</h3>
+        <a-table :columns="columnsTopSkuNeumaticoOc" :data-source="dataSourceTopSkuNeumaticoOc" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking de Llantas Más Vendidas Adjudicadas</h3>
+        <a-table :columns="columnsTopSkuLlanta" :data-source="dataSourceTopSkuLlanta" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking de Llantas Más Vendidas Oc</h3>
+        <a-table :columns="columnsTopSkuLlantaOc" :data-source="dataSourceTopSkuLlantaOc" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking Vehiculos Mas Vendidos</h3>
+        <a-table :columns="columnsTopBrandModel" :data-source="dataSourceTopBrandModel" />
+    </div>
+
+
     <div class="clean-contanier">
         <a-row :gutter="24">
             <!-- <a-col :span="6">
@@ -86,13 +122,21 @@
         </a-row>
     </div>
 
+
+
 </template>
 
 <script>
 import { onMounted, ref } from 'vue';
 import { getQuotesAchievement, getQuotesAggregation, getQuotesAchievementPercentage, getTireTipeNameSummary, getQuotesValues } from '@/api/dashboard/dashboard';
 import { getQuotesDashboard } from '@/api/dashboard/dashboard';
-
+import { tableColumnsCompanies } from './config/columnsCompanies.js';
+import { tableColumnsPlatforms } from './config/columnsPlatforms.js';
+import { tableColumnsTopSkuNeumatico } from './config/columnsTopSkuNeumatico.js';
+import { tableColumnsTopSkuNeumaticoOc } from './config/columnsTopSkuNeumaticoOc.js';
+import { tableColumnsTopSkuLlanta } from './config/columnsTopSkuLlanta.js';
+import { tableColumnsTopSkuLlantaOc } from './config/columnsTopSkuLlantaOc.js';
+import { tableColumnsTopBrandModel } from './config/columnsTopBrandModel.js';
 import QuotesAchievementChart from './components/quotesAchievement.vue';
 import QuotesAggregationChart from './components/quotesAggregation.vue';
 import TireTypeNameChart from './components/tireTypeName.vue';
@@ -114,6 +158,20 @@ export default {
         const wonQuotesData = ref({});
         const tenderQuotesData = ref({});
         const adjudicatedByCompany = ref([]);
+        const columnsCompanies = tableColumnsCompanies;
+        const dataSourceCompanies = ref([]);
+        const columnsPlatforms = tableColumnsPlatforms;
+        const dataSourcePlatforms = ref([]);
+        const columnsTopSkuNeumatico = tableColumnsTopSkuNeumatico;
+        const dataSourceTopSkuNeumatico = ref([]);
+        const columnsTopSkuNeumaticoOc = tableColumnsTopSkuNeumaticoOc;
+        const dataSourceTopSkuNeumaticoOc = ref([]);
+        const columnsTopSkuLlanta = tableColumnsTopSkuLlanta;
+        const dataSourceTopSkuLlanta = ref([]);
+        const columnsTopSkuLlantaOc = tableColumnsTopSkuLlantaOc;
+        const dataSourceTopSkuLlantaOc = ref([]);
+        const columnsTopBrandModel = tableColumnsTopBrandModel;
+        const dataSourceTopBrandModel = ref([]);
 
         const fetchData = async (params = {}) => {
             try {
@@ -127,8 +185,15 @@ export default {
                 // console.log('summary', tireTypeNameData)
                 const response = await getQuotesDashboard(params);
                 console.log('response dashboard', response)
-                quotesValuesData.value = await getQuotesValues(params);
+                //quotesValuesData.value = await getQuotesValues(params);
                 // console.log('quotes-values', quotesValuesData.value)
+                dataSourceCompanies.value = response.companies;
+                dataSourcePlatforms.value = response.platforms;
+                dataSourceTopSkuNeumatico.value = response.top_20_neumatico_type_a_quote_state;
+                dataSourceTopSkuNeumaticoOc.value = response.top_20_neumatico_type_o_quote_state;
+                dataSourceTopSkuLlanta.value = response.top_20_llanta_type_a_quote_state;
+                dataSourceTopSkuLlantaOc.value = response.top_20_llanta_type_o_quote_state;
+                dataSourceTopBrandModel.value = response.top_20_brand_model;
 
                 wonQuotesData.value = {
                     quantity: quotesValuesData.value.won_quotes_quantity,
@@ -157,6 +222,21 @@ export default {
             quotesValuesData,
             wonQuotesData,
             tenderQuotesData,
+            columnsCompanies,
+            dataSourceCompanies,
+            columnsPlatforms,
+            dataSourcePlatforms,
+            columnsTopSkuNeumatico,
+            dataSourceTopSkuNeumatico,
+            columnsTopSkuNeumaticoOc,
+            dataSourceTopSkuNeumaticoOc,
+            columnsTopSkuLlanta,
+            dataSourceTopSkuLlanta,
+            columnsTopSkuLlantaOc,
+            dataSourceTopSkuLlantaOc,
+            columnsTopBrandModel,
+            dataSourceTopBrandModel,
+
         }
     }
 }
