@@ -27,7 +27,7 @@
             </a-row>
             <a-row :gutter="24">
                 <a-col :span="6">
-                    <a-form-item label="Claim id" name="claim_id">
+                    <a-form-item label="Nro Siniestro" name="claim_id">
                         <a-input v-model:value="filterInputs.claim_id" allowClear />
                     </a-form-item>
                 </a-col>
