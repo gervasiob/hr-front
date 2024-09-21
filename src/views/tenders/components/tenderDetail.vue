@@ -1117,6 +1117,7 @@ export default {
 
                 // Preparar los parámetros
                 const params = { ...formTenderDetail.value };
+
                 let brandObject = optionsBrand.find((item) => item.value === formTenderDetail.value.brand);
 
                 if (brandObject) {
@@ -1142,14 +1143,11 @@ export default {
 
                 // Editar o agregar cotización según el tipo
                 if (type.value === 'Edit') {
-                    console.log('Edit');
                     response = await updateQuotes(quoteId.value, fullParams);
                 } else if (type.value === 'Add') {
-                    console.log('Add');
-                    console.log('add form', formTenderDetail.value);
                     fullParams = {
                         ...fullParams,
-                        company_name: aseguradoraList.value.find((item) => item.value === fullParams.company_id).label,
+                        company_name: aseguradoraList.value.find((item) => item.value === fullParams.company_id).name,
                     };
                     response = await addQuotes(fullParams);
                     tenderId.value = formTenderDetail.value.claim_id;
