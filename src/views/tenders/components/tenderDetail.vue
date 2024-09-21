@@ -1116,7 +1116,6 @@ export default {
                 // Validar el formulario
                 if (type.value === 'Add') {
                     await formRefAdd.value.validate();
-                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage.value }));
                 }
                 await formRef.value.validate();
 
@@ -1171,16 +1170,16 @@ export default {
                 }
             } catch (error) {
                 errorMessage.value = 'Error actualizando las cotizaciones, no se ha guardado el objeto: ';
-                console.log('error', error)
-                if (Object.prototype.hasOwnProperty.call(error.response, 'data')) {
+                if (error.response && Object.prototype.hasOwnProperty.call(error.response, 'data')) {
                     if (Object.prototype.hasOwnProperty.call(error.response.data, 'error')) {
                         errorMessage.value += '\n' + error.response.data.error;
                     }
+                } else {
+                    errorMessage.value = errorMessage.value + '\nVerifique los campos obligatorios.';
                 }
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage.value }));
             } finally {
                 isLoading.value = false;
-                console.log('finally')
                 if (errorMessage.value === '') {
                     window.dispatchEvent(new CustomEvent('message-success', { detail: 'Licitación Guardada. Aguarda que la página se recargue' }));
                     setTimeout(() => {
