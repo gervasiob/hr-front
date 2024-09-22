@@ -73,31 +73,32 @@
         <a-form layout="horizontal" ref="formRef" :model="filterInputs">
 
             <a-row :gutter="24">
-                <a-col :span="6">
+                <a-col :span="8">
                     <a-form-item label="Fecha Siniestro Desde" name="claim_date_before">
                         <a-date-picker v-model:value="filterInputs.claim_date_before" allowClear
                             style="width: 200px;" />
                     </a-form-item>
                 </a-col>
-                <a-col :span="6">
+                <a-col :span="8">
                     <a-form-item label="Fecha Siniestro Hasta" name="claim_date_after">
                         <a-date-picker v-model:value="filterInputs.claim_date_after" allowClear style="width: 200px;" />
                     </a-form-item>
                 </a-col>
-                <a-col :span="6">
+            </a-row>
+            <a-row>
+                <a-col :span="8">
                     <a-form-item label="Fecha Creación Desde" name="created_at_before">
                         <a-date-picker v-model:value="filterInputs.created_at_before" allowClear
                             style="width: 200px;" />
                     </a-form-item>
                 </a-col>
-                <a-col :span="6">
+                <a-col :span="8">
                     <a-form-item label="Fecha Creación Hasta" name="created_at_after">
                         <a-date-picker v-model:value="filterInputs.created_at_after" allowClear style="width: 200px;" />
                     </a-form-item>
                 </a-col>
-            </a-row>
-            <a-row>
-                <a-col :span="6" :offset="18" style="text-align: right">
+
+                <a-col :span="8"  style="text-align: right">
                     <a-button type="primary" danger @click="fetchData">Buscar</a-button>
                     <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
                 </a-col>
