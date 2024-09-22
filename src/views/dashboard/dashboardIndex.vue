@@ -69,6 +69,41 @@
             </a-col>
         </a-row>
     </div>
+    <div class="filters">
+        <a-form layout="horizontal" ref="formRef" :model="filterInputs">
+
+            <a-row :gutter="24">
+                <a-col :span="6">
+                    <a-form-item label="Fecha Siniestro Desde" name="claim_date_before">
+                        <a-date-picker v-model:value="filterInputs.claim_date_before" allowClear
+                            style="width: 200px;" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="6">
+                    <a-form-item label="Fecha Siniestro Hasta" name="claim_date_after">
+                        <a-date-picker v-model:value="filterInputs.claim_date_after" allowClear style="width: 200px;" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="6">
+                    <a-form-item label="Fecha Creación Desde" name="created_at_before">
+                        <a-date-picker v-model:value="filterInputs.created_at_before" allowClear
+                            style="width: 200px;" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="6">
+                    <a-form-item label="Fecha Creación Hasta" name="created_at_after">
+                        <a-date-picker v-model:value="filterInputs.created_at_after" allowClear style="width: 200px;" />
+                    </a-form-item>
+                </a-col>
+            </a-row>
+            <a-row>
+                <a-col :span="6" :offset="18" style="text-align: right">
+                    <a-button type="primary" danger @click="fetchData">Buscar</a-button>
+                    <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
+                </a-col>
+            </a-row>
+        </a-form>
+    </div>
 
     <div>
         <h3 style="color:black">Tablero de Compañias</h3>
@@ -151,6 +186,7 @@ export default {
         PieChart,
     },
     setup() {
+        const formRef = ref();
         const quotesAchievementData = ref([]);
         const quotesAggregationData = ref([]);
         const tireTypeNameData = ref([]);
@@ -172,6 +208,7 @@ export default {
         const dataSourceTopSkuLlantaOc = ref([]);
         const columnsTopBrandModel = tableColumnsTopBrandModel;
         const dataSourceTopBrandModel = ref([]);
+        const filterInputs = ref({});
 
         const fetchData = async (params = {}) => {
             try {
@@ -183,7 +220,14 @@ export default {
                 // console.log('percentage', responsec)
                 tireTypeNameData.value = await getTireTipeNameSummary(params);
                 // console.log('summary', tireTypeNameData)
-                const response = await getQuotesDashboard(params);
+                const fullParams = {
+                    ...params,
+                    claim_date_before: filterInputs.value.claim_date_before ? new Date(filterInputs.value.claim_date_before).toISOString().split('T')[0] : null,
+                    claim_date_after: filterInputs.value.claim_date_after ? new Date(filterInputs.value.claim_date_after).toISOString().split('T')[0] : null,
+                    created_at_before: filterInputs.value.created_at_before ? new Date(filterInputs.value.created_at_before).toISOString().split('T')[0] : null,
+                    created_at_after: filterInputs.value.created_at_after ? new Date(filterInputs.value.created_at_after).toISOString().split('T')[0] : null,
+                }
+                const response = await getQuotesDashboard(fullParams);
                 response.companies.map((item) => {
                     let participation = parseFloat(item.participation);
                     let adjudicated = parseFloat(item.adjudicated);
@@ -242,7 +286,11 @@ export default {
             }
 
         };
-
+        const resetFilters = () => {
+            formRef.value.resetFields();
+            filterInputs.value = {};
+            fetchData();
+        };
         onMounted(() => {
             fetchData();
         });
@@ -268,6 +316,9 @@ export default {
             dataSourceTopSkuLlantaOc,
             columnsTopBrandModel,
             dataSourceTopBrandModel,
+            filterInputs,
+            formRef,
+            resetFilters,
 
         }
     }
@@ -307,6 +358,7 @@ export default {
     margin-top: 20px;
     color: var(--principal)
 }
+
 :deep(.ant-table-thead .ant-table-cell) {
     background-color: var(--principal);
     color: white;
@@ -320,5 +372,13 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
     background-color: var(--secondary) !important;
     color: black !important;
+}
+
+.filters {
+    margin-top: 1%;
+    margin-bottom: 1%;
+    background-color: var(--mute);
+    padding: 2%;
+    border-radius: 20px;
 }
 </style>
