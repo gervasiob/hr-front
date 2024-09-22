@@ -1,6 +1,5 @@
-import { formatCurrency, formatNumber } from '@/utils/utils.js';
-const customAdjudicated = (record, index, column) => {
-    record.adjudicated = record.adjudicated*100 + "%";
+
+const customAdjudicated = () => {
     
     return {
         style: {
@@ -8,8 +7,7 @@ const customAdjudicated = (record, index, column) => {
         },
     }
 }
-const customParticipation = (record, index, column) => {
-    record.participation = record.participation*100 + "%";
+const customParticipation = () => {
     
     return {
         style: {
@@ -17,7 +15,7 @@ const customParticipation = (record, index, column) => {
         },
     }
 }
-const customFormat = (record, index, column) => {
+const customFormat = () => {
 
     return {
         style: {
@@ -29,51 +27,51 @@ export const tableColumnsPlatforms = [
        {
         title: 'Compañia',
         dataIndex: 'company',
-        // sorter: (a, b) => a.company.localeCompare(b.company),
+        sorter: (a, b) => a.company.localeCompare(b.company),
     },
     {
         title: 'Adjudicado',
         dataIndex: 'adjudicado',
-        // sorter: (a, b) => a.adjudicado - b.adjudicado,
+        sorter: (a, b) => a.adjudicado - b.adjudicado,
         customCell: customFormat,
     },
     {
         title: 'Cotizado',
         dataIndex: 'cotizado',
-        // sorter: (a, b) => a.cotizado - b.cotizado,
+        sorter: (a, b) => a.cotizado - b.cotizado,
         customCell: customFormat,
     },
     {
         title: 'Finalizado',
         dataIndex: 'finalizado',
-        // sorter: (a, b) => a.finalizado - b.finalizado,
+        sorter: (a, b) => a.finalizado - b.finalizado,
         customCell: customFormat,
      
     },
     {
         title: 'Pendiente',
         dataIndex: 'pendiente',
-        // sorter: (a, b) => a.pendiente - b.pendiente,
+        sorter: (a, b) => a.pendiente - b.pendiente,
         customCell: customFormat, 
     },
     {
         title: 'Total',
         dataIndex: 'total',
-        // sorter: (a, b) => a.total - b.total,
+        sorter: (a, b) => a.total - b.total,
         customCell: customFormat,
    
     },
     {
         title: 'Adjudicado',
         dataIndex: 'adjudicated',
-        // sorter: (a, b) => a.adjudicated - b.adjudicated,
+        sorter: (a, b) => a.adjudicated.localeCompare(b.adjudicated),
         customCell: customAdjudicated,
 
     },
     {
         title: 'Participation',
         dataIndex: 'participation',
-        // sorter: (a, b) => a.participation - b.participation,
+        sorter: (a, b) => a.participation.localeCompare(b.participation),
         customCell: customParticipation,
     },
 

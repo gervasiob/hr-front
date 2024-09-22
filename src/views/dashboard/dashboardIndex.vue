@@ -128,7 +128,7 @@
 
 <script>
 import { onMounted, ref } from 'vue';
-import { getQuotesAchievement, getQuotesAggregation, getQuotesAchievementPercentage, getTireTipeNameSummary, getQuotesValues } from '@/api/dashboard/dashboard';
+import { getQuotesAchievement, getQuotesAggregation, getTireTipeNameSummary, getQuotesValues } from '@/api/dashboard/dashboard';
 import { getQuotesDashboard } from '@/api/dashboard/dashboard';
 import { tableColumnsCompanies } from './config/columnsCompanies.js';
 import { tableColumnsPlatforms } from './config/columnsPlatforms.js';
@@ -157,7 +157,7 @@ export default {
         const quotesValuesData = ref({});
         const wonQuotesData = ref({});
         const tenderQuotesData = ref({});
-        const adjudicatedByCompany = ref([]);
+        // const adjudicatedByCompany = ref([]);
         const columnsCompanies = tableColumnsCompanies;
         const dataSourceCompanies = ref([]);
         const columnsPlatforms = tableColumnsPlatforms;
@@ -175,18 +175,50 @@ export default {
 
         const fetchData = async (params = {}) => {
             try {
-                quotesAchievementData.value = await getQuotesAchievement(params);
-                // console.log('achivement', quotesAchievementData)
+                const responseAchievement = await getQuotesAchievement(params);
+                quotesAchievementData.value = responseAchievement.filter((item) => item.company_name !== null);
                 quotesAggregationData.value = await getQuotesAggregation(params);
                 // console.log('aggregation', quotesAggregationData)
-                const responsec = await getQuotesAchievementPercentage(params);
+                // const responsec = await getQuotesAchievementPercentage(params);
                 // console.log('percentage', responsec)
                 tireTypeNameData.value = await getTireTipeNameSummary(params);
                 // console.log('summary', tireTypeNameData)
                 const response = await getQuotesDashboard(params);
-                console.log('response dashboard', response)
-                //quotesValuesData.value = await getQuotesValues(params);
-                // console.log('quotes-values', quotesValuesData.value)
+                response.companies.map((item) => {
+                    let participation = parseFloat(item.participation);
+                    let adjudicated = parseFloat(item.adjudicated);
+
+                    // Si participation es NaN (no es un número), asigna un valor por defecto
+                    if (isNaN(participation)) {
+                        participation = 0;
+                    }
+                    if (isNaN(adjudicated)) {
+                        adjudicated = 0;
+                    }
+
+                    // Calcula el porcentaje y formatea el valor
+                    item.adjudicated = (adjudicated * 100).toFixed(2) + "%";
+                    item.participation = (participation * 100).toFixed(2) + "%";
+
+                })
+                response.platforms.map((item) => {
+                    let participation = parseFloat(item.participation);
+                    let adjudicated = parseFloat(item.adjudicated);
+
+                    // Si participation es NaN (no es un número), asigna un valor por defecto
+                    if (isNaN(participation)) {
+                        participation = 0;
+                    }
+                    if (isNaN(adjudicated)) {
+                        adjudicated = 0;
+                    }
+
+                    // Calcula el porcentaje y formatea el valor
+                    item.adjudicated = (adjudicated * 100).toFixed(2) + "%";
+                    item.participation = (participation * 100).toFixed(2) + "%";
+
+                })
+                quotesValuesData.value = await getQuotesValues(params);
                 dataSourceCompanies.value = response.companies;
                 dataSourcePlatforms.value = response.platforms;
                 dataSourceTopSkuNeumatico.value = response.top_20_neumatico_type_a_quote_state;
@@ -242,7 +274,7 @@ export default {
 }
 </script>
 
-<style>
+<style scoped>
 .back-contanier {
     background-color: var(--back);
     width: 100%;
@@ -274,5 +306,19 @@ export default {
 
     margin-top: 20px;
     color: var(--principal)
+}
+:deep(.ant-table-thead .ant-table-cell) {
+    background-color: var(--principal);
+    color: white;
+}
+
+:deep(.ant-table-thead:hover .ant-table-cell:hover) {
+    background-color: var(--mute);
+    color: black;
+}
+
+:deep(.ant-table-thead .ant-table-column-sort) {
+    background-color: var(--secondary) !important;
+    color: black !important;
 }
 </style>
