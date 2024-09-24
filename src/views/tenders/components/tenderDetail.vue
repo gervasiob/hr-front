@@ -691,7 +691,7 @@
                     </a-row>
                 </div>
                 <!-- Colocar que se vea según el estado -->
-                <div v-if="formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'V'">
+                <div v-if="formTenderDetail.quote_state === 'E'">
                     <a-row>
                         <a-col :span="8" v-if="formTenderDetail.quote_state === 'V'">
                             <a-button type="primary" size="large" danger @click="onSave('R')"
@@ -701,6 +701,20 @@
                         <a-col :span="8" :offset="8">
                             <a-button type="primary" size="large" class="hover-button" @click="onSave('V')"
                                 :loading="isLoading">Licitar</a-button>
+                        </a-col>
+                    </a-row>
+                </div>
+                <div v-if="formTenderDetail.quote_state === 'V'">
+                    <a-row>
+                        <a-col :span="8" v-if="formTenderDetail.quote_state === 'V'">
+                            <a-button type="primary" size="large" danger @click="onSave('R')"
+                                :loading="isLoading">Cancelar
+                                Presupuesto</a-button>
+                        </a-col>
+                        <a-col :span="8" :offset="8">
+                            <a-button type="primary" size="large" class="hover-button" @click="onSave('A')"
+                                :loading="isLoading"
+                                v-show="formTenderDetail.platform !== 'CLAIMS' && formTenderDetail.platform !== 'Claims'">Adjudicar</a-button>
                         </a-col>
                     </a-row>
                 </div>
