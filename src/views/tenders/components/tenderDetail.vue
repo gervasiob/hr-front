@@ -104,6 +104,7 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Gestor" name="user">
+
                 <a-select placeholder="Ingrese su búsqueda" style="min-width: 150px"
                     v-model:value="formTenderDetail.user" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -111,6 +112,7 @@
                         {{ item.fullName }}
                     </a-select-option>
                 </a-select>
+
             </a-form-item>
             <a-form-item label="Plataforma" name="platform">
                 <a-select placeholder="Ingrese su búsqueda" style="min-width: 150px"
@@ -214,15 +216,33 @@
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Gestor">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.user" allowClear
-                            show-search :filter-option="filterOption">
-                            <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
-                                :label="(item.fullName)">
-                                {{ item.fullName }}
-                            </a-select-option>
-                        </a-select>
-                    </div>
+                    <template v-if="userRoles.includes('Admin') && formTenderDetail.quote_state !== 'N'">
+                        <div class="item-d" :class="{ 'no-background': handleEdit }">
+                            <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.user" allowClear
+                                show-search :filter-option="filterOption">
+                                <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
+                                    :label="(item.fullName)">
+                                    {{ item.fullName }}
+                                </a-select-option>
+                            </a-select>
+                        </div>
+                    </template>
+                    <template v-else-if="formTenderDetail.quote_state === 'N'">
+                        <div class="item-d" :class="{ 'no-background': handleEdit }">
+                            <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.user" allowClear
+                                show-search :filter-option="filterOption">
+                                <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
+                                    :label="(item.fullName)">
+                                    {{ item.fullName }}
+                                </a-select-option>
+                            </a-select>
+                        </div>
+                    </template>
+                    <template v-else>
+                        <div style="text-align: left">
+                            {{ getUserName(formTenderDetail.user) }}</div>
+                    </template>
+
                 </a-descriptions-item>
             </a-descriptions>
         </a-collapse-panel>
@@ -374,7 +394,7 @@
                         <a-row style="margin-top: 2%; align-content: center; padding-left: 2%" :gutter="24">
                             <a-col :span="3">
                                 <div class="">
-                                    <span>Ancho</span>
+                                    <span style="color: red;">*Ancho</span>
                                     <a-select v-model:value="formTenderDetail.tire_width" style="width: 100%"
                                         :options="optionsTireWidth" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
@@ -383,7 +403,7 @@
                             </a-col>
                             <a-col :span="3">
                                 <div class="">
-                                    <span>Alto</span>
+                                    <span style="color: red;">*Alto</span>
                                     <a-select v-model:value="formTenderDetail.tire_height" style="width: 100%"
                                         placeholder="..." :options="optionsTireHeight" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
@@ -392,7 +412,7 @@
                             </a-col>
                             <a-col :span="3">
                                 <div class="">
-                                    <span>Rodado</span>
+                                    <span style="color: red;">*Rodado</span>
                                     <a-select v-model:value="formTenderDetail.tire_tread" style="width: 100%"
                                         placeholder="..." :options="optionsTireTread" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
@@ -412,7 +432,7 @@
                                 <div class="form-item-container">
                                     <!-- <a-badge-ribbon text="IA" color="volcano" v-show="true"><span>Marca</span>
                                     </a-badge-ribbon> -->
-                                    <span>Marca</span>
+                                    <span style="color: red;">*Marca</span>
                                     <div class="input-select">
                                         <!-- <a-badge-ribbon text="IA" color="volcano" v-show="true">
  </a-badge-ribbon> -->
@@ -617,8 +637,8 @@
                         <template v-else-if="column.dataIndex === 'total'">
                             <div style="text-align: right;">
                                 {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
-                                    formTenderDetail.fee /
-                                    100))
+                                formTenderDetail.fee /
+                                100))
                                 }}
                             </div>
                         </template>
@@ -704,7 +724,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -1110,6 +1130,10 @@ export default {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar al menos una sucursal' }));
                 return;
             }
+            if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !formTenderDetail.value.brand) {
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe completar datos de modelo de la rueda y sus medidas' }));
+                return;
+            }
 
             isLoading.value = true;
             try {
@@ -1149,14 +1173,24 @@ export default {
                 if (type.value === 'Edit') {
                     response = await updateQuotes(quoteId.value, fullParams);
                 } else if (type.value === 'Add') {
+                    console.log('full params', fullParams)
                     fullParams = {
                         ...fullParams,
                         tender_data: {
                             domain: fullParams.add_domain,
                             claim_date: fullParams.add_claim_date,
+                            chasis: formTenderDetail.value.tender_data.chasis,
+                            vehicle: formTenderDetail.value.tender_data.vehicle,
+                            brand: formTenderDetail.value.tender_data.brand,
+                            vehicle_year: formTenderDetail.value.tender_data.vehicle_year,
+                            name: formTenderDetail.value.tender_data.name,
+                            phone: formTenderDetail.value.tender_data.phone,
+                            city: formTenderDetail.value.tender_data.city,
+                            province: formTenderDetail.value.tender_data.province,
                         },
                         company_name: aseguradoraList.value.find((item) => item.value === fullParams.company_id).name,
                     };
+                    console.log('full params despues de la edición', fullParams)
                     response = await addQuotes(fullParams);
                     tenderId.value = formTenderDetail.value.claim_id;
                     const path = 'licitaciones/' + tenderId.value;
@@ -1683,7 +1717,15 @@ export default {
                     loading.value = false;
                 });
         };
-
+        const getUserName = (id) => {
+            console.log('get user name', id)
+            const user = agents.value.filter((item) => item.id === id);
+            console.log('user', user)
+            if (user) {
+                return user[0].fullName;
+            }
+            return id;
+        }
 
         watch(
             () => route.path,
@@ -1793,6 +1835,7 @@ export default {
             llantaTypeDescription,
             dataStock,
             columnsStock,
+            getUserName,
         }
     }
 }
