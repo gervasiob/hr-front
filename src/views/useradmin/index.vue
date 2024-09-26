@@ -267,8 +267,15 @@ export default {
         roles: rolesParam,
       }
       if (data.id > 0) {
-
-        updateUsers(data.id, params).then(() => {
+       let { id, ...dataWithoutId } = params;
+if(params.password ==== "" || !params.password) {
+ let { id, password, ...dataWithoutId } = params;
+console.log('passsword blank', dataWithoutId ) ;
+} else {
+let { id, ...dataWithoutId } = params;
+console.log('else', dataWithoutId ) ;
+}
+        updateUsers(data.id, dataWithoutId).then(() => {
           fetchData();
         });
       } else {
