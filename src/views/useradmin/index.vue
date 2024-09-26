@@ -273,10 +273,12 @@ export default {
         });
       } else {
         let { id, ...dataWithoutId } = params;
-if(params.password ==== "") {
+if(params.password ==== "" || !params.password) {
  let { id, password, ...dataWithoutId } = params;
+console.log('passsword blank', dataWithoutId ) ;
 } else {
 let { id, ...dataWithoutId } = params;
+console.log('else', dataWithoutId ) ;
 } 
         addUsers(dataWithoutId).then(() => {
           fetchData();
