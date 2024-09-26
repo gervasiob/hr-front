@@ -272,7 +272,12 @@ export default {
           fetchData();
         });
       } else {
-        const { id, ...dataWithoutId } = params;
+        let { id, ...dataWithoutId } = params;
+if(params.password ==== "") {
+ let { id, password, ...dataWithoutId } = params;
+} else {
+let { id, ...dataWithoutId } = params;
+} 
         addUsers(dataWithoutId).then(() => {
           fetchData();
         });
