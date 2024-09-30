@@ -233,6 +233,7 @@ export default {
       formState.value = form;
       addUsers(formState.value).then(() => {
         formState.value = {};
+        current.value = 1;
         fetchData();
       });
     };

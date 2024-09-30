@@ -637,8 +637,8 @@
                         <template v-else-if="column.dataIndex === 'total'">
                             <div style="text-align: right;">
                                 {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
-                                formTenderDetail.fee /
-                                100))
+                                    formTenderDetail.fee /
+                                    100))
                                 }}
                             </div>
                         </template>
@@ -738,7 +738,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -912,7 +912,7 @@ export default {
                 return errorMessage.value = 'Debe existir un Sku, un grupo, un precio unitario, una cantidad y seleccionar un Proveedor';
             }
             Object.assign(record, editableData[key]);
-            record.total = record.price * record.quantity;
+            record.total = record.price_final * record.quantity;
             delete editableData[key];
             calculateTireType();
             handleGetStock();
@@ -1015,6 +1015,7 @@ export default {
                             ...item,
                             key: index,
                             noStock: false,
+                            total: item.total ? item.total : 0,
                         }));
                     }
                 } else {
@@ -1171,6 +1172,7 @@ export default {
                 const details = dataSource.value.map((item) => ({
                     ...item,
                     po: item.po || false,
+                    total: item.total ? item.total : 0,
                     price_oc: parseFloat(item.price_final / 1.21 * (1 + formTenderDetail.value.fee / 100)).toFixed(2),
                 }));
 
