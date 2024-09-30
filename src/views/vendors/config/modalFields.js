@@ -76,6 +76,9 @@ export const modalFields = [
         label: 'Dirección',
         type: 'input',
         default: null,
+        rules: {
+            address: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
     {
         name: 'city',

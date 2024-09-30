@@ -258,6 +258,7 @@ export default {
         }
         deleteOrders(data.id, params).then(() => {
           fetchData();
+          current.value = 1;
         });
       }
       const newData = dataSource.value.filter(item => item.key !== key);
@@ -271,7 +272,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,

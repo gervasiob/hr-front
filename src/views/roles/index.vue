@@ -60,7 +60,8 @@
       <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
     </a-modal>
   </div>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+    :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
       <template v-if="['name'].includes(column.dataIndex)">
@@ -179,7 +180,6 @@ export default {
     }));
     const handleTableChange = (pag, filters, sorter) => {
       pageCurrent.value = pag?.current;
-
       run({
         page_size: pag.pageSize,
         page: pag?.current,
@@ -209,20 +209,34 @@ export default {
         }
         updateRoles(data.id, params).then(() => {
           fetchData();
+          current.value = 1;
         });
       } else {
         const { id, ...dataWithoutId } = data;
         addRoles(dataWithoutId).then(() => {
           fetchData();
+          current.value = 1;
         });
+
       }
     };
-    const cancel = key => {
+    const cancel = (key) => {
+      if (key === undefined) {
+        onDelete(key);
+        delete editableData[key];
+        return;
+      }
+      const record = dataSource.value.find(item => key === item.key);
+      Object.assign(record, editableData[key]);
+      delete editableData[key];
+      // if (!record.social_name || record.vendor_type === undefined) {
+      //   onDelete(key);
+      // }
       delete editableData[key];
     };
     const count = computed(() => {
-      if (dataSource.value) {
-        return dataSource.value.length + 1
+      if (total.value) {
+        return total.value + 1
       }
       return 0;
     });
@@ -274,12 +288,20 @@ export default {
       open.value = false; // Cierra el modal
     };
 
-    const handleFormFinish = (form) => {
+    const handleFormFinish = async (form) => {
       formState.value = form;
-      addRoles(formState.value).then(() => {
+      try {
+        await addRoles(formState.value);
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
         formState.value = {};
+        current.value = 1;
         fetchData();
-      });
+
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
+      }
+
     };
     return {
       formRef,
@@ -288,7 +310,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,

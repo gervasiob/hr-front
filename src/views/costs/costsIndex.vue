@@ -215,19 +215,27 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
-      if (data.id > 0) {
-        const params = {
-          ...data,
+      try {
+        if (data.id > 0) {
+          const params = {
+            ...data,
+          }
+          updateCosts(data.id, params).then(() => {
+            fetchData();
+          });
+        } else {
+          const { id, ...dataWithoutId } = data;
+          addCosts(dataWithoutId).then(() => {
+            fetchData();
+          });
         }
-        updateCosts(data.id, params).then(() => {
-          fetchData();
-        });
-      } else {
-        const { id, ...dataWithoutId } = data;
-        addCosts(dataWithoutId).then(() => {
-          fetchData();
-        });
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+        current.value = 1;
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
+
     };
     const cancel = (key) => {
       console.log('cancel', key)
@@ -306,6 +314,7 @@ export default {
       formState.value = form;
       addCosts(formState.value).then(() => {
         formState.value = {};
+        current.value = 1;
         fetchData();
       });
     };

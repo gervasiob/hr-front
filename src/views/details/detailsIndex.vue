@@ -202,22 +202,30 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
-      if (data.url === "") {
-        data.url = null;
-      }
-      if (data.id > 0) {
-        const params = {
-          ...data,
+      try {
+        if (data.url === "") {
+          data.url = null;
         }
-        updateDetails(data.id, params).then(() => {
-          fetchData();
-        });
-      } else {
-        const { id, ...dataWithoutId } = data;
-        addDetails(dataWithoutId).then(() => {
-          fetchData();
-        });
+        if (data.id > 0) {
+          const params = {
+            ...data,
+          }
+          updateDetails(data.id, params).then(() => {
+            fetchData();
+          });
+        } else {
+          const { id, ...dataWithoutId } = data;
+          addDetails(dataWithoutId).then(() => {
+            fetchData();
+          });
+        }
+        current.value = 1;
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
+    
     };
     const cancel = (key) => {
       console.log('cancel', key)
@@ -293,6 +301,7 @@ export default {
       formState.value = form;
       addDetails(formState.value).then(() => {
         formState.value = {};
+        current.value = 1;
         fetchData();
       });
     };
@@ -303,7 +312,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,
