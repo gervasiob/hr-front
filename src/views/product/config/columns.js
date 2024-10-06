@@ -34,14 +34,18 @@ export const tableColumns = [
         title: 'Precio',
         dataIndex: 'amount',     
     },
-    // {
-    //     title: 'Fecha de Creación',
-    //     dataIndex: 'created_at',     
-    // },
-    // {
-    //     title: 'Fecha de Actulización',
-    //     dataIndex: 'updated_at',     
-    // },
+    {
+        title: 'Proveedor',
+        dataIndex: 'vendors',     
+    },
+    {
+        title: 'Stock Mínimo',
+        dataIndex: 'minimum_stock',     
+    },
+    {
+        title: 'Stock Disponible',
+        dataIndex: 'available_stock',     
+    },
     {
         title: 'Operation',
         dataIndex: 'operation',     

@@ -110,13 +110,13 @@ export const menuList = [
                 label: 'STOCKS',
                 title: 'STOCKS',
             },
-            // {
-            //     key: 'product',
-            //     path: '/adm/products',
-            //     name: 'Productos',
-            //     label: 'PRODUCTOS',
-            //     title: 'PRODUCTOS',
-            // },
+            {
+                key: 'product',
+                path: '/adm/products',
+                name: 'Productos',
+                label: 'PRODUCTOS',
+                title: 'PRODUCTOS',
+            },
             {
                 key: 'details',
                 path: '/adm/details',
@@ -128,8 +128,8 @@ export const menuList = [
                 key: 'costs',
                 path: '/adm/costs',
                 name: 'Costo',
-                label: 'PRODUCTOS',
-                title: 'PRODUCTOS',
+                label: 'COSTOS',
+                title: 'COSTOS',
             },
             {
                 key: 'Orders',
