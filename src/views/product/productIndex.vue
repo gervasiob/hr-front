@@ -70,14 +70,22 @@
             </a-popconfirm>
           </span>
           <span v-else>
-            <a @click="edit(record.key)">Edit</a>
-            <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
-              <a>Eliminar</a>
-            </a-popconfirm>
-            <a-popconfirm v-if="dataSource.length" title="Confirma envío de mensaje por Whatsapp?"
-              @confirm="wapp(record.key)">
-              <a>Enviar WAPP</a>
-            </a-popconfirm>
+            <a-row :gutter="2">
+              <a-col>
+                <a @click="edit(record.key)">Edit</a>
+              </a-col>
+              <a-col>
+                <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
+                  <a>Eliminar</a>
+                </a-popconfirm>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-popconfirm v-if="dataSource.length" title="Confirma envío de mensaje por Whatsapp?"
+                @confirm="wapp(record.key)">
+                <a style="color: var(--principal);">Enviar WAPP</a>
+              </a-popconfirm>
+            </a-row>
           </span>
         </div>
       </template>
