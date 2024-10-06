@@ -2,17 +2,17 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item label="SKU" name="sku">
-              <a-input v-model:value="filterInputs.sku" allowClear />
-            </a-form-item>
-            <a-form-item label="Nombre" name="name">
-              <a-input v-model:value="filterInputs.nome" allowClear />
-            </a-form-item>
-          </a-col>
-        </a-row>
-        <a-col :span="16" style="text-align: right">
+        <a-col :span="8">
+          <a-form-item label="SKU" name="sku">
+            <a-input v-model:value="filterInputs.sku" allowClear />
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="Nombre" name="name">
+            <a-input v-model:value="filterInputs.nome" allowClear />
+          </a-form-item>
+        </a-col>
+        <a-col :span="8" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -28,7 +28,8 @@
       <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
     </a-modal>
   </div>
-  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow">
+  <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
+    :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
       <template v-if="['sku', 'name', 'group', 'type', 'quantity', 'amount'].includes(column.dataIndex)">
@@ -37,6 +38,25 @@
             style="margin: -5px 0;" />
           <template v-else>
             {{ text }}
+          </template>
+        </div>
+      </template>
+      <template v-if="['vendors'].includes(column.dataIndex)">
+        <div>
+          <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
+            v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
+            :filter-option="filterOption" mode="multiple" style="min-width: 100px;">
+            <a-select-option v-for="(item, index) in vendorList" :key="index" :value="item.value" :label="item.name">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
+          <template v-else>
+            <span>
+              <a-tag color="pink" v-for="(item, index) in text" :key="index">
+                {{ getVendorName(item) }}
+              </a-tag>
+            </span>
+
           </template>
         </div>
       </template>
@@ -50,10 +70,22 @@
             </a-popconfirm>
           </span>
           <span v-else>
-            <a @click="edit(record.key)">Edit</a>
-            <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
-              <a>Eliminar</a>
-            </a-popconfirm>
+            <a-row :gutter="2">
+              <a-col>
+                <a @click="edit(record.key)">Edit</a>
+              </a-col>
+              <a-col>
+                <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
+                  <a>Eliminar</a>
+                </a-popconfirm>
+              </a-col>
+            </a-row>
+            <a-row>
+              <a-popconfirm v-if="dataSource.length" title="Confirma envío de mensaje por Whatsapp?"
+                @confirm="wapp(record.key)">
+                <a style="color: var(--principal);">Enviar WAPP</a>
+              </a-popconfirm>
+            </a-row>
           </span>
         </div>
       </template>
@@ -63,9 +95,11 @@
 
 <script>
 import { reactive, ref, onMounted, computed } from 'vue';
+import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getProduct, addProduct, updateProduct, deleteProduct } from '@/api/product/product.js';
+import { getProduct, addProduct, updateProduct, deleteProduct, getPriceRequest } from '@/api/product/product.js';
+import { getVendorList } from '@/api/vendors/vendors.js';
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
@@ -77,10 +111,9 @@ export default {
   },
   setup() {
     const formRef = ref();
-    const dataSource = ref([]);
     const formState = reactive({});
     const filterInputs = ref({});
-
+    const vendorList = ref([]);
     const columns = tableColumns;
     const productList = ref([]);
 
@@ -90,30 +123,69 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
+
+      const fullParams = {
+        ...params,
+        ...filterInputs.value,
+      }
       try {
-        const response = await getProduct(params);
+        const response = await getProduct(fullParams);
 
         console.log("response");
         console.log(response);
-
-        console.log(dataSource.value)
-        dataSource.value = response.map((item, index) => ({
+        dataSource.value = response.results.map((item, index) => ({
           ...item,
-          key: index
+          key: index,
+          user: null,
         }));
+
         const responseList = await getProduct();
         productList.value = responseList;
-        console.log(dataSource.value)
+        vendorList.value = await getVendorList();
+        total.value = response.count;
+        return dataSource.value;
 
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
     };
+    const pageCurrent = ref(1);
+    const total = ref(10);
+    const {
+      data: dataSource,
+      run,
+      loading,
+      current,
+      pageSize,
+    } = usePagination(fetchData, {
+      formatResult: res => res.results,
+      pagination: {
+        currentKey: 'page',
+        pageSizeKey: 'page_size',
+      },
+    });
+    const pagination = computed(() => ({
+      defaultCurrent: 1,
+      defaultPageSize: 10,
+      total: total.value,
+      current: current.value,
+      pageSizeOptions: ["10", "50", "100"],
+      pageSize: pageSize.value,
+    }));
+    const handleTableChange = (pag, filters, sorter) => {
+      pageCurrent.value = pag?.current;
+      run({
+        page_size: pag.pageSize,
+        page: pag?.current,
+        sortField: sorter.field,
+        sortOrder: sorter.order,
+        ...filters,
+      });
+    };
 
 
     const onSearch = () => {
       current.value = 1;
-      fetchData(filterInputs.value);
     };
     const resetFilters = () => {
       current.value = 1;
@@ -126,7 +198,7 @@ export default {
     };
 
     onMounted(() => {
-      fetchData();
+
 
     });
 
@@ -141,21 +213,28 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
-      if (data.url === "") {
-        data.url = null;
+      const params = {
+        ...data,
+        vendor_ids: data.vendors,
       }
-      if (data.id > 0) {
-        const params = {
-          ...data,
+      try {
+
+        if (data.id > 0) {
+
+          updateProduct(data.id, params).then(() => {
+            fetchData();
+          });
+        } else {
+          const { id, ...dataWithoutId } = data;
+          addProduct(dataWithoutId).then(() => {
+            fetchData();
+          });
         }
-        updateProduct(data.id, params).then(() => {
-          fetchData();
-        });
-      } else {
-        const { id, ...dataWithoutId } = data;
-        addProduct(dataWithoutId).then(() => {
-          fetchData();
-        });
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+        current.value = 1;
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
     };
     const cancel = (key) => {
@@ -172,6 +251,25 @@ export default {
         onDelete(key);
       }
       delete editableData[key];
+    };
+    const wapp = async (key) => {
+      console.log('wapp', key)
+      const data = dataSource.value.filter(item => key === item.key)[0];
+      if (data.id) {
+        const params = {
+          sku: data.sku,
+        }
+        try {
+
+          await getPriceRequest(params);
+          window.dispatchEvent(new CustomEvent('message-success', { detail: 'Mensaje Enviado' }));
+          current.value = 1;
+        }
+        catch (error) {
+          console.error('Error handling form finish:', error);
+          window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
+        }
+      }
     };
     const count = computed(() => {
       if (dataSource.value) {
@@ -230,13 +328,23 @@ export default {
     };
 
     const handleFormFinish = (form) => {
-      formState.value = form;
-      addUsers(formState.value).then(() => {
+      formState.value = { ...form, vendor_ids: [form.vendors] };
+      console.log('form', form)
+
+      addProduct(formState.value).then(() => {
         formState.value = {};
         current.value = 1;
         fetchData();
       });
     };
+
+    const getVendorName = (input) => {
+      let vendor = input;
+      if (vendor) {
+        return vendor.social_name;
+      }
+      return 'Sin proveedor';
+    }
     return {
       formRef,
       formState,
@@ -244,7 +352,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,
@@ -263,6 +370,13 @@ export default {
       formComponent,
       modalFielsProps,
       handleCancel,
+      getVendorName,
+      vendorList,
+      wapp,
+      current,
+      total,
+      pagination,
+      handleTableChange,
     }
   }
 }
