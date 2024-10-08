@@ -157,33 +157,33 @@
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.domain" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                    <a-input v-model:value="formTenderDetail.tender_data.domain" :readonly="handleEdit(1)" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Chasis" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.chasis" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                    <a-input v-model:value="formTenderDetail.tender_data.chasis" :readonly="handleEdit(1)" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Marca" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.brand" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit() }">
+                    <a-input v-model:value="formTenderDetail.tender_data.brand" :readonly="handleEdit()" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.vehicle_year" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit() }">
+                    <a-input v-model:value="formTenderDetail.tender_data.vehicle_year" :readonly="handleEdit()" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Fecha" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.claim_date" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit() }">
+                    <a-input v-model:value="formTenderDetail.tender_data.claim_date" :readonly="handleEdit()" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Plataforma" class="a-descriptions-item">
@@ -196,28 +196,28 @@
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
                 <a-descriptions-item label="Nombre Cliente">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.name" :readonly="handleEdit" />
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.tender_data.name" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Teléfono">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit" />
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Localidad">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.city" :readonly="handleEdit" />
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.tender_data.city" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Provincia">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.province" :readonly="handleEdit" />
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.tender_data.province" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Gestor">
                     <template v-if="userRoles.includes('Admin') && formTenderDetail.quote_state !== 'N'">
-                        <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <div class="item-d" :class="{ 'no-background': handleEdit() }">
                             <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.user" allowClear
                                 show-search :filter-option="filterOption">
                                 <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -228,7 +228,7 @@
                         </div>
                     </template>
                     <template v-else-if="formTenderDetail.quote_state === 'N'">
-                        <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <div class="item-d" :class="{ 'no-background': handleEdit() }">
                             <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.user" allowClear
                                 show-search :filter-option="filterOption">
                                 <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -319,7 +319,7 @@
                             </a-col>
                         </a-row>
 
-                        <div style="align-content: center; padding: 2%">
+                        <div style="align-content: center; padding: 2%; display: none;">
                             <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn"
                                 style="margin-bottom: 8px" @click="handleDetailAdd">AGREGAR
                                 ITEM</a-button>
@@ -442,7 +442,7 @@
                                         <RobotOutlined class="ia-check" v-show="iaCheck.includes('brand')" />
                                     </div>
                                 </div>
-                                <div class="form-item-container">
+                                <!-- <div class="form-item-container">
                                     <span>Modelo Neumático</span>
                                     <div class="input-select">
                                         <a-select v-model:value="formTenderDetail.tire_model" style="width: 100%"
@@ -450,7 +450,7 @@
                                             :filter-option="filterOption"></a-select>
                                         <RobotOutlined class="ia-check" v-show="iaCheck.includes('modelo_rueda')" />
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="form-item-container">
                                     <span>Tipo de Llanta</span>
                                     <div class="input-select">
@@ -510,17 +510,6 @@
 
                 </div>
 
-
-                <!-- Total -->
-
-                <div class="total-item">
-                    <span>TOTAL A ADJUDICAR: {{
-                        formatCurrency(quoteData.total_quoted) }}</span>
-
-                    <RobotOutlined :style="{ marginLeft: '10px', color: 'white' }"
-                        v-show="iaCheck.includes('total_quoted')" />
-
-                </div>
                 <div v-if="formTenderDetail.quote_state !== 'U'">
                     <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn"
                         style="margin-bottom: 8px" @click="handleAdd">AGREGAR
@@ -636,11 +625,13 @@
                         </template>
                         <template v-else-if="column.dataIndex === 'total'">
                             <div style="text-align: right;">
-                                {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
+                                {{ formatCurrency(text) }}
+                                <!-- {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
                                     formTenderDetail.fee /
-                                    100))
-                                }}
+                                    100) + parseFloat(formTenderDetail.freight).toFixed(2))
+                                }} -->
                             </div>
+
                         </template>
 
                         <template v-else-if="column.dataIndex === 'operation'">
@@ -667,6 +658,16 @@
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
+                <!-- Total -->
+
+                <div class="total-item">
+                    <span>TOTAL A ADJUDICAR: {{
+                        formatCurrency(quoteData.total_quoted) }}</span>
+
+                    <RobotOutlined :style="{ marginLeft: '10px', color: 'white' }"
+                        v-show="iaCheck.includes('total_quoted')" />
+
+                </div>
                 <div class="btn-check">
                     <a-button type="primary" @click="handleGetStock()" :loading="isLoading">Verificar Stock</a-button>
                     <div class="stock-table" v-show="dataStock.length > 0">
@@ -912,7 +913,8 @@ export default {
                 return errorMessage.value = 'Debe existir un Sku, un grupo, un precio unitario, una cantidad y seleccionar un Proveedor';
             }
             Object.assign(record, editableData[key]);
-            record.total = record.price_final * record.quantity;
+            record.total = record.price_final / 1.21 * record.quantity * (1 + parseFloat(formTenderDetail.value.fee) / 100) + parseFloat(formTenderDetail.value.freight);
+
             delete editableData[key];
             calculateTireType();
             handleGetStock();
@@ -970,7 +972,7 @@ export default {
             if (tireValue > 0) {
                 freight = formTenderDetail.value.freight;
                 fee = formTenderDetail.value.fee;
-                tireValueTotal = (parseFloat(tireValue) + parseFloat(freight)) * (1 + (fee / 100));
+                tireValueTotal = (parseFloat(tireValue)) * (1 + (fee / 100) + parseFloat(freight));
             }
             // Actualizar
 
@@ -1570,12 +1572,21 @@ export default {
                 iaCheck.value = [];
             }
         }
-        const handleEdit = computed(() => {
+        const handleEdit = (field = null) => {
+            console.log('field', field)
             if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E') {
                 return false;
             }
+            else if (formTenderDetail.value.quote_state === 'V' || formTenderDetail.value.quote_state === 'A') {
+                if (field && field === 1) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
             return true;
-        })
+        }
         const inputRef = ref();
         const name = ref();
         let index = 0;
@@ -2125,6 +2136,7 @@ export default {
     font-style: italic;
     background-color: var(--soft-back);
     margin-bottom: 1%;
+    margin-top: 1%;
     padding: 1%;
 }
 
