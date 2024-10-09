@@ -305,7 +305,7 @@
                                 <div class="form-item-container">
                                     <span>Flete</span>
                                     <a-input v-model:value="formTenderDetail.freight" style="width: 100%" allow-clear
-                                        show-search></a-input>
+                                        show-search @change="calculateTotalQuoted" type="number"></a-input>
 
                                 </div>
                             </a-col>
@@ -913,7 +913,7 @@ export default {
                 return errorMessage.value = 'Debe existir un Sku, un grupo, un precio unitario, una cantidad y seleccionar un Proveedor';
             }
             Object.assign(record, editableData[key]);
-            record.total = record.price_final / 1.21 * record.quantity * (1 + parseFloat(formTenderDetail.value.fee) / 100) + parseFloat(formTenderDetail.value.freight);
+            record.total = record.price_final / 1.21 * record.quantity * (1 + parseFloat(formTenderDetail.value.fee) / 100);
 
             delete editableData[key];
             calculateTireType();
@@ -989,11 +989,15 @@ export default {
         }
         const calculateTotalQuoted = () => {
             let totalQuoted = 0;
-            dataQuoteSource.value.map((item) => {
-
-                totalQuoted += parseFloat(item.Llanta) + parseFloat(item.Neumatico);
+            dataSource.value.map((item) => {
+                if (item.total >= 0) {
+                    console.log('item total', item.total)
+                    totalQuoted += parseFloat(item.total);
+                }
             })
-            quoteData.value.total_quoted = totalQuoted;
+            console.log('total_quoted', totalQuoted)
+
+            quoteData.value.total_quoted = parseFloat(totalQuoted + parseFloat(formTenderDetail.value.freight)).toFixed(2);
         }
 
         const fetchTenderData = async (id) => {
@@ -1284,6 +1288,7 @@ export default {
         const onDelete = key => {
             dataSource.value = dataSource.value.filter(item => item.key !== key);
             calculateTireType();
+            calculateTotalQuoted();
         };
         const onDeleteQuote = key => {
             dataQuoteSource.value = dataQuoteSource.value.filter(item => item.key !== key);
@@ -1466,6 +1471,7 @@ export default {
             }
         });
         const handleGetCost = async () => {
+            console.log('handle get cost')
             isLoadingCost.value = true;
             error.value = null;
             newCost.value = { spare_tire_amount: [] };
@@ -1489,6 +1495,7 @@ export default {
                 if (dataSource.value.find((item) => item.sku === skuN)) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Neumático SKU ya existente N°: ' + skuN }));
                 } else {
+                    let total = newCost.value.spare_tire_amounts[0].cost_amount / 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
                     dataSource.value.push({
                         type: 'Neumático',
                         key: newKey,
@@ -1498,6 +1505,7 @@ export default {
                         price_final: newCost.value.spare_tire_amounts[0].cost_amount,
                         quantity: 1,
                         vendor_id: '',
+                        total: total,
                     });
                 }
                 if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
@@ -1530,6 +1538,7 @@ export default {
                         vendor_id: '',
                     });
                 }
+                calculateTotalQuoted();
                 handleGetStock();
             } catch (err) {
                 error.value = err;
