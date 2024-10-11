@@ -55,11 +55,19 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Modelo" name="vehicle">
-                <a-input v-model:value="formTenderDetail.tender_data.vehicle">
+                <!-- <a-input v-model:value="formTenderDetail.tender_data.vehicle">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
-                </a-input>
+                </a-input> -->
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
+                    v-model:value="formTenderDetail.tender_data.vehicle" allowClear show-search
+                    :filter-option="filterOption" @change="handleChangeAseguradora">
+                    <a-select-option v-for="(item, index) in vehicleList" :key="index" :value="item.name"
+                        :label="item.name">
+                        {{ item.name }}
+                    </a-select-option>
+                </a-select>
             </a-form-item>
             <a-form-item label="Año Vehículo" name="vehicle_year">
                 <a-input v-model:value="formTenderDetail.tender_data.vehicle_year">
@@ -173,7 +181,20 @@
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
                 <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
-                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" />
+                    <!-- <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" /> -->
+                    <div v-if="!handleEdit(1)">
+                        <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
+                            v-model:value="formTenderDetail.tender_data.vehicle" allowClear show-search
+                            :filter-option="filterOption" @change="handleChangeAseguradora" :readonly="handleEdit(1)">
+                            <a-select-option v-for="(item, index) in vehicleList" :key="index" :value="item.name"
+                                :label="item.name">
+                                {{ item.name }}
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                    <div v-else>
+                        <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" />
+                    </div>
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
@@ -739,7 +760,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -768,6 +789,7 @@ import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
 import { getCostStock } from '@/api/stocks/stocks.js';
+import { getVehiclesList } from '@/api/vehicles/vehicles.js';
 
 import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
@@ -775,7 +797,7 @@ import { tableStockColumns } from '../config/columnsStock.js';
 
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
-    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, ASEGURADORAS, GROUPS,
+    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, GROUPS,
 } from '@/common/common';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
@@ -884,6 +906,7 @@ export default {
         const editableQuoteData = reactive({});
         const selectedOption = ref(null);
         const platformList = ref([]);
+        const vehicleList = ref([]);
         const isModalVisible = ref(false);
         const currentImageIndex = ref(0);
         const VNodes = defineComponent({
@@ -1394,6 +1417,13 @@ export default {
                 console.log('error in get platform list', error)
             }
         }
+        const getVehiclesListData = async () => {
+            try {
+                vehicleList.value = await getVehiclesList();
+            } catch (error) {
+                console.log('error in get vehicle list', error)
+            }
+        }
         const getDescriptionListData = async () => {
             try {
                 const res = await getDescriptionList();
@@ -1438,6 +1468,7 @@ export default {
             getDescriptionListData();
             getSkuListData();
             getAssurnanceListData();
+            getVehiclesListData();
             if (tenderId.value) {
                 console.log('edit')
                 type.value = 'Edit';
@@ -1872,6 +1903,7 @@ export default {
             dataStock,
             columnsStock,
             getUserName,
+            vehicleList,
         }
     }
 }

@@ -198,6 +198,20 @@ const otherRoutes = [
         meta: { roles: ['Admin'] },
     },
     {
+        key: 'vehicles',
+        name: 'vehiclesIndex',
+        path: '/adm/vehicles',
+        component: () => import('@/views/vehicles/vehiclesIndex.vue'),
+        meta: { roles: ['Admin'] },
+    },
+    {
+        key: 'whatsapp',
+        name: 'whatsappIndex',
+        path: '/adm/whatsapp',
+        component: () => import('@/views/whatsapp/whatsappIndex.vue'),
+        meta: { roles: ['Admin'] },
+    },
+    {
         key: 'logout',
         path: '/logout',
         name: 'Logout',
