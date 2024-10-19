@@ -55,11 +55,19 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Modelo" name="vehicle">
-                <a-input v-model:value="formTenderDetail.tender_data.vehicle">
+                <!-- <a-input v-model:value="formTenderDetail.tender_data.vehicle">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
-                </a-input>
+                </a-input> -->
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
+                    v-model:value="formTenderDetail.tender_data.vehicle" allowClear show-search
+                    :filter-option="filterOption" @change="handleChangeAseguradora">
+                    <a-select-option v-for="(item, index) in vehicleList" :key="index" :value="item.name"
+                        :label="item.name">
+                        {{ item.name }}
+                    </a-select-option>
+                </a-select>
             </a-form-item>
             <a-form-item label="Año Vehículo" name="vehicle_year">
                 <a-input v-model:value="formTenderDetail.tender_data.vehicle_year">
@@ -173,7 +181,20 @@
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
                 <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
-                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" />
+                    <!-- <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" /> -->
+                    <div v-if="!handleEdit(1)">
+                        <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
+                            v-model:value="formTenderDetail.tender_data.vehicle" allowClear show-search
+                            :filter-option="filterOption" @change="handleChangeAseguradora" :readonly="handleEdit(1)">
+                            <a-select-option v-for="(item, index) in vehicleList" :key="index" :value="item.name"
+                                :label="item.name">
+                                {{ item.name }}
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                    <div v-else>
+                        <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" />
+                    </div>
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
@@ -531,12 +552,15 @@
                         </template>
                         <template v-if="['sku'].includes(column.dataIndex)">
                             <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
+                                <template v-if="editableData[record.key]">
+                                    {{ editableData[record.key][column.dataIndex] }}
+                                </template>
+                                <!-- <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
                                     style="margin: -5px 0;width: 120px;" @focus="focus"
                                     @change="handleChangeSku(editableData[record.key][column.dataIndex], record.key)"
                                     :options="skuList" show-search :filter-option="filterOptionName">
-                                </a-select>
+                                </a-select> -->
                                 <template v-else>
                                     {{ text }}
                                 </template>
@@ -545,10 +569,20 @@
                         <template v-if="['llanta_type'].includes(column.dataIndex)">
                             <div>
                                 <template v-if="editableData[record.key]">
-                                    {{ editableData[record.key].llanta_type }}
+                                    <a-select ref="select" v-if="editableData[record.key]"
+                                        v-model:value="editableData[record.key][column.dataIndex]"
+                                        style="margin: -5px 0;width: 160px;" @focus="focus"
+                                        @change="handleChangeDescription(editableData[record.key][column.dataIndex], record.key)"
+                                        :options="editableData.data" :filter-option="false" show-search allow-clear
+                                        :not-found-content="editableData.fetching ? undefined : null"
+                                        @search="(value) => handleSearchVehicles(value)">
+                                        <template v-if="editableData.fetching" #notFoundContent>
+                                            <a-spin size="small" />
+                                        </template>
+                                    </a-select>
                                 </template>
                                 <template v-else>
-                                    {{ text }}
+                                    {{ getLabelList(text, vehicleList) }}
                                 </template>
                             </div>
                         </template>
@@ -755,7 +789,7 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, debounce } from 'lodash-es';
 import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -768,6 +802,7 @@ import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
 import { getCostStock } from '@/api/stocks/stocks.js';
+import { getVehiclesList } from '@/api/vehicles/vehicles.js';
 
 import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
@@ -775,12 +810,13 @@ import { tableStockColumns } from '../config/columnsStock.js';
 
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
-    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, ASEGURADORAS, GROUPS,
+    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, GROUPS,
 } from '@/common/common';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 import { RobotOutlined } from '@ant-design/icons-vue';
+
 
 export default {
     name: 'TenderDetail',
@@ -884,6 +920,7 @@ export default {
         const editableQuoteData = reactive({});
         const selectedOption = ref(null);
         const platformList = ref([]);
+        const vehicleList = ref([]);
         const isModalVisible = ref(false);
         const currentImageIndex = ref(0);
         const VNodes = defineComponent({
@@ -898,6 +935,10 @@ export default {
             },
         });
         const edit = key => {
+            editableData.data = vehicleList.value.map((item) => ({
+                label: item.name,
+              value: item.value,  
+            }));
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
 
         };
@@ -1132,6 +1173,44 @@ export default {
             }
             return option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
+        const handleSearchVehicles = debounce((val) => {
+            fetchDescription(val);
+        }, 300);
+
+        const fetchDescription = async (value) => {
+            editableData.data = [];
+            editableData.fetching = true;
+            const params = {
+                model__icontains: value,
+            }
+            try {
+                const res = await getVehiclesList(params);
+                editableData.data = res.map(item => ({
+                    label: item.name, // Mostrar el nombre en el select
+                    value: item.value, // Pero el modelo se mantiene con el ID o value
+                }));
+                editableData.fetching = false;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                editableData.fetching = false;
+            }
+        };
+        const filterOptionValue = (input, option) => {
+            console.log('filter', input);
+
+            if (!input || !option.hasOwnProperty('value') || typeof option.value !== 'string') {
+                return;
+            }
+
+            // const optionValue = String(option.value);
+            const optionValue = (option.value); // Convertir el valor a cadena
+            const inputValue = input; // Convertir el valor a cadena
+
+            console.log('option', option.value);
+            console.log('option funciotn', option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0);
+
+            return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        }; // El número 300 es el delay en milisegundos
 
         const getLabelList = (value, list) => {
             console.log('value', value)
@@ -1308,6 +1387,20 @@ export default {
             editableData[key]['price_final'] = price_final;
             console.log('handle sku', res.results[0]);
         }
+        const handleChangeDescription = async (item, key) => {
+            console.log('desciption', item)
+
+            const desciptionItem = descriptionList.value.find((item) => item.value = item)
+            const sku = desciptionItem.name;
+            const params = {
+                code: sku,
+            }
+            const res = await getCosts(params);
+            const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
+            editableData[key]['sku'] = sku;
+            editableData[key]['price_final'] = price_final;
+            console.log('handle sku', res.results[0]);
+        }
         const handleModalCancel = () => {
             console.log('handle Cancel Modal');
             isModalVisible.value = false;
@@ -1394,6 +1487,13 @@ export default {
                 console.log('error in get platform list', error)
             }
         }
+        const getVehiclesListData = async () => {
+            try {
+                vehicleList.value = await getVehiclesList();
+            } catch (error) {
+                console.log('error in get vehicle list', error)
+            }
+        }
         const getDescriptionListData = async () => {
             try {
                 const res = await getDescriptionList();
@@ -1438,6 +1538,7 @@ export default {
             getDescriptionListData();
             getSkuListData();
             getAssurnanceListData();
+            getVehiclesListData();
             if (tenderId.value) {
                 console.log('edit')
                 type.value = 'Edit';
@@ -1582,7 +1683,6 @@ export default {
             }
         }
         const handleEdit = (field = null) => {
-            console.log('field', field)
             if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E') {
                 return false;
             }
@@ -1762,7 +1862,6 @@ export default {
             }
             return id;
         }
-
         watch(
             () => route.path,
             (_newValue) => {
@@ -1872,6 +1971,11 @@ export default {
             dataStock,
             columnsStock,
             getUserName,
+            vehicleList,
+            handleChangeDescription,
+            filterOptionValue,
+            fetchDescription,
+            handleSearchVehicles,
         }
     }
 }

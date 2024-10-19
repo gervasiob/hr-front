@@ -104,18 +104,18 @@ export const menuList = [
                 title: 'PROVEEDORES',
             },
             {
-                key: 'stocks',
-                path: '/adm/stocks',
-                name: 'Stocks',
-                label: 'STOCKS',
-                title: 'STOCKS',
-            },
-            {
                 key: 'product',
                 path: '/adm/products',
                 name: 'Productos',
                 label: 'PRODUCTOS',
                 title: 'PRODUCTOS',
+            },
+            {
+                key: 'vehicles',
+                path: '/adm/vehicles',
+                name: 'Vehiculos',
+                label: 'VEHICULOS',
+                title: 'VEHICULOS',
             },
             {
                 key: 'details',
@@ -132,6 +132,13 @@ export const menuList = [
                 title: 'COSTOS',
             },
             {
+                key: 'stocks',
+                path: '/adm/stocks',
+                name: 'Stocks',
+                label: 'STOCKS',
+                title: 'STOCKS',
+            },
+            {
                 key: 'Orders',
                 path: '/adm/orders',
                 name: 'Ordenes de Compra',
@@ -144,6 +151,13 @@ export const menuList = [
                 name: 'Criterios',
                 label: 'CRITERIOS',
                 title: 'CRITERIOS',
+            },
+            {
+                key: 'whatsapp',
+                path: '/adm/whatsapp',
+                name: 'Whatsapp',
+                label: 'WHATSAPP',
+                title: 'WHATSAPP',
             },
         ]
     },
