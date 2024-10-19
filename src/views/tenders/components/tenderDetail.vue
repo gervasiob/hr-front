@@ -552,12 +552,15 @@
                         </template>
                         <template v-if="['sku'].includes(column.dataIndex)">
                             <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
+                                <template v-if="editableData[record.key]">
+                                    {{ editableData[record.key][column.dataIndex] }}
+                                </template>
+                                <!-- <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
                                     style="margin: -5px 0;width: 120px;" @focus="focus"
                                     @change="handleChangeSku(editableData[record.key][column.dataIndex], record.key)"
                                     :options="skuList" show-search :filter-option="filterOptionName">
-                                </a-select>
+                                </a-select> -->
                                 <template v-else>
                                     {{ text }}
                                 </template>
@@ -566,7 +569,19 @@
                         <template v-if="['llanta_type'].includes(column.dataIndex)">
                             <div>
                                 <template v-if="editableData[record.key]">
-                                    {{ editableData[record.key].llanta_type }}
+                                    <a-select ref="select" v-if="editableData[record.key]"
+                                        v-model:value="editableData[record.key][column.dataIndex]"
+                                        style="margin: -5px 0;width: 160px;" @focus="focus"
+                                        @change="handleChangeDescription(editableData[record.key][column.dataIndex], record.key)"
+                                        :options="editableData[record.key][column.dataIndex].data" show-search
+                                        :filter-option="false"
+                                        :not-found-content="editableData[record.key][column.dataIndex].fetching ? undefined : null"
+                                        @search="fetchDescription(record.key, column.dataIndex)">
+                                        <template v-if="editableData[record.key][column.dataIndex].fetching"
+                                            #notFoundContent>
+                                            <a-spin size="small" />
+                                        </template>
+                                    </a-select>
                                 </template>
                                 <template v-else>
                                     {{ text }}
@@ -760,7 +775,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -776,7 +791,7 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, debounce } from 'lodash-es';
 import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -803,6 +818,7 @@ import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 import { RobotOutlined } from '@ant-design/icons-vue';
+
 
 export default {
     name: 'TenderDetail',
@@ -1150,11 +1166,52 @@ export default {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
         const filterOptionName = (input, option) => {
+            console.log('filter', input)
             if (!input || !option.hasOwnProperty('name')) {
                 return;
             }
+            console.log('option', option.name)
+            console.log('option', option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0)
             return option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
+        let lastFetchId = 0;
+        const fetchDescription = debounce((value, key, dataIndex) => {
+            console.log('fetching desc', value);
+            lastFetchId += 1;
+            const fetchId = lastFetchId;
+            editableData[key][dataIndex].data = [];
+            editableData[key][dataIndex].fetching = true;
+            fetch('https://randomuser.me/api/?results=5')
+                .then(response => response.json())
+                .then(body => {
+                    if (fetchId !== lastFetchId) {
+                        // for fetch callback order
+                        return;
+                    }
+                    const data = body.results.map(user => ({
+                        label: `${user.name.first} ${user.name.last}`,
+                        value: user.login.username,
+                    }));
+                    editableData[record.key][column.dataIndex].data = data;
+                    editableData[record.key][column.dataIndex].fetching = false;
+                });
+        }, 300);
+        const filterOptionValue = (input, option) => {
+            console.log('filter', input);
+
+            if (!input || !option.hasOwnProperty('value') || typeof option.value !== 'string') {
+                return;
+            }
+
+            // const optionValue = String(option.value);
+            const optionValue = (option.value); // Convertir el valor a cadena
+            const inputValue = input; // Convertir el valor a cadena
+
+            console.log('option', option.value);
+            console.log('option funciotn', option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0);
+
+            return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        }; // El número 300 es el delay en milisegundos
 
         const getLabelList = (value, list) => {
             console.log('value', value)
@@ -1328,6 +1385,20 @@ export default {
             const description = res.results[0].detail;  // Obtén la descripción del resultado
             const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
             editableData[key]['llanta_type'] = description;
+            editableData[key]['price_final'] = price_final;
+            console.log('handle sku', res.results[0]);
+        }
+        const handleChangeDescription = async (item, key) => {
+            console.log('desciption', item)
+
+            const desciptionItem = descriptionList.value.find((item) => item.value = item)
+            const sku = desciptionItem.name;
+            const params = {
+                code: sku,
+            }
+            const res = await getCosts(params);
+            const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
+            editableData[key]['sku'] = sku;
             editableData[key]['price_final'] = price_final;
             console.log('handle sku', res.results[0]);
         }
@@ -1904,6 +1975,9 @@ export default {
             columnsStock,
             getUserName,
             vehicleList,
+            handleChangeDescription,
+            filterOptionValue,
+            fetchDescription,
         }
     }
 }
