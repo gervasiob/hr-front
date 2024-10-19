@@ -573,18 +573,16 @@
                                         v-model:value="editableData[record.key][column.dataIndex]"
                                         style="margin: -5px 0;width: 160px;" @focus="focus"
                                         @change="handleChangeDescription(editableData[record.key][column.dataIndex], record.key)"
-                                        :options="editableData[record.key][column.dataIndex].data" show-search
-                                        :filter-option="false"
-                                        :not-found-content="editableData[record.key][column.dataIndex].fetching ? undefined : null"
-                                        @search="fetchDescription(record.key, column.dataIndex)">
-                                        <template v-if="editableData[record.key][column.dataIndex].fetching"
-                                            #notFoundContent>
+                                        :options="editableData.data" :filter-option="false" show-search allow-clear
+                                        :not-found-content="editableData.fetching ? undefined : null"
+                                        @search="(value) => handleSearchVehicles(value)">
+                                        <template v-if="editableData.fetching" #notFoundContent>
                                             <a-spin size="small" />
                                         </template>
                                     </a-select>
                                 </template>
                                 <template v-else>
-                                    {{ text }}
+                                    {{ getLabelList(text, vehicleList) }}
                                 </template>
                             </div>
                         </template>
@@ -937,6 +935,10 @@ export default {
             },
         });
         const edit = key => {
+            editableData.data = vehicleList.value.map((item) => ({
+                label: item.name,
+              value: item.value,  
+            }));
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
 
         };
@@ -1166,36 +1168,33 @@ export default {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
         const filterOptionName = (input, option) => {
-            console.log('filter', input)
             if (!input || !option.hasOwnProperty('name')) {
                 return;
             }
-            console.log('option', option.name)
-            console.log('option', option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0)
             return option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
-        let lastFetchId = 0;
-        const fetchDescription = debounce((value, key, dataIndex) => {
-            console.log('fetching desc', value);
-            lastFetchId += 1;
-            const fetchId = lastFetchId;
-            editableData[key][dataIndex].data = [];
-            editableData[key][dataIndex].fetching = true;
-            fetch('https://randomuser.me/api/?results=5')
-                .then(response => response.json())
-                .then(body => {
-                    if (fetchId !== lastFetchId) {
-                        // for fetch callback order
-                        return;
-                    }
-                    const data = body.results.map(user => ({
-                        label: `${user.name.first} ${user.name.last}`,
-                        value: user.login.username,
-                    }));
-                    editableData[record.key][column.dataIndex].data = data;
-                    editableData[record.key][column.dataIndex].fetching = false;
-                });
+        const handleSearchVehicles = debounce((val) => {
+            fetchDescription(val);
         }, 300);
+
+        const fetchDescription = async (value) => {
+            editableData.data = [];
+            editableData.fetching = true;
+            const params = {
+                model__icontains: value,
+            }
+            try {
+                const res = await getVehiclesList(params);
+                editableData.data = res.map(item => ({
+                    label: item.name, // Mostrar el nombre en el select
+                    value: item.value, // Pero el modelo se mantiene con el ID o value
+                }));
+                editableData.fetching = false;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                editableData.fetching = false;
+            }
+        };
         const filterOptionValue = (input, option) => {
             console.log('filter', input);
 
@@ -1684,7 +1683,6 @@ export default {
             }
         }
         const handleEdit = (field = null) => {
-            console.log('field', field)
             if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E') {
                 return false;
             }
@@ -1864,7 +1862,6 @@ export default {
             }
             return id;
         }
-
         watch(
             () => route.path,
             (_newValue) => {
@@ -1978,6 +1975,7 @@ export default {
             handleChangeDescription,
             filterOptionValue,
             fetchDescription,
+            handleSearchVehicles,
         }
     }
 }
