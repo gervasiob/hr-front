@@ -1,6 +1,14 @@
 import { VENDOR_TYPE } from "@/common/common";
 export const modalFields = [
     {
+        name: 'product_feedback',
+        label: 'Calificación',
+        type: 'rate',
+        desc: ['Muy Malo', 'Malo', 'Regular', 'Bueno', 'Muy Bueno'],
+        color: 'red',
+        default: null,
+    },
+    {
         name: 'social_name',
         label: 'Razón Social',
         type: 'input',
