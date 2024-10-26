@@ -575,14 +575,15 @@
                                         @change="handleChangeDescription(editableData[record.key][column.dataIndex], record.key)"
                                         :options="editableData.data" :filter-option="false" show-search allow-clear
                                         :not-found-content="editableData.fetching ? undefined : null"
-                                        @search="(value) => handleSearchVehicles(value)">
+                                        @search="(value) => handleSearchDescription(value)">
                                         <template v-if="editableData.fetching" #notFoundContent>
                                             <a-spin size="small" />
                                         </template>
                                     </a-select>
                                 </template>
                                 <template v-else>
-                                    {{ getLabelList(text, vehicleList) }}
+                                    {{ text }}
+                                    {{ getLabelList(text, descriptionList) }}
                                 </template>
                             </div>
                         </template>
@@ -803,6 +804,7 @@ import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
 import { getCostStock } from '@/api/stocks/stocks.js';
 import { getVehiclesList } from '@/api/vehicles/vehicles.js';
+import { getProduct } from '@/api/product/product.js';
 
 import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
@@ -816,6 +818,7 @@ import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 import { RobotOutlined } from '@ant-design/icons-vue';
+import { DescriptionsItem } from 'ant-design-vue';
 
 
 export default {
@@ -869,14 +872,6 @@ export default {
         const llantaTypeDescription = ref('');
         const userRoles = localStorage.getItem('roles');
         const dataStock = ref([]);
-        // const optionsDaytonas = DAYTONAS.map(daytona => ({
-        //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
-        //     value: daytona.idClaimsProvider
-        // }));
-        // const optionsDaytonas = sucursalList.map(daytona => ({
-        //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
-        //     value: daytona.idClaimsProvider
-        // }));
         const formTenderDetail = ref({
             not_quote: false,
             delivery_time: '',
@@ -935,10 +930,7 @@ export default {
             },
         });
         const edit = key => {
-            editableData.data = vehicleList.value.map((item) => ({
-                label: item.name,
-              value: item.value,  
-            }));
+            editableData.data = [];
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
 
         };
@@ -1040,7 +1032,6 @@ export default {
 
             quoteData.value.total_quoted = parseFloat(totalQuoted + parseFloat(formTenderDetail.value.freight)).toFixed(2);
         }
-
         const fetchTenderData = async (id) => {
             try {
                 const response = await getTendersIndex({ claim_id: id });
@@ -1159,7 +1150,6 @@ export default {
             const state = TENDER_STATES.find(s => s.value === stateValue);
             return state ? state.color : 'default';
         };
-
         const getStateLabel = (stateValue) => {
             const state = TENDER_STATES.find(s => s.value === stateValue);
             return state ? state.label : stateValue;
@@ -1173,7 +1163,7 @@ export default {
             }
             return option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
-        const handleSearchVehicles = debounce((val) => {
+        const handleSearchDescription = debounce((val) => {
             fetchDescription(val);
         }, 300);
 
@@ -1181,15 +1171,18 @@ export default {
             editableData.data = [];
             editableData.fetching = true;
             const params = {
-                model__icontains: value,
+                name__icontains: value,
             }
             try {
-                const res = await getVehiclesList(params);
-                editableData.data = res.map(item => ({
+                const res = await getProduct(params);
+                editableData.data = res.results.map(item => ({
                     label: item.name, // Mostrar el nombre en el select
-                    value: item.value, // Pero el modelo se mantiene con el ID o value
+                    value: item.name, // Pero el modelo se mantiene con el ID o value
+                    sku: item.sku,
                 }));
+                descriptionList.value = editableData.data;
                 editableData.fetching = false;
+                return editableData.data;
             } catch (error) {
                 console.error('Error fetching data:', error);
                 editableData.fetching = false;
@@ -1197,11 +1190,9 @@ export default {
         };
         const filterOptionValue = (input, option) => {
             console.log('filter', input);
-
             if (!input || !option.hasOwnProperty('value') || typeof option.value !== 'string') {
                 return;
             }
-
             // const optionValue = String(option.value);
             const optionValue = (option.value); // Convertir el valor a cadena
             const inputValue = input; // Convertir el valor a cadena
@@ -1210,7 +1201,7 @@ export default {
             console.log('option funciotn', option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0);
 
             return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
-        }; // El número 300 es el delay en milisegundos
+        };
 
         const getLabelList = (value, list) => {
             console.log('value', value)
@@ -1234,7 +1225,11 @@ export default {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe completar datos de modelo de la rueda y sus medidas' }));
                 return;
             }
-
+            //chequear si todos los proveedores son Neumasur
+            if (value === 'A') {
+                const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
+                dataSource.value.vendor_id === neumasur.value;
+            }
             isLoading.value = true;
             try {
                 // Validar el formulario
@@ -1389,9 +1384,10 @@ export default {
         }
         const handleChangeDescription = async (item, key) => {
             console.log('desciption', item)
-
-            const desciptionItem = descriptionList.value.find((item) => item.value = item)
-            const sku = desciptionItem.name;
+            const desciptionItem = await fetchDescription(item);
+            // const desciptionItem = descriptionList.value.find((item) => item.value = item)
+            const sku = desciptionItem[0].sku;
+            console.log('description item', desciptionItem)
             const params = {
                 code: sku,
             }
@@ -1399,7 +1395,7 @@ export default {
             const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
             editableData[key]['sku'] = sku;
             editableData[key]['price_final'] = price_final;
-            console.log('handle sku', res.results[0]);
+            console.log('handle des res', res.results[0]);
         }
         const handleModalCancel = () => {
             console.log('handle Cancel Modal');
@@ -1438,6 +1434,7 @@ export default {
                 quantity: 1,
                 total: 0,
             };
+            editableData.data = [];
             dataSource.value.push(newData);
             editableData[newKey] = cloneDeep(newData);
         };
@@ -1821,7 +1818,14 @@ export default {
                             // Actualizar los valores de la respuesta
                             if (dataSourceItem) {
                                 dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
-
+                                if (!dataSourceItem.noStock) {
+                                    console.log('no stock', false)
+                                    const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
+                                    if (neumasur) {
+                                        dataSourceItem.vendor_id = neumasur.value;
+                                        console.log('neumasur', neumasur)
+                                    }
+                                }
                                 return {
                                     sku: stockData.sku,
                                     producto: stockData.producto,
@@ -1975,7 +1979,7 @@ export default {
             handleChangeDescription,
             filterOptionValue,
             fetchDescription,
-            handleSearchVehicles,
+            handleSearchDescription,
         }
     }
 }
