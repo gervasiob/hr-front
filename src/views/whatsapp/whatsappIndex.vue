@@ -1,21 +1,16 @@
 <template>
-  <!-- <div class="filters">
+  <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
 
       <a-row :gutter="24">
         <a-col :span="8">
-          <a-form-item label="Modelo" name="model">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.model__icontains" allowClear
-              show-search :filter-option="filterOption" style="width: 300px;">
-              <a-select-option v-for="(item, index) in vehicleList" :key="index" :value="item.name" :label="item.name">
-                {{ item.name }}
-              </a-select-option>
-            </a-select>
+          <a-form-item label="SKU" name="sku">
+            <a-input v-model:value="filterInputs.sku__icontains" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="8">
-          <a-form-item label="Marca" name="brand">
-            <a-input v-model:value="filterInputs.brand__icontains" allowClear />
+          <a-form-item label="Nro Teléfono" name="recipient_number">
+            <a-input v-model:value="filterInputs.recipient_number__icontains" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="8">
@@ -24,7 +19,7 @@
         </a-col>
       </a-row>
     </a-form>
-  </div> -->
+  </div>
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
