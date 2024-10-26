@@ -3,17 +3,26 @@
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
 
       <a-row :gutter="24">
-        <a-col :span="8">
+        <a-col :span="6">
           <a-form-item label="SKU" name="sku">
             <a-input v-model:value="filterInputs.sku__icontains" allowClear />
           </a-form-item>
         </a-col>
-        <a-col :span="8">
+        <a-col :span="6">
           <a-form-item label="Nro Teléfono" name="recipient_number">
             <a-input v-model:value="filterInputs.recipient_number__icontains" allowClear />
           </a-form-item>
         </a-col>
-        <a-col :span="8">
+        <a-col :span="6">
+          <a-form-item label="Confirmado" name="confirmed">
+            <a-select v-model:value="filterInputs.confirmed" allowClear show-search>
+              <a-select-option :value="true">Sí</a-select-option>
+              <a-select-option :value="false">No</a-select-option>
+             
+            </a-select>
+          </a-form-item>
+        </a-col>
+        <a-col :span="6">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
