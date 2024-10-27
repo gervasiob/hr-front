@@ -32,7 +32,8 @@
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['sku', 'name', 'group', 'type', 'quantity', 'amount'].includes(column.dataIndex)">
+      <template
+        v-if="['sku', 'name', 'group', 'type', 'quantity', 'amount', 'minimum_stock'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -205,8 +206,9 @@ export default {
     const editableData = reactive({});
     const edit = key => {
       const data = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
+      const vendorsIds = data.vendors.map((item) => { return item.id })
+      data.vendors = vendorsIds;
       editableData[key] = data;
-
     };
     const save = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
@@ -340,6 +342,7 @@ export default {
 
     const getVendorName = (input) => {
       let vendor = input;
+      console.log('get vendor name input', input)
       if (vendor) {
         return vendor.social_name;
       }

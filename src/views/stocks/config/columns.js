@@ -17,8 +17,8 @@ export const tableColumns = [
         dataIndex: 'stock',
         sorter: (a, b) => a.stock - b.stock,
     },
-    // {
-    //     title: 'Operation',
-    //     dataIndex: 'operation',     
-    // },
+    {
+        title: 'Operation',
+        dataIndex: 'operation',     
+    },
 ];
