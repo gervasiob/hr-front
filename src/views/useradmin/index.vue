@@ -64,7 +64,7 @@
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
-      
+
           </template>
         </div>
       </template>
@@ -266,16 +266,41 @@ export default {
         ...data,
         roles: rolesParam,
       }
-      if (data.id > 0) {
+      try {
 
-        updateUsers(data.id, params).then(() => {
-          fetchData();
-        });
-      } else {
-        const { id, ...dataWithoutId } = params;
-        addUsers(dataWithoutId).then(() => {
-          fetchData();
-        });
+
+        let fullParams = params;
+        if (data.id > 0) {
+          let { id, ...dataWithoutId } = params;
+
+          if (params.password === "" || !params.password) {
+            let { id, password, ...dataWithoutId } = params;
+            fullParams = dataWithoutId;
+          } else {
+            let { id, ...dataWithoutId } = params;
+            fullParams = dataWithoutId;
+          }
+          updateUsers(data.id, fullParams).then(() => {
+            fetchData();
+          })
+        } else {
+          let { id, ...dataWithoutId } = params;
+          if (params.password === "" || !params.password) {
+            let { id, password, ...dataWithoutId } = params;
+            fullParams = dataWithoutId;
+          } else {
+            let { id, ...dataWithoutId } = params;
+            fullParams = dataWithoutId;
+          }
+          addUsers(dataWithoutId).then(() => {
+            fetchData();
+          });
+        }
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+        current.value = 1;
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
     };
     const cancel = (key) => {
@@ -363,7 +388,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,

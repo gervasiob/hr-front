@@ -161,12 +161,13 @@ const otherRoutes = [
         component: () => import('@/views/stocks/stocksIndex.vue'),
         meta: { roles: ['Admin'] },
     },
-    // {
-    //     key: 'products',
-    //     name: 'productIndex',
-    //     path: '/adm/products',
-    //     component: () => import('@/views/product/productIndex.vue'),
-    // },
+    {
+        key: 'products',
+        name: 'productIndex',
+        path: '/adm/products',
+        component: () => import('@/views/product/productIndex.vue'),
+        meta: { roles: basicAuth },
+    },
     {
         key: 'details',
         name: 'detailsIndex',
@@ -197,6 +198,20 @@ const otherRoutes = [
         meta: { roles: ['Admin'] },
     },
     {
+        key: 'vehicles',
+        name: 'vehiclesIndex',
+        path: '/adm/vehicles',
+        component: () => import('@/views/vehicles/vehiclesIndex.vue'),
+        meta: { roles: ['Admin'] },
+    },
+    {
+        key: 'whatsapp',
+        name: 'whatsappIndex',
+        path: '/adm/whatsapp',
+        component: () => import('@/views/whatsapp/whatsappIndex.vue'),
+        meta: { roles: ['Admin'] },
+    },
+    {
         key: 'logout',
         path: '/logout',
         name: 'Logout',
@@ -222,8 +237,7 @@ export const router = createRouter({
 });
 router.beforeEach(async (to, from, next) => {
     console.log('to', to)
-    if ( to.path === '/login')
-    {
+    if (to.path === '/login') {
         next();
         return;
     }

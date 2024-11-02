@@ -1,6 +1,14 @@
 import { VENDOR_TYPE } from "@/common/common";
 export const modalFields = [
     {
+        name: 'product_feedback',
+        label: 'Calificación',
+        type: 'rate',
+        desc: ['Muy Malo', 'Malo', 'Regular', 'Bueno', 'Muy Bueno'],
+        color: 'red',
+        default: null,
+    },
+    {
         name: 'social_name',
         label: 'Razón Social',
         type: 'input',
@@ -76,6 +84,9 @@ export const modalFields = [
         label: 'Dirección',
         type: 'input',
         default: null,
+        rules: {
+            address: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
     {
         name: 'city',

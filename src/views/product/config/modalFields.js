@@ -1,67 +1,70 @@
+import { GROUPS } from "@/common/common";
+import { getVendorList } from "@/api/vendors/vendors";
+const vendorList = await getVendorList();
 export const modalFields = [
     {
-        name: 'name',
-        label: 'Plataforma',
+        name: 'sku',
+        label: 'SKU',
         type: 'input',
         default: '',
         rules: {
-            name: [{ required: true, message: 'Por favor ingrese la plataforma', trigger: 'change', }]
+            sku: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
         }
     },
     {
-        name: 'url',
-        label: 'URL',
+        name: 'name',
+        label: 'Descripción',
+        type: 'input',
+        default: '',
+        rules: {
+            name: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
+    },
+    {
+        name: 'group',
+        label: 'Grupo',
+        default: 'Neumático',
+        type: 'select',
+        options: GROUPS,
+        rules: {
+            group: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
+    },
+    {
+        name: 'type',
+        label: 'Tipo',
         type: 'input',
         default: null,
     },
     {
-        name: 'base_url',
-        label: 'Base URL',
-        type: 'input',
-        default: null,
-    },
-    {
-        name: 'user',
-        label: 'Usuario',
-        type: 'input',
-        default: null,
-    },
-    {
-        name: 'password',
-        label: 'Password',
-        type: 'input',
-        default: null,
-    },
-    {
-        name: 'token',
-        label: 'Token',
-        type: 'input',
-        default: null,
-    },
-    {
-        name: 'fee',
-        label: 'Fee',
+        name: 'quantity',
+        label: 'Cantidad',
         type: 'input',
         default: 0,
-        rules: {
-            fee: [{ required: true, message: 'Por favor un valor numerico. Entre 0 y 1.000', trigger: 'change', },
-                {
-                    min: 0,
-                    max: 1000,
-                    message: 'Debe ser un valor entre 0 y 1.000',
-                    trigger: 'blur',
-                },
-            ]
-        }
     },
     {
-        name: 'cookie',
-        label: 'Cookie',
+        name: 'minimum_stock',
+        label: 'Stock Mínimo',
+        type: 'input',
+        default: 0,
+    },
+    {
+        name: 'available_stock',
+        label: 'Stock Disponible',
+        type: 'input',
+        default: 0,
+    },
+    {
+        name: 'amount',
+        label: 'Precio',
+        type: 'input',
+        default: 0,
+    },
+    {
+        name: 'vendors',
+        label: 'Proveedores',
         type: 'select',
-        default: false,
-        options: [
-            { name: 'Sí', value: true },
-            { name: 'No', value: false },
-        ],
+        default: null,
+        options: vendorList,
     },
 ];

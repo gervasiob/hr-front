@@ -16,9 +16,10 @@
 
 
 
-        <a-col :span="6" :offset="6" style="text-align: right">
+        <a-col :span="8" :offset="4" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
+          <a-button  @click="() => onGetStock({skus: []})">Actualizar Stock</a-button>
         </a-col>
       </a-row>
     </a-form>
@@ -43,16 +44,16 @@
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
-            <a-typography-link @click="save(record.key)">Save</a-typography-link>
+            <!-- <a-typography-link @click="save(record.key)">Save</a-typography-link>
             <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
               <a>Cancel</a>
-            </a-popconfirm>
+            </a-popconfirm> -->
           </span>
           <span v-else>
-            <a @click="edit(record.key)">Edit</a>
-            <!-- <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
-              <a>Eliminar</a>
-            </a-popconfirm> -->
+            <!-- <a @click="edit(record.key)">Edit</a> -->
+            <a-popconfirm v-if="dataSource.length" title="Confirma actualización de stock?" @confirm="onGetStock({skus: [dataSource[record.key]['sku']]})">
+              <a>Actualizar Stock</a>
+            </a-popconfirm>
           </span>
         </div>
       </template>
@@ -65,7 +66,7 @@ import { reactive, ref, onMounted, computed } from 'vue';
 import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getStocks, addStocks, updateStocks, deleteStocks, getCostStock } from '@/api/stocks/stocks.js';
+import { getStocks, addStocks, updateStocks, deleteStocks, getCostStock, getStockHinet } from '@/api/stocks/stocks.js';
 export default {
   name: 'StocksList',
 
@@ -209,6 +210,20 @@ export default {
       // Esperar a que el DOM se actualice y luego desplazarse
 
     };
+    const onGetStock = async (params = {}) => {
+      const fullParams = {
+        ...params,
+      }
+      try {
+        console.log('params', params)
+        const response = await getStockHinet(fullParams);
+        fetchData();
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Stock Actualizado por Hinet' }));
+      } catch (error) {
+        console.error("Error fetching stock:", error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
+      }
+    }
     // const onDelete = key => {
     //   const data = dataSource.value.filter(item => key === item.key)[0];
     //   if (data.id) {
@@ -230,7 +245,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,
@@ -245,6 +259,7 @@ export default {
       total,
       pagination,
       handleTableChange,
+      onGetStock,
     }
   }
 }

@@ -55,11 +55,19 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Modelo" name="vehicle">
-                <a-input v-model:value="formTenderDetail.tender_data.vehicle">
+                <!-- <a-input v-model:value="formTenderDetail.tender_data.vehicle">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
-                </a-input>
+                </a-input> -->
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
+                    v-model:value="formTenderDetail.tender_data.vehicle" allowClear show-search
+                    :filter-option="filterOption" @change="handleChangeAseguradora">
+                    <a-select-option v-for="(item, index) in vehicleList" :key="index" :value="item.name"
+                        :label="item.name">
+                        {{ item.name }}
+                    </a-select-option>
+                </a-select>
             </a-form-item>
             <a-form-item label="Año Vehículo" name="vehicle_year">
                 <a-input v-model:value="formTenderDetail.tender_data.vehicle_year">
@@ -157,33 +165,46 @@
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.domain" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                    <a-input v-model:value="formTenderDetail.tender_data.domain" :readonly="handleEdit(1)" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Chasis" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.chasis" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                    <a-input v-model:value="formTenderDetail.tender_data.chasis" :readonly="handleEdit(1)" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Marca" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.brand" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit() }">
+                    <a-input v-model:value="formTenderDetail.tender_data.brand" :readonly="handleEdit()" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                    <!-- <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" /> -->
+                    <div v-if="!handleEdit(1)">
+                        <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
+                            v-model:value="formTenderDetail.tender_data.vehicle" allowClear show-search
+                            :filter-option="filterOption" @change="handleChangeAseguradora" :readonly="handleEdit(1)">
+                            <a-select-option v-for="(item, index) in vehicleList" :key="index" :value="item.name"
+                                :label="item.name">
+                                {{ item.name }}
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                    <div v-else>
+                        <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" />
+                    </div>
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Año Vehículo" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.vehicle_year" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit() }">
+                    <a-input v-model:value="formTenderDetail.tender_data.vehicle_year" :readonly="handleEdit()" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Fecha" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit }">
-                    <a-input v-model:value="formTenderDetail.tender_data.claim_date" :readonly="handleEdit" />
+                <div class="item-d" :class="{ 'no-background': handleEdit() }">
+                    <a-input v-model:value="formTenderDetail.tender_data.claim_date" :readonly="handleEdit()" />
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Plataforma" class="a-descriptions-item">
@@ -196,28 +217,28 @@
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
                 <a-descriptions-item label="Nombre Cliente">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.name" :readonly="handleEdit" />
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.tender_data.name" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Teléfono">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit" />
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Localidad">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.city" :readonly="handleEdit" />
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.tender_data.city" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Provincia">
-                    <div class="item-d" :class="{ 'no-background': handleEdit }">
-                        <a-input v-model:value="formTenderDetail.tender_data.province" :readonly="handleEdit" />
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.tender_data.province" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Gestor">
                     <template v-if="userRoles.includes('Admin') && formTenderDetail.quote_state !== 'N'">
-                        <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <div class="item-d" :class="{ 'no-background': handleEdit() }">
                             <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.user" allowClear
                                 show-search :filter-option="filterOption">
                                 <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -228,7 +249,7 @@
                         </div>
                     </template>
                     <template v-else-if="formTenderDetail.quote_state === 'N'">
-                        <div class="item-d" :class="{ 'no-background': handleEdit }">
+                        <div class="item-d" :class="{ 'no-background': handleEdit() }">
                             <a-select placeholder="Ingrese su búsqueda" v-model:value="formTenderDetail.user" allowClear
                                 show-search :filter-option="filterOption">
                                 <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -305,7 +326,7 @@
                                 <div class="form-item-container">
                                     <span>Flete</span>
                                     <a-input v-model:value="formTenderDetail.freight" style="width: 100%" allow-clear
-                                        show-search></a-input>
+                                        show-search @change="calculateTotalQuoted" type="number"></a-input>
 
                                 </div>
                             </a-col>
@@ -319,7 +340,7 @@
                             </a-col>
                         </a-row>
 
-                        <div style="align-content: center; padding: 2%">
+                        <div style="align-content: center; padding: 2%; display: none;">
                             <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn"
                                 style="margin-bottom: 8px" @click="handleDetailAdd">AGREGAR
                                 ITEM</a-button>
@@ -442,7 +463,7 @@
                                         <RobotOutlined class="ia-check" v-show="iaCheck.includes('brand')" />
                                     </div>
                                 </div>
-                                <div class="form-item-container">
+                                <!-- <div class="form-item-container">
                                     <span>Modelo Neumático</span>
                                     <div class="input-select">
                                         <a-select v-model:value="formTenderDetail.tire_model" style="width: 100%"
@@ -450,7 +471,7 @@
                                             :filter-option="filterOption"></a-select>
                                         <RobotOutlined class="ia-check" v-show="iaCheck.includes('modelo_rueda')" />
                                     </div>
-                                </div>
+                                </div> -->
                                 <div class="form-item-container">
                                     <span>Tipo de Llanta</span>
                                     <div class="input-select">
@@ -510,17 +531,6 @@
 
                 </div>
 
-
-                <!-- Total -->
-
-                <div class="total-item">
-                    <span>TOTAL A ADJUDICAR: {{
-                        formatCurrency(quoteData.total_quoted) }}</span>
-
-                    <RobotOutlined :style="{ marginLeft: '10px', color: 'white' }"
-                        v-show="iaCheck.includes('total_quoted')" />
-
-                </div>
                 <div v-if="formTenderDetail.quote_state !== 'U'">
                     <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn"
                         style="margin-bottom: 8px" @click="handleAdd">AGREGAR
@@ -542,12 +552,15 @@
                         </template>
                         <template v-if="['sku'].includes(column.dataIndex)">
                             <div>
-                                <a-select ref="select" v-if="editableData[record.key]"
+                                <template v-if="editableData[record.key]">
+                                    {{ editableData[record.key][column.dataIndex] }}
+                                </template>
+                                <!-- <a-select ref="select" v-if="editableData[record.key]"
                                     v-model:value="editableData[record.key][column.dataIndex]"
                                     style="margin: -5px 0;width: 120px;" @focus="focus"
                                     @change="handleChangeSku(editableData[record.key][column.dataIndex], record.key)"
                                     :options="skuList" show-search :filter-option="filterOptionName">
-                                </a-select>
+                                </a-select> -->
                                 <template v-else>
                                     {{ text }}
                                 </template>
@@ -556,10 +569,21 @@
                         <template v-if="['llanta_type'].includes(column.dataIndex)">
                             <div>
                                 <template v-if="editableData[record.key]">
-                                    {{ editableData[record.key].llanta_type }}
+                                    <a-select ref="select" v-if="editableData[record.key]"
+                                        v-model:value="editableData[record.key][column.dataIndex]"
+                                        style="margin: -5px 0;width: 160px;" @focus="focus"
+                                        @change="handleChangeDescription(editableData[record.key][column.dataIndex], record.key)"
+                                        :options="editableData.data" :filter-option="false" show-search allow-clear
+                                        :not-found-content="editableData.fetching ? undefined : null"
+                                        @search="(value) => handleSearchDescription(value)">
+                                        <template v-if="editableData.fetching" #notFoundContent>
+                                            <a-spin size="small" />
+                                        </template>
+                                    </a-select>
                                 </template>
                                 <template v-else>
                                     {{ text }}
+                                    {{ getLabelList(text, descriptionList) }}
                                 </template>
                             </div>
                         </template>
@@ -636,11 +660,13 @@
                         </template>
                         <template v-else-if="column.dataIndex === 'total'">
                             <div style="text-align: right;">
-                                {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
-                                formTenderDetail.fee /
-                                100))
-                                }}
+                                {{ formatCurrency(text) }}
+                                <!-- {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
+                                    formTenderDetail.fee /
+                                    100) + parseFloat(formTenderDetail.freight).toFixed(2))
+                                }} -->
                             </div>
+
                         </template>
 
                         <template v-else-if="column.dataIndex === 'operation'">
@@ -667,6 +693,16 @@
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
+                <!-- Total -->
+
+                <div class="total-item">
+                    <span>TOTAL A ADJUDICAR: {{
+                        formatCurrency(quoteData.total_quoted) }}</span>
+
+                    <RobotOutlined :style="{ marginLeft: '10px', color: 'white' }"
+                        v-show="iaCheck.includes('total_quoted')" />
+
+                </div>
                 <div class="btn-check">
                     <a-button type="primary" @click="handleGetStock()" :loading="isLoading">Verificar Stock</a-button>
                     <div class="stock-table" v-show="dataStock.length > 0">
@@ -738,7 +774,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -754,7 +790,7 @@
 </template>
 
 <script>
-import { cloneDeep } from 'lodash-es';
+import { cloneDeep, debounce } from 'lodash-es';
 import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
@@ -767,6 +803,8 @@ import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
 import { getCostStock } from '@/api/stocks/stocks.js';
+import { getVehiclesList } from '@/api/vehicles/vehicles.js';
+import { getProduct } from '@/api/product/product.js';
 
 import { tableColumns } from '../config/columnsDetail.js';
 import { tableQuoteColumns } from '../config/columnsQuote.js';
@@ -774,12 +812,14 @@ import { tableStockColumns } from '../config/columnsStock.js';
 
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
-    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, ASEGURADORAS, GROUPS,
+    TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, GROUPS,
 } from '@/common/common';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 import { RobotOutlined } from '@ant-design/icons-vue';
+import { DescriptionsItem } from 'ant-design-vue';
+
 
 export default {
     name: 'TenderDetail',
@@ -832,14 +872,6 @@ export default {
         const llantaTypeDescription = ref('');
         const userRoles = localStorage.getItem('roles');
         const dataStock = ref([]);
-        // const optionsDaytonas = DAYTONAS.map(daytona => ({
-        //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
-        //     value: daytona.idClaimsProvider
-        // }));
-        // const optionsDaytonas = sucursalList.map(daytona => ({
-        //     label: `${daytona.businessName} - ${daytona.completeAddress}`,
-        //     value: daytona.idClaimsProvider
-        // }));
         const formTenderDetail = ref({
             not_quote: false,
             delivery_time: '',
@@ -883,6 +915,7 @@ export default {
         const editableQuoteData = reactive({});
         const selectedOption = ref(null);
         const platformList = ref([]);
+        const vehicleList = ref([]);
         const isModalVisible = ref(false);
         const currentImageIndex = ref(0);
         const VNodes = defineComponent({
@@ -897,6 +930,7 @@ export default {
             },
         });
         const edit = key => {
+            editableData.data = [];
             editableData[key] = cloneDeep(dataSource.value.filter(item => key === item.key)[0]);
 
         };
@@ -912,7 +946,8 @@ export default {
                 return errorMessage.value = 'Debe existir un Sku, un grupo, un precio unitario, una cantidad y seleccionar un Proveedor';
             }
             Object.assign(record, editableData[key]);
-            record.total = record.price * record.quantity;
+            record.total = record.price_final / 1.21 * record.quantity * (1 + parseFloat(formTenderDetail.value.fee) / 100);
+
             delete editableData[key];
             calculateTireType();
             handleGetStock();
@@ -970,7 +1005,7 @@ export default {
             if (tireValue > 0) {
                 freight = formTenderDetail.value.freight;
                 fee = formTenderDetail.value.fee;
-                tireValueTotal = (parseFloat(tireValue) + parseFloat(freight)) * (1 + (fee / 100));
+                tireValueTotal = (parseFloat(tireValue)) * (1 + (fee / 100) + parseFloat(freight));
             }
             // Actualizar
 
@@ -987,13 +1022,16 @@ export default {
         }
         const calculateTotalQuoted = () => {
             let totalQuoted = 0;
-            dataQuoteSource.value.map((item) => {
-
-                totalQuoted += parseFloat(item.Llanta) + parseFloat(item.Neumatico);
+            dataSource.value.map((item) => {
+                if (item.total >= 0) {
+                    console.log('item total', item.total)
+                    totalQuoted += parseFloat(item.total);
+                }
             })
-            quoteData.value.total_quoted = totalQuoted;
-        }
+            console.log('total_quoted', totalQuoted)
 
+            quoteData.value.total_quoted = parseFloat(totalQuoted + parseFloat(formTenderDetail.value.freight)).toFixed(2);
+        }
         const fetchTenderData = async (id) => {
             try {
                 const response = await getTendersIndex({ claim_id: id });
@@ -1015,6 +1053,7 @@ export default {
                             ...item,
                             key: index,
                             noStock: false,
+                            total: item.total ? item.total : 0,
                         }));
                     }
                 } else {
@@ -1111,7 +1150,6 @@ export default {
             const state = TENDER_STATES.find(s => s.value === stateValue);
             return state ? state.color : 'default';
         };
-
         const getStateLabel = (stateValue) => {
             const state = TENDER_STATES.find(s => s.value === stateValue);
             return state ? state.label : stateValue;
@@ -1124,6 +1162,45 @@ export default {
                 return;
             }
             return option.name.toLowerCase().indexOf(input.toLowerCase()) >= 0;
+        };
+        const handleSearchDescription = debounce((val) => {
+            fetchDescription(val);
+        }, 300);
+
+        const fetchDescription = async (value) => {
+            editableData.data = [];
+            editableData.fetching = true;
+            const params = {
+                name__icontains: value,
+            }
+            try {
+                const res = await getProduct(params);
+                editableData.data = res.results.map(item => ({
+                    label: item.name, // Mostrar el nombre en el select
+                    value: item.name, // Pero el modelo se mantiene con el ID o value
+                    sku: item.sku,
+                }));
+                descriptionList.value = editableData.data;
+                editableData.fetching = false;
+                return editableData.data;
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                editableData.fetching = false;
+            }
+        };
+        const filterOptionValue = (input, option) => {
+            console.log('filter', input);
+            if (!input || !option.hasOwnProperty('value') || typeof option.value !== 'string') {
+                return;
+            }
+            // const optionValue = String(option.value);
+            const optionValue = (option.value); // Convertir el valor a cadena
+            const inputValue = input; // Convertir el valor a cadena
+
+            console.log('option', option.value);
+            console.log('option funciotn', option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0);
+
+            return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
 
         const getLabelList = (value, list) => {
@@ -1148,7 +1225,11 @@ export default {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe completar datos de modelo de la rueda y sus medidas' }));
                 return;
             }
-
+            //chequear si todos los proveedores son Neumasur
+            if (value === 'A') {
+                const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
+                dataSource.value.vendor_id === neumasur.value;
+            }
             isLoading.value = true;
             try {
                 // Validar el formulario
@@ -1171,6 +1252,7 @@ export default {
                 const details = dataSource.value.map((item) => ({
                     ...item,
                     po: item.po || false,
+                    total: item.total ? item.total : 0,
                     price_oc: parseFloat(item.price_final / 1.21 * (1 + formTenderDetail.value.fee / 100)).toFixed(2),
                 }));
 
@@ -1280,6 +1362,7 @@ export default {
         const onDelete = key => {
             dataSource.value = dataSource.value.filter(item => item.key !== key);
             calculateTireType();
+            calculateTotalQuoted();
         };
         const onDeleteQuote = key => {
             dataQuoteSource.value = dataQuoteSource.value.filter(item => item.key !== key);
@@ -1298,6 +1381,21 @@ export default {
             editableData[key]['llanta_type'] = description;
             editableData[key]['price_final'] = price_final;
             console.log('handle sku', res.results[0]);
+        }
+        const handleChangeDescription = async (item, key) => {
+            console.log('desciption', item)
+            const desciptionItem = await fetchDescription(item);
+            // const desciptionItem = descriptionList.value.find((item) => item.value = item)
+            const sku = desciptionItem[0].sku;
+            console.log('description item', desciptionItem)
+            const params = {
+                code: sku,
+            }
+            const res = await getCosts(params);
+            const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
+            editableData[key]['sku'] = sku;
+            editableData[key]['price_final'] = price_final;
+            console.log('handle des res', res.results[0]);
         }
         const handleModalCancel = () => {
             console.log('handle Cancel Modal');
@@ -1336,6 +1434,7 @@ export default {
                 quantity: 1,
                 total: 0,
             };
+            editableData.data = [];
             dataSource.value.push(newData);
             editableData[newKey] = cloneDeep(newData);
         };
@@ -1385,6 +1484,13 @@ export default {
                 console.log('error in get platform list', error)
             }
         }
+        const getVehiclesListData = async () => {
+            try {
+                vehicleList.value = await getVehiclesList();
+            } catch (error) {
+                console.log('error in get vehicle list', error)
+            }
+        }
         const getDescriptionListData = async () => {
             try {
                 const res = await getDescriptionList();
@@ -1429,6 +1535,7 @@ export default {
             getDescriptionListData();
             getSkuListData();
             getAssurnanceListData();
+            getVehiclesListData();
             if (tenderId.value) {
                 console.log('edit')
                 type.value = 'Edit';
@@ -1462,6 +1569,7 @@ export default {
             }
         });
         const handleGetCost = async () => {
+            console.log('handle get cost')
             isLoadingCost.value = true;
             error.value = null;
             newCost.value = { spare_tire_amount: [] };
@@ -1485,6 +1593,7 @@ export default {
                 if (dataSource.value.find((item) => item.sku === skuN)) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Neumático SKU ya existente N°: ' + skuN }));
                 } else {
+                    let total = newCost.value.spare_tire_amounts[0].cost_amount / 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
                     dataSource.value.push({
                         type: 'Neumático',
                         key: newKey,
@@ -1494,6 +1603,7 @@ export default {
                         price_final: newCost.value.spare_tire_amounts[0].cost_amount,
                         quantity: 1,
                         vendor_id: '',
+                        total: total,
                     });
                 }
                 if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
@@ -1526,6 +1636,7 @@ export default {
                         vendor_id: '',
                     });
                 }
+                calculateTotalQuoted();
                 handleGetStock();
             } catch (err) {
                 error.value = err;
@@ -1568,12 +1679,20 @@ export default {
                 iaCheck.value = [];
             }
         }
-        const handleEdit = computed(() => {
+        const handleEdit = (field = null) => {
             if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E') {
                 return false;
             }
+            else if (formTenderDetail.value.quote_state === 'V' || formTenderDetail.value.quote_state === 'A') {
+                if (field && field === 1) {
+                    return false;
+                }
+                else {
+                    return true;
+                }
+            }
             return true;
-        })
+        }
         const inputRef = ref();
         const name = ref();
         let index = 0;
@@ -1699,7 +1818,14 @@ export default {
                             // Actualizar los valores de la respuesta
                             if (dataSourceItem) {
                                 dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
-
+                                if (!dataSourceItem.noStock) {
+                                    console.log('no stock', false)
+                                    const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
+                                    if (neumasur) {
+                                        dataSourceItem.vendor_id = neumasur.value;
+                                        console.log('neumasur', neumasur)
+                                    }
+                                }
                                 return {
                                     sku: stockData.sku,
                                     producto: stockData.producto,
@@ -1740,7 +1866,6 @@ export default {
             }
             return id;
         }
-
         watch(
             () => route.path,
             (_newValue) => {
@@ -1850,6 +1975,11 @@ export default {
             dataStock,
             columnsStock,
             getUserName,
+            vehicleList,
+            handleChangeDescription,
+            filterOptionValue,
+            fetchDescription,
+            handleSearchDescription,
         }
     }
 }
@@ -2123,6 +2253,7 @@ export default {
     font-style: italic;
     background-color: var(--soft-back);
     margin-bottom: 1%;
+    margin-top: 1%;
     padding: 1%;
 }
 

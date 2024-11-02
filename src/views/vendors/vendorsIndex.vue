@@ -2,18 +2,6 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <!-- <a-col :span="12">
-          <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
-                :label="aseguradora.label">
-                {{ aseguradora.label }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
-
         <a-col :span="8">
           <a-form-item label="Tipo" name="name">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear show-search
@@ -24,29 +12,12 @@
             </a-select>
           </a-form-item>
         </a-col>
-        <!-- <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
-            </a-form-item>
-          </a-col> -->
-
-
-        <!-- <a-col :span="6">
-          <a-form-item label="Licitación id" name="tender_id">
-            <a-input v-model:value="filterInputs.id" allowClear />
+        <a-col :span="8">
+          <a-form-item label="Nombre" name="social_name">
+            <a-input v-model:value="filterInputs.social_name__icontains" allowClear />
           </a-form-item>
-        </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
-        <a-col :span="8" :offset="6" style="text-align: right">
+        </a-col>
+        <a-col :span="8"  style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -117,7 +88,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, computed, nextTick } from 'vue';
+import { reactive, ref, onMounted, computed } from 'vue';
 import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
@@ -146,7 +117,7 @@ export default {
       { value: 2, name: 'Sucursal' },
     ]);
 
-    const customHeaderRow = (column) => {
+    const customHeaderRow = () => {
       return {
         class: 'custom-header',
       };
@@ -367,10 +338,11 @@ export default {
         }
 
         // Vuelve a cargar los datos después de la operación
+        current.value = 1;
         fetchData(filterInputs.value);
       } catch (error) {
         console.error('Error handling form finish:', error);
-        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
     };
     let formDataProps = ref({});
@@ -388,7 +360,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,

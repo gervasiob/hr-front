@@ -2,10 +2,21 @@
     <a-form layout="inline" ref="formRef" :model="formState" @finish="handleFinish" @finishFailed="handleFinishFailed"
         :rules="formRules">
         <a-form-item v-for="(item, index) in fields" :key="index" :label="item.label" :name="item.name">
-            <component :is="getComponentType(item.type)" v-model:value="formState[item.name]"
-                :placeholder="`Ingrese ${item.label.toLowerCase()}`" v-bind="getComponentProps(item)" :mode="item.mode"
-                class="input-item">
-            </component>
+            <template v-if="item.type === 'rate'">
+                <span>
+                    <a-rate v-model:value="formState[item.name]" :tooltips="item.desc" allow-half
+                        style="color: var(--principal)">
+                        
+                    </a-rate>
+                    <span class="ant-rate-text">{{ item.desc[value - 1] }}</span>
+                </span>
+            </template>
+            <template v-else>
+                <component :is="getComponentType(item.type)" v-model:value="formState[item.name]"
+                    :placeholder="`Ingrese ${item.label.toLowerCase()}`" v-bind="getComponentProps(item)"
+                    :mode="item.mode" class="input-item">
+                </component>
+            </template>
         </a-form-item>
     </a-form>
 </template>
@@ -75,6 +86,8 @@ export default {
                     return 'a-checkbox';
                 case 'select':
                     return 'a-select';
+                case 'rate':
+                    return 'a-rate';
                 // Agrega más casos según sea necesario
                 default:
                     return 'a-input';
@@ -96,6 +109,7 @@ export default {
                 }
             }
         };
+
         watch(() => props.formData, (newData) => {
             if (newData) {
                 fieldValues = newData;

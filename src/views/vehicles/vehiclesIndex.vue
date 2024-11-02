@@ -1,47 +1,24 @@
 <template>
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
-      <a-row :gutter="24">
-        <!-- <a-col :span="12">
-          <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
-                :label="aseguradora.label">
-                {{ aseguradora.label }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
-        <a-row :gutter="24">
-          <a-col :span="12">
-            <a-form-item label="Razon Social" name="razon_social">
-              <a-input v-model:value="filterInputs.razon_social__icontains" allowClear style="width: 300px;" />
-            </a-form-item>
-          </a-col>
-          <!-- <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
-            </a-form-item>
-          </a-col> -->
-        </a-row>
 
-        <!-- <a-col :span="6">
-          <a-form-item label="Licitación id" name="tender_id">
-            <a-input v-model:value="filterInputs.id" allowClear />
-          </a-form-item>
-        </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
+      <a-row :gutter="24">
+        <a-col :span="8">
+          <a-form-item label="Modelo" name="model">
+            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.model__icontains" allowClear show-search
+              :filter-option="filterOption" style="width: 300px;">
+              <a-select-option v-for="(item, index) in vehicleList" :key="index" :value="item.name" :label="item.name">
+                {{ item.name }}
               </a-select-option>
             </a-select>
           </a-form-item>
-        </a-col> -->
-        <a-col :span="16" style="text-align: right">
+        </a-col>
+        <a-col :span="8">
+          <a-form-item label="Marca" name="brand">
+            <a-input v-model:value="filterInputs.brand__icontains" allowClear />
+          </a-form-item>
+        </a-col>
+        <a-col :span="8">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -51,11 +28,17 @@
 
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
+  <div>
+    <a-button class="editable-add-btn" @click="showModal">Agregar Item</a-button>
+    <a-modal v-model:open="open" title="Vehículos" @ok="handleOk">
+      <ModalPlatform v-if="open" @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+    </a-modal>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['razon_social', 'cuit', 'provincia', 'sede'].includes(column.dataIndex)">
+      <template v-if="['brand', 'model'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -64,28 +47,20 @@
           </template>
         </div>
       </template>
-      <template v-if="['orden_id'].includes(column.dataIndex)">
-
-        <router-link :to="{ name: 'OrderDetail', params: { id: record.id } }">
-          <a-button type="primary" :disabled="!text">
-            {{ text }}
-          </a-button>
-        </router-link>
-      </template>
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
           <span v-if="editableData[record.key]">
-            <a-typography-link @click="save(record.key)">Save</a-typography-link>
+            <a-typography-link @click="save(record.key)">Guardar</a-typography-link>
             <a-popconfirm title="Confirma cancelar?" @confirm="cancel(record.key)">
               <a>Cancel</a>
             </a-popconfirm>
           </span>
           <span v-else>
-            <!-- <a @click="edit(record.key)">Edit</a> -->
-            <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
+            <a @click="edit(record.key)">Edit</a>
+            <!-- <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
-            </a-popconfirm>
+            </a-popconfirm> -->
           </span>
         </div>
       </template>
@@ -98,18 +73,24 @@ import { reactive, ref, onMounted, computed } from 'vue';
 import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
-import { getOrders, addOrders, updateOrders, deleteOrders } from '@/api/orders/orders.js'
-export default {
-  name: 'ordersList',
+import { getVehicles, addVehicles, updateVehicles, deleteVehicles, getVehiclesList } from '@/api/vehicles/vehicles.js';
 
+import { modalFields } from './config/modalFields.js';
+import ModalPlatform from '@/components/modal/modalPlatform.vue';
+
+export default {
+  name: 'VehiclesList',
+  components: {
+    ModalPlatform,
+  },
   setup() {
     const formRef = ref();
     const formState = reactive({});
     const filterInputs = ref({});
-
+    const formComponent = ref(null);
     const columns = tableColumns;
-    const ordersList = ref([]);
-
+    const vehicleList = ref([]);
+    const modalFielsProps = modalFields;
     const customHeaderRow = (column) => {
       return {
         class: 'custom-header',
@@ -121,21 +102,20 @@ export default {
         ...filterInputs.value,
       }
       try {
-        const response = await getOrders(fullParams);
+        const response = await getVehicles(fullParams);
 
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index
         }));
         total.value = response.count;
+
         if (Object.keys(params).length === 0) {
-          const responseList = await getOrders();
-          ordersList.value = responseList;
+          const responseList = await getVehiclesList();
+          vehicleList.value = responseList;
         }
 
-
         return dataSource.value;
-
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
@@ -188,6 +168,8 @@ export default {
     };
 
     onMounted(() => {
+      fetchData();
+
     });
 
     const editableData = reactive({});
@@ -201,22 +183,32 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
-      if (data.url === "") {
-        data.url = null;
-      }
-      if (data.id > 0) {
-        const params = {
-          ...data,
+      try {
+        if (data.url === "") {
+          data.url = null;
         }
-        updateOrders(data.id, params).then(() => {
-          fetchData();
-        });
-      } else {
-        const { id, ...dataWithoutId } = data;
-        addOrders(dataWithoutId).then(() => {
-          fetchData();
-        });
+        if (data.id > 0) {
+          const params = {
+            ...data,
+          }
+          updateVehicles(data.id, params).then(() => {
+            fetchData();
+          });
+        } else {
+          const { id, ...dataWithoutId } = data;
+          addVehicles(dataWithoutId).then(() => {
+            formState.value = {};
+            fetchData();
+          });
+        }
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+        current.value = 1;
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
+
+
     };
     const cancel = (key) => {
       console.log('cancel', key)
@@ -228,7 +220,7 @@ export default {
       const record = dataSource.value.find(item => key === item.key);
       Object.assign(record, editableData[key]);
       delete editableData[key];
-      if (!record.razon_social || !record.cuit) {
+      if (!record.model) {
         onDelete(key);
       }
     };
@@ -239,7 +231,7 @@ export default {
       return 0;
     });
     const handleAdd = () => {
-      const newKey = `${count.value}`;
+      const newKey = `${0}`;
       const newData = {
         key: newKey,
         id: '',
@@ -256,14 +248,37 @@ export default {
         const params = {
           name: data.name,
         }
-        deleteOrders(data.id, params).then(() => {
+        deleteVehicles(data.id, params).then(() => {
           fetchData();
-          current.value = 1;
         });
       }
       const newData = dataSource.value.filter(item => item.key !== key);
       dataSource.value = newData;
 
+    };
+    const open = ref(false);
+    const showModal = () => {
+      open.value = true;
+    };
+
+    const handleOk = () => {
+      if (formComponent.value) {
+        formComponent.value.handleFinish().then(() => {
+          formState.value = {};
+          open.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+    const handleFormFinish = (form) => {
+      formState.value = form;
+      addVehicles(formState.value).then(() => {
+        formState.value = {};
+        open.value = false;
+        current.value = 1;
+        fetchData();
+      });
     };
     return {
       formRef,
@@ -282,11 +297,17 @@ export default {
       handleAdd,
       count,
       onDelete,
-      ordersList,
+      vehicleList,
       current,
       total,
       pagination,
       handleTableChange,
+      open,
+      showModal,
+      handleOk,
+      handleFormFinish,
+      formComponent,
+      modalFielsProps,
     }
   }
 }
@@ -341,5 +362,9 @@ export default {
 :deep(.ant-table-thead .ant-table-column-sort) {
   background-color: var(--secondary) !important;
   color: black !important;
+}
+
+.editable-add-btn {
+  margin-bottom: 1%;
 }
 </style>
