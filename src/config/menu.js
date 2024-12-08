@@ -203,4 +203,71 @@ export const menuList = [
         title: 'LOGOUT',
         roles: basicAuth,
     },
+    {
+        key: 'principal',
+        path: '/principal',
+        icon: () => h(AppstoreOutlined),
+        label: 'PRINCIPAL',
+        title: 'PRINCIPAL',
+        roles: basicAuth,
+    },
+    {
+        key: 'pedidos',
+        icon: () => h(SettingOutlined),
+        label: 'PEDIDOS',
+        title: 'Pedidos',
+        roles: ['Admin', 'Agente', 'Almacen', 'Facturacion', 'Gomeria','Documentacion','Flete'],
+        children: [
+            {
+                key: 'validacion',
+                path: '/pedidos/validacion',
+                name: 'ValidacionClientes',
+                label: 'VALIDACIÓN CLIENTES',
+                title: 'VALIDACIÓN CLIENTES',
+            },
+            {
+                key: 'recepcion',
+                path: '/pedidos/recepcion-mercaderia',
+                name: 'RecepcionMercaderia',
+                label: 'RECEPCIÓN MERCADERÍA',
+                title: 'RECEPCIÓN MERCADERÍA',
+            },
+
+            {
+                key: 'gomerica',
+                path: '/pedidos/gomeria',
+                name: 'Gomeria',
+                label: 'GOMERÍA',
+                title: 'GOMERÍA',
+            },
+            {
+                key: 'creacionLotes',
+                path: '/pedidos/creacion-lotes',
+                name: 'CreacionLotes',
+                label: 'CREACIÓN LOTES',
+                title: 'CREACIÓN LOTES',
+            },
+            {
+                key: 'proforma',
+                path: '/pedidos/proforma',
+                name: 'Proforma',
+                label: 'PROFORMA',
+                title: 'PROFORMA',
+            },
+            {
+                key: 'envios',
+                path: '/pedidos/envios',
+                name: 'Envios',
+                label: 'ENVÍOS',
+                title: 'ENVÍOS',
+            },
+            {
+                key: 'facturacion',
+                path: '/pedidos/facturacion',
+                name: 'Facturacion',
+                label: 'FACTURACIÓN',
+                title: 'FACTURACIÓN',
+            },
+        ]
+    },
 ];
