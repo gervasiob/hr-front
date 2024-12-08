@@ -296,7 +296,6 @@ export default {
             aseguradoraList,
             estadoList,
             rulesRef,
-            onSearch,
             filterOption,
             resetFilters,
             getState,
