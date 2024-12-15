@@ -266,6 +266,7 @@
                 </a-descriptions-item>
             </a-descriptions>
         </a-collapse-panel>
+
         <a-collapse-panel key="2" class="collapse-class" header="ENVÍO">
             <div class="form-envio">
                 <a-form ref="formEnvioRef" :model="formEnvio" class="form-envio">
@@ -283,6 +284,124 @@
 
                     <a-form-item label="Código Postal" required name="postal_code">
                         <a-input v-model:value="formEnvio.postal_code" placeholder="Ingrese un Código Postal" />
+                    </a-form-item>
+                </a-form>
+            </div>
+        </a-collapse-panel>
+        <hr>
+        <a-collapse-panel key="4" class="collapse-class" header="PEDIDO">
+            <div class="form-pedido">
+                <a-form ref="formPedidoRef" :model="formPedido" class="form-envio">
+                    <!-- Pedido ID -->
+                    <a-form-item label="Pedido ID" name="pedido_id">
+                        <a-input v-model:value="formPedido.pedido_id" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Orden Compra Conformada -->
+                    <a-form-item label="Orden Compra Conformada" name="orden_compra_conformada">
+                        <a-switch v-model:checked="formPedido.orden_compra_conformada" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Orden Compra Conformada Date -->
+                    <!-- <a-form-item label="Fecha Orden Compra Conformada" name="orden_compra_conformada_date">
+                        <a-date-picker v-model:value="formPedido.orden_compra_conformada_date" :disabled="true"
+                            style="width: 100%" />
+                    </a-form-item> -->
+
+                    <!-- Entrega de Mercadería -->
+                    <a-form-item label="Entrega de Mercadería" name="entrega_de_mercaderia">
+                        <a-switch v-model:checked="formPedido.entrega_de_mercaderia" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Fecha Entrega de Mercadería -->
+                    <!-- <a-form-item label="Fecha Entrega de Mercadería" name="entrega_de_mercaderia_date">
+                        <a-date-picker v-model:value="formPedido.entrega_de_mercaderia_date" :disabled="true"
+                            style="width: 100%" />
+                    </a-form-item> -->
+
+                    <!-- Armado y Embalaje -->
+                    <a-form-item label="Armado y Embalaje" name="armado_y_embalaje">
+                        <a-switch v-model:checked="formPedido.armado_y_embalaje" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Fecha Armado y Embalaje -->
+                    <!-- <a-form-item label="Fecha Armado y Embalaje" name="armado_y_embalaje_date">
+                        <a-date-picker v-model:value="formPedido.armado_y_embalaje_date" :disabled="true"
+                            style="width: 100%" />
+                    </a-form-item> -->
+
+                    <!-- Generación de Lote -->
+                    <a-form-item label="Generación de Lote" name="generacion_lote">
+                        <a-switch v-model:checked="formPedido.generacion_lote" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Fecha Generación de Lote -->
+                    <!-- <a-form-item label="Fecha Generación de Lote" name="generacion_lote_date">
+                        <a-date-picker v-model:value="formPedido.generacion_lote_date" :disabled="true"
+                            style="width: 100%" />
+                    </a-form-item> -->
+
+                    <!-- Proforma -->
+                    <a-form-item label="Proforma" name="proforma">
+                        <a-switch v-model:checked="formPedido.proforma" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Fecha Proforma -->
+                    <!-- <a-form-item label="Fecha Proforma" name="proforma_date">
+                        <a-date-picker v-model:value="formPedido.proforma_date" :disabled="true" style="width: 100%" />
+                    </a-form-item> -->
+
+                    <!-- Gestión Documental -->
+                    <a-form-item label="Gestión Documental" name="gestion_documental">
+                        <a-switch v-model:checked="formPedido.gestion_documental" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Fecha Gestión Documental -->
+                    <!-- <a-form-item label="Fecha Gestión Documental" name="gestion_documental_date">
+                        <a-date-picker v-model:value="formPedido.gestion_documental_date" :disabled="true"
+                            style="width: 100%" />
+                    </a-form-item> -->
+
+                    <!-- Fletero -->
+                    <a-form-item label="Fletero" name="fletero">
+                        <a-switch v-model:checked="formPedido.fletero" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Fecha Fletero -->
+                    <!-- <a-form-item label="Fecha Fletero" name="fletero_date">
+                        <a-date-picker v-model:value="formPedido.fletero_date" :disabled="true" style="width: 100%" />
+                    </a-form-item> -->
+
+                    <!-- Facturación Final -->
+                    <a-form-item label="Facturación Final" name="facturacion_final">
+                        <a-switch v-model:checked="formPedido.facturacion_final" :disabled="true" />
+                    </a-form-item>
+
+                    <!-- Fecha Facturación Final -->
+                    <!-- <a-form-item label="Fecha Facturación Final" name="facturacion_final_date">
+                        <a-date-picker v-model:value="formPedido.facturacion_final_date" :disabled="true"
+                            style="width: 100%" />
+                    </a-form-item> -->
+
+                    <!-- Imagen URL 1 -->
+                    <a-form-item label="Imagen URL 1" name="image_url_1">
+                        <a-image v-if="formPedido.image_url_1" :src="formPedido.image_url_1" width="100px"
+                            height="100px" />
+                        <span v-else>No Image</span>
+                    </a-form-item>
+
+                    <!-- Imagen URL 2 -->
+                    <a-form-item label="Imagen URL 2" name="image_url_2">
+                        <a-image v-if="formPedido.image_url_2" :src="formPedido.image_url_2" width="100px"
+                            height="100px" />
+                        <span v-else>No Image</span>
+                    </a-form-item>
+
+                    <!-- Imagen URL 3 -->
+                    <a-form-item label="Imagen URL 3" name="image_url_3">
+                        <a-image v-if="formPedido.image_url_3" :src="formPedido.image_url_3" width="100px"
+                            height="100px" />
+                        <span v-else>No Image</span>
                     </a-form-item>
                 </a-form>
             </div>
@@ -348,7 +467,7 @@
                                 </div>
                             </a-col>
                         </a-row>
-
+                        <!-- Tabla de Tire type -->
                         <div style="align-content: center; padding: 2%; display: none;">
                             <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn"
                                 style="margin-bottom: 8px" @click="handleDetailAdd">AGREGAR
@@ -545,6 +664,7 @@
                         style="margin-bottom: 8px" @click="handleAdd">AGREGAR
                         ITEM</a-button>
                 </div>
+                <!-- Tabla Details -->
                 <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
                         <template v-if="['quantity'].includes(column.dataIndex)">
@@ -703,42 +823,70 @@
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
 
-                <!-- Nuevo formulario -->
+                <!-- Nuevo formulario Details-->
                 <a-form ref="formDetailRef" name="dynamic_form_item" layout="vertical">
-                    <div style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
-                        <span style="width: 30px;">Select</span>
-                        <span style="width: 120px;">Group</span>
-                        <span style="width: 80px;">SKU</span>
-                        <span style="width: 150px;">Description</span>
-                        <span style="width: 120px;">Vendor</span>
-                        <span style="width: 100px;">Price C/IVA</span>
-                        <span style="width: 80px;">Quantity</span>
+                    <!-- <div style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                        <span style="width: 40px;">Select</span>
+                        <span style="width: 120px;">Tipo</span>
+                        <span style="width: 300px;">Descripción</span>
+                        <span style="width: 80px;">Proveedor</span>
+                        <span style="width: 100px;">Precio C/IVA</span>
+                        <span style="width: 80px;">Cantidad</span>
                         <span style="width: 100px;">Total S/IVA</span>
                         <span style="width: 120px;">Total + Fee</span>
-                    </div>
+                    </div> -->
                     <a-form-item v-for="(item, index) in form.items" :key="item.key"
                         :label="index === 0 ? 'Items' : ''">
-                        <div style="display: flex; align-items: center; gap: 10px;">
-                            <a-checkbox v-model:value="item.selected" @change="updateTotalSelected" />
-                            <a-select v-model:value="item.group" placeholder="Select Group" style="width: 120px"
-                                :options="groupList" show-search :filter-option="filterOption" />
-                            <a-input-number v-model:value="item.sku" placeholder="SKU" style="width: 80px" />
-                            <a-select v-model:value="item.description" placeholder="Select Description"
-                                style="width: 150px" @change="handleChangeDescription(item.description, item.index)"
-                                :options="editableData.data" :filter-option="false" show-search allow-clear
-                                :not-found-content="item.fetching ? undefined : null"
-                                @search="(value) => handleSearchDescription(value)" />
-                            <a-select v-model:value="item.vendor" placeholder="Select Vendor" style="width: 120px"
-                                :options="vendorList" />
-                            <a-input-number v-model:value="item.priceWithTax" placeholder="Price C/IVA"
-                                style="width: 100px" @change="updateCalculatedFields(item)" />
-                            <a-input-number v-model:value="item.quantity" placeholder="Quantity" style="width: 80px"
-                                @change="updateCalculatedFields(item)" />
-                            <a-input-number v-model:value="item.totalWithoutTax" disabled placeholder="Total S/IVA"
-                                style="width: 100px" />
-                            <a-input-number v-model:value="item.totalWithFee" disabled placeholder="Total + Fee"
-                                style="width: 120px" />
-                            <MinusCircleOutlined class="dynamic-delete-button" @click="removeItem(index)" />
+                        <div>
+                            <a-row :gutter="24" style="margin-bottom: 0.5%;">
+                                <a-col :span="4"> <a-checkbox v-model:checked="item.po"
+                                        @change="updateTotalSelected(item)" /></a-col>
+                                <a-col :span="6"><a-select v-model:value="item.type" placeholder="Tipo"
+                                        :options="groupList" show-search :filter-option="filterOption" /></a-col>
+                                <a-col :span="8"><a-select v-model:value="item.llanta_type" placeholder="Descripción"
+                                        @change="handleChangeDescription(item.llanta_type, index)"
+                                        :options="editableData.data" :filter-option="false" show-search allow-clear
+                                        :not-found-content="item.fetching ? undefined : null"
+                                        @search="(value) => handleSearchDescription(value, index)" /></a-col>
+                                <a-col :span="4"><a-input-number v-model:value="item.sku" placeholder="SKU"
+                                        :readonly="true" style="min-width: 120px;" /></a-col>
+                            </a-row>
+                            <a-row :gutter="24" style="margin-bottom: 0.5%;">
+                                <a-col :span="8" :offset="4"> <a-select v-model:value="item.vendor"
+                                        placeholder="Proveedor" allow-clear show-search :filter-option="filterOption">
+                                        <a-select-option v-for="(item, index) in vendorList" :key="index"
+                                            :value="item.value" :label="(item.name)">
+                                            {{ item.name }}
+                                        </a-select-option>
+                                    </a-select>
+                                </a-col>
+                                <a-col :span="6">
+                                    <a-input-number v-model:value="item.price_final" placeholder="Precio C/IVA"
+                                        @change="updateCalculatedFields(item, index)"
+                                        style="min-width: 180px;" /></a-col>
+                                <a-col :span="5"><a-input-number v-model:value="item.quantity" placeholder="Cantidad"
+                                        @change="updateCalculatedFields(item, index)"
+                                        style="min-width: 180px;" /></a-col>
+                            </a-row>
+
+
+                            <a-row :gutter="24" style="margin-bottom: 0.5%;">
+                                <a-col :span="4" :offset="12">
+                                    <a-form-item label="Total S/IVA">
+                                        <a-input-number v-model:value="item.amount_wo_iva" disabled
+                                            placeholder="Total S/IVA" style="width: 140px" />
+                                    </a-form-item>
+                                </a-col>
+                                <a-col :span="4">
+                                    <a-form-item label="Total C/IVA">
+                                        <a-input-number label="Total C/IVA" v-model:value="item.total" disabled
+                                            placeholder="Total + Fee" style="width: 140px" />
+                                    </a-form-item>
+                                </a-col>
+                                <a-col :span="4">
+                                    <MinusCircleOutlined class="dynamic-delete-button" @click="removeItem(index)" />
+                                </a-col>
+                            </a-row>
                         </div>
                     </a-form-item>
                     <a-form-item>
@@ -746,11 +894,11 @@
                             <PlusOutlined /> Agregar Item
                         </a-button>
                     </a-form-item>
-                    <a-form-item>
-                        <a-button type="primary" @click="submitForm">Submit</a-button>
-                        <a-button style="margin-left: 10px" @click="resetForm">Reset</a-button>
-                    </a-form-item>
-                    <div>Total Selected + Fee: {{ totalSelectedWithFee }}</div>
+                    <div class="total-item">
+                        <span>
+                            Total Selección + Fee: {{ totalSelectedWithFee }}
+                        </span>
+                    </div>
                 </a-form>
                 <!-- Total -->
 
@@ -971,7 +1119,7 @@ export default {
             tenderData: { domain: '' },
             tender_data: { domain: '' },
             original_parts: '',
-            user: 'gervasio',
+            user: '',
         });
         const imageSelect = ref();
         const imageUrl = ref();
@@ -986,6 +1134,7 @@ export default {
         const formEnvio = reactive({
             sent_type: 'S',
         })
+        const formPedido = ref([]);
         const VNodes = defineComponent({
             props: {
                 vnodes: {
@@ -1193,7 +1342,24 @@ export default {
                     console.log('E original parts check IA changes')
                     handleIACheck(formTenderDetail.value.original_parts);
                 }
+                // Recopila la info de pedidos.
+                if (quoteResponse.results[0].nota_pedido_id) {
+                    const pedidoParams = {
+                        pedido_id: quoteResponse.results[0].nota_pedido_id,
+                    }
+                    const pedidosResponse = await apiPedidos('get', pedidoParams);
+                    const pedidoId = pedidosResponse.results[0].id;
+                    const checklistParams = {
+                        pedido: pedidoId,
+                    }
+                    const checklistResponse = await apiChecklist('get', checklistParams)
+                    formPedido.value = {
+                        ...pedidosResponse.results[0],
+                        ...checklistResponse.results[0],
 
+                    }
+                    console.log(formPedido.value);
+                }
             } catch (error) {
                 console.error('Error fetching tender data:', error);
             }
@@ -1238,6 +1404,7 @@ export default {
         const fetchDescription = async (value) => {
             editableData.data = [];
             editableData.fetching = true;
+            console.log('value', value)
             const params = {
                 name__icontains: value,
             }
@@ -1293,15 +1460,14 @@ export default {
             try {
                 if (!formTenderDetail.value.user) {
                     formTenderDetail.value.user = parseInt(localStorage.getItem('user_id'));
-                    console.log('ingresa al if')
                 }
-                console.log('user', formTenderDetail.value.user)
                 // Validar el formulario
                 if (type.value === 'Add') {
                     await formRefAdd.value.validate();
                 }
                 await formRef.value.validate();
-
+                const detalle = form.items;
+                formTenderDetail.value.detail = detalle;
                 // Preparar los parámetros
                 const params = { ...formTenderDetail.value, ...formEnvio };
 
@@ -1447,19 +1613,18 @@ export default {
             console.log('handle sku', res.results[0]);
         }
         const handleChangeDescription = async (item, key) => {
-            console.log('desciption', item)
             const desciptionItem = await fetchDescription(item);
             // const desciptionItem = descriptionList.value.find((item) => item.value = item)
             const sku = desciptionItem[0].sku;
-            console.log('description item', desciptionItem)
+            console.log('description item', desciptionItem[0].sku)
             const params = {
                 code: sku,
             }
             const res = await getCosts(params);
             const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
-            editableData[key]['sku'] = sku;
-            editableData[key]['price_final'] = price_final;
-            console.log('handle des res', res.results[0]);
+
+            form.items[key]['sku'] = sku;
+            form.items[key]['price_final'] = parseFloat(price_final).toFixed(2);
         }
         const handleModalCancel = () => {
             console.log('handle Cancel Modal');
@@ -1703,15 +1868,10 @@ export default {
             }
         };
         const handleChangeAseguradora = async () => {
-            console.log('ingresa al change')
             if (formTenderDetail.value.company_id) {
-                console.log('ingresa al if', formTenderDetail.value.company_id)
                 const aseguradora = aseguradoraList.value.find((item) => item.value === formTenderDetail.value.company_id)
-                console.log('aseguradora', aseguradora)
                 const assurance = await getVendors({ comercial_name: aseguradora.name, vendor_type: 1 });
-                console.log('assurance', assurance)
                 if (assurance.count > 0) {
-                    console.log('ingresa al if count > 0')
                     formTenderDetail.value.fee = assurance.results[0].fee_financial + assurance.results[0].fee_margen;
                 }
                 else {
@@ -1829,7 +1989,7 @@ export default {
                             return {
                                 Sku: item.sku,
                                 Cantidad: item.quantity,
-                                Descripcion: item.description,
+                                Descripcion: item.llanta_type,
                                 CostoUnitario: item.price,
                             }
                         })
@@ -1982,32 +2142,53 @@ export default {
             }
         }
         const totalSelectedWithFee = computed(() => {
-            console.log('form', form)
-            return form.items
-                .filter((item) => item.selected)
-                .reduce((sum, item) => sum + (item.totalWithFee || 0), 0)
-                .toFixed(2);
+            // Filtrar los ítems seleccionados
+            let selectedItems = form.items.filter((item) => item.po);
+
+            // Calcular el total acumulado
+            let total = selectedItems.reduce((sum, item) => {
+                // Calcular precio sin impuestos
+                const priceWithoutTax = (parseFloat(item.price_final) || 0) / 1.21;
+
+                // Calcular total sin impuestos
+                const totalWithoutTax = priceWithoutTax * (parseFloat(item.quantity) || 0);
+
+                // Aplicar el fee, si existe
+                let totalWithFee = totalWithoutTax;
+                if (formTenderDetail.value.fee > 0) {
+                    totalWithFee = totalWithoutTax * (1 + formTenderDetail.value.fee / 100);
+                }
+
+                // Acumular el total en la suma
+                return sum + totalWithFee;
+            }, 0);
+
+            // Formatear el total acumulado al formato de moneda
+            return formatCurrency(total);
         });
+        const totalSelected = ref(0);
         const updateTotalSelected = () => {
-            console.log('form', form)
-            return form.items
-                .filter((item) => item.selected)
-                .reduce((sum, item) => sum + (item.totalWithFee || 0), 0)
-                .toFixed(2);
+            // totalSelected.value = form.items
+            //     .filter((item) => item.po);
+            // totalSelected.value = form.items
+            //     .filter((item) => item.po)
+            //     .reduce((sum, item) => sum + (item.total || 0), 0)
+            // //     .toFixed(2);
+            // console.log('Total Selected:', totalSelected.value);
         };
 
         const addItemDetail = () => {
             form.items.push({
                 key: Date.now(),
-                selected: false,
-                group: null,
+                po: false,
+                type: null,
                 sku: null,
-                description: null,
+                llanta_type: null,
                 vendor: null,
-                priceWithTax: null,
+                price_final: null,
                 quantity: null,
-                totalWithoutTax: 0,
-                totalWithFee: 0,
+                amount_wo_iva: 0,
+                total: 0,
             });
         };
 
@@ -2015,13 +2196,16 @@ export default {
             form.items.splice(index, 1);
         };
 
-        const updateCalculatedFields = (item) => {
-            const priceWithoutTax = (item.priceWithTax || 0) / 1.21;
+        const updateCalculatedFields = (item, index) => {
+            const priceWithoutTax = (item.price_final || 0) / 1.21;
             const totalWithoutTax = priceWithoutTax * (item.quantity || 0);
-            const totalWithFee = totalWithoutTax * formTenderDetail.value.fee;
 
-            item.totalWithoutTax = parseFloat(totalWithoutTax.toFixed(2));
-            item.totalWithFee = parseFloat(totalWithFee.toFixed(2));
+            let totalWithFee = totalWithoutTax;
+            if (formTenderDetail.value.fee > 0) {
+                totalWithFee = totalWithoutTax * (1 + formTenderDetail.value.fee / 100);
+            }
+            form.items[index].amount_wo_iva = formatCurrency(totalWithoutTax);
+            item.total = formatCurrency(totalWithFee);
         };
 
         const submitForm = () => {
@@ -2156,6 +2340,7 @@ export default {
             updateTotalSelected,
             formEnvio,
             formEnvioRef,
+            formPedido,
         }
     }
 }
