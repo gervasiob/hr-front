@@ -15,4 +15,17 @@ export async function updateOrders(id, params) {
 export async function deleteOrders(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
-
+export async function apiOrders(method, params, id = null) {
+    switch (method.toLowerCase()) {
+        case 'get':
+            return await apiRequest('get', ENDPOINT, params, id);
+        case 'post':
+            return await apiRequest('post', ENDPOINT, params);
+        case 'put':
+            return await apiRequest('put', ENDPOINT, params, id);
+        case 'delete':
+            return await apiRequest('delete', ENDPOINT, params, id);
+        default:
+            throw new Error(`Unsupported method: ${method}`);
+    }
+}

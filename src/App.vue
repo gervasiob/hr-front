@@ -121,6 +121,7 @@ export default {
       color: '#fff',
       backgroundColor: '#fff',
       marginTop: '50px',
+      marginBottom: '50px',
     };
     const footerStyle = {
       textAlign: 'center',
@@ -154,7 +155,6 @@ export default {
     }
 
     onMounted(() => {
-      console.log('roles', localStorage.getItem('roles'))
       const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga los roles del usuario
 
       // Si está en la ruta de login, muestra solo el menú de login
@@ -199,7 +199,6 @@ export default {
     // Notificaciones
     const [messageApi, contextHolder] = message.useMessage();
     const handleMessageInfo = (event) => {
-      console.log('mensaje', event)
       message.info(event.detail);
     }
     const handleMessageSuccess = (event) => {
@@ -228,7 +227,6 @@ export default {
         });
     }
     watch(() => route.path, (newPath) => {
-      console.log('roles en wath', JSON.parse(localStorage.getItem('roles')))
       const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga roles actualizados
       if (newPath === '/login') {
         items.value = menuList.filter((item) => item.key === 'login');

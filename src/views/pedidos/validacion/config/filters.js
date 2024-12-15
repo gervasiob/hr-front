@@ -44,7 +44,7 @@ export const filters = [
         component: 'a-select',
         model: 'quote_state',
         placeholder: 'Ingrese su búsqueda',
-        options: TENDER_STATES, // Aquí pasas la lista de vehículos para el select
+        options: TENDER_STATES,
         showSearch: true,
         value: 'A',
     },
@@ -66,9 +66,9 @@ export const filters = [
     },
     {
         label: 'Validado por Cliente',
-        name: 'mercaderia_entregada',
+        name: 'entrega_de_mercaderia',
         component: 'a-select',
-        model: 'mercaderia_entregada',
+        model: 'checklist_entrega_de_mercaderia',
         options: YES_NO,
         value: false,
     },

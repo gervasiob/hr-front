@@ -90,8 +90,11 @@ export default {
             objectFit: "cover", // Ajusta la imagen para llenar el espacio definido
         };
         const getCardBackground = (state) => {
+            if (!state) {
+                return '';
+            }
             const tenderState = TENDER_STATES.find((item) => item.value === state);
-            return tenderState.back;
+            return tenderState.back ? tenderState.back : '' ;
         }
         const dynamicColumns = ref(props.columns); 
         const screenWidth = ref(window.innerWidth); // Ancho de la pantalla

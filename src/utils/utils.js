@@ -31,7 +31,7 @@ export function navigateTo(id = null, baseRoute, requiredId = false, params = {}
     }
     if (!newTab) {
         console.log('in')
-        router.push(route);
+        router.push(route.path);
         return;
     }
     else {

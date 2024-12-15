@@ -24,6 +24,19 @@
             </a-descriptions-item>
         </a-descriptions>
     </div>
+    <div class="image-slot" v-if="hasImageSlot">
+        <span>Imagen</span>
+        <a-upload v-model:file-list="fileList" :custom-request="handleUpload" list-type="picture-card" :max-count="1"
+            :accept="'image/*,.pdf'">
+            <a-button>
+                <upload-outlined></upload-outlined>
+                Agregar Imagen
+            </a-button>
+        </a-upload>
+    </div>
+    <div>
+        <slot name="additionalInputs"></slot>
+    </div>
     <div class="checkbox-list">
         <div>
             <a-checkbox v-model:checked="state.checkAll" :indeterminate="state.indeterminate" layout="vertical"
@@ -32,7 +45,7 @@
             </a-checkbox>
         </div>
         <a-divider />
-        <a-checkbox-group v-model:value="state.checkedList" :options="checkList" />
+        <a-checkbox-group v-model:value="state.checkedList" :options="filteredCheckList" />
     </div>
     <div class="button-submit">
         <a-button type="primary" @click="handleSubmit">Guardar</a-button>
@@ -40,10 +53,14 @@
 </template>
 
 <script>
-import { reactive, ref, watch } from 'vue';
+import { onMounted, reactive, ref, watch } from 'vue';
 import { generalDescriptionFields } from './config/generalFields';
+import { apiPedidos } from '@/api/pedidos/pedidos';
+import { apiChecklist, uploadChecklistFile } from '@/api/checklists/checklists';
+
 export default {
     name: 'BasicDetails',
+
     props: {
         title: {
             type: String,
@@ -59,7 +76,7 @@ export default {
         },
         checkList: {
             type: Array,
-            default: () => ['Apple', 'Orange', 'Two'],
+            default: () => [],
         },
         dataSource: {
             type: Array,
@@ -69,33 +86,129 @@ export default {
             type: Function,
             required: true,
         },
+        pedidoId: {
+            type: Number,
+            required: true,
+        },
+        hasImageSlot: {
+            type: Boolean,
+        },
+        imageSlotName: {
+            type: String,
+            default: null,
+        },
     },
     setup(props) {
-        console.log('props data', props.dataSource)
         const descriptionFields = ref(props.generalFields);
         const state = reactive({
             indeterminate: false,
             checkAll: false,
             checkedList: [],
         });
+        const checklistData = ref({});
+        const filteredCheckList = ref([]);
+        const fileList = ref([]);
+        const previewVisible = ref(false);
+        const previewImage = ref('');
+        const imageUrl = ref(null);
+
         const onCheckAllChange = e => {
             Object.assign(state, {
                 checkedList: e.target.checked ? props.checkList : [],
                 indeterminate: false,
             });
         };
-        const handleSubmit = () => {
+        const handleSubmit = async () => {
             const dataToSend = {
                 checkedItems: state.checkedList,
                 generalFields: descriptionFields.value,
             };
-            props.onSubmit(dataToSend); // Llama a la función pasada por props
+            const checks = props.checkList.reduce((acc, key) => {
+                acc[key] = state.checkedList.includes(key);
+                return acc;
+            }, {});
+            let params = {
+                ...checks,
+                'pedido': checklistData.value.pedido,
+                'id': checklistData.value.id,
+                'quote_id': checklistData.value.quote_id,
+            }
+            if (props.hasImageSlot && props.imageSlotName) {
+                params = {
+                    ...params,
+                    [props.imageSlotName]: imageUrl.value ? imageUrl.value : undefined,
+                };
+            }
+            const responseSave = await apiChecklist('put', params, checklistData.value.id)
+            props.onSubmit();
+            setTimeout(() => {
+                queryPedidos(props.pedidoId)
+            }, 500);
+            window.dispatchEvent(new CustomEvent('message-success', { detail: 'Guardado Exitoso' }));
+
         };
         const getFieldValue = (field) => {
             const data = props.dataSource || {};
             const rawValue = field.model in data ? data[field.model] : 'Sin Datos';
             return field.transform ? field.transform(rawValue) : rawValue;
         };
+        const queryPedidos = async (nota_pedido_id) => {
+            if (!nota_pedido_id) {
+                return;
+            }
+            try {
+
+                const pedidoParams = { pedido_id: nota_pedido_id }
+                const pedidoResponse = await apiPedidos('get', pedidoParams)
+                if (pedidoResponse.results.length === 0) {
+                    return;
+                }
+
+                const checkParams = { pedido: pedidoResponse.results[0].id };
+                const checkResponse = await apiChecklist('get', checkParams);
+
+                const checklistItem = checkResponse.results[0] || {};
+                fileList.value.push({
+                    uid: '-1', // Identificador único para el archivo
+                    name: 'file', // Nombre del archivo
+                    status: 'done', // Estado del archivo (done para archivos ya cargados)
+                    url: checklistItem[props.imageSlotName], // URL del archivo existente
+                });
+              
+                // Guardar los datos en checklistData y sincronizar con state.checkedList
+                checklistData.value = checklistItem;
+
+                // Filtrar las claves que están en props.checkList
+                filteredCheckList.value = props.checkList.map((key) => ({
+                    label: key.replace(/_/g, ' '), // Opcional: convertir el nombre a un formato más legible
+                    value: key,
+                    checked: !!checklistItem[key],
+                }));
+
+                // Sincronizar estado inicial de los checkboxes
+                state.checkedList = props.checkList.filter((key) => checklistItem[key] === true);
+            } catch (error) {
+                console.error('Error al consultar pedidos:', error);
+            }
+        };
+        const handleUpload = async ({ file, onSuccess, onError }) => {
+            try {
+                const fileField = props.imageSlotName;
+                const response = await uploadChecklistFile(checklistData.value.id, fileField, file);
+                console.log("Subida exitosa:", response);
+                imageUrl.value = response.url;
+                // Invoca el callback de éxito para informar a Ant Design Vue
+                onSuccess(response);
+            } catch (error) {
+                console.error("Error al subir el archivo:", error);
+
+                // Invoca el callback de error para manejar el fallo
+                onError(error);
+            }
+        };
+        onMounted(() => {
+            queryPedidos(props.pedidoId)
+        })
         watch(
             () => state.checkedList,
             val => {
@@ -103,12 +216,26 @@ export default {
                 state.checkAll = val.length === props.checkList.length;
             },
         );
+        watch(
+            () => props.pedidoId,
+            (newVal) => {
+                if (newVal) {
+                    queryPedidos(newVal);
+                }
+            },
+            { immediate: true } // Ejecuta también la primera vez si el valor ya está definido
+        );
         return {
             descriptionFields,
             onCheckAllChange,
             state,
             handleSubmit,
             getFieldValue,
+            filteredCheckList,
+            fileList,
+            previewVisible,
+            previewImage,
+            handleUpload,
         }
     }
 
@@ -130,5 +257,9 @@ export default {
 
 .button-submit {
     margin-top: 1%;
+}
+
+.image-slot {
+    color: #3C3D3C,
 }
 </style>

@@ -112,7 +112,6 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Gestor" name="user">
-
                 <a-select placeholder="Ingrese su búsqueda" style="min-width: 150px"
                     v-model:value="formTenderDetail.user" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
@@ -213,7 +212,7 @@
 
         </a-descriptions>
     </div>
-    <a-collapse class="collapse-class">
+    <a-collapse class="collapse-class" :default-active-key="['3']">
         <a-collapse-panel v-show="type === 'Edit'" key="1" header="INFORMACIÓN EXTRA">
             <a-descriptions bordered :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }" class="description-group">
                 <a-descriptions-item label="Nombre Cliente">
@@ -267,6 +266,28 @@
                 </a-descriptions-item>
             </a-descriptions>
         </a-collapse-panel>
+        <a-collapse-panel key="2" class="collapse-class" header="ENVÍO">
+            <div class="form-envio">
+                <a-form ref="formEnvioRef" :model="formEnvio" class="form-envio">
+                    <a-form-item label="Envío en:" name="sent_type">
+                        <a-radio-group v-model:value="formEnvio.sent_type">
+                            <a-radio value="S" name="Sucursal">Sucursal</a-radio>
+                            <a-radio value="E" name="Envio">Envío</a-radio>
+                            <a-radio value="T" name="Transporte">Transporte</a-radio>
+                        </a-radio-group>
+                    </a-form-item>
+                    <a-form-item ref="transport" label="Transporte" name="transport"
+                        v-show="formEnvio.sent_type === 'T'">
+                        <a-input v-model:value="formEnvio.transport" />
+                    </a-form-item>
+
+                    <a-form-item label="Código Postal" required name="postal_code">
+                        <a-input v-model:value="formEnvio.postal_code" placeholder="Ingrese un Código Postal" />
+                    </a-form-item>
+                </a-form>
+            </div>
+        </a-collapse-panel>
+        <hr>
         <a-collapse-panel key="3" class="collapse-class">
             <template #header>
                 <a-descriptions :column="{ xxl: 4, xl: 3, lg: 3, md: 3, sm: 2, xs: 1 }"
@@ -278,18 +299,6 @@
             <div class="collapse-body">
                 <div class="image-container" v-if="imageUrl">
                     <span>Imágenes</span>
-                    <!-- <a-space style="align-items: start;">
-                        <span>Imágenes</span>
-                        <a-select ref="select" v-model:value="imageSelect"
-                            style="width: 300px; border: 2px solid var(--border-item)" @focus="focus"
-                            @change="handleImageChange" show-search :filter-option="filterOption" allow-clear
-                            placeholder="Seleccione un item">
-                            <a-select-option v-for="(image, index) in imageList" :key="index" :value="image.value"
-                                :label="image.label">
-                                {{ image.label }}
-                            </a-select-option>
-                        </a-select>
-                    </a-space> -->
                     <div v-if="imageUrl" class="image-container-item" @click="showModal">
                         <!-- <img :src="imageUrl" alt="Imagen seleccionada" class="selected-image" /> -->
                         <img :src="imageUrl" alt="Base64 Image" class="selected-image" />
@@ -693,6 +702,56 @@
                     </template>
                 </a-table>
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
+
+                <!-- Nuevo formulario -->
+                <a-form ref="formDetailRef" name="dynamic_form_item" layout="vertical">
+                    <div style="display: flex; align-items: center; gap: 10px; font-weight: bold; margin-bottom: 10px;">
+                        <span style="width: 30px;">Select</span>
+                        <span style="width: 120px;">Group</span>
+                        <span style="width: 80px;">SKU</span>
+                        <span style="width: 150px;">Description</span>
+                        <span style="width: 120px;">Vendor</span>
+                        <span style="width: 100px;">Price C/IVA</span>
+                        <span style="width: 80px;">Quantity</span>
+                        <span style="width: 100px;">Total S/IVA</span>
+                        <span style="width: 120px;">Total + Fee</span>
+                    </div>
+                    <a-form-item v-for="(item, index) in form.items" :key="item.key"
+                        :label="index === 0 ? 'Items' : ''">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <a-checkbox v-model:value="item.selected" @change="updateTotalSelected" />
+                            <a-select v-model:value="item.group" placeholder="Select Group" style="width: 120px"
+                                :options="groupList" show-search :filter-option="filterOption" />
+                            <a-input-number v-model:value="item.sku" placeholder="SKU" style="width: 80px" />
+                            <a-select v-model:value="item.description" placeholder="Select Description"
+                                style="width: 150px" @change="handleChangeDescription(item.description, item.index)"
+                                :options="editableData.data" :filter-option="false" show-search allow-clear
+                                :not-found-content="item.fetching ? undefined : null"
+                                @search="(value) => handleSearchDescription(value)" />
+                            <a-select v-model:value="item.vendor" placeholder="Select Vendor" style="width: 120px"
+                                :options="vendorList" />
+                            <a-input-number v-model:value="item.priceWithTax" placeholder="Price C/IVA"
+                                style="width: 100px" @change="updateCalculatedFields(item)" />
+                            <a-input-number v-model:value="item.quantity" placeholder="Quantity" style="width: 80px"
+                                @change="updateCalculatedFields(item)" />
+                            <a-input-number v-model:value="item.totalWithoutTax" disabled placeholder="Total S/IVA"
+                                style="width: 100px" />
+                            <a-input-number v-model:value="item.totalWithFee" disabled placeholder="Total + Fee"
+                                style="width: 120px" />
+                            <MinusCircleOutlined class="dynamic-delete-button" @click="removeItem(index)" />
+                        </div>
+                    </a-form-item>
+                    <a-form-item>
+                        <a-button type="dashed" @click="addItemDetail" style="width: 100%;">
+                            <PlusOutlined /> Agregar Item
+                        </a-button>
+                    </a-form-item>
+                    <a-form-item>
+                        <a-button type="primary" @click="submitForm">Submit</a-button>
+                        <a-button style="margin-left: 10px" @click="resetForm">Reset</a-button>
+                    </a-form-item>
+                    <div>Total Selected + Fee: {{ totalSelectedWithFee }}</div>
+                </a-form>
                 <!-- Total -->
 
                 <div class="total-item">
@@ -774,14 +833,28 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
                 <a-row>
                     <a-col :span="8" :offset="8">
-                        <a-button type="primary" size="large" @click="onSave('A')" :loading="isLoading">Generar
+                        <a-button type="primary" size="large" @click="handleGenerateOc" :loading="isLoading">Generar
                             OC</a-button>
+                    </a-col>
+
+
+
+                </a-row>
+            </div>
+            <div>
+                <a-row>
+                    <a-col :span="8">
+                        <a-input-number v-model:value="formTenderDetail.nota_pedido_id" placeholder="nota pediod id"
+                            style="width: 80px" />
+                        <a-button type="primary" size="large" @click="generatePedido" :loading="isLoading">Generar Nota
+                            de
+                            Pedido</a-button>
                     </a-col>
                 </a-row>
             </div>
@@ -793,6 +866,7 @@
 import { cloneDeep, debounce } from 'lodash-es';
 import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
+import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
 
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getUsers } from '@/api/users/users.js';
@@ -818,13 +892,16 @@ import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 import { RobotOutlined } from '@ant-design/icons-vue';
-import { DescriptionsItem } from 'ant-design-vue';
+import { apiPedidos } from '@/api/pedidos/pedidos.js';
+import { apiChecklist } from '@/api/checklists/checklists.js';
 
 
 export default {
     name: 'TenderDetail',
     components: {
         RobotOutlined,
+        MinusCircleOutlined,
+        PlusOutlined,
     },
     setup() {
         const route = useRoute();
@@ -833,6 +910,9 @@ export default {
         const isLoading = ref(false);
         const formRef = ref();
         const formRefAdd = ref();
+        const form = reactive({
+            items: [],
+        });
         const rules = formRules;
         const errorMessage = ref('');
         let tenderId = ref(route.params.id);
@@ -891,24 +971,8 @@ export default {
             tenderData: { domain: '' },
             tender_data: { domain: '' },
             original_parts: '',
+            user: 'gervasio',
         });
-        const imageList = ref([
-            {
-                value: 1,
-                label: 'img 1',
-                url: 'https://img.zsmotor.cl/wp-content/uploads/2023/01/Screenshot_4-3-1024x609.jpg'
-            },
-            {
-                value: 2,
-                label: 'img 2',
-                url: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS695Vd-2JpJc0h_VZD80pr9a48mYY5gFQkGg&s'
-            },
-            {
-                value: 3,
-                label: 'img 3',
-                url: 'https://www.autonocion.com/wp-content/uploads/2016/06/C%C3%B3digos-neum%C3%A1ticos-1.jpg'
-            },
-        ]);
         const imageSelect = ref();
         const imageUrl = ref();
         const editableData = reactive({});
@@ -918,6 +982,10 @@ export default {
         const vehicleList = ref([]);
         const isModalVisible = ref(false);
         const currentImageIndex = ref(0);
+        const formEnvioRef = ref();
+        const formEnvio = reactive({
+            sent_type: 'S',
+        })
         const VNodes = defineComponent({
             props: {
                 vnodes: {
@@ -1193,19 +1261,10 @@ export default {
             if (!input || !option.hasOwnProperty('value') || typeof option.value !== 'string') {
                 return;
             }
-            // const optionValue = String(option.value);
-            const optionValue = (option.value); // Convertir el valor a cadena
-            const inputValue = input; // Convertir el valor a cadena
-
-            console.log('option', option.value);
-            console.log('option funciotn', option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0);
-
             return option.value.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
 
         const getLabelList = (value, list) => {
-            console.log('value', value)
-            console.log('list', list)
             if (value) {
                 const item = list.find((item) => item.value === value);
                 if (item) {
@@ -1232,6 +1291,11 @@ export default {
             }
             isLoading.value = true;
             try {
+                if (!formTenderDetail.value.user) {
+                    formTenderDetail.value.user = parseInt(localStorage.getItem('user_id'));
+                    console.log('ingresa al if')
+                }
+                console.log('user', formTenderDetail.value.user)
                 // Validar el formulario
                 if (type.value === 'Add') {
                     await formRefAdd.value.validate();
@@ -1239,7 +1303,7 @@ export default {
                 await formRef.value.validate();
 
                 // Preparar los parámetros
-                const params = { ...formTenderDetail.value };
+                const params = { ...formTenderDetail.value, ...formEnvio };
 
                 let brandObject = optionsBrand.find((item) => item.value === formTenderDetail.value.brand);
 
@@ -1405,14 +1469,6 @@ export default {
             isModalVisible.value = true;
             console.log('handle open Modal');
         }
-        const handleImageChange = () => {
-            if (imageSelect.value) {
-                imageUrl.value = imageList.value.find((item) => item.value === imageSelect.value).url;
-            } else {
-                imageUrl.value = null;
-            }
-            console.log(imageUrl.value);
-        }
 
         const count = computed(() => {
             if (dataSource.value) {
@@ -1529,7 +1585,6 @@ export default {
         }
         onMounted(() => {
             tenderId.value = route.params.id;
-            console.log('tender value', tenderId.value)
             getUsersList();
             getPlatformsListData();
             getDescriptionListData();
@@ -1562,10 +1617,13 @@ export default {
                     spare_tire_amount: 0,
                     freight: 0,
                     fee: 0,
+                    user: parseInt(localStorage.getItem('user_id')),
                     tender_data: {
                         domain: '',
                     },
                 }
+                console.log('user', localStorage.getItem('user_id'))
+                console.log('formTender', formTenderDetail.value)
             }
         });
         const handleGetCost = async () => {
@@ -1745,7 +1803,7 @@ export default {
                 groupedArray.forEach(async subArray => {
                     console.log(subArray)
                     const filter = {
-                        social_name: subArray[0].vendor_id,
+                        id: subArray[0].vendor_id,
                     }
                     console.log('filter', filter)
                     const vendor = await getVendors(filter);
@@ -1866,6 +1924,115 @@ export default {
             }
             return id;
         }
+        const generatePedido = async () => {
+            try {
+                const assurance = await getVendors({ comercial_name: formTenderDetail.value.company_name, vendor_type: 1 });
+                const params = {
+                    "pedido_id": quoteId.value,
+                    "cuit_aseguradora": assurance.results[0].cuit,
+                    "apellidoynombre": formTenderDetail.value.tender_data.name,
+                    "direccion": "sin dirección",
+                    "ciudad": formTenderDetail.value.tender_data.city,
+                    "provincia": formTenderDetail.value.tender_data.province,
+                    "email": "mail@mail.com",
+                    "telefono": formTenderDetail.value.tender_data.phone ? formTenderDetail.value.tender_data.phone : "1234",
+                    "tipo_envio": "A",
+                    "sucursal": "B",
+                    "transporte": "C",
+                    "estado": 0,
+                    "ordenid": quoteId.value,
+                    "vendedor": formTenderDetail.value.user ? formTenderDetail.value.user : 'sin usuario',
+                    "nota1": "",
+                    "nota2": "",
+                    "nota3": ""
+                };
+
+                const response = await apiPedidos('post', params);
+                const pedidoId = response.id;
+                formTenderDetail.value.nota_pedido_id = pedidoId;
+                const paramsCheck = {
+                    "quote_id": quoteId.value,
+                    "orden_compra_conformada": false,
+                    "orden_compra_conformada_date": new Date(),
+                    "entrega_de_mercaderia": false,
+                    "entrega_de_mercaderia_date": new Date(),
+                    "armado_y_embalaje": false,
+                    "armado_y_embalaje_date": new Date(),
+                    "generacion_lote": false,
+                    "proforma": false,
+                    "proforma_date": new Date(),
+                    "generacion_lote_date": new Date(),
+                    "gestion_documental": false,
+                    "gestion_documental_date": new Date(),
+                    "fletero": false,
+                    "fletero_date": new Date(),
+                    "facturacion_final": false,
+                    "facturacion_final_date": new Date(),
+                    "image_url_1": "",
+                    "image_url_2": "",
+                    "image_url_3": "",
+                    "pedido": pedidoId,
+                }
+                const responseCheck = await apiChecklist('post', paramsCheck)
+                console.log('response', response)
+                console.log('responseCheck', responseCheck)
+                onSave();
+            } catch (error) {
+                console.error("Error fetching vendor list:", error);
+            }
+        }
+        const totalSelectedWithFee = computed(() => {
+            console.log('form', form)
+            return form.items
+                .filter((item) => item.selected)
+                .reduce((sum, item) => sum + (item.totalWithFee || 0), 0)
+                .toFixed(2);
+        });
+        const updateTotalSelected = () => {
+            console.log('form', form)
+            return form.items
+                .filter((item) => item.selected)
+                .reduce((sum, item) => sum + (item.totalWithFee || 0), 0)
+                .toFixed(2);
+        };
+
+        const addItemDetail = () => {
+            form.items.push({
+                key: Date.now(),
+                selected: false,
+                group: null,
+                sku: null,
+                description: null,
+                vendor: null,
+                priceWithTax: null,
+                quantity: null,
+                totalWithoutTax: 0,
+                totalWithFee: 0,
+            });
+        };
+
+        const removeItem = (index) => {
+            form.items.splice(index, 1);
+        };
+
+        const updateCalculatedFields = (item) => {
+            const priceWithoutTax = (item.priceWithTax || 0) / 1.21;
+            const totalWithoutTax = priceWithoutTax * (item.quantity || 0);
+            const totalWithFee = totalWithoutTax * formTenderDetail.value.fee;
+
+            item.totalWithoutTax = parseFloat(totalWithoutTax.toFixed(2));
+            item.totalWithFee = parseFloat(totalWithFee.toFixed(2));
+        };
+
+        const submitForm = () => {
+            console.log("Submitted form:", form);
+        };
+
+        const resetForm = () => {
+            form.items = [];
+        };
+
+        addItemDetail(); // Start with one empty field
         watch(
             () => route.path,
             (_newValue) => {
@@ -1921,8 +2088,6 @@ export default {
             countDetail,
             handleDetailAdd,
             imageSelect,
-            handleImageChange,
-            imageList,
             imageUrl,
             selectedOption,
             isModalVisible,
@@ -1980,6 +2145,17 @@ export default {
             filterOptionValue,
             fetchDescription,
             handleSearchDescription,
+            generatePedido,
+            totalSelectedWithFee,
+            addItemDetail,
+            removeItem,
+            updateCalculatedFields,
+            submitForm,
+            resetForm,
+            form,
+            updateTotalSelected,
+            formEnvio,
+            formEnvioRef,
         }
     }
 }

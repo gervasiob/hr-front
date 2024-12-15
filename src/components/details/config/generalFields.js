@@ -18,4 +18,5 @@ export const generalDescriptionFields = [
     { label: "Año Vehículo", model: "vehicle_year" },
     { label: "Fecha", model: "claim_date" },
     { label: "Plataforma", model: "platform" },
+    { label: "Nro Pedido", model: "nota_pedido_id" },
 ];
