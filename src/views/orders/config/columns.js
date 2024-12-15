@@ -4,32 +4,47 @@ export const tableColumns = [
     {
         title: 'Razon Social',
         dataIndex: 'razon_social',
-        sorter: (a, b) => a.razon_social - b.razon_social,
+        sorter: (a, b) => a.razon_social.localeCompare(b.razon_social),
     },
+    // {
+    //     title: 'CUIT',
+    //     dataIndex: 'cuit',
+    //     sorter: (a, b) => a.cuit - b.cuit,
+    // },
+    // {
+    //     title: 'Provincia',
+    //     dataIndex: 'provincia',
+    //     sorter: (a, b) => a.provincia - b.provincia,
+    // },
+    // {
+    //     title: 'Sede',
+    //     dataIndex: 'sede',
+    //     sorter: (a, b) => a.sede - b.sede,
+    // },
     {
-        title: 'CUIT',
-        dataIndex: 'cuit',
-        sorter: (a, b) => a.cuit - b.cuit,
-    },
-    {
-        title: 'Provincia',
-        dataIndex: 'provincia',
-        sorter: (a, b) => a.provincia - b.provincia,
-    },
-    {
-        title: 'Sede',
-        dataIndex: 'sede',
-        sorter: (a, b) => a.sede - b.sede,
-    },
-    {
-        title: 'ID Orden',
+        title: 'Nro Orden de Compra',
         dataIndex: 'orden_id',
-        sorter: (a, b) => a.orden_id - b.orden_id,
+        sorter: (a, b) => a.orden_id.localeCompare(b.orden_id),
     },
     {
-        title: 'Fecha de Entrega',
-        dataIndex: 'fecha_entrega',
-        sorter: (a, b) => a.fecha_entrega - b.fecha_entrega
+        title: 'Remito',
+        dataIndex: 'remito',
+        sorter: (a, b) => a.remito.localeCompare(b.remito),
+    },
+    {
+        title: 'Sku',
+        dataIndex: 'dsku',
+        sorter: (a, b) => a.dsku.localeCompare(b.dsku),
+    },
+    {
+        title: 'Descripción',
+        dataIndex: 'dDescripcion',
+        sorter: (a, b) => a.dDescripcion.localeCompare(b.dDescripcion),
+    },
+    {
+        title: 'Cantidad',
+        dataIndex: 'dCantidad',
+        sorter: (a, b) => a.dCantidad.localeCompare(b.dCantidad),
     },
     {
         title: 'Operation',

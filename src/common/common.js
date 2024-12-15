@@ -278,4 +278,4 @@ export const VENDOR_TYPE = [
     { value: 1, label: 'Cía Aseguradora' },
     { value: 2, label: 'Sucursal Daytona' },
 ];
-export const YES_NO = [{ value: false, label: 'NO' }, { value: true, label: 'SI' }];
+export const YES_NO = [{ value: false, label: 'NO', name: 'NO' }, { value: true, label: 'SI', name: 'SI' }];

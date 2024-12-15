@@ -270,4 +270,63 @@ export const menuList = [
             },
         ]
     },
+    {
+        key: 'buscar',
+        icon: () => h(SettingOutlined),
+        label: 'BUSCAR POR PEDIDO',
+        title: 'Buscar por Pedido',
+        roles: ['Admin', 'Agente', 'Almacen', 'Facturacion', 'Gomeria', 'Documentacion', 'Flete'],
+        children: [
+            {
+                key: 'srecepcion',
+                path: '/buscar/recepcion-mercaderia',
+                name: 'SRecepcionMercaderia',
+                label: 'RECEPCIÓN MERCADERÍA',
+                title: 'RECEPCIÓN MERCADERÍA',
+            },
+
+            {
+                key: 'sgomerica',
+                path: '/buscar/gomeria',
+                name: 'SGomeria',
+                label: 'GOMERÍA',
+                title: 'GOMERÍA',
+            },
+            {
+                key: 'screacionLotes',
+                path: '/buscar/creacion-lotes',
+                name: 'SCreacionLotes',
+                label: 'CREACIÓN LOTES',
+                title: 'CREACIÓN LOTES',
+            },
+            {
+                key: 'sproforma',
+                path: '/buscar/proforma',
+                name: 'SProforma',
+                label: 'PROFORMA',
+                title: 'PROFORMA',
+            },
+            {
+                key: 'senvios',
+                path: '/buscar/envios',
+                name: 'SEnvios',
+                label: 'ENVÍOS',
+                title: 'ENVÍOS',
+            },
+            {
+                key: 'sfacturacion',
+                path: '/buscar/facturacion',
+                name: 'SFacturacion',
+                label: 'FACTURACIÓN',
+                title: 'FACTURACIÓN',
+            },
+            {
+                key: 'todos',
+                path: '/buscar/todos',
+                name: 'Todos',
+                label: 'TODOS LOS PEDIDOS',
+                title: 'TODOS LOS PEDIDOS',
+            },
+        ]
+    },
 ];

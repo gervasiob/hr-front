@@ -1,6 +1,6 @@
 <template>
     <div class="title">
-        <h4>Gomería</h4>
+        <h4>Creación de Lotes</h4>
     </div>
     <div>
         <basic-filters :filters="filterList" :onSearchCallback="onSearch"

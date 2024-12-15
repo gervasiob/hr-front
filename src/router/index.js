@@ -288,6 +288,62 @@ const otherRoutes = [
         component: () => import('@/views/pedidos/facturacion/facturacionIndex.vue'),
         meta: { roles: basicAuth },
     },
+    {
+        key: 'srecepcion',
+        path: '/buscar/recepcion-mercaderia',
+        name: 'SRecepcionMercaderia',
+        component: () => import('@/views/buscar/recepcion/recepcionIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'sgomeria',
+        path: '/buscar/gomeria',
+        name: 'SGomeria',
+        component: () => import('@/views/buscar/gomeria/gomeriaIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'screacionLotes',
+        path: '/buscar/creacion-lotes',
+        name: 'SCreacionLotes',
+        component: () => import('@/views/buscar/creacionLotes/creacionLotesIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'sproforma',
+        path: '/buscar/proforma',
+        name: 'SProforma',
+        component: () => import('@/views/buscar/proforma/proformaIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'senvios',
+        path: '/buscar/envios',
+        name: 'SEnvios',
+        component: () => import('@/views/buscar/envios/enviosIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'sdocumentacion',
+        path: '/buscar/documentacion',
+        name: 'SDocumentacion Cliente',
+        component: () => import('@/views/buscar/documentacion/documentacionIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'sfacturacion',
+        path: '/buscar/facturacion',
+        name: 'SFacturacion',
+        component: () => import('@/views/buscar/facturacion/facturacionIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'todos',
+        path: '/buscar/todos',
+        name: 'Todos',
+        component: () => import('@/views/buscar/allPedidos/allPedidosIndex.vue'),
+        meta: { roles: basicAuth },
+    },
 ]
 export const basicRoutes = [
     LoginRoute,
@@ -306,19 +362,14 @@ export const router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
 });
 router.beforeEach(async (to, from, next) => {
-    console.log('to', to)
     if (to.path === '/login') {
         next();
         return;
     }
     const token = localStorage.getItem('token');
-
-    console.log('token en router', token)
     if (token && token !== 'undefined') {
-        console.log('token válido', token);
         try {
             const resp = await validateToken(token);  // Valida el token en el backend
-            console.log('respuesta validate', resp);
 
         } catch (error) {
             console.error('Error al validar el token:', error);
@@ -331,12 +382,9 @@ router.beforeEach(async (to, from, next) => {
         return;
     }
     const userRoles = JSON.parse(localStorage.getItem('roles')); // Obtener rol del usuario (o desde Vuex/estado)
-    console.log('user role en el router', userRoles)
     if (to.meta.roles) {
         // Verificar si el usuario tiene uno de los roles permitidos
         const hasAccess = to.meta.roles.some((role) => userRoles.includes(role));
-        console.log('to meta roles', to.meta.roles)
-        console.log('has Access', hasAccess)
         if (hasAccess) {
             next();  // Permitir el acceso
         } else {

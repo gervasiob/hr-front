@@ -56,8 +56,8 @@ export default {
             }
             try {
                 const response = await getQuotesSummary(params);
-                dataSource.value = response.results.filter(item => item.claim_id !== null);
-                total.value = response.count;
+                dataSource.value = response.results.filter(item => item.nota_pedido_id !== null);
+                total.value = dataSource.value.length;
                 return dataSource.value;
             } catch (error) {
                 console.error("Error fetching quotes:", error);

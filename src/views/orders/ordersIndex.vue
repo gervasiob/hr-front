@@ -14,9 +14,9 @@
           </a-form-item>
         </a-col> -->
         <a-row :gutter="24">
-          <a-col :span="12">
+          <a-col :span="6">
             <a-form-item label="Razon Social" name="razon_social">
-              <a-input v-model:value="filterInputs.razon_social__icontains" allowClear style="width: 300px;" />
+              <a-input v-model:value="filterInputs.razon_social__icontains" allowClear style="min-width: 120px;" />
             </a-form-item>
           </a-col>
           <!-- <a-col :span="12">
@@ -24,27 +24,49 @@
               <a-input v-model:value="filterInputs.claim_id" allowClear />
             </a-form-item>
           </a-col> -->
-        </a-row>
+          <a-col :span="6">
+            <a-form-item label="Agente" name="user_id">
+              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.user_id" allowClear show-search
+                :filter-option="filterOption" style="min-width: 120px;">
+                <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
+                  {{ item.fullName }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
+          <!-- <a-col :span="6">
+            <a-form-item label="Completa" name="orden_compra_conformada">
+              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.orden_compra_conformada"
+                allowClear show-search :filter-option="filterOption" style="width: 100px">
+                <a-select-option v-for="(item, index) in YESNO" :key="index" :value="item.value" :label="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col> -->
+          <a-col :span="6">
+            <a-form-item label="Tiene Remito Ingresado?" name="has_remito">
+              <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.has_remito" allowClear show-search
+                :filter-option="filterOption" style="width: 100px">
+                <a-select-option v-for="(item, index) in YESNO" :key="index" :value="item.value" :label="item.name">
+                  {{ item.name }}
+                </a-select-option>
+              </a-select>
+            </a-form-item>
+          </a-col>
 
-        <!-- <a-col :span="6">
+
+          <!-- <a-col :span="6">
           <a-form-item label="Licitación id" name="tender_id">
             <a-input v-model:value="filterInputs.id" allowClear />
           </a-form-item>
         </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
-        <a-col :span="16" style="text-align: right">
-          <a-button type="primary" danger @click="onSearch">Buscar</a-button>
-          <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
-        </a-col>
+
+          <a-col :span="6" style="text-align: right">
+            <a-button type="primary" danger @click="onSearch">Buscar</a-button>
+            <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
+          </a-col>
+        </a-row>
       </a-row>
     </a-form>
   </div>
@@ -99,17 +121,20 @@ import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getOrders, addOrders, updateOrders, deleteOrders } from '@/api/orders/orders.js'
+import { getUsers } from '@/api/users/users.js';
+import { YES_NO } from '@/common/common.js';
+import { getRoles } from '@/api/roles/roles.js';
 export default {
   name: 'ordersList',
 
   setup() {
     const formRef = ref();
     const formState = reactive({});
-    const filterInputs = ref({});
-
+    const filterInputs = ref({ has_remito: false });
+    const agents = ref([]);
     const columns = tableColumns;
     const ordersList = ref([]);
-
+    const YESNO = YES_NO;
     const customHeaderRow = (column) => {
       return {
         class: 'custom-header',
@@ -132,9 +157,25 @@ export default {
           const responseList = await getOrders();
           ordersList.value = responseList;
         }
-
-
-        return dataSource.value;
+        const idRole = await getRoles({ name: 'Agente' });
+        const agentsResponse = await getUsers({ roles: idRole.results[0].id });
+        const transformedAgents = agentsResponse.results.map((item) => {
+          return {
+            ...item,
+            fullName: item.username,
+          };
+        });
+        agents.value = transformedAgents;
+        const transformedData = dataSource.value.map((item) => {
+          return {
+            ...item,
+            dSku: item.detalles[0].Sku,
+            dDescripcion: item.detalles[0].Descripcion,
+            dCantidad: item.detalles[0].Cantidad,
+          }
+        })
+        console.log('transpform daa', transformedData)
+        return transformedData;
 
       } catch (error) {
         console.error("Error fetching quotes:", error);
@@ -287,6 +328,8 @@ export default {
       total,
       pagination,
       handleTableChange,
+      agents,
+      YESNO,
     }
   }
 }

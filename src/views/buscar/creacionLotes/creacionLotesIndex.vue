@@ -1,28 +1,47 @@
 <template>
-    <BasicDetails title="Detalle Validación Clientes" :onSubmit="sendDataToAPI" :dataSource="data"
-        :pedidoId="pedidoId" :checkList="checkList"/>
+    <div>
+        <a-form layout="horizontal" :model="formState" v-bind="formItemLayout">
+            <a-row>
+                <a-col span="6">
+                    <a-form-item label="Número de OC">
+                        <a-input v-model:value="formState.po" placeholder="input placeholder" />
+                    </a-form-item></a-col>
+                <a-col span="6">
+                    <a-form-item>
+                        <a-button type="primary" @Click="handleSearch">Buscar</a-button>
+                    </a-form-item></a-col>
+            </a-row>
+
+
+        </a-form>
+    </div>
+    <BasicDetails title="Detalle Creación de Lotes" :onSubmit="sendDataToAPI" :dataSource="data"
+        :pedidoId="pedidoId" :checkList="checkList" />
 </template>
 
 <script>
-import { onMounted, ref } from 'vue';
+import { onMounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import BasicDetails from '@/components/details/basicDetails.vue';
 
 import { getQuotes, updateQuotes } from '@/api/quotes/quotes';
+import { getOrders } from '@/api/orders/orders';
 
 export default {
-    name: 'ValidacionDetail',
+    name: 'CreacionLotesDetail',
     components: {
         BasicDetails
     },
 
     setup() {
+        const formState = reactive({
+            po: '',
+        });
         const sendDataToAPI = async (data) => {
             console.log("Datos enviados:", data);
             try {
-                let response = await updateQuotes(quoteId.value, data);
-                console.log('response', response)
+              
             } catch (error) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
                 return;
@@ -34,18 +53,24 @@ export default {
         const data = ref([]);
         const route = useRoute();
         let paramId = ref(route.params.id);
-        const quoteId = ref(null); 
-        const pedidoId = ref(null); 
-        const checkList = ref(['entrega_de_mercaderia'])
-        const fetchData = async (id) => {
+        const quoteId = ref(null);
+        const pedidoId = ref(null);
+        const checkList = ref(['creacion_lotes'])
+        const fetchData = async () => {
             try {
                 const params = {
-                    claim_id: id,
+                    orden_id__icontains: formState.po,
                 };
-                const quoteResponse = await getQuotes(params);
+                const poResponse = await getOrders(params);
+                const quoteIdInternal = poResponse.results[0].detalles[0].quote_id
+                const paramsQuote = {
+                    id: quoteIdInternal,
+                }
+                const quoteResponse = await getQuotes(paramsQuote);
                 console.log('quote response', quoteResponse.results[0])
                 let dataResult = [];
                 dataResult = quoteResponse.results[0];
+                console.log('dataResult', dataResult)
                 quoteId.value = dataResult.id;
                 pedidoId.value = dataResult.nota_pedido_id;
                 data.value = {
@@ -61,14 +86,17 @@ export default {
                 console.error('Error fetching tender data:', error);
             }
         };
-        onMounted(() => {
-            fetchData(paramId.value);
-        })
+        const handleSearch = () => {
+            console.log('search', formState.pedidoId)
+            fetchData();
+        }
         return {
             sendDataToAPI,
             data,
             pedidoId,
             checkList,
+            formState,
+            handleSearch,
         }
     }
 }
