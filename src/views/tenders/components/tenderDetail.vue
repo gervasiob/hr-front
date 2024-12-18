@@ -919,7 +919,22 @@
                     </a-form-item>
                     <div class="total-item">
                         <span>
-                            Total Selección + Fee: {{ totalSelectedWithFee }}
+                            Total Selección: {{ totalSelected }}
+                        </span>
+                    </div>
+                    <div class="total-item">
+                        <span>
+                            Total Selección + IVA: {{ totalSelectedIva }}
+                        </span>
+                    </div>
+                    <div class="total-item">
+                        <span>
+                            Total Selección + Fee (sin iva): {{ totalSelectedWithFee }}
+                        </span>
+                    </div>
+                    <div class="total-item">
+                        <span>
+                            Total Selección + Fee + Flete (sin iva): {{ totalSelectedWithFreight }}
                         </span>
                     </div>
                 </a-form>
@@ -1004,7 +1019,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -1874,7 +1889,7 @@ export default {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Neumático SKU ya existente N°: ' + skuN }));
                 } else {
                     let total = newCost.value.spare_tire_amounts[0].cost_amount / 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
-                    dataSource.value.push({
+                    form.items.push({
                         type: 'Neumático',
                         key: newKey,
                         sku: skuN, // Usa otro valor si es necesario
@@ -1900,12 +1915,12 @@ export default {
                 const newKeyLlanta = `${count.value}` + 1;
                 const skuL = llantaResponse.spare_tire_amounts[0].sku;
 
-                if (dataSource.value.find((item) => item.sku === skuL)) {
+                if (form.items.find((item) => item.sku === skuL)) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Llanta SKU ya existente N°: ' + skuL }));
-                } else if (dataSource.value.find((item) => item.type === 'Llanta') && !skuL) {
+                } else if (form.items.find((item) => item.type === 'Llanta') && !skuL) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Llanta Duplicada con SKU nulo' }));
                 } else {
-                    dataSource.value.push({
+                    form.items.push({
                         type: 'Llanta',
                         key: newKeyLlanta,
                         sku: skuL,
@@ -2201,31 +2216,55 @@ export default {
             }
         }
         const totalSelectedWithFee = computed(() => {
-            // Filtrar los ítems seleccionados
             let selectedItems = form.items.filter((item) => item.po);
-
-            // Calcular el total acumulado
             let total = selectedItems.reduce((sum, item) => {
-                // Calcular precio sin impuestos
                 const priceWithoutTax = (parseFloat(item.price_final) || 0) / 1.21;
-
-                // Calcular total sin impuestos
                 const totalWithoutTax = priceWithoutTax * (parseFloat(item.quantity) || 0);
-
-                // Aplicar el fee, si existe
                 let totalWithFee = totalWithoutTax;
                 if (formTenderDetail.value.fee > 0) {
                     totalWithFee = totalWithoutTax * (1 + formTenderDetail.value.fee / 100);
                 }
-
-                // Acumular el total en la suma
                 return sum + totalWithFee;
             }, 0);
 
-            // Formatear el total acumulado al formato de moneda
             return formatCurrency(total);
         });
-        const totalSelected = ref(0);
+        const totalSelected = computed(() => {
+            let selectedItems = form.items.filter((item) => item.po);
+            let total = selectedItems.reduce((sum, item) => {
+                const priceWithoutTax = (parseFloat(item.price_final) || 0) / 1.21;
+                const totalWithoutTax = priceWithoutTax * (parseFloat(item.quantity) || 0);
+                return sum + totalWithoutTax;
+            }, 0);
+
+            return formatCurrency(total);
+        });
+        const totalSelectedIva = computed(() => {
+            let selectedItems = form.items.filter((item) => item.po);
+            let total = selectedItems.reduce((sum, item) => {
+                const priceWithoutTax = (parseFloat(item.price_final) || 0);
+                const totalWithoutTax = priceWithoutTax * (parseFloat(item.quantity) || 0);
+                return sum + totalWithoutTax;
+            }, 0);
+
+            return formatCurrency(total);
+        });
+        const totalSelectedWithFreight = computed(() => {
+            let selectedItems = form.items.filter((item) => item.po);
+            let total = selectedItems.reduce((sum, item) => {
+                const priceWithoutTax = (parseFloat(item.price_final) || 0) / 1.21;
+                const totalWithoutTax = priceWithoutTax * (parseFloat(item.quantity) || 0);
+                let totalWithFee = totalWithoutTax;
+                if (formTenderDetail.value.fee > 0) {
+                    totalWithFee = totalWithoutTax * (1 + formTenderDetail.value.fee / 100);
+                }
+                return sum + totalWithFee;
+            }, 0);
+            if (formTenderDetail.value.freight > 0) {
+                total += parseFloat(formTenderDetail.value.freight)
+            }
+            return formatCurrency(total);
+        });
         const updateTotalSelected = () => {
             // totalSelected.value = form.items
             //     .filter((item) => item.po);
@@ -2403,6 +2442,9 @@ export default {
             formEnvioRef,
             formPedido,
             rulesForm,
+            totalSelected,
+            totalSelectedWithFreight,
+            totalSelectedIva,
         }
     }
 }
