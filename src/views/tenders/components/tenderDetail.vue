@@ -294,15 +294,15 @@
         <a-collapse-panel key="2" class="collapse-class" header="ENVÍO">
             <div class="form-envio">
                 <a-form ref="formEnvioRef" :model="formEnvio" class="form-envio">
-                    <a-form-item label="Envío en:" name="sent_type">
-                        <a-radio-group v-model:value="formEnvio.sent_type">
+                    <a-form-item label="Envío en:" name="delivery_type">
+                        <a-radio-group v-model:value="formEnvio.delivery_type">
                             <a-radio value="S" name="Sucursal">Sucursal</a-radio>
                             <a-radio value="E" name="Envio">Envío</a-radio>
                             <a-radio value="T" name="Transporte">Transporte</a-radio>
                         </a-radio-group>
                     </a-form-item>
                     <a-form-item ref="transport" label="Transporte" name="transport"
-                        v-show="formEnvio.sent_type === 'T'">
+                        v-show="formEnvio.delivery_type === 'T'">
                         <a-input v-model:value="formEnvio.transport" />
                     </a-form-item>
 
@@ -1019,7 +1019,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -1402,8 +1402,10 @@ export default {
                         ...checklistResponse.results[0],
 
                     }
-                    console.log(formPedido.value);
                 }
+                formEnvio.delivery_type = quoteData.value.delivery_type;
+                formEnvio.transport = quoteData.value.transport;
+                formEnvio.postal_code = quoteData.value.postal_code;
             } catch (error) {
                 console.error('Error fetching tender data:', error);
             }
