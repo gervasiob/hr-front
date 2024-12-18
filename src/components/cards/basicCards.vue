@@ -12,9 +12,10 @@
             <!-- Título y descripción dinámicos -->
             <a-card-meta>
                 <template #title>
-                    <span>{{ card.domain }} - {{ card.vehicle }}</span>
+                    <span>{{ card.domain }} - {{ card.vehicle }} </span>
                 </template>
                 <template #description>
+                    <span> {{ getCardState(card.quote_state) }}</span>
                     <div style="font-size: 12px; line-height: 1.2; text-align: left;">
                         <p><strong>Compañía:</strong> {{ card.company_name }}</p>
                         <p><strong>Fecha del reclamo:</strong> {{ card.claim_date }}</p>
@@ -41,6 +42,7 @@ import { ExportOutlined } from '@ant-design/icons-vue';
 
 import { navigateTo } from '@/utils/utils';
 import { TENDER_STATES } from '@/common/common';
+import { upperCase } from 'lodash';
 
 export default {
     name: 'BasicCards',
@@ -94,9 +96,16 @@ export default {
                 return '';
             }
             const tenderState = TENDER_STATES.find((item) => item.value === state);
-            return tenderState.back ? tenderState.back : '' ;
+            return tenderState.back ? tenderState.back : '';
         }
-        const dynamicColumns = ref(props.columns); 
+        const getCardState = (state) => {
+            if (!state) {
+                return '';
+            }
+            const tenderState = TENDER_STATES.find((item) => item.value === state);
+            return tenderState.label ? upperCase(tenderState.label) : '';
+        }
+        const dynamicColumns = ref(props.columns);
         const screenWidth = ref(window.innerWidth); // Ancho de la pantalla
 
         const setColumnsBasedOnScreenSize = () => {
@@ -131,7 +140,7 @@ export default {
         };
         const handleNewTab = (event, id) => {
             event.stopPropagation();
-            navigateTo(id, props.baseRoute, true,{},true);
+            navigateTo(id, props.baseRoute, true, {}, true);
         };
 
         return {
@@ -141,6 +150,7 @@ export default {
             navigateRoute,
             dynamicColumns,
             handleNewTab,
+            getCardState,
         }
     }
 }
