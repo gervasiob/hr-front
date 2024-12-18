@@ -97,6 +97,20 @@
                     </template>
                 </a-input>
             </a-form-item>
+            <a-form-item label="Mail" name="mail">
+                <a-input v-model:value="formTenderDetail.mail">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
+            <a-form-item label="Dirección" name="address">
+                <a-input v-model:value="formTenderDetail.address">
+                    <template #prefix>
+                        <UserOutlined class="site-form-item-icon" />
+                    </template>
+                </a-input>
+            </a-form-item>
             <a-form-item label="Localidad" name="city">
                 <a-input v-model:value="formTenderDetail.tender_data.city">
                     <template #prefix>
@@ -223,6 +237,16 @@
                 <a-descriptions-item label="Teléfono">
                     <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
                         <a-input v-model:value="formTenderDetail.tender_data.phone" :readonly="handleEdit(1)" />
+                    </div>
+                </a-descriptions-item>
+                <a-descriptions-item label="Mail">
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.mail" :readonly="handleEdit(1)" />
+                    </div>
+                </a-descriptions-item>
+                <a-descriptions-item label="Dirección">
+                    <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                        <a-input v-model:value="formTenderDetail.address" :readonly="handleEdit(1)" />
                     </div>
                 </a-descriptions-item>
                 <a-descriptions-item label="Localidad">
@@ -431,7 +455,7 @@
                 <!-- <vue-image-lightbox :images="[imageUrl]" :index="currentImageIndex" @close="isModalVisible = false"
                     v-if="isModalVisible" /> -->
 
-                <a-form layout="horizontal" ref="formRef" :model="formTenderDetail" :rules="rules"
+                <a-form layout="horizontal" ref="formRef" :model="formTenderDetail" :rules="rulesForm"
                     :label-col="{ span: 4 }" :wrapper-col="{ span: 6 }">
                     <div class="not-quote">
                         <a-form-item label="NO COTIZAR">
@@ -658,14 +682,14 @@
                     </a-form>
 
                 </div>
-
-                <div v-if="formTenderDetail.quote_state !== 'U'">
+                <hr>
+                <!-- <div v-if="formTenderDetail.quote_state !== 'U'">
                     <a-button v-if="formTenderDetail.quote_state !== 'LO'" class="editable-add-btn"
                         style="margin-bottom: 8px" @click="handleAdd">AGREGAR
                         ITEM</a-button>
-                </div>
+                </div> -->
                 <!-- Tabla Details -->
-                <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
+                <!-- <a-table :columns="columns" :data-source="dataSource" bordered :pagination="false">
                     <template #bodyCell="{ column, text, record }">
                         <template v-if="['quantity'].includes(column.dataIndex)">
                             <div>
@@ -684,12 +708,6 @@
                                 <template v-if="editableData[record.key]">
                                     {{ editableData[record.key][column.dataIndex] }}
                                 </template>
-                                <!-- <a-select ref="select" v-if="editableData[record.key]"
-                                    v-model:value="editableData[record.key][column.dataIndex]"
-                                    style="margin: -5px 0;width: 120px;" @focus="focus"
-                                    @change="handleChangeSku(editableData[record.key][column.dataIndex], record.key)"
-                                    :options="skuList" show-search :filter-option="filterOptionName">
-                                </a-select> -->
                                 <template v-else>
                                     {{ text }}
                                 </template>
@@ -774,13 +792,10 @@
                             </template>
                         </template>
                         <template v-if="column.dataIndex === 'price_wo_iva'">
-                            <!-- <a-input v-if="editableData[record.key]"
-                                v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                            <template v-else> -->
                             <div style="text-align: right;">
                                 {{ formatCurrency(record.price_final / 1.21) }}
                             </div>
-                            <!-- </template> -->
+                       
                         </template>
                         <template v-if="column.dataIndex === 'amount_wo_iva'">
                             <div style="text-align: right;">
@@ -790,10 +805,7 @@
                         <template v-else-if="column.dataIndex === 'total'">
                             <div style="text-align: right;">
                                 {{ formatCurrency(text) }}
-                                <!-- {{ formatCurrency(record.price_final / 1.21 * record.quantity * (1 +
-                                    formTenderDetail.fee /
-                                    100) + parseFloat(formTenderDetail.freight).toFixed(2))
-                                }} -->
+
                             </div>
 
                         </template>
@@ -820,7 +832,7 @@
                             </template>
                         </template>
                     </template>
-                </a-table>
+                </a-table> -->
                 <RobotOutlined class="ia-check" v-show="iaCheck.includes('details')" />
 
                 <!-- Nuevo formulario Details-->
@@ -840,7 +852,16 @@
                         <div>
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
                                 <a-col :span="4"> <a-checkbox v-model:checked="item.po"
-                                        @change="updateTotalSelected(item)" /></a-col>
+                                        @change="updateTotalSelected(item)" />
+                                    <div class="icono" v-show="item.po_id">
+                                        <router-link
+                                            :to="{ name: 'OrderDetail', params: { id: item.po_id ? item.po_id : 1 } }">
+                                            <a-button type="primary" :disabled="!text">
+                                                PDF
+                                            </a-button>
+                                        </router-link>
+                                    </div>
+                                </a-col>
                                 <a-col :span="6"><a-select v-model:value="item.type" placeholder="Tipo"
                                         :options="groupList" show-search :filter-option="filterOption" /></a-col>
                                 <a-col :span="8"><a-select v-model:value="item.llanta_type" placeholder="Descripción"
@@ -852,7 +873,7 @@
                                         :readonly="true" style="min-width: 120px;" /></a-col>
                             </a-row>
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
-                                <a-col :span="8" :offset="4"> <a-select v-model:value="item.vendor"
+                                <a-col :span="8" :offset="4"> <a-select v-model:value="item.vendor_id"
                                         placeholder="Proveedor" allow-clear show-search :filter-option="filterOption">
                                         <a-select-option v-for="(item, index) in vendorList" :key="index"
                                             :value="item.value" :label="(item.name)">
@@ -866,21 +887,23 @@
                                         style="min-width: 180px;" /></a-col>
                                 <a-col :span="5"><a-input-number v-model:value="item.quantity" placeholder="Cantidad"
                                         @change="updateCalculatedFields(item, index)"
-                                        style="min-width: 180px;" /></a-col>
+                                        :style="{ backgroundColor: item.noStock ? '#eeaab0' : 'white', textAlign: 'right', minWidth: '180px' }" /></a-col>
                             </a-row>
 
 
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
                                 <a-col :span="4" :offset="12">
                                     <a-form-item label="Total S/IVA">
-                                        <a-input-number v-model:value="item.amount_wo_iva" disabled
-                                            placeholder="Total S/IVA" style="width: 140px" />
+                                        <a-input-number v-model="item.amount_wo_iva" disabled
+                                            :value="formatCurrency(item.amount_wo_iva)" placeholder="Total S/IVA"
+                                            style="width: 140px"></a-input-number>
                                     </a-form-item>
                                 </a-col>
                                 <a-col :span="4">
                                     <a-form-item label="Total C/IVA">
-                                        <a-input-number label="Total C/IVA" v-model:value="item.total" disabled
-                                            placeholder="Total + Fee" style="width: 140px" />
+                                        <a-input-number label="Total C/IVA" v-model="item.total" disabled
+                                            :value="formatCurrency(item.total)" placeholder="Total + Fee"
+                                            style="width: 140px" />
                                     </a-form-item>
                                 </a-col>
                                 <a-col :span="4">
@@ -889,7 +912,7 @@
                             </a-row>
                         </div>
                     </a-form-item>
-                    <a-form-item>
+                    <a-form-item v-if="formTenderDetail.quote_state !== 'U'">
                         <a-button type="dashed" @click="addItemDetail" style="width: 100%;">
                             <PlusOutlined /> Agregar Item
                         </a-button>
@@ -987,7 +1010,7 @@
                 </a-row>
                 <a-row>
                     <a-col :span="8" :offset="8">
-                        <a-button type="primary" size="large" @click="handleGenerateOc" :loading="isLoading">Generar
+                        <a-button type="primary" size="large" @click="onSave('A')" :loading="isLoading">Generar
                             OC</a-button>
                     </a-col>
 
@@ -1062,6 +1085,7 @@ export default {
             items: [],
         });
         const rules = formRules;
+        const rulesForm = null;
         const errorMessage = ref('');
         let tenderId = ref(route.params.id);
         const tenderData = ref({});
@@ -1239,9 +1263,8 @@ export default {
         }
         const calculateTotalQuoted = () => {
             let totalQuoted = 0;
-            dataSource.value.map((item) => {
+            form.items.map((item) => {
                 if (item.total >= 0) {
-                    console.log('item total', item.total)
                     totalQuoted += parseFloat(item.total);
                 }
             })
@@ -1272,12 +1295,18 @@ export default {
                             noStock: false,
                             total: item.total ? item.total : 0,
                         }));
+                        form.items = filteredDetails.map((item, index) => ({
+                            ...item,
+                            key: index,
+                            noStock: false,
+                            total: item.total ? item.total : 0,
+                        }));
                     }
                 } else {
                     const details = { ...quoteData.value.details, noStock: false };
                     dataSource.value.push(details);
+                    form.value.items.push(details);
                 }
-
 
                 let records = [];
                 records = quoteResponse.results[0].tire_type_name;
@@ -1463,11 +1492,11 @@ export default {
                 }
                 // Validar el formulario
                 if (type.value === 'Add') {
-                    await formRefAdd.value.validate();
+                    // await formRefAdd.value.validate();
                 }
-                await formRef.value.validate();
+                // await formRef.value.validate();
                 const detalle = form.items;
-                formTenderDetail.value.detail = detalle;
+
                 // Preparar los parámetros
                 const params = { ...formTenderDetail.value, ...formEnvio };
 
@@ -1479,12 +1508,40 @@ export default {
 
                 params.quote_state = value;
 
-                const details = dataSource.value.map((item) => ({
-                    ...item,
-                    po: item.po || false,
-                    total: item.total ? item.total : 0,
-                    price_oc: parseFloat(item.price_final / 1.21 * (1 + formTenderDetail.value.fee / 100)).toFixed(2),
-                }));
+                // const details = { ...detalle }; 
+
+                // const details = dataSource.value.map((item) => ({
+                //     ...item,
+                //     po: item.po || false,
+                //     total: item.total ? item.total : 0,
+                //     price_oc: parseFloat(item.price_final / 1.21 * (1 + formTenderDetail.value.fee / 100)).toFixed(2),
+                // }));
+                const details = detalle.map((item, index) => {
+                    // Variables para cálculos
+                    const priceFinal = parseFloat(item.price_final).toFixed(2);
+                    const priceWoIva = parseFloat(item.price_final / 1.21).toFixed(2);
+                    const amountWoIva = parseFloat(priceWoIva * item.quantity);
+                    const feeMultiplier = 1 + formTenderDetail.value.fee / 100;
+                    const total = amountWoIva ? parseFloat(amountWoIva * feeMultiplier).toFixed(2) : 0;
+                    const priceOc = parseFloat(item.price_final / 1.21).toFixed(2);
+
+                    // Retorno del objeto con las variables calculadas
+                    return {
+                        price: 0,
+                        key: index,
+                        llanta_type: item.llanta_type,
+                        price_final: priceFinal,
+                        quantity: item.quantity,
+                        sku: item.sku,
+                        type: item.type,
+                        vendor_id: item.vendor_id,
+                        po: item.po || false,
+                        noStock: item.noStock || false,
+                        amount_wo_iva: amountWoIva,
+                        total,
+                        price_oc: priceOc,
+                    };
+                });
 
                 let fullParams = {
                     ...params,
@@ -1928,8 +1985,8 @@ export default {
             console.log('va al pdf', index)
         }
         const totalPo = computed(() => {
-            if (dataSource.value && Array.isArray(dataSource.value)) {
-                return dataSource.value.reduce((acc, item) => {
+            if (form.items && Array.isArray(form.items)) {
+                return form.items.reduce((acc, item) => {
                     let subTotal = 0;
                     if (item.po) {
                         subTotal = item.price_final / 1.21 * item.quantity * (1 + formTenderDetail.value.fee /
@@ -2017,7 +2074,8 @@ export default {
             error.value = null;
             newCost.value = { spare_tire_amount: [] };
 
-            const data = dataSource.value.filter((item) => item.sku);
+            // const data = dataSource.value.filter((item) => item.sku);
+            const data = form.items.filter((item) => item.sku);
 
             if (data.length === 0) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: No existe información para consultar' }));
@@ -2032,7 +2090,8 @@ export default {
                     .then((res) => {
                         if (res && res.results.length > 0) {
                             const stockData = res.results[0];
-                            const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
+                            // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
+                            const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
                             // Actualizar los valores de la respuesta
                             if (dataSourceItem) {
                                 dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
@@ -2204,8 +2263,10 @@ export default {
             if (formTenderDetail.value.fee > 0) {
                 totalWithFee = totalWithoutTax * (1 + formTenderDetail.value.fee / 100);
             }
-            form.items[index].amount_wo_iva = formatCurrency(totalWithoutTax);
-            item.total = formatCurrency(totalWithFee);
+            form.items[index].amount_wo_iva = totalWithoutTax;
+            item.total = totalWithFee;
+            calculateTireType();
+            handleGetStock();
         };
 
         const submitForm = () => {
@@ -2341,6 +2402,7 @@ export default {
             formEnvio,
             formEnvioRef,
             formPedido,
+            rulesForm,
         }
     }
 }
