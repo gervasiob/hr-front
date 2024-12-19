@@ -50,7 +50,7 @@ export default {
         let paramId = ref(route.params.id);
         const quoteId = ref(null);
         const pedidoId = ref(null);
-        const checkList = ref(['armado_y_ensamblado'])
+        const checkList = ref(['armado_y_embalaje'])
         const fetchData = async () => {
             try {
                 const params = {
@@ -79,6 +79,15 @@ export default {
             console.log('search', formState.pedidoId)
             fetchData();
         }
+        onMounted(async () => {
+            if (paramId.value) {
+                const quote = await getQuotes({ claim_id: paramId.value })
+                if (quote.results[0].nota_pedido_id) {
+                    formState.pedidoId = quote.results[0].nota_pedido_id;
+                    fetchData();
+                }
+            }
+        })
         return {
             sendDataToAPI,
             data,

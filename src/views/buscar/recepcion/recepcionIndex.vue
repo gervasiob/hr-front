@@ -26,7 +26,7 @@
 </template>
 
 <script>
-import { onMounted, reactive, ref } from 'vue';
+import { onMounted, onUnmounted, reactive, ref } from 'vue';
 import { useRoute } from 'vue-router';
 
 import BasicDetails from '@/components/details/basicDetails.vue';
@@ -86,6 +86,7 @@ export default {
                 dataResult = quoteResponse.results[0];
                 quoteId.value = dataResult.id;
                 pedidoId.value = dataResult.nota_pedido_id;
+                console.log('perdido id', pedidoId.value)
                 data.value = {
                     ...dataResult,
                     domain: dataResult.tender_data?.domain || 'Sin datos',
@@ -103,6 +104,7 @@ export default {
             console.log('search', formState.pedidoId)
             fetchData();
         }
+
         return {
             sendDataToAPI,
             data,

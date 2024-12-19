@@ -3,8 +3,8 @@
         <a-form layout="horizontal" :model="formState" v-bind="formItemLayout">
             <a-row>
                 <a-col span="6">
-                    <a-form-item label="Número de OC">
-                        <a-input v-model:value="formState.po" placeholder="input placeholder" />
+                    <a-form-item label="Número de Pedido">
+                        <a-input v-model:value="formState.pedidoId" placeholder="input placeholder" />
                     </a-form-item></a-col>
                 <a-col span="6">
                     <a-form-item>
@@ -15,8 +15,8 @@
 
         </a-form>
     </div>
-    <BasicDetails title="Detalle Creación de Lotes" :onSubmit="sendDataToAPI" :dataSource="data"
-        :pedidoId="pedidoId" :checkList="checkList" />
+    <BasicDetails title="Detalle Creación de Lotes" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
+        :checkList="checkList" />
 </template>
 
 <script>
@@ -41,7 +41,7 @@ export default {
         const sendDataToAPI = async (data) => {
             console.log("Datos enviados:", data);
             try {
-              
+
             } catch (error) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
                 return;
@@ -90,6 +90,15 @@ export default {
             console.log('search', formState.pedidoId)
             fetchData();
         }
+        onMounted(async () => {
+            if (paramId.value) {
+                const quote = await getQuotes({ claim_id: paramId.value })
+                if (quote.results[0].nota_pedido_id) {
+                    formState.pedidoId = quote.results[0].nota_pedido_id;
+                    fetchData();
+                }
+            }
+        })
         return {
             sendDataToAPI,
             data,

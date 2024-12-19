@@ -157,24 +157,28 @@ export default {
                 return;
             }
             try {
-
+                console.log('inciio el try', nota_pedido_id)
                 const pedidoParams = { pedido_id: nota_pedido_id }
                 const pedidoResponse = await apiPedidos('get', pedidoParams)
+                console.log('edido response', pedidoResponse)
                 if (pedidoResponse.results.length === 0) {
                     return;
                 }
-
+                console.log('query')
                 const checkParams = { pedido: pedidoResponse.results[0].id };
                 const checkResponse = await apiChecklist('get', checkParams);
-
+                console.log('response check', checkResponse)
                 const checklistItem = checkResponse.results[0] || {};
-                fileList.value.push({
-                    uid: '-1', // Identificador único para el archivo
-                    name: 'file', // Nombre del archivo
-                    status: 'done', // Estado del archivo (done para archivos ya cargados)
-                    url: checklistItem[props.imageSlotName], // URL del archivo existente
-                });
-              
+                if (checklistItem[props.imageSlotName]) {
+                    fileList.value.push({
+                        uid: '-1', // Identificador único para el archivo
+                        name: 'file', // Nombre del archivo
+                        status: 'done', // Estado del archivo (done para archivos ya cargados)
+                        url: checklistItem[props.imageSlotName], // URL del archivo existente
+                    });
+                } else {
+                    fileList.value = [];
+                }
                 // Guardar los datos en checklistData y sincronizar con state.checkedList
                 checklistData.value = checklistItem;
 
@@ -207,6 +211,7 @@ export default {
             }
         };
         onMounted(() => {
+            console.log('onmounted', props.pedidoId)
             queryPedidos(props.pedidoId)
         })
         watch(
@@ -220,6 +225,7 @@ export default {
             () => props.pedidoId,
             (newVal) => {
                 if (newVal) {
+                    console.log('nuevo valor', newVal)
                     queryPedidos(newVal);
                 }
             },

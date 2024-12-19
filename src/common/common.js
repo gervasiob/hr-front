@@ -279,3 +279,4 @@ export const VENDOR_TYPE = [
     { value: 2, label: 'Sucursal Daytona' },
 ];
 export const YES_NO = [{ value: false, label: 'NO', name: 'NO' }, { value: true, label: 'SI', name: 'SI' }];
+export const HAS_IMAGE = [{ value: 'N', label: 'NO', name: 'NO' }, { value: 'S', label: 'SI', name: 'SI' }];

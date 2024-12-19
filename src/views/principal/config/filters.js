@@ -3,7 +3,7 @@ export const vehicleList = [
     { name: 'Chevrolet' },
     { name: 'Toyota' },
 ];
-import { TENDER_STATES } from "@/common/common";
+import { HAS_IMAGE, TENDER_STATES, YES_NO } from "@/common/common";
 import { getUserList } from "@/api/users/users";
 import { ref } from "vue";
 import { filterOption } from "ant-design-vue/es/vc-mentions/src/util";
@@ -18,10 +18,17 @@ const USER_LIST = userList.value.map((item) => {
 
 export const filters = [
     {
-        label: 'Modelo',
-        name: 'vehicle',
+        label: 'Aseguradora',
+        name: 'company_name__icontains',
         component: 'a-input',
-        model: 'vehicle__icontains',
+        model: 'company_name__icontains',
+        placeholder: 'Ingrese su búsqueda',
+    },
+    {
+        label: 'Modelo',
+        name: 'tender_vehicle',
+        component: 'a-input',
+        model: 'tender_vehicle',
         placeholder: 'Ingrese su búsqueda',
     },
     {
@@ -51,9 +58,25 @@ export const filters = [
     },
     {
         label: 'Localidad',
-        name: 'city',
+        name: 'tender_city',
         component: 'a-input',
-        model: 'city__icontains',
+        model: 'tender_city',
         placeholder: 'Ingrese un valor',
+    },
+    {
+        label: 'Provincia',
+        name: 'tender_province',
+        component: 'a-input',
+        model: 'tender_province',
+        placeholder: 'Ingrese un valor',
+    },
+    {
+        label: 'Tiene Imagen',
+        name: 'has_image',
+        component: 'a-select',
+        model: 'has_image',
+        placeholder: 'Ingrese su búsqueda',
+        options: YES_NO,
+        showSearch: false,
     },
 ]

@@ -14,14 +14,20 @@
         </a-row>
 
     </div>
+
     <div>
         <basic-filters :filters="filterList" :vehicleList="vehicleList" :onSearchCallback="onSearch"
             :onResetCallback="resetFilters" v-model="filterInputs" />
     </div>
 
-    <div>
-        <basicCards :cards="dataSource" :columns="3" gridGap="20px" :baseRoute="baseRoute" navigateId="claim_id" />
-    </div>
+    <a-spin :spinning="loading" tip="Cargando...">
+        <div v-if="dataSource">
+            <basicCards :cards="dataSource" :columns="3" gridGap="20px" :baseRoute="baseRoute" navigateId="claim_id" />
+        </div>
+        <div v-else>
+            <p>No hay datos disponibles</p>
+        </div>
+    </a-spin>
     <div class="pager">
         <a-pagination v-model:current="pageCurrent" :total="total" @change="onPageChange" />
     </div>
@@ -51,6 +57,7 @@ export default {
         PlusOutlined,
     },
     setup() {
+        const loading = ref(false)
         const cardList = ref(cards);
         const filterList = filters;
         const vehicleList = [
@@ -68,24 +75,28 @@ export default {
         const fetchData = async (params) => {
             params = {
                 ...params,
-                ordering: '-created_at',
+                ordering: 'created_at',
                 page: pageCurrent.value,
                 ...filterInputs.value
             }
+            loading.value = true;
             try {
                 const response = await getQuotesSummary(params);
                 dataSource.value = response.results.filter(item => item.claim_id !== null);
                 total.value = response.count;
+
                 return dataSource.value;
             } catch (error) {
                 console.error("Error fetching quotes:", error);
+           
+            } finally {
+                loading.value = false;
             }
         };
         const baseRoute = "/Licitaciones";
         const {
             data: dataSource,
             run,
-            loading,
             current,
             pageSize,
         } = usePagination(fetchData, {
@@ -143,6 +154,7 @@ export default {
             pageCurrent,
             baseRoute,
             navigateToNewTender,
+            loading,
         }
     }
 }

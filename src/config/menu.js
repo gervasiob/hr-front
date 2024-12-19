@@ -12,6 +12,14 @@ export const menuList = [
         roles: ['guest'] // Solo visible para invitados (no logueados)
     },
     {
+        key: 'principal',
+        path: '/principal',
+        icon: () => h(AppstoreOutlined),
+        label: 'PRINCIPAL',
+        title: 'PRINCIPAL',
+        roles: basicAuth,
+    },
+    {
         key: 'licitacionesMenu',
         icon: () => h(MailOutlined),
         label: 'LICITACIONES',
@@ -104,6 +112,13 @@ export const menuList = [
                 title: 'CREACIÓN LOTES',
             },
             {
+                key: 'documentacion',
+                path: '/pedidos/documentacion',
+                name: 'Documentacion',
+                label: 'DOCUMENTACIÓN',
+                title: 'DOCUMENTACIÓN',
+            },
+            {
                 key: 'proforma',
                 path: '/pedidos/proforma',
                 name: 'Proforma',
@@ -161,6 +176,13 @@ export const menuList = [
                 name: 'SProforma',
                 label: 'PROFORMA',
                 title: 'PROFORMA',
+            },
+            {
+                key: 'sdocumentacoin',
+                path: '/buscar/documentacion',
+                name: 'SDocumentacion',
+                label: 'DOCUMENTACIÓN',
+                title: 'DOCUMENTACIÓN',
             },
             {
                 key: 'senvios',
@@ -321,12 +343,5 @@ export const menuList = [
         title: 'LOGOUT',
         roles: basicAuth,
     },
-    {
-        key: 'principal',
-        path: '/principal',
-        icon: () => h(AppstoreOutlined),
-        label: 'PRINCIPAL',
-        title: 'PRINCIPAL',
-        roles: basicAuth,
-    },
+
 ];

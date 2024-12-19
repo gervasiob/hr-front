@@ -919,7 +919,7 @@
                     </a-form-item>
                     <div class="total-item">
                         <span>
-                            Total Selección: {{ totalSelected }}
+                            Costo Total: {{ totalSelected }}
                         </span>
                     </div>
                     <div class="total-item">
@@ -1362,7 +1362,12 @@ export default {
                     llanta_type: llantaType,
                 };
                 if (quoteData.value.image_data) {
-                    imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
+                    if (String(quoteData.value.image_data).startsWith('https')) {
+                        imageData.value = quoteData.value.image_data;
+                    } else {
+                        imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
+                    }
+                  
                     imageUrl.value = imageData.value;
                 }
                 formTenderDetail.value = quoteDataValue;
