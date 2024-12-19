@@ -12,6 +12,14 @@ export const menuList = [
         roles: ['guest'] // Solo visible para invitados (no logueados)
     },
     {
+        key: 'principal',
+        path: '/principal',
+        icon: () => h(AppstoreOutlined),
+        label: 'PRINCIPAL',
+        title: 'PRINCIPAL',
+        roles: basicAuth,
+    },
+    {
         key: 'licitacionesMenu',
         icon: () => h(MailOutlined),
         label: 'LICITACIONES',
@@ -64,6 +72,138 @@ export const menuList = [
                 name: 'Licitaciones Perdidas',
                 label: 'LISTADO DE PERDIDAS',
                 roles: ['Admin'],
+            },
+        ]
+    },
+    {
+        key: 'pedidos',
+        icon: () => h(SettingOutlined),
+        label: 'PEDIDOS',
+        title: 'Pedidos',
+        roles: ['Admin', 'Agente', 'Almacen', 'Facturacion', 'Gomeria', 'Documentacion', 'Flete'],
+        children: [
+            {
+                key: 'validacion',
+                path: '/pedidos/validacion',
+                name: 'ValidacionClientes',
+                label: 'VALIDACIÓN CLIENTES',
+                title: 'VALIDACIÓN CLIENTES',
+            },
+            {
+                key: 'recepcion',
+                path: '/pedidos/recepcion-mercaderia',
+                name: 'RecepcionMercaderia',
+                label: 'RECEPCIÓN MERCADERÍA',
+                title: 'RECEPCIÓN MERCADERÍA',
+            },
+
+            {
+                key: 'gomerica',
+                path: '/pedidos/gomeria',
+                name: 'Gomeria',
+                label: 'GOMERÍA',
+                title: 'GOMERÍA',
+            },
+            {
+                key: 'creacionLotes',
+                path: '/pedidos/creacion-lotes',
+                name: 'CreacionLotes',
+                label: 'CREACIÓN LOTES',
+                title: 'CREACIÓN LOTES',
+            },
+            {
+                key: 'documentacion',
+                path: '/pedidos/documentacion',
+                name: 'Documentacion',
+                label: 'DOCUMENTACIÓN',
+                title: 'DOCUMENTACIÓN',
+            },
+            {
+                key: 'proforma',
+                path: '/pedidos/proforma',
+                name: 'Proforma',
+                label: 'PROFORMA',
+                title: 'PROFORMA',
+            },
+            {
+                key: 'envios',
+                path: '/pedidos/envios',
+                name: 'Envios',
+                label: 'ENVÍOS',
+                title: 'ENVÍOS',
+            },
+            {
+                key: 'facturacion',
+                path: '/pedidos/facturacion',
+                name: 'Facturacion',
+                label: 'FACTURACIÓN',
+                title: 'FACTURACIÓN',
+            },
+        ]
+    },
+    {
+        key: 'buscar',
+        icon: () => h(SettingOutlined),
+        label: 'BUSCAR POR PEDIDO',
+        title: 'Buscar por Pedido',
+        roles: ['Admin', 'Agente', 'Almacen', 'Facturacion', 'Gomeria', 'Documentacion', 'Flete'],
+        children: [
+            {
+                key: 'srecepcion',
+                path: '/buscar/recepcion-mercaderia',
+                name: 'SRecepcionMercaderia',
+                label: 'RECEPCIÓN MERCADERÍA',
+                title: 'RECEPCIÓN MERCADERÍA',
+            },
+
+            {
+                key: 'sgomerica',
+                path: '/buscar/gomeria',
+                name: 'SGomeria',
+                label: 'GOMERÍA',
+                title: 'GOMERÍA',
+            },
+            {
+                key: 'screacionLotes',
+                path: '/buscar/creacion-lotes',
+                name: 'SCreacionLotes',
+                label: 'CREACIÓN LOTES',
+                title: 'CREACIÓN LOTES',
+            },
+            {
+                key: 'sproforma',
+                path: '/buscar/proforma',
+                name: 'SProforma',
+                label: 'PROFORMA',
+                title: 'PROFORMA',
+            },
+            {
+                key: 'sdocumentacoin',
+                path: '/buscar/documentacion',
+                name: 'SDocumentacion',
+                label: 'DOCUMENTACIÓN',
+                title: 'DOCUMENTACIÓN',
+            },
+            {
+                key: 'senvios',
+                path: '/buscar/envios',
+                name: 'SEnvios',
+                label: 'ENVÍOS',
+                title: 'ENVÍOS',
+            },
+            {
+                key: 'sfacturacion',
+                path: '/buscar/facturacion',
+                name: 'SFacturacion',
+                label: 'FACTURACIÓN',
+                title: 'FACTURACIÓN',
+            },
+            {
+                key: 'todos',
+                path: '/buscar/todos',
+                name: 'Todos',
+                label: 'TODOS LOS PEDIDOS',
+                title: 'TODOS LOS PEDIDOS',
             },
         ]
     },
@@ -180,7 +320,7 @@ export const menuList = [
         ],
     },
     {
-        key: 'resportes',
+        key: 'reportes',
         path: '/reports',
         icon: () => h(AppstoreOutlined),
         label: 'REPORTES',
@@ -203,4 +343,5 @@ export const menuList = [
         title: 'LOGOUT',
         roles: basicAuth,
     },
+
 ];

@@ -1,16 +1,14 @@
 <template>
   <a-layout style="background: #fff">
     <a-layout style="background: #fff">
-      <a-layout-sider :style="siderStyle" v-model:collapsed="collapsed" collapsible>
-        <a-menu v-model:selectedKeys="current" :items="items" @click="handleMenuSelect" /></a-layout-sider>
       <a-layout-content :style="contentStyle">
-        <a-row :gutter="24">
+        <a-row :gutter="24" style="height: fit-content;">
           <a-col :span="20">
             <div class="title">
               <div class="logo-container">
                 <img src="@/assets/daytona-logo.png" alt="Daytona Logo" class="logo-image" />
               </div>
-              <h4 class="sub-title">DFT - Daytona Fast Track</h4>
+              <h5 class="sub-title">DFT - Daytona Fast Track</h5>
 
             </div>
           </a-col>
@@ -35,9 +33,11 @@
                 }}</a-button> -->
             </div>
           </a-col>
-
           <a-divider style="height: 4px; background-color: #EC2233"></a-divider>
         </a-row>
+        <a-layout-content :style="siderStyle" v-model:collapsed="collapsed" collapsible>
+          <a-menu v-model:selectedKeys="current" :items="items" @click="handleMenuSelect"
+            mode="horizontal" /></a-layout-content>
         <RouterView />
       </a-layout-content>
     </a-layout>
@@ -121,6 +121,7 @@ export default {
       color: '#fff',
       backgroundColor: '#fff',
       marginTop: '50px',
+      marginBottom: '50px',
     };
     const footerStyle = {
       textAlign: 'center',
@@ -154,7 +155,6 @@ export default {
     }
 
     onMounted(() => {
-      console.log('roles', localStorage.getItem('roles'))
       const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga los roles del usuario
 
       // Si está en la ruta de login, muestra solo el menú de login
@@ -199,7 +199,6 @@ export default {
     // Notificaciones
     const [messageApi, contextHolder] = message.useMessage();
     const handleMessageInfo = (event) => {
-      console.log('mensaje', event)
       message.info(event.detail);
     }
     const handleMessageSuccess = (event) => {
@@ -228,7 +227,6 @@ export default {
         });
     }
     watch(() => route.path, (newPath) => {
-      console.log('roles en wath', JSON.parse(localStorage.getItem('roles')))
       const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga roles actualizados
       if (newPath === '/login') {
         items.value = menuList.filter((item) => item.key === 'login');
@@ -273,14 +271,14 @@ export default {
 
 <style scoped>
 .logo-container {
-  height: 80px;
+  height: 55px;
   overflow: hidden;
   position: relative;
 }
 
 .logo-image {
-  width: 40%;
-  height: 120px;
+  width: 20%;
+  height: 80px;
 }
 
 .title {
@@ -326,7 +324,7 @@ export default {
 
 .notification {
   color: var(--principal);
-  font-size: 40px;
+  font-size: 30px;
 }
 
 :deep(.ant-switch-checked) {

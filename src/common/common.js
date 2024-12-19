@@ -27,7 +27,8 @@ export const TENDER_STATES = [
     {
         label: 'Adjudicado',
         value: 'A',
-        color: 'volcano' // Rojo
+        color: 'volcano', // Rojo
+        back: '#8FEF9E', //verde
     },
     {
         label: 'Entregado',
@@ -38,6 +39,7 @@ export const TENDER_STATES = [
         label: 'Evaluado',
         value: 'E',
         color: 'purple',
+        back: '#D5BDF0',
     },
     {
         label: 'Cancelado',
@@ -62,7 +64,8 @@ export const TENDER_STATES = [
     {
         label: 'Pendiente',
         value: 'N',
-        color: 'gold'
+        color: 'gold',
+        back: '#F0E24A',
     },
     {
         label: 'Solicitud Cambio de Costo',
@@ -98,6 +101,8 @@ export const TENDER_STATES = [
         label: 'Perdida',
         value: 'LO',
         color: '#C5C308',
+        back: '#D9B2C0',
+
     },
 ];
 export const PRIORITY_VALUES = [
@@ -273,3 +278,5 @@ export const VENDOR_TYPE = [
     { value: 1, label: 'Cía Aseguradora' },
     { value: 2, label: 'Sucursal Daytona' },
 ];
+export const YES_NO = [{ value: false, label: 'NO', name: 'NO' }, { value: true, label: 'SI', name: 'SI' }];
+export const HAS_IMAGE = [{ value: 'N', label: 'NO', name: 'NO' }, { value: 'S', label: 'SI', name: 'SI' }];

@@ -29,7 +29,8 @@ export async function apiRequest(method, endpoint, params, id = null) {
             url: url_endpoint,
             // params: params,
             params: method === 'get' || method === 'delete' ? params : undefined,
-            data: method === 'post' || method === 'put' ? params : undefined
+            data: method === 'post' || method === 'put' ? params : undefined,
+            headers: params instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
         });
         return response.data;
     } catch (error) {
@@ -73,7 +74,6 @@ export async function validateToken(credentials) {
         localStorage.setItem('email', email);
         localStorage.setItem('roles', JSON.stringify(roles));
         localStorage.setItem('name', name);
-        console.log('validate token', roles)
         return token;
     } catch (error) {
         console.error('Error check token: ', error);
