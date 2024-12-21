@@ -124,6 +124,7 @@ import { getOrders, addOrders, updateOrders, deleteOrders } from '@/api/orders/o
 import { getUsers } from '@/api/users/users.js';
 import { YES_NO } from '@/common/common.js';
 import { getRoles } from '@/api/roles/roles.js';
+import { getQuotes } from '@/api/quotes/quotes.js';
 export default {
   name: 'ordersList',
 
@@ -166,12 +167,15 @@ export default {
           };
         });
         agents.value = transformedAgents;
-        const transformedData = dataSource.value.map((item) => {
+        const transformedData = dataSource.value.map( (item) => {
+    
           return {
             ...item,
             dSku: item.detalles[0].Sku,
             dDescripcion: item.detalles[0].Descripcion,
             dCantidad: item.detalles[0].Cantidad,
+            dPatente: item.detalles[0].domain,
+            dNroPedido: item.detalles[0].numero_nota_pedido,
           }
         })
         console.log('transpform daa', transformedData)

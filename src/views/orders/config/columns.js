@@ -42,9 +42,14 @@ export const tableColumns = [
         sorter: (a, b) => a.dDescripcion.localeCompare(b.dDescripcion),
     },
     {
-        title: 'Cantidad',
-        dataIndex: 'dCantidad',
-        sorter: (a, b) => a.dCantidad.localeCompare(b.dCantidad),
+        title: 'Patente',
+        dataIndex: 'dPatente',
+        sorter: (a, b) => a.dPatente.localeCompare(b.dPatente),
+    },
+    {
+        title: 'Nota de Pedido',
+        dataIndex: 'dNroPedido',
+        sorter: (a, b) => a.dNroPedido.localeCompare(b.dNroPedido),
     },
     {
         title: 'Operation',

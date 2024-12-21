@@ -21,8 +21,8 @@ export default {
         const sendDataToAPI = async (data) => {
             console.log("Datos enviados:", data);
             try {
-                let response = await updateQuotes(quoteId.value, data);
-                console.log('response', response)
+                // let response = await updateQuotes(quoteId.value, data);
+                // console.log('response', response)
             } catch (error) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
                 return;

@@ -36,7 +36,7 @@ export default {
         basicFilters,
     },
     setup() {
-        const baseRoute = "/Licitaciones";
+        const baseRoute = "/buscar/creacion-lotes";
         const nextRoute = '/nueva-licitacion';
         const cardList = ref({});
         const filterList = filters;

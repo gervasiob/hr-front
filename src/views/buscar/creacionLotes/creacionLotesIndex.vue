@@ -3,8 +3,8 @@
         <a-form layout="horizontal" :model="formState" v-bind="formItemLayout">
             <a-row>
                 <a-col span="6">
-                    <a-form-item label="Número de OC">
-                        <a-input v-model:value="formState.po" placeholder="input placeholder" />
+                    <a-form-item label="Número de Pedido">
+                        <a-input v-model:value="formState.pedidoId" placeholder="input placeholder" />
                     </a-form-item></a-col>
                 <a-col span="6">
                     <a-form-item>
@@ -15,8 +15,8 @@
 
         </a-form>
     </div>
-    <BasicDetails title="Detalle Creación de Lotes" :onSubmit="sendDataToAPI" :dataSource="data"
-        :pedidoId="pedidoId" :checkList="checkList" />
+    <BasicDetails title="Detalle Creación de Lotes" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
+        :checkList="checkList" />
 </template>
 
 <script>
@@ -41,7 +41,7 @@ export default {
         const sendDataToAPI = async (data) => {
             console.log("Datos enviados:", data);
             try {
-              
+
             } catch (error) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
                 return;
@@ -59,18 +59,12 @@ export default {
         const fetchData = async () => {
             try {
                 const params = {
-                    orden_id__icontains: formState.po,
+                    nota_pedido_id: formState.pedidoId,
                 };
-                const poResponse = await getOrders(params);
-                const quoteIdInternal = poResponse.results[0].detalles[0].quote_id
-                const paramsQuote = {
-                    id: quoteIdInternal,
-                }
-                const quoteResponse = await getQuotes(paramsQuote);
+                const quoteResponse = await getQuotes(params);
                 console.log('quote response', quoteResponse.results[0])
                 let dataResult = [];
                 dataResult = quoteResponse.results[0];
-                console.log('dataResult', dataResult)
                 quoteId.value = dataResult.id;
                 pedidoId.value = dataResult.nota_pedido_id;
                 data.value = {
@@ -90,6 +84,15 @@ export default {
             console.log('search', formState.pedidoId)
             fetchData();
         }
+        onMounted(async () => {
+            if (paramId.value) {
+                const quote = await getQuotes({ claim_id: paramId.value })
+                if (quote.results[0].nota_pedido_id) {
+                    formState.pedidoId = quote.results[0].nota_pedido_id;
+                    fetchData();
+                }
+            }
+        })
         return {
             sendDataToAPI,
             data,

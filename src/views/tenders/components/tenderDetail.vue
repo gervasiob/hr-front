@@ -317,14 +317,20 @@
             <div class="form-pedido">
                 <a-form ref="formPedidoRef" :model="formPedido" class="form-envio">
                     <!-- Pedido ID -->
-                    <a-form-item label="Pedido ID" name="pedido_id">
-                        <a-input v-model:value="formPedido.pedido_id" :disabled="true" />
-                    </a-form-item>
+                    <a-row :gutter="45">
+                        <a-col :span="12"> <a-form-item label="Pedido ID" name="pedido_id">
+                                <a-input v-model:value="formPedido.pedido_id" :disabled="true" />
+                            </a-form-item></a-col>
+                        <a-col :span="8"><router-link :to="{ name: 'Todos', params: { id: formPedido.pedido_id } }"
+                                target="_blank">
+                                <a-button type="primary" danger>
+                                    Ir a Pedido {{ formPedido.pedido_id }}
+                                </a-button>
+                            </router-link></a-col>
+                    </a-row>
 
-                    <!-- Orden Compra Conformada -->
-                    <a-form-item label="Orden Compra Conformada" name="orden_compra_conformada">
-                        <a-switch v-model:checked="formPedido.orden_compra_conformada" :disabled="true" />
-                    </a-form-item>
+
+
 
                     <!-- Orden Compra Conformada Date -->
                     <!-- <a-form-item label="Fecha Orden Compra Conformada" name="orden_compra_conformada_date">
@@ -337,6 +343,10 @@
                         <a-switch v-model:checked="formPedido.entrega_de_mercaderia" :disabled="true" />
                     </a-form-item>
 
+                    <!-- Orden Compra Conformada -->
+                    <a-form-item label="Orden Compra Conformada" name="orden_compra_conformada">
+                        <a-switch v-model:checked="formPedido.orden_compra_conformada" :disabled="true" />
+                    </a-form-item>
                     <!-- Fecha Entrega de Mercadería -->
                     <!-- <a-form-item label="Fecha Entrega de Mercadería" name="entrega_de_mercaderia_date">
                         <a-date-picker v-model:value="formPedido.entrega_de_mercaderia_date" :disabled="true"
@@ -856,7 +866,7 @@
                                     <div class="icono" v-show="item.po_id">
                                         <router-link
                                             :to="{ name: 'OrderDetail', params: { id: item.po_id ? item.po_id : 1 } }">
-                                            <a-button type="primary" :disabled="!text">
+                                            <a-button type="primary">
                                                 PDF
                                             </a-button>
                                         </router-link>
@@ -869,8 +879,8 @@
                                         :options="editableData.data" :filter-option="false" show-search allow-clear
                                         :not-found-content="item.fetching ? undefined : null"
                                         @search="(value) => handleSearchDescription(value, index)" /></a-col>
-                                <a-col :span="4"><a-input-number v-model:value="item.sku" placeholder="SKU"
-                                        :readonly="true" style="min-width: 120px;" /></a-col>
+                                <a-col :span="4"><a-input v-model:value="item.sku" placeholder="SKU" :readonly="true"
+                                        style="min-width: 120px;" /></a-col>
                             </a-row>
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
                                 <a-col :span="8" :offset="4"> <a-select v-model:value="item.vendor_id"
@@ -912,14 +922,14 @@
                             </a-row>
                         </div>
                     </a-form-item>
-                    <a-form-item v-if="formTenderDetail.quote_state !== 'U'">
+                    <a-form-item v-if="formTenderDetail.quote_state !== 'LO'">
                         <a-button type="dashed" @click="addItemDetail" style="width: 100%;">
                             <PlusOutlined /> Agregar Item
                         </a-button>
                     </a-form-item>
                     <div class="total-item">
                         <span>
-                            Total Selección: {{ totalSelected }}
+                            Costo Total: {{ totalSelected }}
                         </span>
                     </div>
                     <div class="total-item">
@@ -1012,14 +1022,14 @@
                 </div>
             </div>
             <!-- Botones en estado Adjudicado -->
-            <div v-if="formTenderDetail.quote_state === 'A'">
+            <div v-if="formTenderDetail.quote_state === 'A' || formTenderDetail.quote_state === 'u'">
                 <a-row class="footer-oc">
                     <!-- <a-col :offset="10">
                         <a-button type="primary" @click="handleGenerateOc">Generar OC</a-button>
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -1362,7 +1372,12 @@ export default {
                     llanta_type: llantaType,
                 };
                 if (quoteData.value.image_data) {
-                    imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
+                    if (String(quoteData.value.image_data).startsWith('https')) {
+                        imageData.value = quoteData.value.image_data;
+                    } else {
+                        imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
+                    }
+
                     imageUrl.value = imageData.value;
                 }
                 formTenderDetail.value = quoteDataValue;
@@ -2015,7 +2030,6 @@ export default {
             return 0;
         });
         const handleGenerateOc = () => {
-            console.log('generar OC')
             // Agrupar por vendor
             const filteredData = dataSource.value.filter((item) => item.po === true);
             console.log('filtered Data', filteredData)

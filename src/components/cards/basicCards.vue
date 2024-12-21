@@ -6,7 +6,7 @@
             @click="navigateRoute(card[navigateId])">
             <!-- Imagen con altura y ancho definidos -->
             <template #cover v-if="card.image">
-                <img :alt="card.imageAlt || 'Card cover'" :src="card.image" :style="imageStyle" />
+                <img :alt="card.imageAlt || 'Card cover'" :src="getImageSrc(card.image)" :style="imageStyle" />
             </template>
 
             <!-- Título y descripción dinámicos -->
@@ -143,6 +143,12 @@ export default {
             navigateTo(id, props.baseRoute, true, {}, true);
         };
 
+        const getImageSrc = (image) => {
+            if (typeof image === 'string' && image.startsWith('https')) {
+                return image; // Si es una URL, devuélvela tal cual
+            }
+            return `data:image/jpeg;base64,${image}`; // Si es base64, prepende el esquema correcto
+        };
         return {
             defaultCardStyle,
             imageStyle,
@@ -151,6 +157,7 @@ export default {
             dynamicColumns,
             handleNewTab,
             getCardState,
+            getImageSrc,
         }
     }
 }
