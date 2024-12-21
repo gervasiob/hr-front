@@ -1377,7 +1377,6 @@ export default {
                     } else {
                         imageData.value = 'data:image/jpeg;base64,' + quoteData.value.image_data;
                     }
-
                     imageUrl.value = imageData.value;
                 }
                 formTenderDetail.value = quoteDataValue;
