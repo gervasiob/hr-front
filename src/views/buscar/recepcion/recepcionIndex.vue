@@ -79,7 +79,7 @@ export default {
                 remito.value = poResponse.results[0].remito;
                 const quoteIdInternal = poResponse.results[0].detalles[0].quote_id
                 const paramsQuote = {
-                    id: quoteIdInternal,
+                    claim_id: quoteIdInternal,
                 }
                 const quoteResponse = await getQuotes(paramsQuote);
                 let dataResult = [];

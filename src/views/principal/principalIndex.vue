@@ -75,7 +75,7 @@ export default {
         const fetchData = async (params) => {
             params = {
                 ...params,
-                ordering: 'created_at',
+                ordering: '-created_at',
                 page: pageCurrent.value,
                 ...filterInputs.value
             }

@@ -72,7 +72,7 @@
         <div>
           <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
             v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
-            :filter-option="filterOption" mode="multiple">
+            :filter-option="filterOption" mode="multiple" :style="{ minWidth: '150px' }">
             <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
               {{ item.name }}
             </a-select-option>

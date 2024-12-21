@@ -15,8 +15,8 @@
 
         </a-form>
     </div>
-    <BasicDetails title="Detalle Pedido" :onSubmit="sendDataToAPI" :dataSource="data"
-        :pedidoId="pedidoId" :checkList="checkList" />
+    <BasicDetails title="Detalle Pedido" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
+        :checkList="checkList" />
 </template>
 
 <script>
@@ -40,7 +40,7 @@ export default {
         const sendDataToAPI = async (data) => {
             console.log("Datos enviados:", data);
             try {
-               
+
             } catch (error) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
                 return;
@@ -52,7 +52,9 @@ export default {
         const data = ref([]);
         const quoteId = ref(null);
         const pedidoId = ref(null);
-        const checkList = ref(['entrega_de_mercaderia','orden_compra_conformada', 'armado_y_embalaje','generacion_lote',])
+        const route = useRoute();
+        let paramId = ref(route.params.id);
+        const checkList = ref(['entrega_de_mercaderia', 'orden_compra_conformada', 'armado_y_embalaje', 'generacion_lote',])
         const fetchData = async () => {
             try {
                 const params = {
@@ -78,7 +80,10 @@ export default {
             }
         };
         onMounted(() => {
-           
+            if (paramId.value) {
+                formState.pedidoId = paramId.value
+                fetchData();
+            }
         })
         const handleSearch = () => {
             fetchData();

@@ -59,18 +59,12 @@ export default {
         const fetchData = async () => {
             try {
                 const params = {
-                    orden_id__icontains: formState.po,
+                    nota_pedido_id: formState.pedidoId,
                 };
-                const poResponse = await getOrders(params);
-                const quoteIdInternal = poResponse.results[0].detalles[0].quote_id
-                const paramsQuote = {
-                    id: quoteIdInternal,
-                }
-                const quoteResponse = await getQuotes(paramsQuote);
+                const quoteResponse = await getQuotes(params);
                 console.log('quote response', quoteResponse.results[0])
                 let dataResult = [];
                 dataResult = quoteResponse.results[0];
-                console.log('dataResult', dataResult)
                 quoteId.value = dataResult.id;
                 pedidoId.value = dataResult.nota_pedido_id;
                 data.value = {
