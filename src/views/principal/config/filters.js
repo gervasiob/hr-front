@@ -46,6 +46,7 @@ export const filters = [
         placeholder: 'Ingrese su búsqueda',
         options: TENDER_STATES, // Aquí pasas la lista de vehículos para el select
         showSearch: true,
+        value: 'N',
     },
     {
         label: 'Usuario',

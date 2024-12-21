@@ -339,7 +339,7 @@ const otherRoutes = [
     },
     {
         key: 'todos',
-        path: '/buscar/todos',
+        path: '/buscar/todos/:id?',
         name: 'Todos',
         component: () => import('@/views/buscar/allPedidos/allPedidosIndex.vue'),
         meta: { roles: basicAuth },

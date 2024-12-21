@@ -8,8 +8,8 @@
           </a-form-item>
         </a-col>
         <a-col :span="8">
-          <a-form-item label="Nombre" name="name">
-            <a-input v-model:value="filterInputs.nome" allowClear />
+          <a-form-item label="Nombre" name="name__icontains">
+            <a-input v-model:value="filterInputs.name__icontains" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="8" style="text-align: right">
@@ -124,7 +124,7 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
-
+console.log('fectch params', params)
       const fullParams = {
         ...params,
         ...filterInputs.value,
@@ -342,7 +342,6 @@ export default {
 
     const getVendorName = (input) => {
       let vendor = input;
-      console.log('get vendor name input', input)
       if (vendor) {
         return vendor.social_name;
       }
