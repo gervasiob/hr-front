@@ -1,10 +1,7 @@
 import axios from 'axios';
 
 const stage = import.meta.env.VITE_STAGE;
-const draftURL = `${window.location.origin}${window.location.pathname}`;
 localStorage.setItem('origin', window.location.origin)
-localStorage.setItem('pathname', window.location.pathname)
-localStorage.setItem('baseUrl', draftURL)
 localStorage.setItem('stage', stage)
 // export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
 export let BASE_URL;

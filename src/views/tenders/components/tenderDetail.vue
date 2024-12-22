@@ -1065,7 +1065,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
 
 import { getTendersIndex } from '@/api/tenders/tenders.js';
-import { getUsers } from '@/api/users/users.js';
+import { getUserList, getUsers } from '@/api/users/users.js';
 import { getPlatformList, getPlatforms } from '@/api/platforms/platforms.js';
 import { getRoles } from '@/api/roles/roles.js';
 import { getVendors, getVendorList, getSucursalList, getAssuranceList } from '@/api/vendors/vendors.js';
@@ -1769,11 +1769,13 @@ export default {
         const getUsersList = async () => {
             try {
                 const idRole = await getRoles({ name: 'Agente' });
-                const agentsResponse = await getUsers({ roles: idRole.results[0].id });
-                const transformedAgents = agentsResponse.results.map((item) => {
+                // const agentsResponse = await getUsers({ roles: idRole.results[0].id });
+                // const agentsResponse = await getUserList({ roles: idRole.results[0].id });
+                const agentsResponse = await getUserList();
+                const transformedAgents = agentsResponse.map((item) => {
                     return {
-                        ...item,
-                        fullName: item.username,
+                        id: item.value,
+                        fullName: item.name,
                     };
                 });
                 agents.value = transformedAgents;
@@ -1948,11 +1950,15 @@ export default {
                         vendor_id: '',
                     });
                 }
-                calculateTotalQuoted();
-                handleGetStock();
+
+
             } catch (err) {
                 error.value = err;
+                isLoadingCost.value = false;
             } finally {
+                // updateCalculatedFields(); //tiene que enviar el item
+                calculateTotalQuoted();
+                handleGetStock();
                 isLoadingCost.value = false;
             }
         };
@@ -2318,6 +2324,8 @@ export default {
             if (formTenderDetail.value.fee > 0) {
                 totalWithFee = totalWithoutTax * (1 + formTenderDetail.value.fee / 100);
             }
+            console.log('sin iva', totalWithoutTax)
+            console.log('price_final', item.price_final)
             form.items[index].amount_wo_iva = totalWithoutTax;
             item.total = totalWithFee;
             calculateTireType();

@@ -94,6 +94,15 @@
           </a-button>
         </router-link>
       </template>
+      <template v-if="['quote_id'].includes(column.dataIndex)">
+        <div v-if="record.quote_id">
+          <router-link :to="{ name: 'TenderDetail', params: { id: record.quote_id } }">
+            <a-button type="primary" :disabled="!text">
+              {{ text }}
+            </a-button>
+          </router-link>
+        </div>
+      </template>
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
@@ -167,15 +176,14 @@ export default {
           };
         });
         agents.value = transformedAgents;
-        const transformedData = dataSource.value.map( (item) => {
-    
+        const transformedData = dataSource.value.map((item) => {
+
           return {
             ...item,
             dSku: item.detalles[0].Sku,
+            quote_id: item.detalles[0].quote_id,
             dDescripcion: item.detalles[0].Descripcion,
             dCantidad: item.detalles[0].Cantidad,
-            dPatente: item.detalles[0].domain,
-            dNroPedido: item.detalles[0].numero_nota_pedido,
           }
         })
         console.log('transpform daa', transformedData)
