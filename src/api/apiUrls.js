@@ -2,7 +2,6 @@ import axios from 'axios';
 
 const stage = import.meta.env.VITE_STAGE;
 // export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
-// export let BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
 export let BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
 const token = localStorage.getItem('token');
 if (token) {
@@ -30,7 +29,8 @@ export async function apiRequest(method, endpoint, params, id = null) {
             url: url_endpoint,
             // params: params,
             params: method === 'get' || method === 'delete' ? params : undefined,
-            data: method === 'post' || method === 'put' ? params : undefined
+            data: method === 'post' || method === 'put' ? params : undefined,
+            headers: params instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
         });
         return response.data;
     } catch (error) {
@@ -74,7 +74,6 @@ export async function validateToken(credentials) {
         localStorage.setItem('email', email);
         localStorage.setItem('roles', JSON.stringify(roles));
         localStorage.setItem('name', name);
-        console.log('validate token', roles)
         return token;
     } catch (error) {
         console.error('Error check token: ', error);
