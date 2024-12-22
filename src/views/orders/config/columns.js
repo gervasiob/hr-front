@@ -27,14 +27,19 @@ export const tableColumns = [
         sorter: (a, b) => a.orden_id.localeCompare(b.orden_id),
     },
     {
+        title: 'Nro Siniestro',
+        dataIndex: 'quote_id',
+        sorter: (a, b) => a.quote_id.localeCompare(b.quote_id),
+    },
+    {
         title: 'Remito',
         dataIndex: 'remito',
         sorter: (a, b) => a.remito.localeCompare(b.remito),
     },
     {
         title: 'Sku',
-        dataIndex: 'dsku',
-        sorter: (a, b) => a.dsku.localeCompare(b.dsku),
+        dataIndex: 'dSku',
+        sorter: (a, b) => a.dSku.localeCompare(b.dSku),
     },
     {
         title: 'Descripción',
@@ -43,13 +48,13 @@ export const tableColumns = [
     },
     {
         title: 'Patente',
-        dataIndex: 'dPatente',
-        sorter: (a, b) => a.dPatente.localeCompare(b.dPatente),
+        dataIndex: 'patente',
+        sorter: (a, b) => a.patente.localeCompare(b.patente),
     },
     {
         title: 'Nota de Pedido',
-        dataIndex: 'dNroPedido',
-        sorter: (a, b) => a.dNroPedido.localeCompare(b.dNroPedido),
+        dataIndex: 'pedido',
+        sorter: (a, b) => a.pedido.localeCompare(b.pedido),
     },
     {
         title: 'Operation',
