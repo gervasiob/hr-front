@@ -2,16 +2,17 @@ import axios from 'axios';
 
 const stage = import.meta.env.VITE_STAGE;
 const draftURL = `${window.location.origin}${window.location.pathname}`;
-console.log('origin', window.location.origin); // Imprime la URL base completa
-console.log('window.location.pathname', window.location.pathname); // Imprime la URL base completa
-console.log('dratURL',draftURL); // Imprime la URL base completa
-console.log('stage', stage); // Imprime la URL base completa
 localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('pathname', window.location.pathname)
 localStorage.setItem('baseUrl', draftURL)
 localStorage.setItem('stage', stage)
 // export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
-export let BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
+export let BASE_URL;
+if (stage && stage === 'DEV') {
+    BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
+} else {
+    BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
+}
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
