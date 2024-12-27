@@ -1710,6 +1710,10 @@ export default {
                 code: sku,
             }
             const res = await getCosts(params);
+            if (!res.count) {
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: El item seleccionado no tiene costo asociado en la tabla Costos' }));
+                return;
+            }
             const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
 
             form.items[key]['sku'] = sku;
@@ -1770,8 +1774,8 @@ export default {
             try {
                 const idRole = await getRoles({ name: 'Agente' });
                 // const agentsResponse = await getUsers({ roles: idRole.results[0].id });
-                // const agentsResponse = await getUserList({ roles: idRole.results[0].id });
-                const agentsResponse = await getUserList();
+                const agentsResponse = await getUserList({ roles: idRole.results[0].id });
+                // const agentsResponse = await getUserList();
                 const transformedAgents = agentsResponse.map((item) => {
                     return {
                         id: item.value,
@@ -1859,11 +1863,11 @@ export default {
                     delivery_time: 1,
                     original_parts: '',
                     brand: 1,
-                    tire_model: 1,
+                    tire_model: 15,
                     llanta_type: 'ALEACION',
-                    tire_width: 145,
-                    tire_height: 30,
-                    tire_tread: 13,
+                    tire_width: 195,
+                    tire_height: 55,
+                    tire_tread: 16,
                     obs: '',
                     tire_type_name: 'Auxilio',
                     tire_quoted: 'modelo exacto',
@@ -1907,7 +1911,7 @@ export default {
                 if (dataSource.value.find((item) => item.sku === skuN)) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Neumático SKU ya existente N°: ' + skuN }));
                 } else {
-                    let total = newCost.value.spare_tire_amounts[0].cost_amount / 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
+                    let total = newCost.value.spare_tire_amounts[0].cost_amount * 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
                     form.items.push({
                         type: 'Neumático',
                         key: newKey,
@@ -1918,6 +1922,7 @@ export default {
                         quantity: 1,
                         vendor_id: '',
                         total: total,
+                        amount_wo_iva: newCost.value.spare_tire_amounts[0].cost_amount,
                     });
                 }
                 if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
@@ -1939,6 +1944,7 @@ export default {
                 } else if (form.items.find((item) => item.type === 'Llanta') && !skuL) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Llanta Duplicada con SKU nulo' }));
                 } else {
+                    let total = llantaResponse.spare_tire_amounts[0].cost_amount * 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
                     form.items.push({
                         type: 'Llanta',
                         key: newKeyLlanta,
@@ -1946,6 +1952,8 @@ export default {
                         id: llantaResponse.spare_tire_amounts[0].id,
                         llanta_type: llantaResponse.spare_tire_amounts[0].detail,
                         price_final: llantaResponse.spare_tire_amounts[0].cost_amount,
+                        amount_wo_iva: llantaResponse.spare_tire_amounts[0].cost_amount,
+                        total: total,
                         quantity: 1,
                         vendor_id: '',
                     });
