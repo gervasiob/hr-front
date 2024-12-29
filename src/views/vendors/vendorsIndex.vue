@@ -113,6 +113,7 @@ import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vend
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
+import { VENDOR_TYPE } from '@/common/common.js';
 
 export default {
   name: 'VendorsList',
@@ -127,11 +128,7 @@ export default {
     });
 
     const columns = tableColumns;
-    const vendorsList = ref([
-      { value: 0, name: 'Proveedor' },
-      { value: 1, name: 'Comp. Aseguradora' },
-      { value: 2, name: 'Sucursal' },
-    ]);
+    const vendorsList = VENDOR_TYPE;
 
     const customHeaderRow = () => {
       return {
@@ -289,7 +286,7 @@ export default {
 
     };
     const getName = (item) => {
-      const vendor = vendorsList.value.find((vendor) => vendor.value === item);
+      const vendor = vendorsList.find((vendor) => vendor.value === item);
       if (vendor) {
 
         return vendor.name
@@ -369,8 +366,17 @@ export default {
     let formDataProps = ref({});
     const handleEdit = (key) => {
       const data = dataSource.value.filter(item => key === item.key)[0];
-      console.log('data', data)
-      formDataProps.value = { ...data };
+      const originalObject = {
+        marcas: data.marcas
+      };
+      // Convierte la cadena a un array
+      const transformedObject = {
+        marcas: originalObject.marcas
+          .replace(/^\[|\]$/g, '') // Elimina los corchetes inicial y final
+          .split(',') // Divide por comas
+          .map((marca) => marca.trim()) // Elimina espacios adicionales
+      };
+      formDataProps.value = { ...data, marcas: transformedObject.marcas };
       open.value = true;
 
     };

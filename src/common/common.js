@@ -274,9 +274,11 @@ export const GROUPS = [
     { value: 'Otros', label: "Otros" },
 ];
 export const VENDOR_TYPE = [
-    { value: 0, label: 'Proveedor' },
-    { value: 1, label: 'Cía Aseguradora' },
-    { value: 2, label: 'Sucursal Daytona' },
+    { value: 0, name: 'Proveedor' },
+    { value: 1, name: 'Cía Aseguradora' },
+    { value: 2, name: 'Sucursal Daytona' },
+    { value: 3, name: 'Sedes' },
+    { value: 4, name: 'Transporte' },
 ];
 export const YES_NO = [{ value: false, label: 'NO', name: 'NO' }, { value: true, label: 'SI', name: 'SI' }];
 export const HAS_IMAGE = [{ value: 'N', label: 'NO', name: 'NO' }, { value: 'S', label: 'SI', name: 'SI' }];

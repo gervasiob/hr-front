@@ -6,7 +6,7 @@
                 <span>
                     <a-rate v-model:value="formState[item.name]" :tooltips="item.desc" allow-half
                         style="color: var(--principal)">
-                        
+
                     </a-rate>
                     <span class="ant-rate-text">{{ item.desc[value - 1] }}</span>
                 </span>

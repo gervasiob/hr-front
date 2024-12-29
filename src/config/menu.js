@@ -307,6 +307,13 @@ export const menuList = [
                 title: 'WHATSAPP',
             },
             {
+                key: 'documentacion',
+                path: '/adm/documentacion',
+                name: 'Documentacion',
+                label: 'DOCUMENTACIÓN',
+                title: 'DOCUMENTACIÓN',
+            },
+            {
                 key: 'configurations',
                 path: '/adm/configurations',
                 name: 'Configuraciones',

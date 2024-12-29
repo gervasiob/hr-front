@@ -358,6 +358,13 @@ const otherRoutes = [
         component: () => import('@/views/pedidos/documentacion/uploadDocumentacion/uploadDocumentacionIndex.vue'),
         meta: { roles: basicAuth },
     },
+    {
+        key: 'documentacion',
+        name: 'Documentacion',
+        path: '/adm/documentacion',
+        component: () => import('@/views/configurations/documentacion/documentacionIndex.vue'),
+        meta: { roles: basicAuth },
+    },
 ]
 export const basicRoutes = [
     LoginRoute,
