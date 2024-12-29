@@ -17,7 +17,7 @@
             <a-input v-model:value="filterInputs.social_name__icontains" allowClear />
           </a-form-item>
         </a-col>
-        <a-col :span="8"  style="text-align: right">
+        <a-col :span="8" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -63,6 +63,22 @@
           <template v-else>
             {{ getName(text) }}
 
+          </template>
+        </div>
+      </template>
+      <template v-if="['marcas'].includes(column.dataIndex)">
+        <div>
+          <!-- <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />  -->
+          <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
+            v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
+            :filter-option="filterOption" style="width: 200px;">
+            <a-select-option v-for="(item, index) in brands" :key="index" :value="item.value" :label="item.name">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
+          <template v-else>
+            {{ text.length < 2 ? '' : text }}
           </template>
         </div>
       </template>
@@ -134,7 +150,9 @@ export default {
           ...item,
           key: index,
           user: null,
+          marcas: item.marcas && item.marcas.length > 2 ? item.marcas : [],
         }));
+
 
         total.value = response.count;
         return dataSource.value;
@@ -304,6 +322,8 @@ export default {
 
     const handleFormFinish = async (form) => {
       formState.value = form;
+      const marcasArray = form.marcas;
+      const marcasString = `[${marcasArray.join(",")}]`
       console.log('form handleFormFinish', form);
 
       try {
@@ -316,6 +336,7 @@ export default {
 
           const params = {
             ...form,
+            marcas: marcasString,
           };
 
           await updateVendors(form.id, params);

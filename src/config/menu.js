@@ -118,6 +118,13 @@ export const menuList = [
                 label: 'DOCUMENTACIÓN',
                 title: 'DOCUMENTACIÓN',
             },
+            // {
+            //     key: 'upload-documents',
+            //     path: '/upload-documents',
+            //     name: 'Carga Documentacion',
+            //     label: 'CARGA DOCUMENTACIÓN',
+            //     title: 'CARGA DOCUMENTACIÓN',
+            // },
             {
                 key: 'proforma',
                 path: '/pedidos/proforma',
@@ -298,6 +305,13 @@ export const menuList = [
                 name: 'Whatsapp',
                 label: 'WHATSAPP',
                 title: 'WHATSAPP',
+            },
+            {
+                key: 'configurations',
+                path: '/adm/configurations',
+                name: 'Configuraciones',
+                label: 'CONFIGURACIONES',
+                title: 'CONFIGURACIONES',
             },
         ]
     },

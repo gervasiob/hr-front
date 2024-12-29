@@ -18,5 +18,5 @@ export async function getProductList(params) {
     return await apiRequest('get', 'products_deep/', params);
 }
 export async function getPriceRequest(params) {
-    return await apiRequest('post', 'price_request/ ', params);
+    return await apiRequest('post', 'price_request/', params);
 }
