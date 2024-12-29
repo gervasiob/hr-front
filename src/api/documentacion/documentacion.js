@@ -1,7 +1,7 @@
 import { apiRequest } from '../apiUrls.js';
 
-const ENDPOINT = 'documentacion/';
-export async function apiChecklist(method, params, id = null) {
+const ENDPOINT = 'document_type/';
+export async function apiDocumentacion(method, params, id = null) {
     switch (method.toLowerCase()) {
         case 'get':
             return await apiRequest('get', ENDPOINT, params, id);
