@@ -22,6 +22,12 @@ export const tableColumns = [
         fixed: 'left',
         width: 210,
     },
+    {
+        title: 'Marcas',
+        dataIndex: 'marcas',
+        fixed: 'left',
+        width: 210,
+    },
     // {
     //     title: 'Subsidiaria',
     //     dataIndex: 'subsidiary',

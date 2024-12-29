@@ -212,6 +212,13 @@ const otherRoutes = [
         meta: { roles: ['Admin'] },
     },
     {
+        key: 'configurations',
+        name: 'configurationsIndex',
+        path: '/adm/configurations',
+        component: () => import('@/views/configurations/configurations/configurationsIndex.vue'),
+        meta: { roles: ['Admin'] },
+    },
+    {
         key: 'logout',
         path: '/logout',
         name: 'Logout',
@@ -342,6 +349,13 @@ const otherRoutes = [
         path: '/buscar/todos/:id?',
         name: 'Todos',
         component: () => import('@/views/buscar/allPedidos/allPedidosIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'upload-documents',
+        name: 'UploadDocuments',
+        path: '/upload-documents/:id',
+        component: () => import('@/views/pedidos/documentacion/uploadDocumentacion/uploadDocumentacionIndex.vue'),
         meta: { roles: basicAuth },
     },
 ]

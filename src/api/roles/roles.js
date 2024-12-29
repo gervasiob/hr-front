@@ -18,5 +18,5 @@ export async function deleteRoles(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
 export async function getRoleList(params) {
-    return await apiRequest('get', 'roles_deep ', params);
+    return await apiRequest('get', 'roles_deep/', params);
 }

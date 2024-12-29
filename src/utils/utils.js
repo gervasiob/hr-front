@@ -15,6 +15,7 @@ export function formatNumber(value) {
 
 export function navigateTo(id = null, baseRoute, requiredId = false, params = {}, newTab = false) {
     let route = {};
+    console.log('baseroute', baseRoute)
     if (requiredId) {
         if (id) {
             route = { path: `${baseRoute}/${id}` };
@@ -30,12 +31,10 @@ export function navigateTo(id = null, baseRoute, requiredId = false, params = {}
         route.query = params; // Agregar parámetros si existen
     }
     if (!newTab) {
-        console.log('in')
         router.push(route.path);
         return;
     }
     else {
-        console.log('out')
         window.open(route.path, "_blank");
         return;
     }

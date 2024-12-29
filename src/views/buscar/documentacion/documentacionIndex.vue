@@ -15,8 +15,17 @@
 
         </a-form>
     </div>
-    <BasicDetails title="Detalle Documentacion" :onSubmit="sendDataToAPI" :dataSource="data"
-        :pedidoId="pedidoId" :checkList="checkList" />
+    <BasicDetails title="Detalle Documentacion" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
+        :checkList="checkList" />
+    <div class="upload-documents">
+        <router-link :to="{ name: 'UploadDocuments', params: { id: claimId } }">
+            <a-button type="primary">
+             Cargar Archivos
+            </a-button>
+        </router-link>
+        <span style="color: black;">Archivos Cargados</span>
+    </div>
+
 </template>
 
 <script>
@@ -25,7 +34,7 @@ import { useRoute } from 'vue-router';
 
 import BasicDetails from '@/components/details/basicDetails.vue';
 
-import { getQuotes, updateQuotes } from '@/api/quotes/quotes';
+import { getQuotes } from '@/api/quotes/quotes';
 
 export default {
     name: 'DocumentacionDetail',
@@ -54,6 +63,7 @@ export default {
         let paramId = ref(route.params.id);
         const quoteId = ref(null);
         const pedidoId = ref(null);
+        const claimId = ref(null);
         const checkList = ref(['documentacion'])
         const fetchData = async () => {
             try {
@@ -65,6 +75,7 @@ export default {
                 let dataResult = [];
                 dataResult = quoteResponse.results[0];
                 quoteId.value = dataResult.id;
+                claimId.value = dataResult.claim_id;
                 pedidoId.value = dataResult.nota_pedido_id;
                 data.value = {
                     ...dataResult,
@@ -99,9 +110,14 @@ export default {
             checkList,
             formState,
             handleSearch,
+            claimId,
         }
     }
 }
 </script>
 
-<style></style>
+<style scoped>
+.upload-documents {
+    margin-top: 1%;
+}
+</style>

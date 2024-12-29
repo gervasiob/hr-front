@@ -1,4 +1,4 @@
-import { VENDOR_TYPE } from "@/common/common";
+import { BRANDS, VENDOR_TYPE } from "@/common/common";
 export const modalFields = [
     {
         name: 'product_feedback',
@@ -57,6 +57,19 @@ export const modalFields = [
             vendor_type: [{ required: true, message: 'Por favor seleccione un valor', trigger: 'change', },
             ]
         }
+    },
+    {
+        name: 'marcas',
+        label: 'Marcas',
+        type: 'select',
+        mode: 'multiple',
+        default: [],
+        options: BRANDS.map((item) => {
+            return {
+                value: item.label,
+                name: item.label,
+            }
+        }),
     },
     {
         name: 'mail',

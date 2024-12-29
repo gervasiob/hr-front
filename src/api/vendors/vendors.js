@@ -19,11 +19,11 @@ export async function deleteVendors(id, params) {
 }
 
 export async function getAssuranceList(params) {
-    return await apiRequest('get', 'aseguradoras_deep', params);
+    return await apiRequest('get', 'aseguradoras_deep/', params);
 }
 export async function getVendorList(params) {
-    return await apiRequest('get', 'proveedores_deep ', params);
+    return await apiRequest('get', 'proveedores_deep/', params);
 }
 export async function getSucursalList(params) {
-    return await apiRequest('get', 'sucursales_deep  ', params);
+    return await apiRequest('get', 'sucursales_deep/', params);
 }
