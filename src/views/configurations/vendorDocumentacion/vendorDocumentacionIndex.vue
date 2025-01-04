@@ -1,15 +1,15 @@
 <template>
-    <!-- <div class="filters">
+    <div class="filters">
         <a-form layout="horizontal" ref="formRef" :model="filterInputs">
             <a-row :gutter="24">
                 <a-col :span="8">
-                    <a-form-item label="SKU" name="sku">
-                        <a-input v-model:value="filterInputs.sku" allowClear />
+                    <a-form-item label="Nombre" name="name">
+                        <a-input v-model:value="filterInputs.name__icontains" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
-                    <a-form-item label="Nombre" name="name__icontains">
-                        <a-input v-model:value="filterInputs.name__icontains" allowClear />
+                    <a-form-item label="Descripción" name="description__icontains">
+                        <a-input v-model:value="filterInputs.description__icontains" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8" style="text-align: right">
@@ -18,21 +18,21 @@
                 </a-col>
             </a-row>
         </a-form>
-    </div> -->
+    </div>
 
     <!-- Table -->
 
-    <!-- <div>
+    <div>
         <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
-        <a-modal v-model:open="open" title="Producto" @ok="handleOk" @cancel="handleCancel">
+        <a-modal v-model:open="open" title="Documentación" @ok="handleOk" @cancel="handleCancel">
             <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
         </a-modal>
-    </div> -->
+    </div>
     <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
         @change="handleTableChange">
         <template #bodyCell="{ column, text, record }">
 
-            <template v-if="['description', 'text', 'values'].includes(column.dataIndex)">
+            <template v-if="['name', 'description'].includes(column.dataIndex)">
                 <div>
                     <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
                         style="margin: -5px 0;" />
@@ -41,34 +41,6 @@
                     </template>
                 </div>
             </template>
-            <template v-if="[ 'state'].includes(column.dataIndex)">
-                <div>
-                    <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
-                        style="margin: -5px 0;" :maxlength="4" />
-                    <template v-else>
-                        {{ text }}
-                    </template>
-                </div>
-            </template>
-            <template v-if="['enable'].includes(column.dataIndex)">
-                <div> <a-switch v-if="editableData[record.key]"
-                        v-model:checked="editableData[record.key][column.dataIndex]" :disabled="false" />
-                    <template v-else>
-                        <a-switch :checked="text" :disabled="true" />
-                    </template>
-                </div>
-            </template>
-
-            <template v-if="['value'].includes(column.dataIndex)">
-                <div>
-                    <a-input-number v-if="editableData[record.key]"
-                        v-model:value="editableData[record.key][column.dataIndex]" style="margin: -5px 0;" />
-                    <template v-else>
-                        {{ text }}
-                    </template>
-                </div>
-            </template>
-
             <template v-else-if="column.dataIndex === 'operation'">
                 <div class="editable-row-operations">
                     <span v-if="editableData[record.key]">
@@ -81,6 +53,12 @@
                         <a-row :gutter="2">
                             <a-col>
                                 <a @click="edit(record.key)">Edit</a>
+                            </a-col>
+                            <a-col>
+                                <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
+                                    @confirm="onDelete(record.key)">
+                                    <a>Eliminar</a>
+                                </a-popconfirm>
                             </a-col>
                         </a-row>
                     </span>
@@ -98,10 +76,10 @@ import { tableColumns } from './config/columns.js';
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
-import { apiConfigurations } from '@/api/configurations/configurations.js';
+import { apiDocumentacion } from '@/api/documentacion/documentacion.js';
 
 export default {
-    name: 'productList',
+    name: 'VendorDocumentacionIndex',
     components: {
         ModalPlatform,
     },
@@ -112,13 +90,12 @@ export default {
         const columns = tableColumns;
 
         const fetchData = async (params = {}) => {
-            console.log('fectch params', params)
             const fullParams = {
                 ...params,
                 ...filterInputs.value,
             }
             try {
-                const response = await apiConfigurations('get', fullParams);
+                const response = await apiDocumentacion('get', fullParams);
 
                 console.log("response");
                 console.log(response);
@@ -204,10 +181,10 @@ export default {
             try {
 
                 if (data.id > 0) {
-                    await apiConfigurations('put', params, data.id);
+                    await apiDocumentacion('put', params, data.id);
                 } else {
                     const { id, ...dataWithoutId } = data;
-                    apiConfigurations('post', dataWithoutId);
+                    apiDocumentacion('post', dataWithoutId);
                 }
                 window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
                 current.value = 1;
@@ -228,7 +205,7 @@ export default {
             const record = dataSource.value.find(item => key === item.key);
             Object.assign(record, editableData[key]);
             delete editableData[key];
-            if (!record.name) {
+            if (!record.sku || !record.name) {
                 onDelete(key);
             }
             delete editableData[key];
@@ -255,9 +232,9 @@ export default {
                 const params = {
                     name: data.name,
                 }
-                // apiConfigurations('delete',params, data.id).then(() => {
-                //     fetchData();
-                // });
+                apiDocumentacion('delete', params, data.id).then(() => {
+                    fetchData();
+                });
             }
             const newData = dataSource.value.filter(item => item.key !== key);
             dataSource.value = newData;
@@ -275,6 +252,7 @@ export default {
             if (formComponent.value) {
                 formComponent.value.handleFinish().then(() => {
                     open.value = false;
+                    formComponent.value.resetForm();
                 }).catch(() => {
                     // Si hay errores, el modal no se cierra
                 });
@@ -291,7 +269,7 @@ export default {
             formState.value = { ...form };
             console.log('form', form)
 
-            apiConfigurations('post',formState.value).then(() => {
+            apiDocumentacion('post', formState.value).then(() => {
                 formState.value = {};
                 current.value = 1;
                 fetchData();
