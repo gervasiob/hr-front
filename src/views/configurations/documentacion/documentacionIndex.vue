@@ -79,7 +79,7 @@ import ModalPlatform from '@/components/modal/modalPlatform.vue';
 import { apiDocumentacion } from '@/api/documentacion/documentacion.js';
 
 export default {
-    name: 'productList',
+    name: 'DocumentacionIndex',
     components: {
         ModalPlatform,
     },

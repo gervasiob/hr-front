@@ -78,8 +78,7 @@
             </a-select-option>
           </a-select>
           <template v-else>
-            {{ text.length < 2 ? '' : text }}
-          </template>
+            {{ text.length < 2 ? '' : text }} </template>
         </div>
       </template>
 
@@ -114,6 +113,7 @@ import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vend
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
 import { VENDOR_TYPE } from '@/common/common.js';
+import { apiDocumentacion, getDocumentTypeList, vendorDocument, vendorUploadDocuments } from '@/api/documentacion/documentacion.js';
 
 export default {
   name: 'VendorsList',
@@ -319,14 +319,15 @@ export default {
 
     const handleFormFinish = async (form) => {
       formState.value = form;
-      const marcasArray = form.marcas;
-      const marcasString = `[${marcasArray.join(",")}]`
-      console.log('form handleFormFinish', form);
 
+      const marcasArray = form.marcas;
+      let marcasString = '';
+      if (marcasArray) {
+        marcasString = `[${marcasArray.join(",")}]`
+      }
       try {
         if (form.hasOwnProperty('id') && form.id) {
           // Caso de edición
-          console.log('Edit mode', form);
           if (form.comercial_name === '') {
             form.comercial_name = null;
           }
@@ -335,9 +336,7 @@ export default {
             ...form,
             marcas: marcasString,
           };
-
           await updateVendors(form.id, params);
-          console.log('Vendor updated successfully');
           window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
           formComponent.value.resetForm();
           formState.value = {};
@@ -345,12 +344,11 @@ export default {
 
         } else {
           // Caso de adición
-          console.log('Add mode', formState.value);
           await addVendors(formState.value);
           console.log('Vendor added successfully');
           window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro agregado con éxito' }));
           formComponent.value.resetForm();
-          formState.value = {}; // Reinicia el estado del formulario
+          formState.value = {};
           formDataProps.value = {};
 
         }
@@ -369,14 +367,18 @@ export default {
       const originalObject = {
         marcas: data.marcas
       };
+      console.log('data', data)
       // Convierte la cadena a un array
-      const transformedObject = {
-        marcas: originalObject.marcas
-          .replace(/^\[|\]$/g, '') // Elimina los corchetes inicial y final
-          .split(',') // Divide por comas
-          .map((marca) => marca.trim()) // Elimina espacios adicionales
-      };
-      formDataProps.value = { ...data, marcas: transformedObject.marcas };
+      let transformedObject = originalObject.marcas;
+      if (originalObject.marcas.length > 0) {
+        transformedObject = {
+          marcas: originalObject.marcas
+            .replace(/^\[|\]$/g, '') // Elimina los corchetes inicial y final
+            .split(',') // Divide por comas
+            .map((marca) => marca.trim()) // Elimina espacios adicionales
+        };
+      }
+      formDataProps.value = { ...data, marcas: transformedObject.marcas, documents: [] };
       open.value = true;
 
     };

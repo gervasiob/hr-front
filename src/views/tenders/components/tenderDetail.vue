@@ -667,7 +667,8 @@
                                         placeholder="..." :options="optionsQuoteDetails" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
                                 </div>
-                                <div class="form-item-container">
+                                <div class="form-item-container"
+                                    :class="{ 'highlight-error': !formTenderDetail.daytona_ids }">
                                     <span style="color: red;">* Sucursal</span>
                                     <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%"
                                         mode="single" placeholder="Please select" allow-clear show-search
@@ -859,7 +860,7 @@
                     </div> -->
                     <a-form-item v-for="(item, index) in form.items" :key="item.key"
                         :label="index === 0 ? 'Items' : ''">
-                        <div>
+                        <div class="individual-item" :data-item-id="item.key">
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
                                 <a-col :span="4"> <a-checkbox v-model:checked="item.po"
                                         @change="updateTotalSelected(item)" />
@@ -879,23 +880,28 @@
                                         :options="editableData.data" :filter-option="false" show-search allow-clear
                                         :not-found-content="item.fetching ? undefined : null"
                                         @search="(value) => handleSearchDescription(value, index)" /></a-col>
-                                <a-col :span="4"><a-input v-model:value="item.sku" placeholder="SKU" :readonly="true"
+                                <a-col :span="4" :class="{ 'highlight-error': item.error && !item.sku }"><a-input
+                                        v-model:value="item.sku" placeholder="SKU" :readonly="true"
                                         style="min-width: 120px;" /></a-col>
                             </a-row>
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
-                                <a-col :span="8" :offset="4"> <a-select v-model:value="item.vendor_id"
-                                        placeholder="Proveedor" allow-clear show-search :filter-option="filterOption">
+                                <a-col :span="8" :offset="4"
+                                    :class="{ 'highlight-error': item.error && !item.vendor_id }">
+                                    <a-select v-model:value="item.vendor_id" placeholder="Proveedor" allow-clear
+                                        show-search :filter-option="filterOption">
                                         <a-select-option v-for="(item, index) in vendorList" :key="index"
                                             :value="item.value" :label="(item.name)">
                                             {{ item.name }}
                                         </a-select-option>
                                     </a-select>
                                 </a-col>
-                                <a-col :span="6">
+                                <a-col :span="6" :class="{ 'highlight-error': item.error && (!item.price_final) }">
                                     <a-input-number v-model:value="item.price_final" placeholder="Precio C/IVA"
                                         @change="updateCalculatedFields(item, index)"
                                         style="min-width: 180px;" /></a-col>
-                                <a-col :span="5"><a-input-number v-model:value="item.quantity" placeholder="Cantidad"
+                                <a-col :span="5"
+                                    :class="{ 'highlight-error': item.error && (!item.quantity) }"><a-input-number
+                                        v-model:value="item.quantity" placeholder="Cantidad"
                                         @change="updateCalculatedFields(item, index)"
                                         :style="{ backgroundColor: item.noStock ? '#eeaab0' : 'white', textAlign: 'right', minWidth: '180px' }" /></a-col>
                             </a-row>
@@ -1029,7 +1035,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -1501,10 +1507,24 @@ export default {
             }
             return '';
         }
+        const highlightInvalidItems = (items) => {
+            items.forEach((item) => {
+                const element = document.querySelector(`[data-item-id="${item.key}"]`); // Asumiendo que hay un atributo `data-item-id`
+                if (element) {
+                    element.classList.add('highlight-error');
+                    setTimeout(() => element.classList.remove('highlight-error'), 2000); // Remover la clase tras 2 segundos
+                }
+            });
+        };
         const onSave = async (value) => {
 
             errorMessage.value = '';
             if (!formTenderDetail.value.daytona_ids) {
+                const element = document.querySelector('.form-item-container');
+                if (element) {
+                    element.classList.add('highlight-error');
+                    setTimeout(() => element.classList.remove('highlight-error'), 2000);
+                }
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar al menos una sucursal' }));
                 return;
             }
@@ -1516,6 +1536,30 @@ export default {
             if (value === 'A') {
                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
                 dataSource.value.vendor_id === neumasur.value;
+            }
+            // Validar items del formulario
+            const invalidItems = form.items.filter((item) => {
+                // Validar campos vacíos para SKU o vendor
+                if (!item.sku || !item.vendor_id) {
+                    item.error = 'Debe completar el sku o proveedor o eliminar el item.';
+                    return true;
+                }
+
+                // Validar price_final o quantity vacíos
+                if ((!item.price_final || !item.quantity) && item.sku && item.vendor_id) {
+                    item.error = 'Debe completar la cantidad y precio o eliminar el item.';
+                    return true;
+                }
+
+                // Si no hay errores
+                delete item.error;
+                return false;
+            });
+
+            if (invalidItems.length > 0) {
+                highlightInvalidItems(invalidItems);
+                window.dispatchEvent(new CustomEvent('message-error', { detail: invalidItems[0].error }));
+                return;
             }
             isLoading.value = true;
             try {
@@ -1627,6 +1671,7 @@ export default {
                     errorMessage.value = errorMessage.value + '\nVerifique los campos obligatorios.';
                 }
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage.value }));
+
             } finally {
                 isLoading.value = false;
                 if (errorMessage.value === '') {
@@ -2785,5 +2830,10 @@ export default {
 
 .stock-table {
     margin-top: 1%;
+}
+
+.highlight-error {
+    border: 2px solid var(--principal);
+    transition: border 0.3s ease-out;
 }
 </style>

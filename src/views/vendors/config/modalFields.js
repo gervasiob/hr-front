@@ -1,7 +1,6 @@
-import { apiDocumentacion } from "@/api/documentacion/documentacion";
+import { getDocumentTypeList } from "@/api/documentacion/documentacion";
 import { BRANDS, VENDOR_TYPE } from "@/common/common";
-const documentsResponse = await apiDocumentacion('get');
-const documents = documentsResponse.results;
+const documents = await getDocumentTypeList();
 export const modalFields = [
     {
         name: 'product_feedback',
@@ -126,6 +125,14 @@ export const modalFields = [
         default: null,
     },
     {
+        name: 'documents',
+        label: 'Documentos',
+        type: 'select',
+        mode: 'multiple',
+        default: [],
+        options: documents,
+    },
+    {
         name: 'freight',
         label: 'Flete',
         type: 'input',
@@ -155,18 +162,6 @@ export const modalFields = [
         type: 'input',
         default: 0,
     },
-    {
-        name: 'documents',
-        label: 'Documentos',
-        type: 'select',
-        mode: 'multiple',
-        default: [],
-        options: documents.map((item) => {
-            return {
-                value: item.id,
-                name: item.name,
-            }
-        }),
-    },
+
 
 ];
