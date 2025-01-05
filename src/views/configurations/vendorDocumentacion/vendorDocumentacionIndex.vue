@@ -3,15 +3,20 @@
         <a-form layout="horizontal" ref="formRef" :model="filterInputs">
             <a-row :gutter="24">
                 <a-col :span="8">
-                    <a-form-item label="Nombre" name="name">
-                        <a-input v-model:value="filterInputs.name__icontains" allowClear />
+                    <a-form-item label="Id Aseguradora" name="id">
+                        <a-input v-model:value="filterInputs.id" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="8">
+                    <a-form-item label="Nombre Comercial" name="comercial_name">
+                        <a-input v-model:value="filterInputs.comercial_name__icontains" allowClear />
+                    </a-form-item>
+                </a-col>
+                <!-- <a-col :span="8">
                     <a-form-item label="Descripción" name="description__icontains">
                         <a-input v-model:value="filterInputs.description__icontains" allowClear />
                     </a-form-item>
-                </a-col>
+                </a-col> -->
                 <a-col :span="8" style="text-align: right">
                     <a-button type="primary" danger @click="onSearch">Buscar</a-button>
                     <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
@@ -22,22 +27,31 @@
 
     <!-- Table -->
 
-    <div>
+    <!-- <div>
         <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
         <a-modal v-model:open="open" title="Documentación" @ok="handleOk" @cancel="handleCancel">
             <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
         </a-modal>
-    </div>
+    </div> -->
     <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
         @change="handleTableChange">
         <template #bodyCell="{ column, text, record }">
-
-            <template v-if="['name', 'description'].includes(column.dataIndex)">
+            <template v-if="['documents'].includes(column.dataIndex)">
                 <div>
-                    <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
-                        style="margin: -5px 0;" />
+                    <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
+                        v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
+                        :filter-option="filterOption" mode="multiple" :style="{ minWidth: '470px' }" :max-tag-count="3">
+                        <a-select-option v-for="(item, index) in documents" :key="index" :value="item.value"
+                            :label="item.name">
+                            {{ item.name }}
+                        </a-select-option>
+                    </a-select>
                     <template v-else>
-                        {{ text }}
+                        <span>
+                            <a-tag color="blue" v-for="(item, index) in text" :key="index">
+                                {{ getDocumentName(item) }}
+                            </a-tag>
+                        </span>
                     </template>
                 </div>
             </template>
@@ -76,7 +90,7 @@ import { tableColumns } from './config/columns.js';
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
-import { apiDocumentacion } from '@/api/documentacion/documentacion.js';
+import { apiDocumentacion, apiVendorDocument, documentsByVendor, getDocumentTypeList, vendorDocument } from '@/api/documentacion/documentacion.js';
 
 export default {
     name: 'VendorDocumentacionIndex',
@@ -88,21 +102,20 @@ export default {
         const formState = reactive({});
         const filterInputs = ref({});
         const columns = tableColumns;
-
+        const documents = ref([]);
         const fetchData = async (params = {}) => {
             const fullParams = {
                 ...params,
                 ...filterInputs.value,
             }
             try {
-                const response = await apiDocumentacion('get', fullParams);
+                const response = await documentsByVendor(fullParams);
 
                 console.log("response");
                 console.log(response);
                 dataSource.value = response.results.map((item, index) => ({
                     ...item,
                     key: index,
-                    user: null,
                 }));
 
                 total.value = response.count;
@@ -160,9 +173,12 @@ export default {
             return option.label.toLowerCase().indexOf(input.toLowerCase()) >= 0;
         };
 
-        onMounted(() => {
-
-
+        onMounted(async () => {
+            try {
+                documents.value = await getDocumentTypeList();
+            } catch (error) {
+                console.log('error en obtener el list de documentos')
+            }
         });
 
         const editableData = reactive({});
@@ -174,27 +190,45 @@ export default {
             const data = dataSource.value.filter(item => key === item.key)[0];
             Object.assign(data, editableData[key]);
             delete editableData[key];
-            console.log(data)
+            console.log('data', data)
+            try {
+                // 1- Buscar si este vendor tiene datos en Vendor_Document endpoint
+                const response = await apiVendorDocument('get', { vendor: data.vendor_id });
+
+                // 2- Borra todos los registros existentes
+                if (response.results.length > 0) {
+                    await Promise.all(response.results.map(item => apiVendorDocument('delete', null, item.id)));
+                }
+
+                // 3- Graba los nuevos registros
+                if (data.documents.length > 0) {
+                    for (const item of data.documents) {
+                        let itemName = getDocumentName(item);
+                        saveEachDocument(itemName, data.vendor_id, item); // Aseguramos que se grabe cada documento
+                    }
+                }
+            } catch (error) {
+                console.error("Error durante el guardado:", error);
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error durante el guardado: ' + error.message }));
+            } finally {
+                fetchData();
+            }
+        };
+        const saveEachDocument = async (documentName, vendorId, documentType) => {
             const params = {
-                ...data,
+                document_value: documentName,
+                vendor: vendorId,
+                document_type: documentType,
             }
             try {
-
-                if (data.id > 0) {
-                    await apiDocumentacion('put', params, data.id);
-                } else {
-                    const { id, ...dataWithoutId } = data;
-                    apiDocumentacion('post', dataWithoutId);
-                }
+                await apiVendorDocument('post', params);
                 window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
                 current.value = 1;
             } catch (error) {
                 console.error('Error handling form finish:', error);
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
-            } finally {
-                fetchData();
             }
-        };
+        }
         const cancel = (key) => {
             console.log('cancel', key)
             if (key === undefined) {
@@ -205,7 +239,7 @@ export default {
             const record = dataSource.value.find(item => key === item.key);
             Object.assign(record, editableData[key]);
             delete editableData[key];
-            if (!record.sku || !record.name) {
+            if (!record.vendor_id) {
                 onDelete(key);
             }
             delete editableData[key];
@@ -275,6 +309,13 @@ export default {
                 fetchData();
             });
         };
+        const getDocumentName = (value) => {
+            const document = documents.value.find((item) => item.value === value)
+            if (document) {
+                return document.name;
+            }
+            return value;
+        }
         return {
             formRef,
             formState,
@@ -302,6 +343,8 @@ export default {
             total,
             pagination,
             handleTableChange,
+            documents,
+            getDocumentName,
         }
     }
 }

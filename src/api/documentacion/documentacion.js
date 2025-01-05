@@ -38,3 +38,6 @@ export async function getDocumentTypeList(params) {
 export async function vendorDocument(params) {
     return await apiRequest('post', 'vendor_document/', params);
 }
+export async function documentsByVendor(params) {
+    return await apiRequest('get', 'documentos_por_vendedor/', params);
+}

@@ -1,18 +1,19 @@
 export const tableColumns = [
     {
         title: '#',
-        dataIndex: 'id',
-        sorter: (a, b) => a.id - b.id,
+        dataIndex: 'vendor_id',
+        sorter: (a, b) => a.vendor_id - b.vendor_id,
     },
     {
-        title: 'Nombre',
-        dataIndex: 'name',
-        sorter: (a, b) => a.name.localeCompare(b.name),
+        title: 'Aseguradora',
+        dataIndex: 'comercial_name',
+        sorter: (a, b) => a.comercial_name.localeCompare(b.comercial_name),
     },
 
     {
-        title: 'Descripción',
-        dataIndex: 'description',
+        title: 'Documentos',
+        dataIndex: 'documents',
+        width: 500,
     },
     {
         title: 'Operation',

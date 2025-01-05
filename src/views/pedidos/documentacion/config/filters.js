@@ -60,10 +60,10 @@ export const filters = [
         placeholder: 'Ingrese un valor',
     },
     {
-        label: 'Lote Creado',
-        name: 'generacion_lote',
+        label: 'Mercadería Validada',
+        name: 'entrega_de_mercaderia',
         component: 'a-select',
-        model: 'checklist_generacion_lote',
+        model: 'checklist_entrega_de_mercaderia',
         options: YES_NO,
         value: true,
     },
