@@ -365,6 +365,13 @@ const otherRoutes = [
         component: () => import('@/views/configurations/documentacion/documentacionIndex.vue'),
         meta: { roles: basicAuth },
     },
+    {
+        key: 'documentsbyvendors',
+        name: 'DocumentosPorAseguradoras',
+        path: '/adm/documentsbyvendors',
+        component: () => import('@/views/configurations/vendorDocumentacion/vendorDocumentacionIndex.vue'),
+        meta: { roles: basicAuth },
+    },
 ]
 export const basicRoutes = [
     LoginRoute,

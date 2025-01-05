@@ -41,7 +41,7 @@ export const filters = [
         placeholder: 'Ingrese su búsqueda',
         options: TENDER_STATES,
         showSearch: true,
-        value: 'A',
+        value: 'U',
     },
     {
         label: 'Usuario',

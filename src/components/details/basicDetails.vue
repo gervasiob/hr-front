@@ -7,7 +7,15 @@
             :labelStyle="{ fontWeight: 'bolder', fontSize: '16px' }" :style="{ padding: '1%' }">
             <a-descriptions-item v-for="field in descriptionFields" :key="field.model" :label="field.label"
                 class="a-descriptions-item">
-                <div class="item-d">
+                <div v-if="field.model === 'claim_id'" class="button-container">
+                    <div v-if="getFieldValue(field) === 'Sin Datos'">Sin Datos</div>
+                    <router-link v-else :to="{ name: 'TenderDetail', params: { id: getFieldValue(field) } }" target="_blank">
+                        <a-button type="primary">
+                            {{ getFieldValue(field) }}
+                        </a-button>
+                    </router-link>
+                </div>
+                <div v-else class="item-d">
                     {{ getFieldValue(field) }}
                 </div>
             </a-descriptions-item>
