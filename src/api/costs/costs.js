@@ -32,5 +32,3 @@ export async function getDescriptionList(params) {
 export async function getSkuList(params) {
     return await apiRequest('get', 'costs_sku_deep/', params);
 }
-
-

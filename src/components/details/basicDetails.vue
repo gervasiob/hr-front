@@ -219,7 +219,6 @@ export default {
             }
         };
         onMounted(() => {
-            console.log('onmounted', props.pedidoId)
             queryPedidos(props.pedidoId)
         })
         watch(
