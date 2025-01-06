@@ -15,24 +15,27 @@
             </a-descriptions>
         </div>
 
-        <div class="documents">
-            <a-upload-dragger v-model:fileList="fileList" name="file" class="upload" :multiple="false"
-                action="https://www.mocky.io/v2/5cc8019d300000980a055e76" @change="handleChange" @drop="handleDrop">
+        <div v-for="doc in requiredDocuments" :key="doc.id" class="document-upload">
+            <h3>{{ doc.name }}</h3>
+            <a-upload-dragger v-model:fileList="fileLists[doc.id]" :name="doc.name" class="upload" :multiple="false"
+                :custom-request="handleUploadWrapper(doc.id)" list-type="picture-card" :max-count="1"
+                :accept="'image/*,.pdf'" @drop="handleDrop">
                 <p class="ant-upload-drag-icon">
                     <InboxOutlined />
                 </p>
                 <p class="ant-upload-text">Arrastrar o Clickear para cargar archivo</p>
-                <p class="ant-upload-hint">
-                </p>
+                <p class="ant-upload-hint"></p>
             </a-upload-dragger>
         </div>
     </div>
 </template>
 
 <script>
+import { apiVendorDocumentUpload, apiVendorDocumentUploadView, getRequiredDocuments, uploadDocumentFile, vendorUploadDocuments } from '@/api/documentacion/documentacion';
 import { InboxOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
+import { useRoute } from 'vue-router';
 
 export default {
     name: 'UploadDocuments',
@@ -48,7 +51,7 @@ export default {
         ];
         const getFieldValue = (field) => {
             // const data = props.dataSource || {};
-            const data =  {};
+            const data = {};
             const rawValue = field.model in data ? data[field.model] : 'Sin Datos';
             return field.transform ? field.transform(rawValue) : rawValue;
         };
@@ -67,9 +70,76 @@ export default {
         function handleDrop(e) {
             console.log(e);
         }
+        const route = useRoute();
+        let claimId = ref(route.params.id);
+        const requiredDocuments = ref([]);
+        const fileLists = ref({});
+        const vendorId = ref(null);
+        const quoteId = ref(null);
+        const fetchData = async () => {
+            try {
+                const resRequired = await getRequiredDocuments(null, claimId.value);
+                requiredDocuments.value = resRequired.required_documents;
+                vendorId.value = resRequired.vendor_id;
+                quoteId.value = resRequired.quote_id;
+                // Inicializar fileLists para cada documento
+                requiredDocuments.value.forEach((doc) => {
+                    fileLists.value[doc.id] = [];
+                });
+                const params = {
+                    quote_id: quoteId.value,
+                }
+                const resDocuments = await apiVendorDocumentUploadView('get', params);
+                console.log('res doc', resDocuments);
+                resDocuments.results.forEach((doc) => {
+                    if (fileLists.value[doc.document_type]) {
+                        fileLists.value[doc.document_type].push({
+                            uid: doc.id, // Identificador único para el archivo
+                            name: doc.file_url.split('/').pop(), // Nombre del archivo extraído de la URL
+                            status: 'done', // Estado del archivo (ej. 'done' si ya está subido)
+                            url: doc.file_url, // URL del archivo
+                        });
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+        const imageUrl = ref(null);
+        const handleUploadWrapper = (docId) => (options) => {
+            handleUpload(options, docId);
+        };
+        const handleUpload = async ({ file, onSuccess, onError }, docId) => {
+            if (!docId) {
+                onError(new Error("ID del documento no encontrado"));
+                return;
+            }
+            try {
+
+                const response = await uploadDocumentFile(vendorId.value, quoteId.value, docId, file);
+                console.log("Subida exitosa:", response);
+                imageUrl.value = response.url;
+                // Invoca el callback de éxito para informar a Ant Design Vue
+                onSuccess(response);
+            } catch (error) {
+                console.error("Error al subir el archivo:", error);
+           
+                // Invoca el callback de error para manejar el fallo
+                onError(error);
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Archivo no guardado: ' + error.response.data.error }));
+            } finally {
+                fetchData();
+            }
+        };
+        onMounted(() => {
+            fetchData();
+        })
         return {
             descriptionFields,
             getFieldValue,
+            requiredDocuments,
+            fileLists,
+            handleUploadWrapper,
         }
     }
 

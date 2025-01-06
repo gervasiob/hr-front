@@ -956,7 +956,7 @@ import { getVendors, getVendorList, getSucursalList, getAssuranceList } from '@/
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
-import { getCostStock } from '@/api/stocks/stocks.js';
+import { getCostStock, getStockDef } from '@/api/stocks/stocks.js';
 import { getVehiclesList } from '@/api/vehicles/vehicles.js';
 import { getProduct } from '@/api/product/product.js';
 
@@ -2048,15 +2048,42 @@ export default {
 
             // Crear una lista de promesas para todas las llamadas a la API
             const promises = data.map((item) => {
-                return getCostStock({ code: item.sku })
+                // return getCostStock({ code: item.sku })
+                    // .then((res) => {
+                    //     if (res && res.results.length > 0) {
+                    //         const stockData = res.results[0];
+                    //         // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
+                    //         const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
+                    //         // Actualizar los valores de la respuesta
+                    //         if (dataSourceItem) {
+                    //             dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
+                    //             if (!dataSourceItem.noStock) {
+                    //                 console.log('no stock', false)
+                    //                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
+                    //                 if (neumasur) {
+                    //                     dataSourceItem.vendor_id = neumasur.value;
+                    //                     console.log('neumasur', neumasur)
+                    //                 }
+                    //             }
+                    //             return {
+                    //                 sku: stockData.sku,
+                    //                 producto: stockData.producto,
+                    //                 stock: stockData.stock,
+                    //                 minimum_stock: stockData.minimum_stock,
+                    //                 available_stock: stockData.available_stock,
+                    //             };
+                    //         }
+
+                    //     }
+                return getStockDef({ codigo: item.sku })
                     .then((res) => {
                         if (res && res.results.length > 0) {
                             const stockData = res.results[0];
                             // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
-                            const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
+                            const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.codigo);
                             // Actualizar los valores de la respuesta
                             if (dataSourceItem) {
-                                dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
+                                dataSourceItem.noStock = dataSourceItem.quantity > stockData.stock_virtual ? true : false;
                                 if (!dataSourceItem.noStock) {
                                     console.log('no stock', false)
                                     const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
@@ -2066,9 +2093,10 @@ export default {
                                     }
                                 }
                                 return {
-                                    sku: stockData.sku,
-                                    producto: stockData.producto,
-                                    stock: stockData.stock,
+                                    sku: stockData.codigo,
+
+                                    stock: stockData.stock_virtual,
+                                    stockReal: stockData.stock_real,
                                     minimum_stock: stockData.minimum_stock,
                                     available_stock: stockData.available_stock,
                                 };
