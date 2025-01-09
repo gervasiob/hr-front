@@ -24,7 +24,7 @@
 
   <div>
     <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
-    <a-modal v-model:open="open" title="Plataforma" @ok="handleOk" @cancel="handleCancel">
+    <a-modal v-model:open="open" title="Producto" @ok="handleOk" @cancel="handleCancel">
       <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
     </a-modal>
   </div>

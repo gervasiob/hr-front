@@ -20,4 +20,9 @@ export async function getCostStock(params) {
 export async function getStockHinet(params) {
     return await apiRequest('get', 'stock_disponible/', params);
 }
-
+export async function getStockDef(params) {
+    return await apiRequest('get', 'stock_def/', params);
+}
+export async function getStockSummary(params) {
+    return await apiRequest('get', 'stock_summary/', params);
+}

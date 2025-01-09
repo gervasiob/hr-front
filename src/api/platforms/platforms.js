@@ -15,5 +15,5 @@ export async function deletePlatforms(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
 export async function getPlatformList(params) {
-    return await apiRequest('get', 'platforms_deep  ', params);
+    return await apiRequest('get', 'platforms_deep/', params);
 }

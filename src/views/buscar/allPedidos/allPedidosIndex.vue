@@ -11,10 +11,9 @@
                         <a-button type="primary" @Click="handleSearch">Buscar</a-button>
                     </a-form-item></a-col>
             </a-row>
-
-
         </a-form>
     </div>
+    <PedidoTab :pedido-id="pedidoId" :button-link="false"/>
     <BasicDetails title="Detalle Pedido" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
         :checkList="checkList" />
 </template>
@@ -26,11 +25,13 @@ import { useRoute } from 'vue-router';
 import BasicDetails from '@/components/details/basicDetails.vue';
 
 import { getQuotes, updateQuotes } from '@/api/quotes/quotes';
+import PedidoTab from '@/components/tabs/pedidoTab.vue';
 
 export default {
     name: 'AlmacennDetail',
     components: {
-        BasicDetails
+        BasicDetails,
+        PedidoTab,
     },
 
     setup() {
@@ -61,7 +62,7 @@ export default {
                     nota_pedido_id: formState.pedidoId,
                 };
                 const quoteResponse = await getQuotes(params);
-                console.log('quote response', quoteResponse.results[0])
+                console.log('quote response all pedidos', quoteResponse.results[0])
                 let dataResult = [];
                 dataResult = quoteResponse.results[0];
                 quoteId.value = dataResult.id;

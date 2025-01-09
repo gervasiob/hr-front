@@ -6,7 +6,7 @@
                 <span>
                     <a-rate v-model:value="formState[item.name]" :tooltips="item.desc" allow-half
                         style="color: var(--principal)">
-                        
+
                     </a-rate>
                     <span class="ant-rate-text">{{ item.desc[value - 1] }}</span>
                 </span>
@@ -48,6 +48,7 @@ export default {
             formRef.value.resetFields();  // Limpia los campos del formulario
         };
         const handleFinish = () => {
+            console.log('form termiando', formState)
             return formRef.value.validate().then(() => {
                 emit('form-finish', formState);
                 return Promise.resolve();  // Validación exitosa
@@ -98,6 +99,7 @@ export default {
             if (item.type === 'select') {
                 props.options = item.options.map(opt => ({ label: opt.name, value: opt.value }));
                 props.showSearch = true;
+                props.maxTagCount = 1;
             }
             return props;
         };

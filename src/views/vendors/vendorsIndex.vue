@@ -17,7 +17,7 @@
             <a-input v-model:value="filterInputs.social_name__icontains" allowClear />
           </a-form-item>
         </a-col>
-        <a-col :span="8"  style="text-align: right">
+        <a-col :span="8" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -66,6 +66,21 @@
           </template>
         </div>
       </template>
+      <template v-if="['marcas'].includes(column.dataIndex)">
+        <div>
+          <!-- <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />  -->
+          <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
+            v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
+            :filter-option="filterOption" style="width: 200px;">
+            <a-select-option v-for="(item, index) in brands" :key="index" :value="item.value" :label="item.name">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
+          <template v-else>
+            {{ text.length < 2 ? '' : text }} </template>
+        </div>
+      </template>
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
@@ -97,6 +112,8 @@ import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vend
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
+import { VENDOR_TYPE } from '@/common/common.js';
+import { apiDocumentacion, getDocumentTypeList, vendorDocument, vendorUploadDocuments } from '@/api/documentacion/documentacion.js';
 
 export default {
   name: 'VendorsList',
@@ -111,11 +128,7 @@ export default {
     });
 
     const columns = tableColumns;
-    const vendorsList = ref([
-      { value: 0, name: 'Proveedor' },
-      { value: 1, name: 'Comp. Aseguradora' },
-      { value: 2, name: 'Sucursal' },
-    ]);
+    const vendorsList = VENDOR_TYPE;
 
     const customHeaderRow = () => {
       return {
@@ -134,7 +147,9 @@ export default {
           ...item,
           key: index,
           user: null,
+          marcas: item.marcas && item.marcas.length > 2 ? item.marcas : [],
         }));
+
 
         total.value = response.count;
         return dataSource.value;
@@ -271,7 +286,7 @@ export default {
 
     };
     const getName = (item) => {
-      const vendor = vendorsList.value.find((vendor) => vendor.value === item);
+      const vendor = vendorsList.find((vendor) => vendor.value === item);
       if (vendor) {
 
         return vendor.name
@@ -304,22 +319,24 @@ export default {
 
     const handleFormFinish = async (form) => {
       formState.value = form;
-      console.log('form handleFormFinish', form);
 
+      const marcasArray = form.marcas;
+      let marcasString = '';
+      if (marcasArray) {
+        marcasString = `[${marcasArray.join(",")}]`
+      }
       try {
         if (form.hasOwnProperty('id') && form.id) {
           // Caso de edición
-          console.log('Edit mode', form);
           if (form.comercial_name === '') {
             form.comercial_name = null;
           }
 
           const params = {
             ...form,
+            marcas: marcasString,
           };
-
           await updateVendors(form.id, params);
-          console.log('Vendor updated successfully');
           window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
           formComponent.value.resetForm();
           formState.value = {};
@@ -327,12 +344,11 @@ export default {
 
         } else {
           // Caso de adición
-          console.log('Add mode', formState.value);
           await addVendors(formState.value);
           console.log('Vendor added successfully');
           window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro agregado con éxito' }));
           formComponent.value.resetForm();
-          formState.value = {}; // Reinicia el estado del formulario
+          formState.value = {};
           formDataProps.value = {};
 
         }
@@ -348,8 +364,21 @@ export default {
     let formDataProps = ref({});
     const handleEdit = (key) => {
       const data = dataSource.value.filter(item => key === item.key)[0];
+      const originalObject = {
+        marcas: data.marcas
+      };
       console.log('data', data)
-      formDataProps.value = { ...data };
+      // Convierte la cadena a un array
+      let transformedObject = originalObject.marcas;
+      if (originalObject.marcas.length > 0) {
+        transformedObject = {
+          marcas: originalObject.marcas
+            .replace(/^\[|\]$/g, '') // Elimina los corchetes inicial y final
+            .split(',') // Divide por comas
+            .map((marca) => marca.trim()) // Elimina espacios adicionales
+        };
+      }
+      formDataProps.value = { ...data, marcas: transformedObject.marcas, documents: [] };
       open.value = true;
 
     };

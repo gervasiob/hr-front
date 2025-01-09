@@ -104,6 +104,20 @@ export const TENDER_STATES = [
         back: '#D9B2C0',
 
     },
+    {
+        label: 'Test passed A',
+        value: 'Test passed A',
+        color: '#C5C308',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test passed U',
+        value: 'Test passed U',
+        color: '#C5C308',
+        back: '#D9B2C0',
+
+    },
 ];
 export const PRIORITY_VALUES = [
     {
@@ -274,9 +288,41 @@ export const GROUPS = [
     { value: 'Otros', label: "Otros" },
 ];
 export const VENDOR_TYPE = [
-    { value: 0, label: 'Proveedor' },
-    { value: 1, label: 'Cía Aseguradora' },
-    { value: 2, label: 'Sucursal Daytona' },
+    { value: 0, name: 'Proveedor' },
+    { value: 1, name: 'Cía Aseguradora' },
+    { value: 2, name: 'Sucursal Daytona' },
+    { value: 3, name: 'Sedes' },
+    { value: 4, name: 'Transporte' },
 ];
 export const YES_NO = [{ value: false, label: 'NO', name: 'NO' }, { value: true, label: 'SI', name: 'SI' }];
 export const HAS_IMAGE = [{ value: 'N', label: 'NO', name: 'NO' }, { value: 'S', label: 'SI', name: 'SI' }];
+export const BRANDS = [
+    { value: 25, label: "ALFA ROMEO" },
+    { value: 3, label: "AUDI" },
+    { value: 2, label: "BMW" },
+    { value: 8, label: "CHEVROLET" },
+    { value: 15, label: "CITROEN" },
+    { value: 27, label: "DODGE" },
+    { value: 1, label: "FIAT" },
+    { value: 7, label: "FORD" },
+    { value: 11, label: "HYUNDAI" },
+    { value: 26, label: "JAGUAR" },
+    { value: 20, label: "JEEP" },
+    { value: 12, label: "KIA" },
+    { value: 24, label: "LEXUS" },
+    { value: 22, label: "LAND ROVER" },
+    { value: 19, label: "MAZDA" },
+    { value: 4, label: "MERCEDES-BENZ" },
+    { value: 29, label: "MITSUBISHI" },
+    { value: 9, label: "NISSAN" },
+    { value: 13, label: "PEUGEOT" },
+    { value: 23, label: "PORSCHE" },
+    { value: 14, label: "RENAULT" },
+    { value: 28, label: "RAM" },
+    { value: 16, label: "SUZUKI" },
+    { value: 18, label: "SUBARU" },
+    { value: 21, label: "TESLA" },
+    { value: 5, label: "TOYOTA" },
+    { value: 10, label: "VOLKSWAGEN" },
+    { value: 19, label: "VOLVO" }
+];

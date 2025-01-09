@@ -15,8 +15,8 @@ export async function deleteVehicles(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
 export async function getVehiclesList(params) {
-    return await apiRequest('get', 'vehicles_deep_model', params);
+    return await apiRequest('get', 'vehicles_deep_model/', params);
 }
 export async function getBrandList(params) {
-    return await apiRequest('get', 'vehicles_deep', params);
+    return await apiRequest('get', 'vehicles_deep/', params);
 }

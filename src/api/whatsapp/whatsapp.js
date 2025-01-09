@@ -15,5 +15,5 @@ export async function deleteWhatsapp(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
 export async function getWhatsappList(params) {
-    return await apiRequest('get', 'whatsapp_deep  ', params);
+    return await apiRequest('get', 'whatsapp_deep/', params);
 }

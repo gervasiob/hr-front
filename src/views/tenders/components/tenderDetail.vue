@@ -172,10 +172,20 @@
                 <div class="item-d">{{ formTenderDetail.company_name }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
-                <div class="item-d">
+                <div class="item-d" v-if="selectState">
+                    <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
+                    v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
+                    <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
+                        :label="item.label">
+                        {{ item.label }}
+                    </a-select-option>
+                </a-select>
+                </div>
+                <div class="item-d" v-else>
                     <a-badge status="processing" :color="getStateColor(formTenderDetail.quote_state)"
                         :text="getStateLabel(formTenderDetail.quote_state)" />
                 </div>
+                
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
                 <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
@@ -314,130 +324,8 @@
         </a-collapse-panel>
         <hr>
         <a-collapse-panel key="4" class="collapse-class" header="PEDIDO">
-            <div class="form-pedido">
-                <a-form ref="formPedidoRef" :model="formPedido" class="form-envio">
-                    <!-- Pedido ID -->
-                    <a-row :gutter="45">
-                        <a-col :span="12"> <a-form-item label="Pedido ID" name="pedido_id">
-                                <a-input v-model:value="formPedido.pedido_id" :disabled="true" />
-                            </a-form-item></a-col>
-                        <a-col :span="8"><router-link :to="{ name: 'Todos', params: { id: formPedido.pedido_id } }"
-                                target="_blank">
-                                <a-button type="primary" danger>
-                                    Ir a Pedido {{ formPedido.pedido_id }}
-                                </a-button>
-                            </router-link></a-col>
-                    </a-row>
-
-
-
-
-                    <!-- Orden Compra Conformada Date -->
-                    <!-- <a-form-item label="Fecha Orden Compra Conformada" name="orden_compra_conformada_date">
-                        <a-date-picker v-model:value="formPedido.orden_compra_conformada_date" :disabled="true"
-                            style="width: 100%" />
-                    </a-form-item> -->
-
-                    <!-- Entrega de Mercadería -->
-                    <a-form-item label="Entrega de Mercadería" name="entrega_de_mercaderia">
-                        <a-switch v-model:checked="formPedido.entrega_de_mercaderia" :disabled="true" />
-                    </a-form-item>
-
-                    <!-- Orden Compra Conformada -->
-                    <a-form-item label="Orden Compra Conformada" name="orden_compra_conformada">
-                        <a-switch v-model:checked="formPedido.orden_compra_conformada" :disabled="true" />
-                    </a-form-item>
-                    <!-- Fecha Entrega de Mercadería -->
-                    <!-- <a-form-item label="Fecha Entrega de Mercadería" name="entrega_de_mercaderia_date">
-                        <a-date-picker v-model:value="formPedido.entrega_de_mercaderia_date" :disabled="true"
-                            style="width: 100%" />
-                    </a-form-item> -->
-
-                    <!-- Armado y Embalaje -->
-                    <a-form-item label="Armado y Embalaje" name="armado_y_embalaje">
-                        <a-switch v-model:checked="formPedido.armado_y_embalaje" :disabled="true" />
-                    </a-form-item>
-
-                    <!-- Fecha Armado y Embalaje -->
-                    <!-- <a-form-item label="Fecha Armado y Embalaje" name="armado_y_embalaje_date">
-                        <a-date-picker v-model:value="formPedido.armado_y_embalaje_date" :disabled="true"
-                            style="width: 100%" />
-                    </a-form-item> -->
-
-                    <!-- Generación de Lote -->
-                    <a-form-item label="Generación de Lote" name="generacion_lote">
-                        <a-switch v-model:checked="formPedido.generacion_lote" :disabled="true" />
-                    </a-form-item>
-
-                    <!-- Fecha Generación de Lote -->
-                    <!-- <a-form-item label="Fecha Generación de Lote" name="generacion_lote_date">
-                        <a-date-picker v-model:value="formPedido.generacion_lote_date" :disabled="true"
-                            style="width: 100%" />
-                    </a-form-item> -->
-
-                    <!-- Proforma -->
-                    <a-form-item label="Proforma" name="proforma">
-                        <a-switch v-model:checked="formPedido.proforma" :disabled="true" />
-                    </a-form-item>
-
-                    <!-- Fecha Proforma -->
-                    <!-- <a-form-item label="Fecha Proforma" name="proforma_date">
-                        <a-date-picker v-model:value="formPedido.proforma_date" :disabled="true" style="width: 100%" />
-                    </a-form-item> -->
-
-                    <!-- Gestión Documental -->
-                    <a-form-item label="Gestión Documental" name="gestion_documental">
-                        <a-switch v-model:checked="formPedido.gestion_documental" :disabled="true" />
-                    </a-form-item>
-
-                    <!-- Fecha Gestión Documental -->
-                    <!-- <a-form-item label="Fecha Gestión Documental" name="gestion_documental_date">
-                        <a-date-picker v-model:value="formPedido.gestion_documental_date" :disabled="true"
-                            style="width: 100%" />
-                    </a-form-item> -->
-
-                    <!-- Fletero -->
-                    <a-form-item label="Fletero" name="fletero">
-                        <a-switch v-model:checked="formPedido.fletero" :disabled="true" />
-                    </a-form-item>
-
-                    <!-- Fecha Fletero -->
-                    <!-- <a-form-item label="Fecha Fletero" name="fletero_date">
-                        <a-date-picker v-model:value="formPedido.fletero_date" :disabled="true" style="width: 100%" />
-                    </a-form-item> -->
-
-                    <!-- Facturación Final -->
-                    <a-form-item label="Facturación Final" name="facturacion_final">
-                        <a-switch v-model:checked="formPedido.facturacion_final" :disabled="true" />
-                    </a-form-item>
-
-                    <!-- Fecha Facturación Final -->
-                    <!-- <a-form-item label="Fecha Facturación Final" name="facturacion_final_date">
-                        <a-date-picker v-model:value="formPedido.facturacion_final_date" :disabled="true"
-                            style="width: 100%" />
-                    </a-form-item> -->
-
-                    <!-- Imagen URL 1 -->
-                    <a-form-item label="Imagen URL 1" name="image_url_1">
-                        <a-image v-if="formPedido.image_url_1" :src="formPedido.image_url_1" width="100px"
-                            height="100px" />
-                        <span v-else>No Image</span>
-                    </a-form-item>
-
-                    <!-- Imagen URL 2 -->
-                    <a-form-item label="Imagen URL 2" name="image_url_2">
-                        <a-image v-if="formPedido.image_url_2" :src="formPedido.image_url_2" width="100px"
-                            height="100px" />
-                        <span v-else>No Image</span>
-                    </a-form-item>
-
-                    <!-- Imagen URL 3 -->
-                    <a-form-item label="Imagen URL 3" name="image_url_3">
-                        <a-image v-if="formPedido.image_url_3" :src="formPedido.image_url_3" width="100px"
-                            height="100px" />
-                        <span v-else>No Image</span>
-                    </a-form-item>
-                </a-form>
+            <div>
+                <PedidoTab :pedido-id="formPedido.pedido_id" :quote-id="formTenderDetail.id"/>
             </div>
         </a-collapse-panel>
         <hr>
@@ -667,7 +555,8 @@
                                         placeholder="..." :options="optionsQuoteDetails" allow-clear show-search
                                         :filter-option="filterOption"></a-select>
                                 </div>
-                                <div class="form-item-container">
+                                <div class="form-item-container"
+                                    :class="{ 'highlight-error': !formTenderDetail.daytona_ids }">
                                     <span style="color: red;">* Sucursal</span>
                                     <a-select v-model:value="formTenderDetail.daytona_ids" style="width: 100%"
                                         mode="single" placeholder="Please select" allow-clear show-search
@@ -859,7 +748,7 @@
                     </div> -->
                     <a-form-item v-for="(item, index) in form.items" :key="item.key"
                         :label="index === 0 ? 'Items' : ''">
-                        <div>
+                        <div class="individual-item" :data-item-id="item.key">
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
                                 <a-col :span="4"> <a-checkbox v-model:checked="item.po"
                                         @change="updateTotalSelected(item)" />
@@ -879,23 +768,28 @@
                                         :options="editableData.data" :filter-option="false" show-search allow-clear
                                         :not-found-content="item.fetching ? undefined : null"
                                         @search="(value) => handleSearchDescription(value, index)" /></a-col>
-                                <a-col :span="4"><a-input v-model:value="item.sku" placeholder="SKU" :readonly="true"
+                                <a-col :span="4" :class="{ 'highlight-error': item.error && !item.sku }"><a-input
+                                        v-model:value="item.sku" placeholder="SKU" :readonly="true"
                                         style="min-width: 120px;" /></a-col>
                             </a-row>
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
-                                <a-col :span="8" :offset="4"> <a-select v-model:value="item.vendor_id"
-                                        placeholder="Proveedor" allow-clear show-search :filter-option="filterOption">
+                                <a-col :span="8" :offset="4"
+                                    :class="{ 'highlight-error': item.error && !item.vendor_id }">
+                                    <a-select v-model:value="item.vendor_id" placeholder="Proveedor" allow-clear
+                                        show-search :filter-option="filterOption">
                                         <a-select-option v-for="(item, index) in vendorList" :key="index"
                                             :value="item.value" :label="(item.name)">
                                             {{ item.name }}
                                         </a-select-option>
                                     </a-select>
                                 </a-col>
-                                <a-col :span="6">
+                                <a-col :span="6" :class="{ 'highlight-error': item.error && (!item.price_final) }">
                                     <a-input-number v-model:value="item.price_final" placeholder="Precio C/IVA"
                                         @change="updateCalculatedFields(item, index)"
                                         style="min-width: 180px;" /></a-col>
-                                <a-col :span="5"><a-input-number v-model:value="item.quantity" placeholder="Cantidad"
+                                <a-col :span="5"
+                                    :class="{ 'highlight-error': item.error && (!item.quantity) }"><a-input-number
+                                        v-model:value="item.quantity" placeholder="Cantidad"
                                         @change="updateCalculatedFields(item, index)"
                                         :style="{ backgroundColor: item.noStock ? '#eeaab0' : 'white', textAlign: 'right', minWidth: '180px' }" /></a-col>
                             </a-row>
@@ -1022,7 +916,7 @@
                 </div>
             </div>
             <!-- Botones en estado Adjudicado -->
-            <div v-if="formTenderDetail.quote_state === 'A' || formTenderDetail.quote_state === 'u'">
+            <div v-if="formTenderDetail.quote_state === 'A' || formTenderDetail.quote_state === 'U'">
                 <a-row class="footer-oc">
                     <!-- <a-col :offset="10">
                         <a-button type="primary" @click="handleGenerateOc">Generar OC</a-button>
@@ -1072,7 +966,7 @@ import { getVendors, getVendorList, getSucursalList, getAssuranceList } from '@/
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
-import { getCostStock } from '@/api/stocks/stocks.js';
+import { getCostStock, getStockDef, getStockSummary } from '@/api/stocks/stocks.js';
 import { getVehiclesList } from '@/api/vehicles/vehicles.js';
 import { getProduct } from '@/api/product/product.js';
 
@@ -1090,6 +984,8 @@ import { formatCurrency, formatNumber } from '@/utils/utils.js';
 import { RobotOutlined } from '@ant-design/icons-vue';
 import { apiPedidos } from '@/api/pedidos/pedidos.js';
 import { apiChecklist } from '@/api/checklists/checklists.js';
+import PedidoTab from '@/components/tabs/pedidoTab.vue';
+import { apiConfigurations } from '@/api/configurations/configurations.js';
 
 
 export default {
@@ -1098,6 +994,7 @@ export default {
         RobotOutlined,
         MinusCircleOutlined,
         PlusOutlined,
+        PedidoTab,
     },
     setup() {
         const route = useRoute();
@@ -1184,6 +1081,7 @@ export default {
             sent_type: 'S',
         })
         const formPedido = ref([]);
+        const selectState = ref(false);
         const VNodes = defineComponent({
             props: {
                 vnodes: {
@@ -1406,15 +1304,8 @@ export default {
                         pedido_id: quoteResponse.results[0].nota_pedido_id,
                     }
                     const pedidosResponse = await apiPedidos('get', pedidoParams);
-                    const pedidoId = pedidosResponse.results[0].id;
-                    const checklistParams = {
-                        pedido: pedidoId,
-                    }
-                    const checklistResponse = await apiChecklist('get', checklistParams)
                     formPedido.value = {
                         ...pedidosResponse.results[0],
-                        ...checklistResponse.results[0],
-
                     }
                 }
                 formEnvio.delivery_type = quoteData.value.delivery_type;
@@ -1500,10 +1391,24 @@ export default {
             }
             return '';
         }
+        const highlightInvalidItems = (items) => {
+            items.forEach((item) => {
+                const element = document.querySelector(`[data-item-id="${item.key}"]`); // Asumiendo que hay un atributo `data-item-id`
+                if (element) {
+                    element.classList.add('highlight-error');
+                    setTimeout(() => element.classList.remove('highlight-error'), 2000); // Remover la clase tras 2 segundos
+                }
+            });
+        };
         const onSave = async (value) => {
 
             errorMessage.value = '';
             if (!formTenderDetail.value.daytona_ids) {
+                const element = document.querySelector('.form-item-container');
+                if (element) {
+                    element.classList.add('highlight-error');
+                    setTimeout(() => element.classList.remove('highlight-error'), 2000);
+                }
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe seleccionar al menos una sucursal' }));
                 return;
             }
@@ -1515,6 +1420,30 @@ export default {
             if (value === 'A') {
                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
                 dataSource.value.vendor_id === neumasur.value;
+            }
+            // Validar items del formulario
+            const invalidItems = form.items.filter((item) => {
+                // Validar campos vacíos para SKU o vendor
+                if (!item.sku || !item.vendor_id) {
+                    item.error = 'Debe completar el sku o proveedor o eliminar el item.';
+                    return true;
+                }
+
+                // Validar price_final o quantity vacíos
+                if ((!item.price_final || !item.quantity) && item.sku && item.vendor_id) {
+                    item.error = 'Debe completar la cantidad y precio o eliminar el item.';
+                    return true;
+                }
+
+                // Si no hay errores
+                delete item.error;
+                return false;
+            });
+
+            if (invalidItems.length > 0) {
+                highlightInvalidItems(invalidItems);
+                window.dispatchEvent(new CustomEvent('message-error', { detail: invalidItems[0].error }));
+                return;
             }
             isLoading.value = true;
             try {
@@ -1626,6 +1555,7 @@ export default {
                     errorMessage.value = errorMessage.value + '\nVerifique los campos obligatorios.';
                 }
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + errorMessage.value }));
+
             } finally {
                 isLoading.value = false;
                 if (errorMessage.value === '') {
@@ -1709,6 +1639,10 @@ export default {
                 code: sku,
             }
             const res = await getCosts(params);
+            if (!res.count) {
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: El item seleccionado no tiene costo asociado en la tabla Costos' }));
+                return;
+            }
             const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
 
             form.items[key]['sku'] = sku;
@@ -1769,8 +1703,8 @@ export default {
             try {
                 const idRole = await getRoles({ name: 'Agente' });
                 // const agentsResponse = await getUsers({ roles: idRole.results[0].id });
-                // const agentsResponse = await getUserList({ roles: idRole.results[0].id });
-                const agentsResponse = await getUserList();
+                const agentsResponse = await getUserList({ roles: idRole.results[0].id });
+                // const agentsResponse = await getUserList();
                 const transformedAgents = agentsResponse.map((item) => {
                     return {
                         id: item.value,
@@ -1858,11 +1792,11 @@ export default {
                     delivery_time: 1,
                     original_parts: '',
                     brand: 1,
-                    tire_model: 1,
+                    tire_model: 15,
                     llanta_type: 'ALEACION',
-                    tire_width: 145,
-                    tire_height: 30,
-                    tire_tread: 13,
+                    tire_width: 195,
+                    tire_height: 55,
+                    tire_tread: 16,
                     obs: '',
                     tire_type_name: 'Auxilio',
                     tire_quoted: 'modelo exacto',
@@ -1880,7 +1814,16 @@ export default {
                 console.log('user', localStorage.getItem('user_id'))
                 console.log('formTender', formTenderDetail.value)
             }
-        });
+            getConfigurationsKey();
+        })
+        const getConfigurationsKey = async () => {
+            const resConfiguration = await apiConfigurations('get',{nombre: 'select_state'});
+            console.log('resConfg', resConfiguration)
+            const resConfigurationFiltered = resConfiguration.results.find((item) => item.name === 'select_state')
+                if (resConfigurationFiltered) {
+                    selectState.value = resConfigurationFiltered.enable;
+                }
+            }
         const handleGetCost = async () => {
             console.log('handle get cost')
             isLoadingCost.value = true;
@@ -1906,7 +1849,7 @@ export default {
                 if (dataSource.value.find((item) => item.sku === skuN)) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Neumático SKU ya existente N°: ' + skuN }));
                 } else {
-                    let total = newCost.value.spare_tire_amounts[0].cost_amount / 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
+                    let total = newCost.value.spare_tire_amounts[0].cost_amount * 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
                     form.items.push({
                         type: 'Neumático',
                         key: newKey,
@@ -1917,6 +1860,7 @@ export default {
                         quantity: 1,
                         vendor_id: '',
                         total: total,
+                        amount_wo_iva: newCost.value.spare_tire_amounts[0].cost_amount,
                     });
                 }
                 if (!formTenderDetail.value.tire_width || !formTenderDetail.value.tire_height || !formTenderDetail.value.tire_tread || !brandName) {
@@ -1938,6 +1882,7 @@ export default {
                 } else if (form.items.find((item) => item.type === 'Llanta') && !skuL) {
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Llanta Duplicada con SKU nulo' }));
                 } else {
+                    let total = llantaResponse.spare_tire_amounts[0].cost_amount * 1.21 * 1 * (1 + parseFloat(formTenderDetail.value.fee) / 100);
                     form.items.push({
                         type: 'Llanta',
                         key: newKeyLlanta,
@@ -1945,6 +1890,8 @@ export default {
                         id: llantaResponse.spare_tire_amounts[0].id,
                         llanta_type: llantaResponse.spare_tire_amounts[0].detail,
                         price_final: llantaResponse.spare_tire_amounts[0].cost_amount,
+                        amount_wo_iva: llantaResponse.spare_tire_amounts[0].cost_amount,
+                        total: total,
                         quantity: 1,
                         vendor_id: '',
                     });
@@ -2122,15 +2069,42 @@ export default {
 
             // Crear una lista de promesas para todas las llamadas a la API
             const promises = data.map((item) => {
-                return getCostStock({ code: item.sku })
+                // return getCostStock({ code: item.sku })
+                    // .then((res) => {
+                    //     if (res && res.results.length > 0) {
+                    //         const stockData = res.results[0];
+                    //         // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
+                    //         const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
+                    //         // Actualizar los valores de la respuesta
+                    //         if (dataSourceItem) {
+                    //             dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
+                    //             if (!dataSourceItem.noStock) {
+                    //                 console.log('no stock', false)
+                    //                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
+                    //                 if (neumasur) {
+                    //                     dataSourceItem.vendor_id = neumasur.value;
+                    //                     console.log('neumasur', neumasur)
+                    //                 }
+                    //             }
+                    //             return {
+                    //                 sku: stockData.sku,
+                    //                 producto: stockData.producto,
+                    //                 stock: stockData.stock,
+                    //                 minimum_stock: stockData.minimum_stock,
+                    //                 available_stock: stockData.available_stock,
+                    //             };
+                    //         }
+
+                    //     }
+                return getStockSummary({ codigo: item.sku })
                     .then((res) => {
-                        if (res && res.results.length > 0) {
-                            const stockData = res.results[0];
+                        if (res && res.length > 0) {
+                            const stockData = res[0];
                             // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
-                            const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
+                            const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.codigo);
                             // Actualizar los valores de la respuesta
                             if (dataSourceItem) {
-                                dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
+                                dataSourceItem.noStock = dataSourceItem.quantity > stockData.stock_virtual ? true : false;
                                 if (!dataSourceItem.noStock) {
                                     console.log('no stock', false)
                                     const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
@@ -2140,11 +2114,12 @@ export default {
                                     }
                                 }
                                 return {
-                                    sku: stockData.sku,
-                                    producto: stockData.producto,
-                                    stock: stockData.stock,
-                                    minimum_stock: stockData.minimum_stock,
-                                    available_stock: stockData.available_stock,
+                                    sku: stockData.codigo,
+                                    descripcion: stockData.descripcion,
+                                    stock: stockData.stock_virtual,
+                                    stockReal: stockData.stock_real,
+                                    minimum_stock: stockData.stock_minimo,
+                                    available_stock: stockData.stock_disponible,
                                 };
                             }
 
@@ -2468,6 +2443,7 @@ export default {
             totalSelected,
             totalSelectedWithFreight,
             totalSelectedIva,
+            selectState,
         }
     }
 }
@@ -2776,5 +2752,10 @@ export default {
 
 .stock-table {
     margin-top: 1%;
+}
+
+.highlight-error {
+    border: 2px solid var(--principal);
+    transition: border 0.3s ease-out;
 }
 </style>
