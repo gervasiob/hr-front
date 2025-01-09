@@ -2444,6 +2444,7 @@ export default {
             totalSelected,
             totalSelectedWithFreight,
             totalSelectedIva,
+            selectState,
         }
     }
 }
