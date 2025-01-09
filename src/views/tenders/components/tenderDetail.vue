@@ -746,6 +746,12 @@
                         <span style="width: 100px;">Total S/IVA</span>
                         <span style="width: 120px;">Total + Fee</span>
                     </div> -->
+                    <div class="not-quote">
+                        <a-form-item label="SOLICITAR COTIZACIÓN A PROVEEDORES">
+                            <a-switch v-model:checked="formTenderDetail.require_vendor_prices"
+                                style="background-color: var(--border-item); border: none; margin: 1%;" />
+                        </a-form-item>
+                    </div>
                     <a-form-item v-for="(item, index) in form.items" :key="item.key"
                         :label="index === 0 ? 'Items' : ''">
                         <div class="individual-item" :data-item-id="item.key">
@@ -862,7 +868,8 @@
 
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
-                    v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'">
+                    v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'
+                    || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed U'">
                     <a-row>
                         <a-col :span="8">
                             <a-button type="primary" size="large" class="hover-button-grey" @click="onSave('C')"
@@ -1066,6 +1073,7 @@ export default {
             tender_data: { domain: '' },
             original_parts: '',
             user: '',
+            require_vendor_prices: false,
         });
         const imageSelect = ref();
         const imageUrl = ref();
@@ -1468,7 +1476,9 @@ export default {
                 }
 
                 params.quote_state = value;
-
+                if (selectState.value) {
+                    params.quote_state = formTenderDetail.value.quote_state;
+                }
                 // const details = { ...detalle }; 
 
                 // const details = dataSource.value.map((item) => ({
@@ -1477,6 +1487,7 @@ export default {
                 //     total: item.total ? item.total : 0,
                 //     price_oc: parseFloat(item.price_final / 1.21 * (1 + formTenderDetail.value.fee / 100)).toFixed(2),
                 // }));
+                    const requireVendorPrices = formTenderDetail.value.require_vendor_prices;
                 const details = detalle.map((item, index) => {
                     // Variables para cálculos
                     const priceFinal = parseFloat(item.price_final).toFixed(2);
@@ -1501,6 +1512,7 @@ export default {
                         amount_wo_iva: amountWoIva,
                         total,
                         price_oc: priceOc,
+                        require_vendor_prices :requireVendorPrices,
                     };
                 });
 
