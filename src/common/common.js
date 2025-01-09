@@ -104,6 +104,20 @@ export const TENDER_STATES = [
         back: '#D9B2C0',
 
     },
+    {
+        label: 'Test passed A',
+        value: 'Test passed A',
+        color: '#C5C308',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test passed U',
+        value: 'Test passed U',
+        color: '#C5C308',
+        back: '#D9B2C0',
+
+    },
 ];
 export const PRIORITY_VALUES = [
     {

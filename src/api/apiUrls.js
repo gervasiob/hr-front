@@ -5,10 +5,10 @@ localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 // export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
 export let BASE_URL;
-if (stage && stage === 'DEV') {
-    BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
-} else {
+if (stage && stage === 'UAT') {
     BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
+} else {
+    BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
 }
 const token = localStorage.getItem('token');
 if (token) {

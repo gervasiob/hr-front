@@ -18,7 +18,15 @@
         </a-form>
     </div>
     <div class="div-checklist">
-        <a-steps v-model:current="current" :items="itemsChecklist" size="small"></a-steps>
+            <a-steps v-model:current="current" size="small">
+    <a-step
+      v-for="(item, index) in itemsChecklist"
+      :key="index"
+      :title="item.title"
+      :description="item.description"
+      @click="handleStepClick(index, item)"
+    />
+  </a-steps>
     </div>
 </template>
 
@@ -26,7 +34,7 @@
 import { apiChecklist } from '@/api/checklists/checklists';
 import { apiPedidos } from '@/api/pedidos/pedidos';
 import { onMounted, ref, watch } from 'vue';
-
+import { navigateTo } from '@/utils/utils';
 export default {
     name: 'PedidoStep',
     props: {
@@ -38,11 +46,16 @@ export default {
         enableButtonLink: {
             type: Boolean,
             default: true,
-        }
+        },
+        quoteId: {
+            type: Number,
+            required: true,
+        },
     },
     setup(props) {
         const pedidoIdValue = ref(props.pedidoId);
         const itemsChecklist = ref([]);
+        const current = ref(0);
         const fetchData = async () => {
             try {
                 if (pedidoIdValue.value) {
@@ -84,6 +97,13 @@ export default {
             }
             itemsChecklist.value.push({ title: title, status: status, description: description })
         }
+        const handleStepClick = (index, item) => {
+            console.log('Step clicked:', item);
+            if (item.title === 'Documentación') {
+                const nextRoute = '/upload-documents';
+                navigateTo(props.quoteId, nextRoute, true, {}, true);
+            }
+        };
         onMounted(() => {
             fetchData();
         })
@@ -100,6 +120,7 @@ export default {
         return {
             pedidoIdValue,
             itemsChecklist,
+            handleStepClick,
         }
     }
 }
