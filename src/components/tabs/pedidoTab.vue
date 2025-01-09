@@ -1,7 +1,7 @@
 <template>
     <a-tabs v-model:activeKey="activeKey" type="card">
         <a-tab-pane key="1" tab="Nota de Pedido">
-            <PedidoStep :pedido-id="pedidoId" :enable-button-link="buttonLink"/>
+            <PedidoStep :pedido-id="pedidoId" :enable-button-link="buttonLink" :quote-id="quoteId"/>
         </a-tab-pane>
         <a-tab-pane key="2" tab="Proforma">Contenido de Proforma</a-tab-pane>
     </a-tabs>
@@ -21,7 +21,11 @@ export default {
         buttonLink: {
             type: Boolean,
             default: true,
-        }
+        },
+        quoteId: {
+            type: Number,
+            required: true,
+        },
     },
     components: {
         PedidoStep,    

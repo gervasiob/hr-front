@@ -6,8 +6,8 @@ export const tableStockColumns = [
     },
     {
         title: 'Descripción',
-        dataIndex: 'producto',
-        key: 'producto',
+        dataIndex: 'descripcion',
+        key: 'descripcion',
     },
     {
         title: 'Stock',

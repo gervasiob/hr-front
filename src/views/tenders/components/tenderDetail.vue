@@ -172,10 +172,20 @@
                 <div class="item-d">{{ formTenderDetail.company_name }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
-                <div class="item-d">
+                <div class="item-d" v-if="selectState">
+                    <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
+                    v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
+                    <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
+                        :label="item.label">
+                        {{ item.label }}
+                    </a-select-option>
+                </a-select>
+                </div>
+                <div class="item-d" v-else>
                     <a-badge status="processing" :color="getStateColor(formTenderDetail.quote_state)"
                         :text="getStateLabel(formTenderDetail.quote_state)" />
                 </div>
+                
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
                 <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
@@ -315,7 +325,7 @@
         <hr>
         <a-collapse-panel key="4" class="collapse-class" header="PEDIDO">
             <div>
-                <PedidoTab :pedido-id="formPedido.pedido_id" />
+                <PedidoTab :pedido-id="formPedido.pedido_id" :quote-id="formTenderDetail.id"/>
             </div>
         </a-collapse-panel>
         <hr>
@@ -956,7 +966,7 @@ import { getVendors, getVendorList, getSucursalList, getAssuranceList } from '@/
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
-import { getCostStock, getStockDef } from '@/api/stocks/stocks.js';
+import { getCostStock, getStockDef, getStockSummary } from '@/api/stocks/stocks.js';
 import { getVehiclesList } from '@/api/vehicles/vehicles.js';
 import { getProduct } from '@/api/product/product.js';
 
@@ -975,6 +985,7 @@ import { RobotOutlined } from '@ant-design/icons-vue';
 import { apiPedidos } from '@/api/pedidos/pedidos.js';
 import { apiChecklist } from '@/api/checklists/checklists.js';
 import PedidoTab from '@/components/tabs/pedidoTab.vue';
+import { apiConfigurations } from '@/api/configurations/configurations.js';
 
 
 export default {
@@ -1070,6 +1081,7 @@ export default {
             sent_type: 'S',
         })
         const formPedido = ref([]);
+        const selectState = ref(false);
         const VNodes = defineComponent({
             props: {
                 vnodes: {
@@ -1802,7 +1814,16 @@ export default {
                 console.log('user', localStorage.getItem('user_id'))
                 console.log('formTender', formTenderDetail.value)
             }
-        });
+            getConfigurationsKey();
+        })
+        const getConfigurationsKey = async () => {
+            const resConfiguration = await apiConfigurations('get',{nombre: 'select_state'});
+            console.log('resConfg', resConfiguration)
+            const resConfigurationFiltered = resConfiguration.results.find((item) => item.name === 'select_state')
+                if (resConfigurationFiltered) {
+                    selectState.value = resConfigurationFiltered.enable;
+                }
+            }
         const handleGetCost = async () => {
             console.log('handle get cost')
             isLoadingCost.value = true;
@@ -2075,10 +2096,10 @@ export default {
                     //         }
 
                     //     }
-                return getStockDef({ codigo: item.sku })
+                return getStockSummary({ codigo: item.sku })
                     .then((res) => {
-                        if (res && res.results.length > 0) {
-                            const stockData = res.results[0];
+                        if (res && res.length > 0) {
+                            const stockData = res[0];
                             // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
                             const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.codigo);
                             // Actualizar los valores de la respuesta
@@ -2094,11 +2115,11 @@ export default {
                                 }
                                 return {
                                     sku: stockData.codigo,
-
+                                    descripcion: stockData.descripcion,
                                     stock: stockData.stock_virtual,
                                     stockReal: stockData.stock_real,
-                                    minimum_stock: stockData.minimum_stock,
-                                    available_stock: stockData.available_stock,
+                                    minimum_stock: stockData.stock_minimo,
+                                    available_stock: stockData.stock_disponible,
                                 };
                             }
 
@@ -2422,6 +2443,7 @@ export default {
             totalSelected,
             totalSelectedWithFreight,
             totalSelectedIva,
+            selectState,
         }
     }
 }
