@@ -49,7 +49,7 @@
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['username', 'email'].includes(column.dataIndex)">
+      <template v-if="['username', 'email', 'phone'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />

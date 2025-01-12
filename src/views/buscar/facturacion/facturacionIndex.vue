@@ -54,7 +54,7 @@ export default {
         let paramId = ref(route.params.id);
         const quoteId = ref(null);
         const pedidoId = ref(null);
-        const checkList = ref(['facturacion'])
+        const checkList = ref(['facturacion_final'])
         const fetchData = async () => {
             console.log('peiddoID', formState)
             try {

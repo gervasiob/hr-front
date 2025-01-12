@@ -325,7 +325,7 @@
         <hr>
         <a-collapse-panel key="4" class="collapse-class" header="PEDIDO">
             <div>
-                <PedidoTab :pedido-id="formPedido.pedido_id" :quote-id="formTenderDetail.id"/>
+                <PedidoTab :pedido-id="formPedido.pedido_id" :quote-id="formTenderDetail.claim_id"/>
             </div>
         </a-collapse-panel>
         <hr>
@@ -1829,7 +1829,8 @@ export default {
             getConfigurationsKey();
         })
         const getConfigurationsKey = async () => {
-            const resConfiguration = await apiConfigurations('get',{nombre: 'select_state'});
+            const resConfiguration = await apiConfigurations('get', { name: 'select_state' });
+         console.log('resconfig', resConfiguration)   
             const resConfigurationFiltered = resConfiguration.results.find((item) => item.name === 'select_state')
             if (resConfigurationFiltered) {
                     selectState.value = resConfigurationFiltered.enable;
