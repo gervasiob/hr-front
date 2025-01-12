@@ -18,12 +18,17 @@
     <BasicDetails title="Detalle Documentacion" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
         :checkList="checkList" />
     <div class="upload-documents">
-        <router-link :to="{ name: 'UploadDocuments', params: { id: claimId } }">
-            <a-button type="primary">
-             Cargar Archivos
-            </a-button>
-        </router-link>
-        <span style="color: black;">Archivos Cargados</span>
+        <a-row>
+            <a-col :span="6" :offset="18">
+                <router-link :to="{ name: 'UploadDocuments', params: { id: claimId } }">
+                    <a-button type="primary" ghost>
+                        Ir a Cargar Archivos
+                    </a-button>
+                </router-link>
+            </a-col>
+        </a-row>
+
+        <!-- <span style="color: black;">Archivos Cargados</span> -->
     </div>
 
 </template>
@@ -64,14 +69,13 @@ export default {
         const quoteId = ref(null);
         const pedidoId = ref(null);
         const claimId = ref(null);
-        const checkList = ref(['documentacion'])
+        const checkList = ref(['gestion_documental'])
         const fetchData = async () => {
             try {
                 const params = {
-                    nota_pedido_id: formState.pedidoId,
+                    nota_pedido_id__icontains: formState.pedidoId,
                 };
                 const quoteResponse = await getQuotes(params);
-                console.log('quote response', quoteResponse.results[0])
                 let dataResult = [];
                 dataResult = quoteResponse.results[0];
                 quoteId.value = dataResult.id;
@@ -87,7 +91,8 @@ export default {
                     claim_date: dataResult.tender_data?.claim_date || 'Sin datos',
                 };
             } catch (error) {
-                console.error('Error fetching tender data:', error);
+                console.error('Error fetching data:', error);
+                location.reload();
             }
         };
         const handleSearch = () => {

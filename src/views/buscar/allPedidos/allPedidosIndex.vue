@@ -59,7 +59,7 @@ export default {
         const fetchData = async () => {
             try {
                 const params = {
-                    nota_pedido_id: formState.pedidoId,
+                    nota_pedido_id__icontains: formState.pedidoId,
                 };
                 const quoteResponse = await getQuotes(params);
                 console.log('quote response all pedidos', quoteResponse.results[0])
@@ -78,6 +78,7 @@ export default {
                 };
             } catch (error) {
                 console.error('Error fetching tender data:', error);
+                location.reload();
             }
         };
         onMounted(() => {

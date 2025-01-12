@@ -52,8 +52,7 @@
                 Marcar Todos
             </a-checkbox>
         </div>
-        <a-divider />
-        <a-checkbox-group v-model:value="state.checkedList" :options="filteredCheckList" />
+        <a-checkbox-group v-model:value="state.checkedList" class="checkbox-group" :options="filteredCheckList" />
     </div>
     <div class="button-submit">
         <a-button type="primary" @click="handleSubmit">Guardar</a-button>
@@ -65,6 +64,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { generalDescriptionFields } from './config/generalFields';
 import { apiPedidos } from '@/api/pedidos/pedidos';
 import { apiChecklist, uploadChecklistFile } from '@/api/checklists/checklists';
+import { CHECKLIST_KEYS } from '@/common/common';
 
 export default {
     name: 'BasicDetails',
@@ -150,7 +150,7 @@ export default {
             const responseSave = await apiChecklist('put', params, checklistData.value.id)
             props.onSubmit();
             setTimeout(() => {
-                queryPedidos(props.pedidoId)
+                location.reload();
             }, 500);
             window.dispatchEvent(new CustomEvent('message-success', { detail: 'Guardado Exitoso' }));
 
@@ -165,17 +165,13 @@ export default {
                 return;
             }
             try {
-                console.log('inciio el try', nota_pedido_id)
                 const pedidoParams = { pedido_id: nota_pedido_id }
                 const pedidoResponse = await apiPedidos('get', pedidoParams)
-                console.log('edido response', pedidoResponse)
                 if (pedidoResponse.results.length === 0) {
                     return;
                 }
-                console.log('query')
                 const checkParams = { pedido: pedidoResponse.results[0].id };
                 const checkResponse = await apiChecklist('get', checkParams);
-                console.log('response check', checkResponse)
                 const checklistItem = checkResponse.results[0] || {};
                 if (checklistItem[props.imageSlotName]) {
                     fileList.value.push({
@@ -191,11 +187,14 @@ export default {
                 checklistData.value = checklistItem;
 
                 // Filtrar las claves que están en props.checkList
-                filteredCheckList.value = props.checkList.map((key) => ({
-                    label: key.replace(/_/g, ' '), // Opcional: convertir el nombre a un formato más legible
-                    value: key,
-                    checked: !!checklistItem[key],
-                }));
+                filteredCheckList.value = props.checkList.map((key) => {
+                    const matchedKey = CHECKLIST_KEYS.find((item) => item.value === key);
+                    return {
+                        label: matchedKey ? matchedKey.label : key.replace(/_/g, ' '),
+                        value: key,
+                        checked: !!checklistItem[key],
+                    };
+                });
 
                 // Sincronizar estado inicial de los checkboxes
                 state.checkedList = props.checkList.filter((key) => checklistItem[key] === true);
@@ -275,4 +274,19 @@ export default {
 .image-slot {
     color: #3C3D3C,
 }
+.checkbox-group {
+    border: 2px solid var(--principal);
+    /* border: 2px solid #007BFF; */
+    /* Azul */
+    background-color:var(--mute);
+    /* Fondo tenue */
+    padding: 5px;
+    border-radius: 5px;
+    margin-top: 1%;
+}
+.description-group {
+    border: 1px solid var(--principal);
+    margin-bottom: 1%;
+}
+
 </style>
