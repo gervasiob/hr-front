@@ -1830,9 +1830,8 @@ export default {
         })
         const getConfigurationsKey = async () => {
             const resConfiguration = await apiConfigurations('get',{nombre: 'select_state'});
-            console.log('resConfg', resConfiguration)
             const resConfigurationFiltered = resConfiguration.results.find((item) => item.name === 'select_state')
-                if (resConfigurationFiltered) {
+            if (resConfigurationFiltered) {
                     selectState.value = resConfigurationFiltered.enable;
                 }
             }

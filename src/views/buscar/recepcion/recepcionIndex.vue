@@ -98,6 +98,7 @@ export default {
                 };
             } catch (error) {
                 console.error('Error fetching tender data:', error);
+                location.reload();
             }
         };
         const handleSearch = () => {

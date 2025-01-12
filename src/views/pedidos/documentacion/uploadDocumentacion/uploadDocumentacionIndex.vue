@@ -32,6 +32,7 @@
 
 <script>
 import { apiVendorDocumentUpload, apiVendorDocumentUploadView, getRequiredDocuments, uploadDocumentFile, vendorUploadDocuments } from '@/api/documentacion/documentacion';
+import { getQuotes } from '@/api/quotes/quotes';
 import { InboxOutlined } from '@ant-design/icons-vue';
 import { message } from 'ant-design-vue';
 import { onMounted, ref } from 'vue';
@@ -51,11 +52,10 @@ export default {
         ];
         const getFieldValue = (field) => {
             // const data = props.dataSource || {};
-            const data = {};
-            const rawValue = field.model in data ? data[field.model] : 'Sin Datos';
+            const rawValue = field.model in data.value ? data.value[field.model] : 'Sin Datos';
             return field.transform ? field.transform(rawValue) : rawValue;
         };
-        const fileList = ref([]);
+        const data = ref([]);
         const handleChange = info => {
             const status = info.file.status;
             if (status !== 'uploading') {
@@ -78,10 +78,18 @@ export default {
         const quoteId = ref(null);
         const fetchData = async () => {
             try {
-                const resRequired = await getRequiredDocuments(null, claimId.value);
+                const quote = await getQuotes({ claim_id: claimId.value });
+                if (quote.results.length === 0) {
+                    return;
+                }
+                quoteId.value = quote.results[0].id;
+                const resRequired = await getRequiredDocuments(null, quoteId.value);
+                data.value = {
+                    ...resRequired, 
+                    claim_id: claimId.value,
+                };
                 requiredDocuments.value = resRequired.required_documents;
                 vendorId.value = resRequired.vendor_id;
-                quoteId.value = resRequired.quote_id;
                 // Inicializar fileLists para cada documento
                 requiredDocuments.value.forEach((doc) => {
                     fileLists.value[doc.id] = [];
@@ -123,7 +131,7 @@ export default {
                 onSuccess(response);
             } catch (error) {
                 console.error("Error al subir el archivo:", error);
-           
+
                 // Invoca el callback de error para manejar el fallo
                 onError(error);
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Archivo no guardado: ' + error.response.data.error }));
