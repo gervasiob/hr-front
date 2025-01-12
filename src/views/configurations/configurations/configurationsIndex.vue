@@ -41,7 +41,7 @@
                     </template>
                 </div>
             </template>
-            <template v-if="[ 'state'].includes(column.dataIndex)">
+            <template v-if="['state'].includes(column.dataIndex)">
                 <div>
                     <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
                         style="margin: -5px 0;" :maxlength="4" />
@@ -82,6 +82,12 @@
                             <a-col>
                                 <a @click="edit(record.key)">Edit</a>
                             </a-col>
+                            <!-- <a-col>
+                                <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?"
+                                    @confirm="onDelete(record.key)">
+                                    <a>Eliminar</a>
+                                </a-popconfirm>
+                            </a-col> -->
                         </a-row>
                     </span>
                 </div>
@@ -255,9 +261,9 @@ export default {
                 const params = {
                     name: data.name,
                 }
-                // apiConfigurations('delete',params, data.id).then(() => {
-                //     fetchData();
-                // });
+                apiConfigurations('delete', params, data.id).then(() => {
+                    fetchData();
+                });
             }
             const newData = dataSource.value.filter(item => item.key !== key);
             dataSource.value = newData;
@@ -291,7 +297,7 @@ export default {
             formState.value = { ...form };
             console.log('form', form)
 
-            apiConfigurations('post',formState.value).then(() => {
+            apiConfigurations('post', formState.value).then(() => {
                 formState.value = {};
                 current.value = 1;
                 fetchData();

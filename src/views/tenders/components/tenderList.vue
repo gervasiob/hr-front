@@ -37,8 +37,8 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
-                    <a-form-item label="Agente" name="agent">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
+                    <a-form-item label="Agente" name="user">
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.user" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                                 :label="(item.fullName)">
@@ -78,7 +78,7 @@
             <template v-else-if="column.key === 'quote_state'">
                 <span>
                     <a-tag :color="getState(record.quote_state).color">
-                        {{ getState(record.quote_state  ).label.toUpperCase() }}
+                        {{ getState(record.quote_state ).label.toUpperCase() }}
                     </a-tag>
                 </span>
             </template>

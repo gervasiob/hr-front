@@ -55,7 +55,7 @@ export default {
         let paramId = ref(route.params.id);
         const quoteId = ref(null);
         const pedidoId = ref(null);
-        const checkList = ref(['creacion_lotes'])
+        const checkList = ref(['generacion_lote'])
         const fetchData = async () => {
             try {
                 const params = {
