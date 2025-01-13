@@ -363,7 +363,8 @@ export default {
     };
     let formDataProps = ref({});
     const handleEdit = (key) => {
-      const data = dataSource.value.filter(item => key === item.key)[0];
+      const data = dataSource.value.filter(item => item === key)[0];
+      console.log('key', key)
       const originalObject = {
         marcas: data.marcas
       };
