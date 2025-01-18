@@ -85,6 +85,7 @@ export async function getToken(credentials) {
         return token;
     } catch (error) {
         console.error('Error logging in:', error);
+        localStorage.clear();
         throw error;
     }
 }

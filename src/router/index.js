@@ -356,7 +356,11 @@ const otherRoutes = [
         name: 'UploadDocuments',
         path: '/upload-documents/:id',
         component: () => import('@/views/pedidos/documentacion/uploadDocumentacion/uploadDocumentacionIndex.vue'),
-        meta: { roles: basicAuth },
+        meta: {
+            roles: basicAuth,
+            requiresAuth: false,
+            hideMenu: true,
+         },
     },
     {
         key: 'documentacion',
@@ -390,9 +394,13 @@ export const router = createRouter({
     scrollBehavior: () => ({ left: 0, top: 0 }),
 });
 router.beforeEach(async (to, from, next) => {
+    const requiresAuth = to.meta.requiresAuth;
     if (to.path === '/login') {
         next();
         return;
+    }
+    if (!requiresAuth) {
+        next();
     }
     const token = localStorage.getItem('token');
     if (token && token !== 'undefined') {

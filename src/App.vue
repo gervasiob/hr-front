@@ -13,7 +13,7 @@
             </div>
           </a-col>
           <a-col :span="4">
-            <div class="notification" v-show="!loginRoute">
+            <div class="notification" v-show="!loginRoute" v-if="!hideMenu">
               <a-row>
                 <a-col class="notification">
                   <BellOutlined :class="{ animatebell: animateBell }" @click="openNotification" />
@@ -36,7 +36,7 @@
           <a-divider style="height: 4px; background-color: #EC2233"></a-divider>
         </a-row>
         <a-layout-content :style="siderStyle" v-model:collapsed="collapsed" collapsible>
-          <a-menu v-model:selectedKeys="current" :items="items" @click="handleMenuSelect"
+          <a-menu v-model:selectedKeys="current" v-if="!hideMenu" :items="items" @click="handleMenuSelect"
             mode="horizontal" /></a-layout-content>
         <RouterView />
       </a-layout-content>
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { onMounted, ref, watch, onUnmounted, inject } from 'vue';
+import { onMounted, ref, watch, onUnmounted, inject, computed } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
 import { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
@@ -86,10 +86,12 @@ export default {
     const newNotificationsList = ref([]);
     const notificationOn = ref(localStorageData.notificationOn);
     const intervalId = ref(null);
-    const router = useRouter(); // Importar el router
+    const router = useRouter();
     let newNotificationsString = '';
-    const route = useRoute(); // Obtener la ruta actual
-
+    const route = useRoute();
+    const hideMenu = computed(() => {
+      return route.meta.hideMenu || true;
+    });
     const handleMenuSelect = (key) => {
       const path = key.item.path;
       if (route.path === path) {
@@ -260,6 +262,7 @@ export default {
       loginRoute,
       minutesAdjudicated,
       animateBell,
+      hideMenu,
 
     }
 
