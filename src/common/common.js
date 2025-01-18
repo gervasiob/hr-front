@@ -339,9 +339,9 @@ export const BRANDS = [
 ];
 
 export const CHECKLIST_KEYS = [
-    { value: 'entrega_de_mercaderia', label: "Validación Cliente" },
+    { value: 'entrega_de_mercaderia', label: "Confirmación de Cliente" },
     { value: 'gestion_documental', label: "Documentación" },
-    { value: 'orden_compra_conformada', label: "Recepción Mercadería" },
+    { value: 'orden_compra_conformada', label: "Ingresar OC" },
     { value: 'armado_y_embalaje', label: "Gomería" },
     { value: 'generacion_lote', label: "Creación Lote" },
     { value: 'proforma', label: "Proforma" },

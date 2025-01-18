@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useRoute } from 'vue-router';
 
 const stage = import.meta.env.VITE_STAGE;
 localStorage.setItem('origin', window.location.origin)

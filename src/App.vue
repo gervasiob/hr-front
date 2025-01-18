@@ -90,7 +90,7 @@ export default {
     let newNotificationsString = '';
     const route = useRoute();
     const hideMenu = computed(() => {
-      return route.meta.hideMenu || true;
+      return route.meta.hideMenu || false;
     });
     const handleMenuSelect = (key) => {
       const path = key.item.path;

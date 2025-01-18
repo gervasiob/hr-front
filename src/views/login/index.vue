@@ -4,10 +4,11 @@
       <div class="login-title">
         <h2>INICIO DE SESIÓN</h2>
       </div>
-      <a-form layout="vertical" @submit.prevent="handleSubmit" :model="loginForm">
+      <a-form layout="vertical" :model="loginForm" @submit.prevent="handleSubmit">
         <a-form-item>
           <div class="item-d">
-            <a-input placeholder="Ingrese su usuario" v-model:value="loginForm.username">
+            <a-input name="username" placeholder="Ingrese su usuario" v-model:value="loginForm.username"
+              autocomplete="username">
               <template #prefix>
                 <UserOutlined class="site-form-item-icon" />
               </template>
@@ -15,7 +16,8 @@
           </div>
         </a-form-item>
         <a-form-item>
-          <a-input type="password" placeholder="Ingrese su contraseña" v-model:value="loginForm.password">
+          <a-input name="password" type="password" placeholder="Ingrese su contraseña"
+            v-model:value="loginForm.password" autocomplete="current-password">
             <template #prefix>
               <LockOutlined class="site-form-item-icon" />
             </template>
