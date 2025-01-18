@@ -13,6 +13,8 @@ if (stage && stage === 'UAT') {
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+} else {
+    console.log('no token', token)
 }
 // console.log('stage', stage)
 // if (stage === 'DEV') {
@@ -107,3 +109,16 @@ export async function validateToken(credentials) {
     }
 }
 export default apiClient;
+
+export const setTokenHeader = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+        console.log('reload');
+        location.reload();
+        return 'setted';
+    } else {
+        console.log('no token', token)
+        return 'no token';
+    }
+}

@@ -419,7 +419,7 @@ router.beforeEach(async (to, from, next) => {
             next({ path: '/login' });  // Redirigir si no tiene acceso
         }
     } else {
-        next();  // Si la ruta no tiene roles definidos, permitir el acceso
+        next();
     }
 });
 

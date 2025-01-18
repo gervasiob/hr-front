@@ -36,10 +36,10 @@
 </template>
 
 <script>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
-import { getToken } from '@/api/apiUrls';
+import { getToken, setTokenHeader } from '@/api/apiUrls';
 
 export default {
   name: 'LoginIndex',
@@ -68,7 +68,7 @@ export default {
         };
         const response = await getToken(params);
         console.log('response', response);
-        router.push({ path: '/Licitaciones' });
+        setTokenHeader();
       } catch (error) {
         console.error('Error logging in', error);
         window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error en el logueo: ' + error }));
@@ -80,6 +80,12 @@ export default {
       // Aquí iría la lógica para manejar el olvidé mi contraseña
     };
 
+    onMounted(() => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        router.push({ path: '/Licitaciones' });
+      }
+    })
     return {
       loginForm,
       handleSubmit,
