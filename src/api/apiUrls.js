@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { useRoute } from 'vue-router';
 
 const stage = import.meta.env.VITE_STAGE;
 localStorage.setItem('origin', window.location.origin)
@@ -13,6 +14,8 @@ if (stage && stage === 'UAT') {
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+} else {
+    console.log('no token', token)
 }
 // console.log('stage', stage)
 // if (stage === 'DEV') {
@@ -83,6 +86,7 @@ export async function getToken(credentials) {
         return token;
     } catch (error) {
         console.error('Error logging in:', error);
+        localStorage.clear();
         throw error;
     }
 }
@@ -107,4 +111,15 @@ export async function validateToken(credentials) {
     }
 }
 export default apiClient;
-
+export const setTokenHeader = () => {
+    const token = localStorage.getItem('token');
+    if (token) {
+        axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+        console.log('reload');
+        location.reload();
+        return 'setted';
+    } else {
+        console.log('no token', token)
+        return 'no token';
+    }
+}

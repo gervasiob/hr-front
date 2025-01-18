@@ -174,18 +174,19 @@
             <a-descriptions-item label="Estado" class="a-descriptions-item">
                 <div class="item-d" v-if="selectState">
                     <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
-                    v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
-                    <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
-                        :label="item.label">
-                        {{ item.label }}
-                    </a-select-option>
-                </a-select>
+                        v-model:value="formTenderDetail.quote_state" allowClear show-search
+                        :filter-option="filterOption">
+                        <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
+                            :label="item.label">
+                            {{ item.label }}
+                        </a-select-option>
+                    </a-select>
                 </div>
                 <div class="item-d" v-else>
                     <a-badge status="processing" :color="getStateColor(formTenderDetail.quote_state)"
                         :text="getStateLabel(formTenderDetail.quote_state)" />
                 </div>
-                
+
             </a-descriptions-item>
             <a-descriptions-item label="Dominio" class="a-descriptions-item">
                 <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
@@ -325,7 +326,7 @@
         <hr>
         <a-collapse-panel key="4" class="collapse-class" header="PEDIDO">
             <div>
-                <PedidoTab :pedido-id="formPedido.pedido_id" :quote-id="formTenderDetail.claim_id"/>
+                <PedidoTab :pedido-id="formPedido.pedido_id" :quote-id="formTenderDetail.claim_id" />
             </div>
         </a-collapse-panel>
         <hr>
@@ -930,7 +931,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
