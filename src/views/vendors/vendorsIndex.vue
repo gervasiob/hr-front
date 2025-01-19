@@ -2,22 +2,32 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <a-col :span="8">
+        <a-col :span="6">
           <a-form-item label="Tipo" name="name">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear show-search
-              :filter-option="filterOption" style="width: 300px;">
+              :filter-option="filterOption" style="min-width: 120px;">
               <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value" :label="item.name">
                 {{ item.name }}
               </a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
-        <a-col :span="8">
+        <a-col :span="3">
+          <a-form-item label="Id" name="id">
+            <a-input v-model:value="filterInputs.id" allowClear />
+          </a-form-item>
+        </a-col>
+        <a-col :span="6">
           <a-form-item label="Nombre" name="social_name">
             <a-input v-model:value="filterInputs.social_name__icontains" allowClear />
           </a-form-item>
         </a-col>
-        <a-col :span="8" style="text-align: right">
+        <a-col :span="4">
+          <a-form-item label="Marcas" name="marcas__icontains" v-show="filterInputs.vendor_type === 0">
+            <a-input v-model:value="filterInputs.marcas__icontains" allowClear />
+          </a-form-item>
+        </a-col>
+        <a-col :span="5" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>

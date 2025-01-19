@@ -78,18 +78,19 @@ export default {
         const quoteId = ref(null);
         const fetchData = async () => {
             try {
-                const quote = await getQuotes({ claim_id: claimId.value });
-                if (quote.results.length === 0) {
-                    return;
-                }
-                quoteId.value = quote.results[0].id;
-                const resRequired = await getRequiredDocuments(null, quoteId.value);
+                // const quote = await getQuotes({ claim_id: claimId.value });
+                // if (quote.results.length === 0) {
+                //     return;
+                // }
+                // quoteId.value = quote.results[0].id;
+                const resRequired = await getRequiredDocuments(null, claimId.value);
                 data.value = {
                     ...resRequired, 
                     claim_id: claimId.value,
                 };
                 requiredDocuments.value = resRequired.required_documents;
                 vendorId.value = resRequired.vendor_id;
+                quoteId.value = resRequired.quote_id;
                 // Inicializar fileLists para cada documento
                 requiredDocuments.value.forEach((doc) => {
                     fileLists.value[doc.id] = [];

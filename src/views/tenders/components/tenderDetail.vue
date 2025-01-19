@@ -870,7 +870,7 @@
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
                     v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'
-                    || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed U'">
+                        || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed U'">
                     <a-row>
                         <a-col :span="8">
                             <a-button type="primary" size="large" class="hover-button-grey" @click="onSave('C')"
@@ -931,7 +931,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -945,7 +945,7 @@
 
                 </a-row>
             </div>
-            <div>
+            <!-- <div>
                 <a-row>
                     <a-col :span="8">
                         <a-input-number v-model:value="formTenderDetail.nota_pedido_id" placeholder="nota pediod id"
@@ -955,7 +955,7 @@
                             Pedido</a-button>
                     </a-col>
                 </a-row>
-            </div>
+            </div> -->
         </a-collapse-panel>
     </a-collapse>
 </template>
@@ -994,6 +994,7 @@ import { apiPedidos } from '@/api/pedidos/pedidos.js';
 import { apiChecklist } from '@/api/checklists/checklists.js';
 import PedidoTab from '@/components/tabs/pedidoTab.vue';
 import { apiConfigurations } from '@/api/configurations/configurations.js';
+import { documentsByVendor } from '@/api/documentacion/documentacion.js';
 
 
 export default {
@@ -1364,7 +1365,6 @@ export default {
         const fetchDescription = async (value) => {
             editableData.data = [];
             editableData.fetching = true;
-            console.log('value', value)
             const params = {
                 name__icontains: value,
             }
@@ -1381,6 +1381,21 @@ export default {
             } catch (error) {
                 console.error('Error fetching data:', error);
                 editableData.fetching = false;
+            }
+        };
+        const fetchBySku = async (value) => {
+            console.log('value', value)
+            const params = {
+                sku: value,
+            }
+            try {
+                const res = await getProduct(params);
+                if (res.count > 0) {
+                    return res.results[0].name;
+                }
+                return 'Sku no encontrado';
+            } catch (error) {
+                console.error('Error fetching data:', error);
             }
         };
         const filterOptionValue = (input, option) => {
@@ -1412,6 +1427,7 @@ export default {
         const onSave = async (value) => {
 
             errorMessage.value = '';
+            strValWapp.value = '';
             if (!formTenderDetail.value.daytona_ids) {
                 const element = document.querySelector('.form-item-container');
                 if (element) {
@@ -1429,6 +1445,32 @@ export default {
             if (value === 'A') {
                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
                 dataSource.value.vendor_id === neumasur.value;
+            }
+            //Chequeos para Whatsapp - Validación Clientes
+            if (formTenderDetail.value.quote_state === 'Test passed A') {
+                const resp1 = await checkVal();
+                if (!resp1) {
+                    window.dispatchEvent(new CustomEvent('message-error', { detail: strValWapp.value }));
+                    return false;
+                }
+            }
+
+            //Chequeos para Whatsapp - Proveedores
+            if (formTenderDetail.value.quote_state === 'Test passed A' & formTenderDetail.value.require_vendor_prices) {
+                const resp2 = await checkProv();
+                if (!resp2) {
+                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + strValWapp.value }));
+                    return;
+                }
+            }
+            //Chequeos para Whatsapp - Documentación
+            if (formTenderDetail.value.quote_state === 'Test passed U') {
+                console.log('va a verificar docs')
+                const resp3 = await checkVal(false, true);
+                if (!resp3) {
+                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + strValWapp.value }));
+                    return;
+                }
             }
             // Validar items del formulario
             const invalidItems = form.items.filter((item) => {
@@ -1487,7 +1529,7 @@ export default {
                 //     total: item.total ? item.total : 0,
                 //     price_oc: parseFloat(item.price_final / 1.21 * (1 + formTenderDetail.value.fee / 100)).toFixed(2),
                 // }));
-                    const requireVendorPrices = formTenderDetail.value.require_vendor_prices;
+                const requireVendorPrices = formTenderDetail.value.require_vendor_prices;
                 const details = detalle.map((item, index) => {
                     // Variables para cálculos
                     const priceFinal = parseFloat(item.price_final).toFixed(2);
@@ -1512,7 +1554,7 @@ export default {
                         amount_wo_iva: amountWoIva,
                         total,
                         price_oc: priceOc,
-                        require_vendor_prices :requireVendorPrices,
+                        require_vendor_prices: requireVendorPrices,
                     };
                 });
 
@@ -1572,10 +1614,11 @@ export default {
             } finally {
                 isLoading.value = false;
                 if (errorMessage.value === '') {
+                    const reloadTime = value === 'A' ? 3500 : 200;
                     window.dispatchEvent(new CustomEvent('message-success', { detail: 'Licitación Guardada. Aguarda que la página se recargue' }));
                     setTimeout(() => {
                         location.reload();
-                    }, 3000); // 3000 ms = 3 segundos
+                    }, reloadTime); // 3000 ms = 3 segundos
                 }
             }
 
@@ -1642,6 +1685,23 @@ export default {
             editableData[key]['llanta_type'] = description;
             editableData[key]['price_final'] = price_final;
             console.log('handle sku', res.results[0]);
+        }
+        const calculateDetails = () => {
+            const details = form.value;
+           
+            details.map(async (item) => {
+                try {
+                    if (item.sku && !item.llanta_type) {
+                        const description = await fetchBySku(item.sku);
+                        item.llanta_type = description;
+                    }
+
+                }
+                catch (error) {
+                    console.error(`Error`, error);
+                    
+                }
+            })
         }
         const handleChangeDescription = async (item, key) => {
             const desciptionItem = await fetchDescription(item);
@@ -1715,9 +1775,7 @@ export default {
         const getUsersList = async () => {
             try {
                 const idRole = await getRoles({ name: 'Agente' });
-                // const agentsResponse = await getUsers({ roles: idRole.results[0].id });
                 const agentsResponse = await getUserList({ roles: idRole.results[0].id });
-                // const agentsResponse = await getUserList();
                 const transformedAgents = agentsResponse.map((item) => {
                     return {
                         id: item.value,
@@ -1831,12 +1889,12 @@ export default {
         })
         const getConfigurationsKey = async () => {
             const resConfiguration = await apiConfigurations('get', { name: 'select_state' });
-         console.log('resconfig', resConfiguration)   
+            console.log('resconfig', resConfiguration)
             const resConfigurationFiltered = resConfiguration.results.find((item) => item.name === 'select_state')
             if (resConfigurationFiltered) {
-                    selectState.value = resConfigurationFiltered.enable;
-                }
+                selectState.value = resConfigurationFiltered.enable;
             }
+        }
         const handleGetCost = async () => {
             console.log('handle get cost')
             isLoadingCost.value = true;
@@ -1952,7 +2010,7 @@ export default {
             }
         }
         const handleEdit = (field = null) => {
-            if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E') {
+            if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E' || formTenderDetail.value.quote_state === 'Test passed A' || formTenderDetail.value.quote_state === 'Test passed U') {
                 return false;
             }
             else if (formTenderDetail.value.quote_state === 'V' || formTenderDetail.value.quote_state === 'A') {
@@ -2018,10 +2076,8 @@ export default {
                     const filter = {
                         id: subArray[0].vendor_id,
                     }
-                    console.log('filter', filter)
                     const vendor = await getVendors(filter);
                     const vendorData = vendor.results[0];
-                    console.log('vendor', vendor)
                     const params = {
                         order: {
                             cuit: vendorData.cuit,
@@ -2083,32 +2139,32 @@ export default {
             // Crear una lista de promesas para todas las llamadas a la API
             const promises = data.map((item) => {
                 // return getCostStock({ code: item.sku })
-                    // .then((res) => {
-                    //     if (res && res.results.length > 0) {
-                    //         const stockData = res.results[0];
-                    //         // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
-                    //         const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
-                    //         // Actualizar los valores de la respuesta
-                    //         if (dataSourceItem) {
-                    //             dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
-                    //             if (!dataSourceItem.noStock) {
-                    //                 console.log('no stock', false)
-                    //                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
-                    //                 if (neumasur) {
-                    //                     dataSourceItem.vendor_id = neumasur.value;
-                    //                     console.log('neumasur', neumasur)
-                    //                 }
-                    //             }
-                    //             return {
-                    //                 sku: stockData.sku,
-                    //                 producto: stockData.producto,
-                    //                 stock: stockData.stock,
-                    //                 minimum_stock: stockData.minimum_stock,
-                    //                 available_stock: stockData.available_stock,
-                    //             };
-                    //         }
+                // .then((res) => {
+                //     if (res && res.results.length > 0) {
+                //         const stockData = res.results[0];
+                //         // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
+                //         const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
+                //         // Actualizar los valores de la respuesta
+                //         if (dataSourceItem) {
+                //             dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
+                //             if (!dataSourceItem.noStock) {
+                //                 console.log('no stock', false)
+                //                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
+                //                 if (neumasur) {
+                //                     dataSourceItem.vendor_id = neumasur.value;
+                //                     console.log('neumasur', neumasur)
+                //                 }
+                //             }
+                //             return {
+                //                 sku: stockData.sku,
+                //                 producto: stockData.producto,
+                //                 stock: stockData.stock,
+                //                 minimum_stock: stockData.minimum_stock,
+                //                 available_stock: stockData.available_stock,
+                //             };
+                //         }
 
-                    //     }
+                //     }
                 return getStockSummary({ codigo: item.sku })
                     .then((res) => {
                         if (res && res.length > 0) {
@@ -2159,9 +2215,7 @@ export default {
                 });
         };
         const getUserName = (id) => {
-            console.log('get user name', id)
             const user = agents.value.filter((item) => item.id === id);
-            console.log('user', user)
             if (user) {
                 return user[0].fullName;
             }
@@ -2327,7 +2381,179 @@ export default {
             form.items = [];
         };
 
-        addItemDetail(); // Start with one empty field
+        addItemDetail();
+
+        // Controles Wapp
+        const strValWapp = ref(null);
+        const checkVal = async (verificarSku = true, verificarDocs = false) => {
+            strValWapp.value = "Errores en la Validación:"
+            let errorCount = 0;
+            //Control Nombre
+            const nombre = formTenderDetail.value.tender_data.name
+            if (!nombre) {
+                strValWapp.value += " La licitación debe tener un nombre de cliente."
+                errorCount++;
+            }
+            //control teléfono
+            const cel = formTenderDetail.value.tender_data.phone;
+            const phonePattern = /^54\d{10,}$/; // Comienza con "54" y al menos 10 dígitos más
+            if (!phonePattern.test(cel)) {
+                strValWapp.value += " El número de teléfono del cliente debe ser como 541145336682, mínimo 10 dígitos y comenzar con 54."
+                errorCount++;
+            }
+
+            // control teléfono User
+            const user = await getUsers({ id: formTenderDetail.value.user });
+            if (user.count != 1) {
+                strValWapp.value += " La licitación debe tener un gestor asignado."
+                errorCount++;
+            }
+            const userPhone = user.results[0].phone;
+            if (!phonePattern.test(userPhone)) {
+                strValWapp.value += " El número de teléfono del gestor debe ser como 541145336682, mínimo 10 dígitos y comenzar con 54."
+                errorCount++;
+            }
+            // control teléfono coordinador
+            const idRole = await getRoles({ name: 'Coordinador' });
+            const coord = await getUsers({ roles: idRole.results[0].id });
+            if (coord.count != 1) {
+                strValWapp.value += " Debe existir al menos un coordinador en el sistema."
+                errorCount++;
+            }
+            const coordPhone = coord.results[0].phone;
+            if (!phonePattern.test(coordPhone)) {
+                strValWapp.value += " El número de teléfono del primer coordinador debe ser como 541145336682, mínimo 10 dígitos y comenzar con 54."
+                errorCount++;
+            }
+
+            // Tiene que existir un details seleccionado:
+            // 1. Verificar si al menos uno tiene `po = true`
+            if (verificarSku) {
+                const errorSku = await checkSkus();
+                errorCount += errorSku;
+            }
+            if (verificarDocs) {
+                const errorDoc = await checkDoc();
+                console.log('errors doc', errorDoc)
+                errorCount += errorDoc;
+            }
+            return errorCount ? false : true;
+        }
+        const checkSkus = async () => {
+            const hasAtLeastOnePo = form.items.some(item => item.po);
+            let errorCount = 0;
+            if (!hasAtLeastOnePo) {
+                strValWapp.value += " Debe seleccionar al menos 1 item que será enviado al cliente"
+                errorCount++;
+            } else {
+                // 2. Obtener todos los objetos con `po = true`
+                const itemsWithPoTrue = form.items.filter(item => item.po);
+
+                // 3. Obtener solo los SKUs de esos objetos
+                const skusWithPoTrue = itemsWithPoTrue.map(item => item.sku);
+                const resProd = await getProduct({ sku: skusWithPoTrue[0] });
+                //image
+                // control sku E y tiene imágenes
+                if (!resProd.count) {
+                    strValWapp.value += " Debe existir el sku en la tabla Productos."
+                    errorCount++;
+                }
+                const imgProd = resProd.results[0].image;
+                if (!imgProd) {
+                    strValWapp.value += " El SKU no tiene imagen."
+                    errorCount++;
+                }
+                const validationPromises = skusWithPoTrue.map(async (sku) => {
+                    try {
+                        const resProd = await getProduct({ sku });
+                        console.log('resProd', resProd);
+
+                        // Verificar si existe el producto
+                        if (!resProd.count) {
+                            strValWapp.value += `\nDebe existir el SKU ${sku} en la tabla Productos.`;
+                            return { sku, error: 'No existe en la tabla Productos.' };
+                        }
+
+                        // Verificar si el producto tiene imágenes
+                        const imgProd = resProd.results[0]?.image;
+                        if (!imgProd) {
+                            strValWapp.value += `\nEl SKU ${sku} no tiene imagen.`;
+                            return { sku, error: 'No tiene imagen.' };
+                        }
+
+                        return { sku, error: null }; // Sin errores
+                    } catch (error) {
+                        console.error(`Error al procesar el SKU ${sku}:`, error);
+                        strValWapp.value += `\nHubo un error al procesar el SKU ${sku}.`;
+                        return { sku, error: 'Error en la API.' };
+                    }
+                });
+
+                const results = await Promise.all(validationPromises);
+
+                results.forEach((result) => {
+                    if (result.error) {
+                        errorCount++;
+                    }
+                });
+            }
+            return errorCount;
+        }
+        const checkProv = async () => {
+            strValWapp.value = "Errores en la Validación de Proveedores:"
+            let errorCount = 0;
+            const marca = formTenderDetail.value.tender_data.brand;
+            if (!marca) {
+                strValWapp.value += " Debe ingresar una Marca de vehículo en la licitación."
+                errorCount++;
+            }
+            try {
+                const vendors = await getVendors({ marcas__icontains: marca, vendor_type: 0 });
+                // Validar si hay al menos un proveedor con un número de teléfono válido
+
+                const validVendors = vendors.results.filter(vendor => {
+                    const wapp = vendor.wapp;
+                    return wapp && /^54\d{10,}$/.test(wapp); // Validar número de teléfono: comienza con "54" y tiene al menos 10 dígitos
+                });
+                if (validVendors.length === 0) {
+                    strValWapp.value += " No hay proveedores con un número de teléfono válido.";
+                    errorCount++;
+                }
+
+            } catch (error) {
+                console.error(' Error al obtener los proveedores:', error);
+                strValWapp.value += " Error al obtener los proveedores." + error;
+                errorCount++;
+            }
+
+            return errorCount === 0;
+        }
+        const checkDoc = async () => {
+            strValWapp.value = "Errores en la Validación de Documentación:"
+            let errorCount = 0;
+            try {
+                const params = {
+                    id: formTenderDetail.value.company_id,
+                }
+                const respDocs = await documentsByVendor(params)
+                if (!respDocs.count) {
+                    strValWapp.value += " La Aseguradora no existe en la tabla Documentos por Aseguradora."
+                    errorCount++;
+                    return errorCount;
+                }
+                const documents = respDocs.results[0];
+                if (documents.documents.length === 0) {
+                    strValWapp.value += " La Aseguradora no tiene documentos requeridos."
+                    errorCount++;
+                }
+            } catch (error) {
+                console.log('error')
+                console.error(' Error al obtener los documentos requeridos:', error);
+                strValWapp.value += " Error al obtener los documentos requeridos." + error;
+                errorCount++;
+            }
+            return errorCount;
+        }
         watch(
             () => route.path,
             (_newValue) => {
