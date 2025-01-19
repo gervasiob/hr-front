@@ -111,7 +111,6 @@ export async function validateToken(credentials) {
     }
 }
 export default apiClient;
-
 export const setTokenHeader = () => {
     const token = localStorage.getItem('token');
     if (token) {
