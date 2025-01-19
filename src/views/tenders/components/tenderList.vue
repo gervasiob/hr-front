@@ -96,7 +96,7 @@ import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
 import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
 import { getRoles } from '@/api/roles/roles.js';
-import { getUsers } from '@/api/users/users.js';
+import { getUserList, getUsers } from '@/api/users/users.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 export default {
@@ -191,11 +191,12 @@ export default {
         const getLists = async () => {
             try {
                 const idRole = await getRoles({ name: 'Agente' });
-                const agentsResponse = await getUsers({ roles: idRole.results[0].id });
-                const transformedAgents = agentsResponse.results.map((item) => {
+                const agentsResponse = await getUserList({ roles: idRole.results[0].id });
+                const transformedAgents = agentsResponse.map((item) => {
                     return {
                         ...item,
-                        fullName: item.username,
+                        id: item.value,
+                        fullName: item.name,
                     };
                 });
                 agents.value = transformedAgents;

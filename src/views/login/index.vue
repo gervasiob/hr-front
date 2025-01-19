@@ -103,7 +103,7 @@ export default {
   background-image: url('@/assets/fondo-login.png');
   background-size: cover;
   background-position: center;
-  height: 100vh;
+  height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;
