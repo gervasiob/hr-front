@@ -55,11 +55,12 @@ export default {
         const pedidoId = ref(null);
         const route = useRoute();
         let paramId = ref(route.params.id);
-        const checkList = ref(['entrega_de_mercaderia', 'orden_compra_conformada', 'armado_y_embalaje', 'generacion_lote',])
+        const checkList = ref(['entrega_de_mercaderia', 'gestion_documental', 'orden_compra_conformada',
+            'armado_y_embalaje', 'generacion_lote', 'proforma', 'fletero', 'facturacion_final'])
         const fetchData = async () => {
             try {
                 const params = {
-                    nota_pedido_id: formState.pedidoId,
+                    nota_pedido_id__icontains: formState.pedidoId,
                 };
                 const quoteResponse = await getQuotes(params);
                 console.log('quote response all pedidos', quoteResponse.results[0])
@@ -78,6 +79,7 @@ export default {
                 };
             } catch (error) {
                 console.error('Error fetching tender data:', error);
+                location.reload();
             }
         };
         onMounted(() => {

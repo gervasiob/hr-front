@@ -124,14 +124,14 @@ export const modalFields = [
         type: 'input',
         default: null,
     },
-    {
-        name: 'documents',
-        label: 'Documentos',
-        type: 'select',
-        mode: 'multiple',
-        default: [],
-        options: documents,
-    },
+    // {
+    //     name: 'documents',
+    //     label: 'Documentos',
+    //     type: 'select',
+    //     mode: 'multiple',
+    //     default: [],
+    //     options: documents,
+    // },
     {
         name: 'freight',
         label: 'Flete',

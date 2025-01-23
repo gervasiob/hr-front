@@ -20,3 +20,10 @@ export async function getProductList(params) {
 export async function getPriceRequest(params) {
     return await apiRequest('post', 'price_request/', params);
 }
+export async function uploadProductImage(productId, file) {
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('file', file);
+
+    return await apiRequest('post', 'upload-product-image/', formData);
+}

@@ -18,34 +18,38 @@ export const tableColumns = [
         dataIndex: 'name',
     },
     {
-        title: 'Grupo',
-        dataIndex: 'group',
-        sorter: (a, b) => a.fee - b.fee,
+        title: 'Imagen',
+        dataIndex: 'image',
     },
-    {
-        title: 'Tipo',
-        dataIndex: 'type',     
-    },
-    {
-        title: 'Cantidad',
-        dataIndex: 'quantity',     
-    },
-    {
-        title: 'Precio',
-        dataIndex: 'amount',     
-    },
-    {
-        title: 'Proveedor',
-        dataIndex: 'vendors',     
-    },
+    // {
+    //     title: 'Grupo',
+    //     dataIndex: 'group',
+    //     sorter: (a, b) => a.fee - b.fee,
+    // },
+    // {
+    //     title: 'Tipo',
+    //     dataIndex: 'type',     
+    // },
+    // {
+    //     title: 'Cantidad',
+    //     dataIndex: 'quantity',     
+    // },
+    // {
+    //     title: 'Precio',
+    //     dataIndex: 'amount',     
+    // },
+    // {
+    //     title: 'Proveedor',
+    //     dataIndex: 'vendors',     
+    // },
     {
         title: 'Stock Mínimo',
         dataIndex: 'minimum_stock',     
     },
-    {
-        title: 'Stock Disponible',
-        dataIndex: 'available_stock',     
-    },
+    // {
+    //     title: 'Stock Disponible',
+    //     dataIndex: 'available_stock',     
+    // },
     {
         title: 'Operation',
         dataIndex: 'operation',     

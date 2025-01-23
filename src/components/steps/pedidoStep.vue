@@ -18,15 +18,10 @@
         </a-form>
     </div>
     <div class="div-checklist">
-            <a-steps v-model:current="current" size="small">
-    <a-step
-      v-for="(item, index) in itemsChecklist"
-      :key="index"
-      :title="item.title"
-      :description="item.description"
-      @click="handleStepClick(index, item)"
-    />
-  </a-steps>
+        <a-steps v-model:current="current" size="small">
+            <a-step v-for="(item, index) in itemsChecklist" :key="index" :title="item.title"
+                :description="item.description" :status="item.status" @click="handleStepClick(index, item)" />
+        </a-steps>
     </div>
 </template>
 
@@ -76,7 +71,8 @@ export default {
                     addChecklistToStep('Creación Lote', items.generacion_lote, items.generacion_lote_date)
                     addChecklistToStep('Proforma', items.proforma, items.proforma_date)
                     addChecklistToStep('Envío', items.fletero, items.fletero_date)
-                    addChecklistToStep('facturación', items.facturacion_final, items.facturacion_final_date)
+                    addChecklistToStep('Facturación', items.facturacion_final, items.facturacion_final_date)
+                    setNextStep();
                 }
             } catch (error) {
                 console.error('Error fetching data:', error);
@@ -86,7 +82,7 @@ export default {
             let status = 'wait';
             let description = '';
             if (item) {
-                status = 'finish';
+                status = item ? 'finish' : 'wait';
                 const date = new Date(dateItem);
                 const formattedDate = new Intl.DateTimeFormat('es-AR', {
                     day: '2-digit',
@@ -97,6 +93,16 @@ export default {
             }
             itemsChecklist.value.push({ title: title, status: status, description: description })
         }
+        const setNextStep = () => {
+            const firstWaitIndex = itemsChecklist.value.findIndex((item) => item.status === 'wait');
+            if (firstWaitIndex !== -1) {
+                console.log('first', firstWaitIndex)
+                current.value = firstWaitIndex;
+                itemsChecklist.value[current.value].status = 'process'
+            } else {
+                current.value = null;
+            }
+        };
         const handleStepClick = (index, item) => {
             console.log('Step clicked:', item);
             if (item.title === 'Documentación') {
@@ -126,4 +132,8 @@ export default {
 }
 </script>
 
-<style></style>
+<style scoped>
+.div-checklist {
+    margin-bottom: 1%;
+}
+</style>

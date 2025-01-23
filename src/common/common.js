@@ -33,7 +33,8 @@ export const TENDER_STATES = [
     {
         label: 'Entregado',
         value: 'D',
-        color: 'green' // Naranja
+        color: 'green', // Naranja
+        back: 'green' // Naranja
     },
     {
         label: 'Evaluado',
@@ -45,21 +46,25 @@ export const TENDER_STATES = [
         label: 'Cancelado',
         value: 'C',
         color: 'red',
+        back: 'red',
     },
     {
         label: 'Ganado',
         value: 'U',
         color: '#F50085',
+        back: '#edaace',
     },
     {
         label: 'Rechazado/Sin Resolucion',
         value: 'G',
         color: '#79979B',
+        back: '#79979B',
     },
     {
         label: 'Documentación Observada',
         value: 'J',
         color: '#2B7D73',
+        back: '#2B7D73',
     },
     {
         label: 'Pendiente',
@@ -71,50 +76,56 @@ export const TENDER_STATES = [
         label: 'Solicitud Cambio de Costo',
         value: 'O',
         color: '#789E15',
+        back: '#789E15',
     },
     {
         label: 'Rechazado',
         value: 'R',
-        color: 'default' // Rechazado
+        color: 'default', // Rechazado
+        back: 'default', // Rechazado
     },
     {
         label: 'Adjudicado Pendiente',
         value: 'S',
         color: '#C361CA',
+        back: '#C361CA',
     },
     {
         label: 'Licitado',
         value: 'V',
-        color: 'blue'
+        color: 'blue',
+        back: 'blue',
     },
     {
         label: 'Listo para Licitar',
         value: 'Z',
-        color: '#162957'
+        color: '#162957',
+        back: '#162957',
     },
     {
         label: 'Adjudicado/Rechazado',
         value: 'W',
         color: '#A52A2A',
+        back: '#A52A2A',
     },
     {
         label: 'Perdida',
         value: 'LO',
         color: '#C5C308',
-        back: '#D9B2C0',
+        back: '#C5C308',
 
     },
     {
-        label: 'Test passed A',
+        label: 'Test validación y proveedores',
         value: 'Test passed A',
-        color: '#C5C308',
+        color: '#D9B2C0',
         back: '#D9B2C0',
 
     },
     {
-        label: 'Test passed U',
+        label: 'Test documentación',
         value: 'Test passed U',
-        color: '#C5C308',
+        color: '#D9B2C0',
         back: '#D9B2C0',
 
     },
@@ -326,3 +337,14 @@ export const BRANDS = [
     { value: 10, label: "VOLKSWAGEN" },
     { value: 19, label: "VOLVO" }
 ];
+
+export const CHECKLIST_KEYS = [
+    { value: 'entrega_de_mercaderia', label: "Confirmación de Cliente" },
+    { value: 'gestion_documental', label: "Documentación" },
+    { value: 'orden_compra_conformada', label: "Ingresar OC" },
+    { value: 'armado_y_embalaje', label: "Gomería" },
+    { value: 'generacion_lote', label: "Creación Lote" },
+    { value: 'proforma', label: "Proforma" },
+    { value: 'fletero', label: "Envío" },
+    { value: 'facturacion_final', label: "Facturación" },
+]

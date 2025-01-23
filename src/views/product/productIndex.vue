@@ -3,8 +3,8 @@
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
         <a-col :span="8">
-          <a-form-item label="SKU" name="sku">
-            <a-input v-model:value="filterInputs.sku" allowClear />
+          <a-form-item label="SKU" name="sku__icontains">
+            <a-input v-model:value="filterInputs.sku__icontains" allowClear />
           </a-form-item>
         </a-col>
         <a-col :span="8">
@@ -27,6 +27,12 @@
     <a-modal v-model:open="open" title="Producto" @ok="handleOk" @cancel="handleCancel">
       <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
     </a-modal>
+    <a-modal v-model:open="openImg" title="Imagen del Producto">
+      <template #footer>
+        <a-button key="submit" type="primary" :loading="loading" @click="handleImgOk">Cerrar</a-button>
+      </template>
+      <ModalImg @form-finish="handleImgFormFinish" ref="formImgComponent" :form-data="formImgState" />
+    </a-modal>
   </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
@@ -37,6 +43,14 @@
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
+          <template v-else>
+            {{ text }}
+          </template>
+        </div>
+      </template>
+      <template v-if="['image'].includes(column.dataIndex)">
+        <div>
+          <img v-if="text" :alt="'Image Product'" :src="text" :style="imageStyle" />
           <template v-else>
             {{ text }}
           </template>
@@ -87,6 +101,9 @@
                 <a style="color: var(--principal);">Enviar WAPP</a>
               </a-popconfirm>
             </a-row>
+            <a-row>
+              <a style="color: darkslateblue;" @click="handleImage(record.key)">Editar Imagen</a>
+            </a-row>
           </span>
         </div>
       </template>
@@ -104,15 +121,18 @@ import { getVendorList } from '@/api/vendors/vendors.js';
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
+import ModalImg from '@/components/modal/modalImg.vue';
 
 export default {
   name: 'productList',
   components: {
     ModalPlatform,
+    ModalImg,
   },
   setup() {
     const formRef = ref();
     const formState = reactive({});
+    const formImgState = reactive({});
     const filterInputs = ref({});
     const vendorList = ref([]);
     const columns = tableColumns;
@@ -124,16 +144,13 @@ export default {
       };
     };
     const fetchData = async (params = {}) => {
-console.log('fectch params', params)
       const fullParams = {
         ...params,
         ...filterInputs.value,
+        ordering: '-updated_at',
       }
       try {
         const response = await getProduct(fullParams);
-
-        console.log("response");
-        console.log(response);
         dataSource.value = response.results.map((item, index) => ({
           ...item,
           key: index,
@@ -240,7 +257,6 @@ console.log('fectch params', params)
       }
     };
     const cancel = (key) => {
-      console.log('cancel', key)
       if (key === undefined) {
         onDelete(key);
         delete editableData[key];
@@ -255,7 +271,6 @@ console.log('fectch params', params)
       delete editableData[key];
     };
     const wapp = async (key) => {
-      console.log('wapp', key)
       const data = dataSource.value.filter(item => key === item.key)[0];
       if (data.id) {
         const params = {
@@ -308,7 +323,9 @@ console.log('fectch params', params)
 
     const modalFielsProps = modalFields;
     const formComponent = ref(null);
+    const formImgComponent = ref(null);
     const open = ref(false);
+    const openImg = ref(false);
     const showModal = () => {
       open.value = true;
     };
@@ -331,13 +348,36 @@ console.log('fectch params', params)
 
     const handleFormFinish = (form) => {
       formState.value = { ...form, vendor_ids: [form.vendors] };
-      console.log('form', form)
-
       addProduct(formState.value).then(() => {
         formState.value = {};
         current.value = 1;
         fetchData();
       });
+    };
+
+    // Image Handler
+
+    const handleImgOk = () => {
+      console.log('handle img ok')
+      if (formImgComponent.value) {
+        console.log('if')
+        formImgComponent.value.handleFinish().then(() => {
+          openImg.value = false;
+        }).catch(() => {
+          // Si hay errores, el modal no se cierra
+        });
+      }
+    };
+
+    const handleImgFormFinish = (form) => {
+      console.log('form img finish')
+      formImgState.value = { ...form, productId: [form.id] };
+      fetchData();
+      // updateProduct(form.id, formImgState.value).then(() => {
+      //   formImgState.value = {};
+      //   current.value = 1;
+      //   fetchData();
+      // });
     };
 
     const getVendorName = (input) => {
@@ -347,6 +387,18 @@ console.log('fectch params', params)
       }
       return 'Sin proveedor';
     }
+
+    const handleImage = (index) => {
+      const record = dataSource.value[index];
+      console.log('record', record)
+
+      formImgState.value = { ...record };
+      openImg.value = true;
+    }
+    const imageStyle = {
+      width: "100px",
+      height: "100px",
+    };
     return {
       formRef,
       formState,
@@ -379,6 +431,13 @@ console.log('fectch params', params)
       total,
       pagination,
       handleTableChange,
+      handleImage,
+      openImg,
+      handleImgOk,
+      handleImgFormFinish,
+      formImgState,
+      imageStyle,
+      formImgComponent,
     }
   }
 }

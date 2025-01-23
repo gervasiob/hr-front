@@ -37,8 +37,8 @@
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">
-                    <a-form-item label="Agente" name="agent">
-                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear
+                    <a-form-item label="Agente" name="user">
+                        <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.user" allowClear
                             show-search :filter-option="filterOption">
                             <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id"
                                 :label="(item.fullName)">
@@ -78,7 +78,7 @@
             <template v-else-if="column.key === 'quote_state'">
                 <span>
                     <a-tag :color="getState(record.quote_state).color">
-                        {{ getState(record.quote_state  ).label.toUpperCase() }}
+                        {{ getState(record.quote_state ).label.toUpperCase() }}
                     </a-tag>
                 </span>
             </template>
@@ -96,7 +96,7 @@ import { ASEGURADORAS, TENDER_STATES } from '@/common/common'
 import { Form } from 'ant-design-vue';
 import { getQuotes, getQuotesSummary } from '@/api/quotes/quotes.js';
 import { getRoles } from '@/api/roles/roles.js';
-import { getUsers } from '@/api/users/users.js';
+import { getUserList, getUsers } from '@/api/users/users.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 export default {
@@ -191,11 +191,12 @@ export default {
         const getLists = async () => {
             try {
                 const idRole = await getRoles({ name: 'Agente' });
-                const agentsResponse = await getUsers({ roles: idRole.results[0].id });
-                const transformedAgents = agentsResponse.results.map((item) => {
+                const agentsResponse = await getUserList({ roles: idRole.results[0].id });
+                const transformedAgents = agentsResponse.map((item) => {
                     return {
                         ...item,
-                        fullName: item.username,
+                        id: item.value,
+                        fullName: item.name,
                     };
                 });
                 agents.value = transformedAgents;

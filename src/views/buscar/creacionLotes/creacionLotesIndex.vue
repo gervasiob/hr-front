@@ -55,11 +55,11 @@ export default {
         let paramId = ref(route.params.id);
         const quoteId = ref(null);
         const pedidoId = ref(null);
-        const checkList = ref(['creacion_lotes'])
+        const checkList = ref(['generacion_lote'])
         const fetchData = async () => {
             try {
                 const params = {
-                    nota_pedido_id: formState.pedidoId,
+                    nota_pedido_id__icontains: formState.pedidoId,
                 };
                 const quoteResponse = await getQuotes(params);
                 console.log('quote response', quoteResponse.results[0])
@@ -78,6 +78,7 @@ export default {
                 };
             } catch (error) {
                 console.error('Error fetching tender data:', error);
+                location.reload();
             }
         };
         const handleSearch = () => {
