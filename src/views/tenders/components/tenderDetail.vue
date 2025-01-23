@@ -1321,10 +1321,12 @@ export default {
                 formEnvio.delivery_type = quoteData.value.delivery_type;
                 formEnvio.transport = quoteData.value.transport;
                 formEnvio.postal_code = quoteData.value.postal_code;
+               
             } catch (error) {
                 console.error('Error fetching tender data:', error);
             }
         };
+        
         const calcularFee = async () => {
             if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.company_id) {
                 const assurance = await getVendors({ comercial_name: formTenderDetail.value.company_name, vendor_type: 1 });
