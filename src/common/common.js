@@ -116,7 +116,14 @@ export const TENDER_STATES = [
 
     },
     {
-        label: 'Test validación y proveedores',
+        label: 'Test validación clientes',
+        value: 'Test passed A',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test Proveedores',
         value: 'Test passed A',
         color: '#D9B2C0',
         back: '#D9B2C0',
@@ -125,6 +132,13 @@ export const TENDER_STATES = [
     {
         label: 'Test documentación',
         value: 'Test passed U',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test Calificación Clientes',
+        value: 'Test passed F',
         color: '#D9B2C0',
         back: '#D9B2C0',
 

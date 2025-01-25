@@ -11,6 +11,21 @@
                     <span class="ant-rate-text">{{ item.desc[value - 1] }}</span>
                 </span>
             </template>
+            <template v-else-if="item.type === 'select' && item.name === 'marcas'">
+                <a-row>
+                    <a-col :span="18">
+                        <span>
+                            <component :is="getComponentType(item.type)" v-model:value="formState[item.name]"
+                                :placeholder="`Ingrese ${item.label.toLowerCase()}`" v-bind="getComponentProps(item)"
+                                :mode="item.mode" class="input-item">
+                            </component>
+                        </span>
+                    </a-col>
+                    <a-col :span="4" style="margin-left: 0.5%;"> <a-button type="primary" @click="handleAll(item)">Sel
+                            Todos</a-button></a-col>
+                </a-row>
+
+            </template>
             <template v-else>
                 <component :is="getComponentType(item.type)" v-model:value="formState[item.name]"
                     :placeholder="`Ingrese ${item.label.toLowerCase()}`" v-bind="getComponentProps(item)"
@@ -112,6 +127,17 @@ export default {
             }
         };
 
+        // Selección todos
+        const handleAll = (item) => {
+         
+            if (formState[item.name].length === item.options.length) {
+                formState[item.name] = [];
+            } else {
+                formState[item.name] = item.options.map((i) => {
+                    return i.value;
+                });
+            }
+        }
         watch(() => props.formData, (newData) => {
             if (newData) {
                 fieldValues = newData;
@@ -130,6 +156,7 @@ export default {
             formRef,
             resetForm,
             fieldValues,
+            handleAll,
         };
     }
 
