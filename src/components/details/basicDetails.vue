@@ -9,7 +9,8 @@
                 class="a-descriptions-item">
                 <div v-if="field.model === 'claim_id'" class="button-container">
                     <div v-if="getFieldValue(field) === 'Sin Datos'">Sin Datos</div>
-                    <router-link v-else :to="{ name: 'TenderDetail', params: { id: getFieldValue(field) } }" target="_blank">
+                    <router-link v-else :to="{ name: 'TenderDetail', params: { id: getFieldValue(field) } }"
+                        target="_blank">
                         <a-button type="primary">
                             {{ getFieldValue(field) }}
                         </a-button>
@@ -54,6 +55,13 @@
         </div>
         <a-checkbox-group v-model:value="state.checkedList" class="checkbox-group" :options="filteredCheckList" />
     </div>
+    <div>
+        <div class="type-slot" v-if="hasEntregaTipo">
+            <span style="color: black; margin-right: 1%">Tipo de Entrega</span>
+            <a-select v-model:value="entrega_tipo" placeholder="Selecciones una opción" addonBefore="entrega_tipo"
+                style="width: 30%; margin-bottom: 1%" :options="tipoList" />
+        </div>
+    </div>
     <div class="button-submit">
         <a-button type="primary" @click="handleSubmit">Guardar</a-button>
     </div>
@@ -64,7 +72,7 @@ import { onMounted, reactive, ref, watch } from 'vue';
 import { generalDescriptionFields } from './config/generalFields';
 import { apiPedidos } from '@/api/pedidos/pedidos';
 import { apiChecklist, uploadChecklistFile } from '@/api/checklists/checklists';
-import { CHECKLIST_KEYS } from '@/common/common';
+import { CHECKLIST_KEYS, ENTREGAS_TIPOS } from '@/common/common';
 
 export default {
     name: 'BasicDetails',
@@ -105,6 +113,13 @@ export default {
             type: String,
             default: null,
         },
+        hasEntregaTipo: {
+            type: Boolean,
+        },
+        entregaTipoValue: {
+            type: Number,
+            default: null,
+        },
     },
     setup(props) {
         const descriptionFields = ref(props.generalFields);
@@ -119,7 +134,8 @@ export default {
         const previewVisible = ref(false);
         const previewImage = ref('');
         const imageUrl = ref(null);
-
+        const entrega_tipo = ref(props.entregaTipoValue);
+        const tipoList = ENTREGAS_TIPOS;
         const onCheckAllChange = e => {
             Object.assign(state, {
                 checkedList: e.target.checked ? props.checkList : [],
@@ -130,6 +146,7 @@ export default {
             const dataToSend = {
                 checkedItems: state.checkedList,
                 generalFields: descriptionFields.value,
+                entrega_tipo: entrega_tipo.value,
             };
             const checks = props.checkList.reduce((acc, key) => {
                 acc[key] = state.checkedList.includes(key);
@@ -137,6 +154,7 @@ export default {
             }, {});
             let params = {
                 ...checks,
+                entrega_tipo: entrega_tipo.value,
                 'pedido': checklistData.value.pedido,
                 'id': checklistData.value.id,
                 'quote_id': checklistData.value.quote_id,
@@ -147,6 +165,12 @@ export default {
                     [props.imageSlotName]: imageUrl.value ? imageUrl.value : undefined,
                 };
             }
+            // if (props. && props.imageSlotName) {
+            //     params = {
+            //         ...params,
+            //         [props.imageSlotName]: imageUrl.value ? imageUrl.value : undefined,
+            //     };
+            // }
             const responseSave = await apiChecklist('put', params, checklistData.value.id)
             props.onSubmit();
             setTimeout(() => {
@@ -172,6 +196,8 @@ export default {
                 }
                 const checkParams = { pedido: pedidoResponse.results[0].id };
                 const checkResponse = await apiChecklist('get', checkParams);
+
+                entrega_tipo.value = checkResponse.results[0].entrega_tipo;
                 const checklistItem = checkResponse.results[0] || {};
                 if (checklistItem[props.imageSlotName]) {
                     fileList.value.push({
@@ -206,7 +232,6 @@ export default {
             try {
                 const fileField = props.imageSlotName;
                 const response = await uploadChecklistFile(checklistData.value.id, fileField, file);
-                console.log("Subida exitosa:", response);
                 imageUrl.value = response.url;
                 // Invoca el callback de éxito para informar a Ant Design Vue
                 onSuccess(response);
@@ -231,12 +256,12 @@ export default {
             () => props.pedidoId,
             (newVal) => {
                 if (newVal) {
-                    console.log('nuevo valor', newVal)
                     queryPedidos(newVal);
                 }
             },
             { immediate: true } // Ejecuta también la primera vez si el valor ya está definido
         );
+      
         return {
             descriptionFields,
             onCheckAllChange,
@@ -248,6 +273,8 @@ export default {
             previewVisible,
             previewImage,
             handleUpload,
+            tipoList,
+            entrega_tipo,
         }
     }
 
@@ -274,19 +301,23 @@ export default {
 .image-slot {
     color: #3C3D3C,
 }
+
 .checkbox-group {
     border: 2px solid var(--principal);
     /* border: 2px solid #007BFF; */
     /* Azul */
-    background-color:var(--mute);
+    background-color: var(--mute);
     /* Fondo tenue */
     padding: 5px;
     border-radius: 5px;
     margin-top: 1%;
 }
+
 .description-group {
     border: 1px solid var(--principal);
     margin-bottom: 1%;
 }
-
+.type-slot {
+    margin-top: 1%;
+}
 </style>

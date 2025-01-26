@@ -360,5 +360,12 @@ export const CHECKLIST_KEYS = [
     { value: 'generacion_lote', label: "Creación Lote" },
     { value: 'proforma', label: "Proforma" },
     { value: 'fletero', label: "Envío" },
+    { value: 'cliente_recepcion', label: "Recepción Cliente" },
     { value: 'facturacion_final', label: "Facturación" },
+]
+export const ENTREGAS_TIPOS = [
+    { value: 0, label: "Sin Entregada" },
+    { value: 1, label: "Entrega en Domicilio" },
+    { value: 2, label: "Entrega en Sucursal" },
+
 ]

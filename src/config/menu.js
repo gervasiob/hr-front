@@ -140,6 +140,13 @@ export const menuList = [
                 title: 'ENVÍOS',
             },
             {
+                key: 'recepcion-clientes',
+                path: '/pedidos/recepcion-clientes',
+                name: 'Recepcion',
+                label: 'RECEPCIÓN',
+                title: 'RECEPCIÓN',
+            },
+            {
                 key: 'facturacion',
                 path: '/pedidos/facturacion',
                 name: 'Facturacion',
@@ -197,6 +204,13 @@ export const menuList = [
                 name: 'SEnvios',
                 label: 'ENVÍOS',
                 title: 'ENVÍOS',
+            },
+            {
+                key: 'srecepcion-clientes',
+                path: '/buscar/recepcion-clientes',
+                name: 'SRecepcion',
+                label: 'RECEPCIÓN',
+                title: 'RECEPCIÓN',
             },
             {
                 key: 'sfacturacion',

@@ -250,7 +250,7 @@ const otherRoutes = [
         key: 'recepcion',
         path: '/pedidos/recepcion-mercaderia',
         name: 'RecepcionMercaderia',
-        component: () => import('@/views/pedidos/recepcion/recepcionIndex.vue'),
+        component: () => import('@/views/pedidos/recepcionClientes/recepcionClientes.vue'),
         meta: { roles: basicAuth },
     },
     {
@@ -279,6 +279,13 @@ const otherRoutes = [
         path: '/pedidos/envios',
         name: 'Envios',
         component: () => import('@/views/pedidos/envios/enviosIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'recepcion-clientes',
+        path: '/pedidos/recepcion-clientes',
+        name: 'Recepcion',
+        component: () => import('@/views/pedidos/recepcionClientes/recepcionClientes.vue'),
         meta: { roles: basicAuth },
     },
     {
@@ -328,6 +335,13 @@ const otherRoutes = [
         path: '/buscar/envios/:id?',
         name: 'SEnvios',
         component: () => import('@/views/buscar/envios/enviosIndex.vue'),
+        meta: { roles: basicAuth },
+    },
+    {
+        key: 'srecepcion-clientes',
+        path: '/buscar/recepcion-clientes/:id?',
+        name: 'SRecepcion',
+        component: () => import('@/views/buscar/recepcionClientes/recepcionClientesIndex.vue'),
         meta: { roles: basicAuth },
     },
     {

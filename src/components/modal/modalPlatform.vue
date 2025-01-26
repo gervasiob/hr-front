@@ -21,8 +21,7 @@
                             </component>
                         </span>
                     </a-col>
-                    <a-col :span="4" style="margin-left: 0.5%;"> <a-button type="primary" @click="handleAll(item)">Sel
-                            Todos</a-button></a-col>
+                    <a-col :span="4" style="margin-left: 0.5%;"> <a-button type="primary" :ghost="marcasText === 'Desel Todas'" @click="handleAll(item)">{{ marcasText }}</a-button></a-col>
                 </a-row>
 
             </template>
@@ -55,6 +54,7 @@ export default {
     setup(props, { emit }) {
         const formState = reactive({});
         const formRef = ref();
+        const marcasText = ref('Sel Todas');
         const resetForm = () => {
             // Reinicia el estado del formulario
             for (const key in formState) {
@@ -132,10 +132,12 @@ export default {
          
             if (formState[item.name].length === item.options.length) {
                 formState[item.name] = [];
+                marcasText.value = "Sel Todas";
             } else {
                 formState[item.name] = item.options.map((i) => {
                     return i.value;
                 });
+                marcasText.value = "Desel Todas";
             }
         }
         watch(() => props.formData, (newData) => {
@@ -157,6 +159,7 @@ export default {
             resetForm,
             fieldValues,
             handleAll,
+            marcasText,
         };
     }
 
