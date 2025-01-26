@@ -116,7 +116,14 @@ export const TENDER_STATES = [
 
     },
     {
-        label: 'Test validación y proveedores',
+        label: 'Test validación clientes',
+        value: 'Test passed A',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test Proveedores',
         value: 'Test passed A',
         color: '#D9B2C0',
         back: '#D9B2C0',
@@ -125,6 +132,13 @@ export const TENDER_STATES = [
     {
         label: 'Test documentación',
         value: 'Test passed U',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test Calificación Clientes',
+        value: 'Test passed F',
         color: '#D9B2C0',
         back: '#D9B2C0',
 
@@ -346,5 +360,12 @@ export const CHECKLIST_KEYS = [
     { value: 'generacion_lote', label: "Creación Lote" },
     { value: 'proforma', label: "Proforma" },
     { value: 'fletero', label: "Envío" },
+    { value: 'cliente_recepcion', label: "Recepción Cliente" },
     { value: 'facturacion_final', label: "Facturación" },
+]
+export const ENTREGAS_TIPOS = [
+    { value: 0, label: "Sin Entregada" },
+    { value: 1, label: "Entrega en Domicilio" },
+    { value: 2, label: "Entrega en Sucursal" },
+
 ]

@@ -15,22 +15,9 @@
 
         </a-form>
     </div>
-    <BasicDetails title="Detalle Documentacion" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
-        :checkList="checkList" />
-    <div class="upload-documents">
-        <a-row>
-            <a-col :span="6" :offset="18">
-                <router-link v-if="claimId" :to=" { name: 'UploadDocuments' , params: { id: claimId } }">
-                    <a-button type="primary" ghost>
-                        Ir a Cargar Archivos
-                    </a-button>
-                </router-link>
-            </a-col>
-        </a-row>
-
-        <!-- <span style="color: black;">Archivos Cargados</span> -->
-    </div>
-
+    <BasicDetails title="Detalle Envios" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
+        :checkList="checkList" :has-entrega-tipo="true" :entrega-tipo-value="entregaTipoValue">
+    </BasicDetails>
 </template>
 
 <script>
@@ -39,10 +26,10 @@ import { useRoute } from 'vue-router';
 
 import BasicDetails from '@/components/details/basicDetails.vue';
 
-import { getQuotes } from '@/api/quotes/quotes';
+import { getQuotes, updateQuotes } from '@/api/quotes/quotes';
 
 export default {
-    name: 'DocumentacionDetail',
+    name: 'RecepcionClientesDetail',
     components: {
         BasicDetails
     },
@@ -54,7 +41,7 @@ export default {
         const sendDataToAPI = async (data) => {
             console.log("Datos enviados:", data);
             try {
-              
+               
             } catch (error) {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
                 return;
@@ -68,18 +55,19 @@ export default {
         let paramId = ref(route.params.id);
         const quoteId = ref(null);
         const pedidoId = ref(null);
-        const claimId = ref(null);
-        const checkList = ref(['gestion_documental'])
+        const checkList = ref(['cliente_recepcion'])
+        const entregaTipoValue = ref(null);
         const fetchData = async () => {
+            console.log('peiddoID', formState)
             try {
                 const params = {
                     nota_pedido_id__icontains: formState.pedidoId,
                 };
                 const quoteResponse = await getQuotes(params);
+                console.log('quote response', quoteResponse.results[0])
                 let dataResult = [];
                 dataResult = quoteResponse.results[0];
                 quoteId.value = dataResult.id;
-                claimId.value = dataResult.claim_id;
                 pedidoId.value = dataResult.nota_pedido_id;
                 data.value = {
                     ...dataResult,
@@ -91,17 +79,17 @@ export default {
                     claim_date: dataResult.tender_data?.claim_date || 'Sin datos',
                 };
             } catch (error) {
-                console.error('Error fetching data:', error);
+                console.error('Error fetching tender data:', error);
                 location.reload();
             }
         };
+
         const handleSearch = () => {
             console.log('search', formState.pedidoId)
             fetchData();
         }
         onMounted(async () => {
             if (paramId.value) {
-                console.log('params id', paramId.value)
                 const quote = await getQuotes({ claim_id: paramId.value })
                 if (quote.results[0].nota_pedido_id) {
                     formState.pedidoId = quote.results[0].nota_pedido_id;
@@ -116,14 +104,10 @@ export default {
             checkList,
             formState,
             handleSearch,
-            claimId,
+            entregaTipoValue,
         }
     }
 }
 </script>
 
-<style scoped>
-.upload-documents {
-    margin-top: 1%;
-}
-</style>
+<style></style>
