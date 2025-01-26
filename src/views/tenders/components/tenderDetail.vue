@@ -172,7 +172,10 @@
                 <div class="item-d">{{ formTenderDetail.company_name }}</div>
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
-                <div class="item-d" v-if="selectState">
+                <div style="margin-bottom: 1%">
+                     <a-switch v-model:checked="checkSelectState" v-if="selectState"/>
+                </div>
+                <div class="item-d" v-if="checkSelectState">
                     <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
                         v-model:value="formTenderDetail.quote_state" allowClear show-search
                         :filter-option="filterOption">
@@ -1092,6 +1095,7 @@ export default {
         })
         const formPedido = ref([]);
         const selectState = ref(false);
+        const checkSelectState = ref(false);
         const VNodes = defineComponent({
             props: {
                 vnodes: {
@@ -2685,6 +2689,7 @@ export default {
             totalSelectedWithFreight,
             totalSelectedIva,
             selectState,
+            checkSelectState,
         }
     }
 }

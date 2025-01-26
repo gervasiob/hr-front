@@ -56,7 +56,7 @@ export default {
         const route = useRoute();
         let paramId = ref(route.params.id);
         const checkList = ref(['entrega_de_mercaderia', 'gestion_documental', 'orden_compra_conformada',
-            'armado_y_embalaje', 'generacion_lote', 'proforma', 'fletero', 'facturacion_final'])
+            'armado_y_embalaje', 'generacion_lote', 'proforma', 'fletero', 'cliente_recepcion', 'facturacion_final'])
         const fetchData = async () => {
             try {
                 const params = {

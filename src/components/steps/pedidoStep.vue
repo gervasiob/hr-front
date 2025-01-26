@@ -30,6 +30,7 @@ import { apiChecklist } from '@/api/checklists/checklists';
 import { apiPedidos } from '@/api/pedidos/pedidos';
 import { onMounted, ref, watch } from 'vue';
 import { navigateTo } from '@/utils/utils';
+import { ENTREGAS_TIPOS } from '@/common/common';
 export default {
     name: 'PedidoStep',
     props: {
@@ -71,6 +72,8 @@ export default {
                     addChecklistToStep('Creación Lote', items.generacion_lote, items.generacion_lote_date)
                     addChecklistToStep('Proforma', items.proforma, items.proforma_date)
                     addChecklistToStep('Envío', items.fletero, items.fletero_date)
+                    const entregaTipo = ENTREGAS_TIPOS.find((item) => item.value === items.entrega_tipo);
+                    addChecklistToStep('Recepción Cliente', items.cliente_recepcion, items.cliente_recepcion_date, entregaTipo.label)
                     addChecklistToStep('Facturación', items.facturacion_final, items.facturacion_final_date)
                     setNextStep();
                 }
@@ -78,7 +81,7 @@ export default {
                 console.error('Error fetching data:', error);
             }
         };
-        const addChecklistToStep = (title, item, dateItem) => {
+        const addChecklistToStep = (title, item, dateItem, addDesc = null) => {
             let status = 'wait';
             let description = '';
             if (item) {
@@ -90,6 +93,9 @@ export default {
                     year: 'numeric',
                 }).format(date);
                 description = formattedDate;
+                if (addDesc) {
+                    description = formattedDate + ' - ' + addDesc;
+                }
             }
             itemsChecklist.value.push({ title: title, status: status, description: description })
         }
