@@ -1524,7 +1524,7 @@ export default {
                 }
 
                 params.quote_state = value;
-                if (selectState.value) {
+                if (checkSelectState.value) {
                     params.quote_state = formTenderDetail.value.quote_state;
                 }
                 // const details = { ...detalle }; 
