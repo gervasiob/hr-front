@@ -21,7 +21,9 @@
                             </component>
                         </span>
                     </a-col>
-                    <a-col :span="4" style="margin-left: 0.5%;"> <a-button type="primary" :ghost="marcasText === 'Desel Todas'" @click="handleAll(item)">{{ marcasText }}</a-button></a-col>
+                    <a-col :span="4" style="margin-left: 0.5%;"> <a-button type="primary"
+                            :ghost="marcasText === 'Desel Todas'" @click="handleAll(item)">{{ marcasText
+                            }}</a-button></a-col>
                 </a-row>
 
             </template>
@@ -129,7 +131,9 @@ export default {
 
         // Selección todos
         const handleAll = (item) => {
-         
+            if (!formState[item.name]) {
+                formState[item.name] = [];
+            }
             if (formState[item.name].length === item.options.length) {
                 formState[item.name] = [];
                 marcasText.value = "Sel Todas";
