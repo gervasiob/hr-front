@@ -1079,6 +1079,7 @@ export default {
             original_parts: '',
             user: '',
             require_vendor_prices: false,
+            create_pedido: null,
         });
         const imageSelect = ref();
         const imageUrl = ref();
@@ -1888,6 +1889,7 @@ export default {
                     tender_data: {
                         domain: '',
                     },
+                    create_pedido: null,
                 }
                 console.log('user', localStorage.getItem('user_id'))
                 console.log('formTender', formTenderDetail.value)
