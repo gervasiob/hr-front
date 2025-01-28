@@ -751,6 +751,12 @@
                         <span style="width: 120px;">Total + Fee</span>
                     </div> -->
                     <div class="not-quote">
+                        <a-form-item label="CREAR NOTA DE PEDIDO EN HINET">
+                            <a-switch v-model:checked="formTenderDetail.crear_pedido"
+                                style="background-color: var(--border-item); border: none; margin: 1%;" />
+                        </a-form-item>
+                    </div>
+                    <div class="not-quote">
                         <a-form-item label="SOLICITAR COTIZACIÓN A PROVEEDORES">
                             <a-switch v-model:checked="formTenderDetail.require_vendor_prices"
                                 style="background-color: var(--border-item); border: none; margin: 1%;" />
