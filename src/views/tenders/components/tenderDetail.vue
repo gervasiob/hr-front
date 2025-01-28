@@ -751,12 +751,6 @@
                         <span style="width: 120px;">Total + Fee</span>
                     </div> -->
                     <div class="not-quote">
-                        <a-form-item label="CREAR NOTA DE PEDIDO EN HINET">
-                            <a-switch v-model:checked="formTenderDetail.crear_pedido"
-                                style="background-color: var(--border-item); border: none; margin: 1%;" />
-                        </a-form-item>
-                    </div>
-                    <div class="not-quote">
                         <a-form-item label="SOLICITAR COTIZACIÓN A PROVEEDORES">
                             <a-switch v-model:checked="formTenderDetail.require_vendor_prices"
                                 style="background-color: var(--border-item); border: none; margin: 1%;" />
@@ -1575,6 +1569,7 @@ export default {
                     details,
                     tire_type_name: dataQuoteSource.value,
                     total_quoted: quoteData.value.total_quoted,
+                    create_pedido: formTenderDetail.value?.create_pedido ? formTenderDetail.value.create_pedido : null, 
                 };
 
                 let response;
