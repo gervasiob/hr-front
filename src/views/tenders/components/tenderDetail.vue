@@ -1569,6 +1569,7 @@ export default {
                     details,
                     tire_type_name: dataQuoteSource.value,
                     total_quoted: quoteData.value.total_quoted,
+                    create_pedido: formTenderDetail.value?.create_pedido ? formTenderDetail.value.create_pedido : null, 
                 };
 
                 let response;
