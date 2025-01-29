@@ -1,7 +1,7 @@
 <template>
     <span>Costos</span>
     <a-upload-dragger v-model:file-list="fileList" name="file" list-type="picture-card" class="avatar-uploader"
-        :show-upload-list="true" action="https://dft-back-uat-b85d882277cf.herokuapp.com/upload/"
+        :show-upload-list="true" action="https://dft-back-dev-2484ff5ddb07.herokuapp.com/upload/"
         :before-upload="beforeUpload" @change="handleChange" @drop="handleDrop">
         <div v-if="imageUrl">
 
