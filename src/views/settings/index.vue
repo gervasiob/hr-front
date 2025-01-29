@@ -77,9 +77,9 @@ export default {
                 return false; // Cancela la carga del archivo
             }
 
-            const isLt2M = file.size / 1024 / 1024 < 6;
+            const isLt2M = file.size / 1024 / 1024 < 200;
             if (!isLt2M) {
-                message.error('File must be smaller than 6MB!');
+                message.error('File must be smaller than 200MB!');
                 return false; // Cancela la carga del archivo
             }
 
