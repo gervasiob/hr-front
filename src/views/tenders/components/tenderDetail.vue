@@ -1089,6 +1089,7 @@ export default {
             original_parts: '',
             user: '',
             require_vendor_prices: false,
+            create_pedido: null,
         });
         const imageSelect = ref();
         const imageUrl = ref();
@@ -1579,6 +1580,7 @@ export default {
                     details,
                     tire_type_name: dataQuoteSource.value,
                     total_quoted: quoteData.value.total_quoted,
+                    create_pedido: formTenderDetail.value?.create_pedido ? formTenderDetail.value.create_pedido : null, 
                 };
 
                 let response;
@@ -1897,6 +1899,7 @@ export default {
                     tender_data: {
                         domain: '',
                     },
+                    create_pedido: null,
                 }
                 console.log('user', localStorage.getItem('user_id'))
                 console.log('formTender', formTenderDetail.value)

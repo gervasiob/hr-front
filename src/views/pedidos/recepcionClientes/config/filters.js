@@ -79,7 +79,7 @@ export const filters = [
         label: 'Recepción Cliente',
         name: 'cliente_recepcion',
         component: 'a-select',
-        model: 'cliente_recepcion',
+        model: 'checklist_cliente_recepcion',
         options: YES_NO,
         value: false,
     },
