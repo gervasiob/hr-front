@@ -214,7 +214,9 @@ export default {
       const data = dataSource.value.filter(item => key === item.key)[0];
       Object.assign(data, editableData[key]);
       delete editableData[key];
-      console.log(data)
+      if (data.model === "" || !data.model) {
+        data.model = "Sin Modelo";
+      }
       try {
         if (data.id > 0) {
           const params = {
