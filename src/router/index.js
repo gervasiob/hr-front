@@ -222,7 +222,6 @@ const otherRoutes = [
         key: 'logout',
         path: '/logout',
         name: 'Logout',
-        redirect: '/login',
         meta: { roles: basicAuth },
     },
     {
@@ -374,7 +373,7 @@ const otherRoutes = [
             roles: basicAuth,
             requiresAuth: false,
             hideMenu: true,
-         },
+        },
     },
     {
         key: 'documentacion',
@@ -409,6 +408,11 @@ export const router = createRouter({
 });
 router.beforeEach(async (to, from, next) => {
     const requiresAuth = to.meta.requiresAuth;
+    if (to.path === '/logout') {
+        localStorage.clear();
+        next({ path: '/login' });
+        return;
+    }
     if (to.path === '/login') {
         next();
         return;

@@ -173,10 +173,10 @@
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
                 <div style="margin-bottom: 1%">
-                     <a-switch v-model:checked="checkSelectState" v-if="selectState"/>
+                    <a-switch v-model:checked="checkSelectState" v-if="selectState" />
                 </div>
                 <div class="item-d" v-if="checkSelectState">
-                    <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
+                    <a-select placeholder="Ingrese su búsqueda" style="min-width: 180px"
                         v-model:value="formTenderDetail.quote_state" allowClear show-search
                         :filter-option="filterOption">
                         <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
@@ -330,6 +330,14 @@
         <a-collapse-panel key="4" class="collapse-class" header="PEDIDO">
             <div>
                 <PedidoTab :pedido-id="formPedido.pedido_id" :quote-id="formTenderDetail.claim_id" />
+            </div>
+        </a-collapse-panel>
+        <hr>
+        <a-collapse-panel key="5" class="collapse-class" header="ENCUESTA DE CALIDAD">
+            <div v-show="formTenderDetail.tender_data.survey_sent">
+                <a-checkbox v-model:checked="formTenderDetail.tender_data.survey_sent">Enviada</a-checkbox>
+                <SatisfactionTab :survey-sent="formTenderDetail.tender_data.survey_sent"
+                    :claim-id="formTenderDetail.claim_id" />
             </div>
         </a-collapse-panel>
         <hr>
@@ -879,7 +887,7 @@
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
                     v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'
-                        || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed U'">
+                        || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed U' || formTenderDetail.quote_state === 'Test passed F'">
                     <a-row>
                         <a-col :span="8">
                             <a-button type="primary" size="large" class="hover-button-grey" @click="onSave('C')"
@@ -1004,6 +1012,7 @@ import { apiChecklist } from '@/api/checklists/checklists.js';
 import PedidoTab from '@/components/tabs/pedidoTab.vue';
 import { apiConfigurations } from '@/api/configurations/configurations.js';
 import { documentsByVendor } from '@/api/documentacion/documentacion.js';
+import SatisfactionTab from './satisfactionTab.vue';
 
 
 export default {
@@ -1013,6 +1022,7 @@ export default {
         MinusCircleOutlined,
         PlusOutlined,
         PedidoTab,
+        SatisfactionTab,
     },
     setup() {
         const route = useRoute();
@@ -1332,12 +1342,12 @@ export default {
                 formEnvio.delivery_type = quoteData.value.delivery_type;
                 formEnvio.transport = quoteData.value.transport;
                 formEnvio.postal_code = quoteData.value.postal_code;
-               
+
             } catch (error) {
                 console.error('Error fetching tender data:', error);
             }
         };
-        
+
         const calcularFee = async () => {
             if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.company_id) {
                 const assurance = await getVendors({ comercial_name: formTenderDetail.value.company_name, vendor_type: 1 });
@@ -1476,8 +1486,8 @@ export default {
                     return;
                 }
             }
-            //Chequeos para Whatsapp - Documentación
-            if (formTenderDetail.value.quote_state === 'Test passed U') {
+            //Chequeos para Whatsapp - Documentación y Calificación Clientes
+            if (formTenderDetail.value.quote_state === 'Test passed U' || formTenderDetail.value.quote_state === 'Test passed F') {
                 console.log('va a verificar docs')
                 const resp3 = await checkVal(false, true);
                 if (!resp3) {
@@ -1702,7 +1712,7 @@ export default {
         }
         const calculateDetails = () => {
             const details = form.value;
-           
+
             details.map(async (item) => {
                 try {
                     if (item.sku && !item.llanta_type) {
@@ -1713,7 +1723,7 @@ export default {
                 }
                 catch (error) {
                     console.error(`Error`, error);
-                    
+
                 }
             })
         }
@@ -2025,7 +2035,7 @@ export default {
             }
         }
         const handleEdit = (field = null) => {
-            if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E' || formTenderDetail.value.quote_state === 'Test passed A' || formTenderDetail.value.quote_state === 'Test passed U') {
+            if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E' || formTenderDetail.value.quote_state === 'Test passed A' || formTenderDetail.value.quote_state === 'Test passed U' || formTenderDetail.value.quote_state === 'Test passed F') {
                 return false;
             }
             else if (formTenderDetail.value.quote_state === 'V' || formTenderDetail.value.quote_state === 'A') {
