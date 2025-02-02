@@ -158,6 +158,7 @@ export default {
           key: index,
           user: null,
           marcas: item.marcas && item.marcas.length > 2 ? item.marcas : [],
+          type_group: item.type_group,
         }));
 
 
@@ -335,6 +336,11 @@ export default {
       if (marcasArray) {
         marcasString = `[${marcasArray.join(",")}]`
       }
+      const typeArray = form.type_group;
+      let typeString = null;
+      if (typeArray.length > 0) {
+        typeString = `[${typeArray.join(",")}]`
+      }
       try {
         if (form.hasOwnProperty('id') && form.id) {
           // Caso de edición
@@ -345,6 +351,7 @@ export default {
           const params = {
             ...form,
             marcas: marcasString,
+            type_group: typeString,
           };
           await updateVendors(form.id, params);
           window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
@@ -378,7 +385,6 @@ export default {
       const originalObject = {
         marcas: data.marcas
       };
-      console.log('data', data)
       // Convierte la cadena a un array
       let transformedObject = originalObject.marcas;
       if (originalObject.marcas.length > 0) {
@@ -389,7 +395,20 @@ export default {
             .map((marca) => marca.trim()) // Elimina espacios adicionales
         };
       }
-      formDataProps.value = { ...data, marcas: transformedObject.marcas, documents: [] };
+      let transformType = data.type_group;
+      if (data.type_group) {
+        if (data.type_group.length > 0) {
+          transformType = {
+            groupType: data.type_group
+              .replace(/^\[|\]$/g, '')
+              .split(',')
+              .map((item) => item.trim())
+          };
+        }
+      } else {
+        transformType = [];
+      }
+      formDataProps.value = { ...data, marcas: transformedObject.marcas, documents: [], type_group: transformType.groupType };
       open.value = true;
 
     };

@@ -23,6 +23,12 @@ export const tableColumns = [
         width: 210,
     },
     {
+        title: 'Grupo',
+        dataIndex: 'type_group',
+        fixed: 'left',
+        width: 210,
+    },
+    {
         title: 'Marcas',
         dataIndex: 'marcas',
         fixed: 'left',
