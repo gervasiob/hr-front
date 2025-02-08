@@ -985,7 +985,7 @@ import { getVendors, getVendorList, getSucursalList, getAssuranceList } from '@/
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
-import { getCostStock, getStockDef, getStockSummary } from '@/api/stocks/stocks.js';
+import { getCheckStock, getCostStock, getStockDef, getStockSummary } from '@/api/stocks/stocks.js';
 import { getVehiclesList } from '@/api/vehicles/vehicles.js';
 import { getProduct } from '@/api/product/product.js';
 
@@ -1580,7 +1580,7 @@ export default {
                     details,
                     tire_type_name: dataQuoteSource.value,
                     total_quoted: quoteData.value.total_quoted,
-                    create_pedido: formTenderDetail.value?.create_pedido ? formTenderDetail.value.create_pedido : false, 
+                    create_pedido: formTenderDetail.value?.create_pedido ? formTenderDetail.value.create_pedido : false,
                 };
 
                 let response;
@@ -2157,33 +2157,6 @@ export default {
 
             // Crear una lista de promesas para todas las llamadas a la API
             const promises = data.map((item) => {
-                // return getCostStock({ code: item.sku })
-                // .then((res) => {
-                //     if (res && res.results.length > 0) {
-                //         const stockData = res.results[0];
-                //         // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
-                //         const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
-                //         // Actualizar los valores de la respuesta
-                //         if (dataSourceItem) {
-                //             dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
-                //             if (!dataSourceItem.noStock) {
-                //                 console.log('no stock', false)
-                //                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
-                //                 if (neumasur) {
-                //                     dataSourceItem.vendor_id = neumasur.value;
-                //                     console.log('neumasur', neumasur)
-                //                 }
-                //             }
-                //             return {
-                //                 sku: stockData.sku,
-                //                 producto: stockData.producto,
-                //                 stock: stockData.stock,
-                //                 minimum_stock: stockData.minimum_stock,
-                //                 available_stock: stockData.available_stock,
-                //             };
-                //         }
-
-                //     }
                 return getStockSummary({ codigo: item.sku })
                     .then((res) => {
                         if (res && res.length > 0) {
@@ -2218,7 +2191,29 @@ export default {
                         console.error(`Error fetching stock for SKU ${item.sku}:`, err);
                     });
             });
+            const promises2 = data.map(async (item) => {
+                return await getCheckStock({}, item.sku)
+                    .then((res) => {
+                        if (res) {
+                            console.log('res 2', res)
+                            const stockHinet = res;
+                            console.log('stock hinet', stockHinet)
 
+                            return {
+                                codigo: stockHinet.codigo,
+                                stockHinet: stockHinet.total_stock_disponible,
+                            };
+                        }
+                    })
+                    .catch((err) => {
+                        // Manejar errores por cada SKU
+                        console.error(`Error en Hinet al intentar obtener el stock del SKU ${item.sku}:`, err);
+                        return {
+                            codigo: item.sku,
+                            stockHinet: 'Error en Hinet',
+                        };
+                    });
+            });
             // Ejecutar todas las promesas en paralelo
             Promise.all(promises)
                 .then((results) => {
@@ -2232,6 +2227,32 @@ export default {
                 .finally(() => {
                     loading.value = false;
                 });
+            Promise.all(promises2)
+                .then((res) => {
+                    if (res && res.length > 0) {
+                        res.forEach((stockItem) => {
+                            if (stockItem) {
+                                const item = dataStock.value.find((dataItem) => dataItem.sku === stockItem.codigo);
+                                if (item) {
+                                    item.stockHinet = stockItem.stockHinet;
+                                } else {
+                                    console.warn(`No se encontró el SKU ${stockItem.codigo} en dataStock`);
+                                }
+                            }
+                        });
+                        console.log('data stock', dataStock.value);
+                    }
+
+                })
+                .catch((err) => {
+                    // Manejo de errores global
+                    error.value = err;
+                    console.error('Error fetching stocks:', err);
+                })
+                .finally(() => {
+                    loading.value = false;
+                });
+
         };
         const getUserName = (id) => {
             const user = agents.value.filter((item) => item.id === id);
