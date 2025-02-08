@@ -173,10 +173,10 @@
             </a-descriptions-item>
             <a-descriptions-item label="Estado" class="a-descriptions-item">
                 <div style="margin-bottom: 1%">
-                     <a-switch v-model:checked="checkSelectState" v-if="selectState"/>
+                    <a-switch v-model:checked="checkSelectState" v-if="selectState" />
                 </div>
                 <div class="item-d" v-if="checkSelectState">
-                    <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
+                    <a-select placeholder="Ingrese su búsqueda" style="min-width: 180px"
                         v-model:value="formTenderDetail.quote_state" allowClear show-search
                         :filter-option="filterOption">
                         <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
@@ -330,6 +330,14 @@
         <a-collapse-panel key="4" class="collapse-class" header="PEDIDO">
             <div>
                 <PedidoTab :pedido-id="formPedido.pedido_id" :quote-id="formTenderDetail.claim_id" />
+            </div>
+        </a-collapse-panel>
+        <hr>
+        <a-collapse-panel key="5" class="collapse-class" header="ENCUESTA DE CALIDAD">
+            <div v-show="formTenderDetail.tender_data.survey_sent">
+                <a-checkbox v-model:checked="formTenderDetail.tender_data.survey_sent">Enviada</a-checkbox>
+                <SatisfactionTab :survey-sent="formTenderDetail.tender_data.survey_sent"
+                    :claim-id="formTenderDetail.claim_id" />
             </div>
         </a-collapse-panel>
         <hr>
@@ -750,6 +758,12 @@
                         <span style="width: 100px;">Total S/IVA</span>
                         <span style="width: 120px;">Total + Fee</span>
                     </div> -->
+                     <div class="not-quote">
+                        <a-form-item label="CREAR NOTA DE PEDIDO EN HINET">
+                            <a-switch v-model:checked="formTenderDetail.create_pedido"
+                                style="background-color: var(--border-item); border: none; margin: 1%;" />
+                        </a-form-item>
+                    </div>
                     <div class="not-quote">
                         <a-form-item label="SOLICITAR COTIZACIÓN A PROVEEDORES">
                             <a-switch v-model:checked="formTenderDetail.require_vendor_prices"
@@ -873,7 +887,7 @@
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
                     v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'
-                        || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed U'">
+                        || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed U' || formTenderDetail.quote_state === 'Test passed F'">
                     <a-row>
                         <a-col :span="8">
                             <a-button type="primary" size="large" class="hover-button-grey" @click="onSave('C')"
@@ -977,7 +991,7 @@ import { getVendors, getVendorList, getSucursalList, getAssuranceList } from '@/
 import { getQuotes, addQuotes, updateQuotes } from '@/api/quotes/quotes.js';
 import { addOrders } from '@/api/orders/orders.js';
 import { getTireCost, getLlantaCost, getDescriptionList, getSkuList, getCosts } from '@/api/costs/costs.js';
-import { getCostStock, getStockDef, getStockSummary } from '@/api/stocks/stocks.js';
+import { getCheckStock, getCostStock, getStockDef, getStockSummary } from '@/api/stocks/stocks.js';
 import { getVehiclesList } from '@/api/vehicles/vehicles.js';
 import { getProduct } from '@/api/product/product.js';
 
@@ -998,6 +1012,7 @@ import { apiChecklist } from '@/api/checklists/checklists.js';
 import PedidoTab from '@/components/tabs/pedidoTab.vue';
 import { apiConfigurations } from '@/api/configurations/configurations.js';
 import { documentsByVendor } from '@/api/documentacion/documentacion.js';
+import SatisfactionTab from './satisfactionTab.vue';
 
 
 export default {
@@ -1007,6 +1022,7 @@ export default {
         MinusCircleOutlined,
         PlusOutlined,
         PedidoTab,
+        SatisfactionTab,
     },
     setup() {
         const route = useRoute();
@@ -1079,6 +1095,7 @@ export default {
             original_parts: '',
             user: '',
             require_vendor_prices: false,
+            create_pedido: null,
         });
         const imageSelect = ref();
         const imageUrl = ref();
@@ -1325,12 +1342,12 @@ export default {
                 formEnvio.delivery_type = quoteData.value.delivery_type;
                 formEnvio.transport = quoteData.value.transport;
                 formEnvio.postal_code = quoteData.value.postal_code;
-               
+
             } catch (error) {
                 console.error('Error fetching tender data:', error);
             }
         };
-        
+
         const calcularFee = async () => {
             if (formTenderDetail.value.quote_state === 'N' && formTenderDetail.value.company_id) {
                 const assurance = await getVendors({ comercial_name: formTenderDetail.value.company_name, vendor_type: 1 });
@@ -1469,8 +1486,8 @@ export default {
                     return;
                 }
             }
-            //Chequeos para Whatsapp - Documentación
-            if (formTenderDetail.value.quote_state === 'Test passed U') {
+            //Chequeos para Whatsapp - Documentación y Calificación Clientes
+            if (formTenderDetail.value.quote_state === 'Test passed U' || formTenderDetail.value.quote_state === 'Test passed F') {
                 console.log('va a verificar docs')
                 const resp3 = await checkVal(false, true);
                 if (!resp3) {
@@ -1569,6 +1586,7 @@ export default {
                     details,
                     tire_type_name: dataQuoteSource.value,
                     total_quoted: quoteData.value.total_quoted,
+                    create_pedido: formTenderDetail.value?.create_pedido ? formTenderDetail.value.create_pedido : false,
                 };
 
                 let response;
@@ -1694,7 +1712,7 @@ export default {
         }
         const calculateDetails = () => {
             const details = form.value;
-           
+
             details.map(async (item) => {
                 try {
                     if (item.sku && !item.llanta_type) {
@@ -1705,7 +1723,7 @@ export default {
                 }
                 catch (error) {
                     console.error(`Error`, error);
-                    
+
                 }
             })
         }
@@ -1887,6 +1905,7 @@ export default {
                     tender_data: {
                         domain: '',
                     },
+                    create_pedido: null,
                 }
                 console.log('user', localStorage.getItem('user_id'))
                 console.log('formTender', formTenderDetail.value)
@@ -2016,7 +2035,7 @@ export default {
             }
         }
         const handleEdit = (field = null) => {
-            if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E' || formTenderDetail.value.quote_state === 'Test passed A' || formTenderDetail.value.quote_state === 'Test passed U') {
+            if (formTenderDetail.value.quote_state === 'N' || formTenderDetail.value.quote_state === 'E' || formTenderDetail.value.quote_state === 'Test passed A' || formTenderDetail.value.quote_state === 'Test passed U' || formTenderDetail.value.quote_state === 'Test passed F') {
                 return false;
             }
             else if (formTenderDetail.value.quote_state === 'V' || formTenderDetail.value.quote_state === 'A') {
@@ -2144,33 +2163,6 @@ export default {
 
             // Crear una lista de promesas para todas las llamadas a la API
             const promises = data.map((item) => {
-                // return getCostStock({ code: item.sku })
-                // .then((res) => {
-                //     if (res && res.results.length > 0) {
-                //         const stockData = res.results[0];
-                //         // const dataSourceItem = dataSource.value.find((dataItem) => dataItem.sku === stockData.sku);
-                //         const dataSourceItem = form.items.find((dataItem) => dataItem.sku === stockData.sku);
-                //         // Actualizar los valores de la respuesta
-                //         if (dataSourceItem) {
-                //             dataSourceItem.noStock = dataSourceItem.quantity > stockData.available_stock ? true : false;
-                //             if (!dataSourceItem.noStock) {
-                //                 console.log('no stock', false)
-                //                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
-                //                 if (neumasur) {
-                //                     dataSourceItem.vendor_id = neumasur.value;
-                //                     console.log('neumasur', neumasur)
-                //                 }
-                //             }
-                //             return {
-                //                 sku: stockData.sku,
-                //                 producto: stockData.producto,
-                //                 stock: stockData.stock,
-                //                 minimum_stock: stockData.minimum_stock,
-                //                 available_stock: stockData.available_stock,
-                //             };
-                //         }
-
-                //     }
                 return getStockSummary({ codigo: item.sku })
                     .then((res) => {
                         if (res && res.length > 0) {
@@ -2205,7 +2197,29 @@ export default {
                         console.error(`Error fetching stock for SKU ${item.sku}:`, err);
                     });
             });
+            const promises2 = data.map(async (item) => {
+                return await getCheckStock({}, item.sku)
+                    .then((res) => {
+                        if (res) {
+                            console.log('res 2', res)
+                            const stockHinet = res;
+                            console.log('stock hinet', stockHinet)
 
+                            return {
+                                codigo: stockHinet.codigo,
+                                stockHinet: stockHinet.total_stock_disponible,
+                            };
+                        }
+                    })
+                    .catch((err) => {
+                        // Manejar errores por cada SKU
+                        console.error(`Error en Hinet al intentar obtener el stock del SKU ${item.sku}:`, err);
+                        return {
+                            codigo: item.sku,
+                            stockHinet: 'Error en Hinet',
+                        };
+                    });
+            });
             // Ejecutar todas las promesas en paralelo
             Promise.all(promises)
                 .then((results) => {
@@ -2219,6 +2233,32 @@ export default {
                 .finally(() => {
                     loading.value = false;
                 });
+            Promise.all(promises2)
+                .then((res) => {
+                    if (res && res.length > 0) {
+                        res.forEach((stockItem) => {
+                            if (stockItem) {
+                                const item = dataStock.value.find((dataItem) => dataItem.sku === stockItem.codigo);
+                                if (item) {
+                                    item.stockHinet = stockItem.stockHinet;
+                                } else {
+                                    console.warn(`No se encontró el SKU ${stockItem.codigo} en dataStock`);
+                                }
+                            }
+                        });
+                        console.log('data stock', dataStock.value);
+                    }
+
+                })
+                .catch((err) => {
+                    // Manejo de errores global
+                    error.value = err;
+                    console.error('Error fetching stocks:', err);
+                })
+                .finally(() => {
+                    loading.value = false;
+                });
+
         };
         const getUserName = (id) => {
             const user = agents.value.filter((item) => item.id === id);

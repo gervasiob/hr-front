@@ -26,3 +26,6 @@ export async function getStockDef(params) {
 export async function getStockSummary(params) {
     return await apiRequest('get', 'stock_summary/', params);
 }
+export async function getCheckStock(params, id) {
+    return await apiRequest('get', 'stock_disponible_producto/', params, id);
+}

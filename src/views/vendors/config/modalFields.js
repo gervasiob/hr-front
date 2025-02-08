@@ -1,5 +1,5 @@
 import { getDocumentTypeList } from "@/api/documentacion/documentacion";
-import { BRANDS, VENDOR_TYPE } from "@/common/common";
+import { BRANDS, GROUPS, VENDOR_TYPE } from "@/common/common";
 const documents = await getDocumentTypeList();
 export const modalFields = [
     {
@@ -8,6 +8,18 @@ export const modalFields = [
         type: 'rate',
         desc: ['Muy Malo', 'Malo', 'Regular', 'Bueno', 'Muy Bueno'],
         color: 'red',
+        default: null,
+    },
+    {
+        name: 'hinet_code',
+        label: 'Código Hinet',
+        type: 'input',
+        default: null,
+    },
+    {
+        name: 'hinet_id',
+        label: 'Id Hinet',
+        type: 'input',
         default: null,
     },
     {
@@ -59,6 +71,19 @@ export const modalFields = [
             vendor_type: [{ required: true, message: 'Por favor seleccione un valor', trigger: 'change', },
             ]
         }
+    },
+    {
+        name: 'type_group',
+        label: 'Grupo',
+        type: 'select',
+        mode: 'multiple',
+        default: [],
+        options: GROUPS.map((item) => {
+            return {
+                value: item.value,
+                name: item.label,
+            }
+        }),
     },
     {
         name: 'marcas',

@@ -1,7 +1,7 @@
 <template>
     <span>Costos</span>
     <a-upload-dragger v-model:file-list="fileList" name="file" list-type="picture-card" class="avatar-uploader"
-        :show-upload-list="true" action="https://dft-back-uat-b85d882277cf.herokuapp.com/upload/"
+        :show-upload-list="true" action="https://dft-back-dev-2484ff5ddb07.herokuapp.com/upload/"
         :before-upload="beforeUpload" @change="handleChange" @drop="handleDrop">
         <div v-if="imageUrl">
 
@@ -77,9 +77,9 @@ export default {
                 return false; // Cancela la carga del archivo
             }
 
-            const isLt2M = file.size / 1024 / 1024 < 6;
+            const isLt2M = file.size / 1024 / 1024 < 200;
             if (!isLt2M) {
-                message.error('File must be smaller than 6MB!');
+                message.error('File must be smaller than 200MB!');
                 return false; // Cancela la carga del archivo
             }
 

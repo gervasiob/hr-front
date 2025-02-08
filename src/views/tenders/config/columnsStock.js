@@ -10,17 +10,22 @@ export const tableStockColumns = [
         key: 'descripcion',
     },
     {
-        title: 'Stock',
+        title: 'Hinet Stock',
+        dataIndex: 'stockHinet',
+        key: 'stockHinet',
+    },
+    {
+        title: 'Stock DFT',
         dataIndex: 'stock',
         key: 'stock',
     },
     {
-        title: 'Stock Mínimo',
+        title: 'Stock Mínimo DFT',
         dataIndex: 'minimum_stock',
         key: 'minimum_stock',
     },
     {
-        title: 'Stock Disponible',
+        title: 'Stock Disponible DFT',
         dataIndex: 'available_stock',
         key: 'available_stock',
     },
