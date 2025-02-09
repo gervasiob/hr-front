@@ -13,19 +13,26 @@
             <a-input v-model:value="filterInputs.detail__icontains" allowClear style="width: 200px;" />
           </a-form-item>
         </a-col>
-
-
-
         <a-col :span="8" :offset="4" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
-          <a-button  @click="() => onGetStock({skus: []})">Actualizar Stock</a-button>
+          <a-button @click="() => onGetStock({skus: []})">Actualizar Stock</a-button>
         </a-col>
       </a-row>
     </a-form>
   </div>
 
   <!-- Table -->
+  <div style="margin-bottom: 0.5%;">
+    <a-row>
+      <a-col :span="4" :offset="20"> <a-button type="primary" :size="size" @click="handleExport">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          Exportar
+        </a-button></a-col>
+    </a-row>
+  </div>
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
@@ -51,7 +58,8 @@
           </span>
           <span v-else>
             <!-- <a @click="edit(record.key)">Edit</a> -->
-            <a-popconfirm v-if="dataSource.length" title="Confirma actualización de stock?" @confirm="onGetStock({skus: [dataSource[record.key]['sku']]})">
+            <a-popconfirm v-if="dataSource.length" title="Confirma actualización de stock?"
+              @confirm="onGetStock({skus: [dataSource[record.key]['sku']]})">
               <a>Actualizar Stock</a>
             </a-popconfirm>
           </span>
@@ -67,9 +75,13 @@ import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
 import { getStocks, addStocks, updateStocks, deleteStocks, getCostStock, getStockHinet } from '@/api/stocks/stocks.js';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { apiExport } from '@/api/export/export.js';
 export default {
   name: 'StocksList',
-
+  components: {
+    DownloadOutlined,
+  },
   setup() {
     const formRef = ref();
     const formState = reactive({});
@@ -238,6 +250,9 @@ export default {
     //   dataSource.value = newData;
 
     // };
+    const handleExport = async () => {
+      await apiExport('stocks', {});
+    }
     return {
       formRef,
       formState,
@@ -260,6 +275,7 @@ export default {
       pagination,
       handleTableChange,
       onGetStock,
+      handleExport,
     }
   }
 }
