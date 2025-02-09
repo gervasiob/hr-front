@@ -18,7 +18,7 @@
             <a-select v-model:value="filterInputs.confirmed" allowClear show-search>
               <a-select-option :value="true">Sí</a-select-option>
               <a-select-option :value="false">No</a-select-option>
-             
+
             </a-select>
           </a-form-item>
         </a-col>
@@ -38,6 +38,16 @@
       <ModalPlatform v-if="open" @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
     </a-modal>
   </div> -->
+  <div>
+    <a-row>
+      <a-col :span="4" :offset="20"> <a-button type="primary" :size="size" @click="handleExport">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          Exportar
+        </a-button></a-col>
+    </a-row>
+  </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
@@ -82,11 +92,14 @@ import { getWhatsapp, addWhatsapp, updateWhatsapp, deleteWhatsapp, getWhatsappLi
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { apiExport } from '@/api/export/export.js';
 
 export default {
   name: 'WhatsappList',
   components: {
     ModalPlatform,
+    DownloadOutlined,
   },
   setup() {
     const formRef = ref();
@@ -285,6 +298,9 @@ export default {
         fetchData();
       });
     };
+    const handleExport = async () => {
+      await apiExport('whatsapp', {});
+    }
     return {
       formRef,
       formState,
@@ -313,6 +329,7 @@ export default {
       handleFormFinish,
       formComponent,
       modalFielsProps,
+      handleExport,
     }
   }
 }
