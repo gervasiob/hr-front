@@ -38,7 +38,7 @@
       <ModalPlatform v-if="open" @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
     </a-modal>
   </div> -->
-  <div>
+  <div style="margin-bottom: 0.5%;">
     <a-row>
       <a-col :span="4" :offset="20"> <a-button type="primary" :size="size" @click="handleExport">
           <template #icon>
