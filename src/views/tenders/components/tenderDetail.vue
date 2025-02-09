@@ -2171,7 +2171,6 @@ export default {
                                     const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
                                     if (neumasur) {
                                         dataSourceItem.vendor_id = neumasur.value;
-                                        console.log('neumasur', neumasur)
                                     }
                                 }
                                 return {
@@ -2195,10 +2194,7 @@ export default {
                 return await getCheckStock({}, item.sku)
                     .then((res) => {
                         if (res) {
-                            console.log('res 2', res)
                             const stockHinet = res;
-                            console.log('stock hinet', stockHinet)
-
                             return {
                                 codigo: stockHinet.codigo,
                                 stockHinet: stockHinet.total_stock_disponible,
@@ -2230,14 +2226,20 @@ export default {
             Promise.all(promises2)
                 .then((res) => {
                     if (res && res.length > 0) {
+                        console.log('ingresa al if', res)
                         res.forEach((stockItem) => {
-                            if (stockItem) {
+                            if (stockItem && dataStock.value.length >0) {
                                 const item = dataStock.value.find((dataItem) => dataItem.sku === stockItem.codigo);
                                 if (item) {
                                     item.stockHinet = stockItem.stockHinet;
                                 } else {
                                     console.warn(`No se encontró el SKU ${stockItem.codigo} en dataStock`);
                                 }
+                            } else {
+                                dataStock.value.push({
+                                    sku: stockItem.codigo,
+                                    stockHinet: stockItem.stockHinet,
+                                });
                             }
                         });
                         console.log('data stock', dataStock.value);
