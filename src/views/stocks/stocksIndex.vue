@@ -251,7 +251,7 @@ export default {
 
     // };
     const handleExport = async () => {
-      await apiExport('stocks', {});
+      await apiExport('all-cost-stock', {});
     }
     return {
       formRef,
