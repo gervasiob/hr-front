@@ -23,10 +23,19 @@
   <!-- Table -->
 
   <div>
-    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
-    <a-modal v-model:open="open" title="Producto" @ok="handleOk" @cancel="handleCancel">
-      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
-    </a-modal>
+    <a-row>
+      <a-col :span="20"><a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+        <a-modal v-model:open="open" title="Producto" @ok="handleOk" @cancel="handleCancel">
+          <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+        </a-modal></a-col>
+      <a-col :span="4"> <a-button type="primary" :size="size" @click="handleExport">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          Exportar
+        </a-button></a-col>
+    </a-row>
+
     <a-modal v-model:open="openImg" title="Imagen del Producto">
       <template #footer>
         <a-button key="submit" type="primary" :loading="loading" @click="handleImgOk">Cerrar</a-button>
@@ -122,12 +131,15 @@ import { getVendorList } from '@/api/vendors/vendors.js';
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
 import ModalImg from '@/components/modal/modalImg.vue';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { apiExport } from '@/api/export/export.js';
 
 export default {
   name: 'productList',
   components: {
     ModalPlatform,
     ModalImg,
+    DownloadOutlined,
   },
   setup() {
     const formRef = ref();
@@ -399,6 +411,9 @@ export default {
       width: "100px",
       height: "100px",
     };
+    const handleExport = async () => {
+      await apiExport('products', {});
+    }
     return {
       formRef,
       formState,
@@ -438,6 +453,7 @@ export default {
       formImgState,
       imageStyle,
       formImgComponent,
+      handleExport,
     }
   }
 }

@@ -38,11 +38,19 @@
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <div>
-    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
-    <a-modal v-model:open="open" title="Prov - Aseg - Suc" @ok="handleOk" @cancel="handleCancel">
-      <ModalPlatform ref="formComponent" :modalFields="modalFielsProps" :formData="formDataProps"
-        @form-finish="handleFormFinish" />
-    </a-modal>
+    <a-row>
+      <a-col :span="20"><a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+        <a-modal v-model:open="open" title="Prov - Aseg - Suc" @ok="handleOk" @cancel="handleCancel">
+          <ModalPlatform ref="formComponent" :modalFields="modalFielsProps" :formData="formDataProps"
+            @form-finish="handleFormFinish" />
+        </a-modal></a-col>
+      <a-col :span="4"> <a-button type="primary" :size="size" @click="handleExport">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          Exportar
+        </a-button></a-col>
+    </a-row>
   </div>
   <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
     @change="handleTableChange">
@@ -124,11 +132,14 @@ import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
 import { VENDOR_TYPE } from '@/common/common.js';
 import { apiDocumentacion, getDocumentTypeList, vendorDocument, vendorUploadDocuments } from '@/api/documentacion/documentacion.js';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { apiExport } from '@/api/export/export.js';
 
 export default {
   name: 'VendorsList',
   components: {
     ModalPlatform,
+    DownloadOutlined,
   },
   setup() {
     const formRef = ref();
@@ -412,6 +423,9 @@ export default {
       open.value = true;
 
     };
+    const handleExport = async () => {
+      await apiExport('vendors', {});
+    }
     return {
       formRef,
       formState,
@@ -444,6 +458,7 @@ export default {
       handleCancel,
       formDataProps,
       handleEdit,
+      handleExport,
     }
   }
 }

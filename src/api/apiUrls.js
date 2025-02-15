@@ -31,7 +31,7 @@ const apiClient = axios.create({
     timeout: 50000,
 });
 
-export async function apiRequest(method, endpoint, params, id = null) {
+export async function apiRequest(method, endpoint, params, id = null, isFile = false) {
     const url_endpoint = id ? `${BASE_URL}${endpoint}${id}/` : `${BASE_URL}${endpoint}`;
     try {
         // const response = await apiClient({
@@ -46,6 +46,7 @@ export async function apiRequest(method, endpoint, params, id = null) {
         const config = {
             method: method.toLowerCase(),
             url: url_endpoint,
+            responseType: isFile ? 'blob' : 'json',
         };
 
         // Asignar los parámetros adecuados según el método HTTP

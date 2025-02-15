@@ -72,6 +72,16 @@
   </div>
 
   <!-- Table -->
+  <div style="margin-bottom: 0.5%;">
+    <a-row>
+      <a-col :span="4" :offset="20"> <a-button type="primary" :size="size" @click="handleExport">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          Exportar
+        </a-button></a-col>
+    </a-row>
+  </div>
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
@@ -134,8 +144,13 @@ import { getUsers } from '@/api/users/users.js';
 import { YES_NO } from '@/common/common.js';
 import { getRoles } from '@/api/roles/roles.js';
 import { getQuotes } from '@/api/quotes/quotes.js';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { apiExport } from '@/api/export/export.js';
 export default {
   name: 'ordersList',
+  components: {
+    DownloadOutlined,
+  },
 
   setup() {
     const formRef = ref();
@@ -318,6 +333,9 @@ export default {
       dataSource.value = newData;
 
     };
+    const handleExport = async () => {
+      await apiExport('orders', {});
+    }
     return {
       formRef,
       formState,
@@ -342,6 +360,7 @@ export default {
       handleTableChange,
       agents,
       YESNO,
+      handleExport,
     }
   }
 }
