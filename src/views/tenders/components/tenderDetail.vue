@@ -1485,6 +1485,8 @@ export default {
                 console.log('va a verificar docs')
                 const resp3 = await checkVal(false, true);
                 if (!resp3) {
+                    console.log('respuesta 3', resp3)
+                    console.log('strValWapp.value 3', strValWapp.value)
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + strValWapp.value }));
                     return;
                 }
@@ -2228,7 +2230,7 @@ export default {
                     if (res && res.length > 0) {
                         console.log('ingresa al if', res)
                         res.forEach((stockItem) => {
-                            if (stockItem && dataStock.value.length >0) {
+                            if (stockItem && dataStock.value.length > 0) {
                                 const item = dataStock.value.find((dataItem) => dataItem.sku === stockItem.codigo);
                                 if (item) {
                                     item.stockHinet = stockItem.stockHinet;
@@ -2443,7 +2445,6 @@ export default {
                 strValWapp.value += " El número de teléfono del cliente debe ser como 541145336682, mínimo 10 dígitos y comenzar con 54."
                 errorCount++;
             }
-
             // control teléfono User
             const user = await getUsers({ id: formTenderDetail.value.user });
             if (user.count != 1) {
@@ -2455,6 +2456,7 @@ export default {
                 strValWapp.value += " El número de teléfono del gestor debe ser como 541145336682, mínimo 10 dígitos y comenzar con 54."
                 errorCount++;
             }
+            console.log('verifica errorCount 4', errorCount)
             // control teléfono coordinador
             const idRole = await getRoles({ name: 'Coordinador' });
             const coord = await getUsers({ roles: idRole.results[0].id });
@@ -2472,12 +2474,13 @@ export default {
             // 1. Verificar si al menos uno tiene `po = true`
             if (verificarSku) {
                 const errorSku = await checkSkus();
+                console.log('errorSku', errorSku)
                 errorCount += errorSku;
             }
             if (verificarDocs) {
                 const errorDoc = await checkDoc();
-                console.log('errors doc', errorDoc)
                 errorCount += errorDoc;
+
             }
             return errorCount ? false : true;
         }
@@ -2499,6 +2502,7 @@ export default {
                 if (!resProd.count) {
                     strValWapp.value += " Debe existir el sku en la tabla Productos."
                     errorCount++;
+                    return errorCount;
                 }
                 const imgProd = resProd.results[0].image;
                 if (!imgProd) {
@@ -2508,7 +2512,6 @@ export default {
                 const validationPromises = skusWithPoTrue.map(async (sku) => {
                     try {
                         const resProd = await getProduct({ sku });
-                        console.log('resProd', resProd);
 
                         // Verificar si existe el producto
                         if (!resProd.count) {
@@ -2542,7 +2545,7 @@ export default {
             return errorCount;
         }
         const checkProv = async () => {
-            strValWapp.value = "Errores en la Validación de Proveedores:"
+            strValWapp.value += "Errores en la Validación de Proveedores:"
             let errorCount = 0;
             const marca = formTenderDetail.value.tender_data.brand;
             if (!marca) {
@@ -2571,13 +2574,14 @@ export default {
             return errorCount === 0;
         }
         const checkDoc = async () => {
-            strValWapp.value = "Errores en la Validación de Documentación:"
+            strValWapp.value += "Errores en la Validación de Documentación:"
             let errorCount = 0;
             try {
                 const params = {
                     id: formTenderDetail.value.company_id,
                 }
                 const respDocs = await documentsByVendor(params)
+
                 if (!respDocs.count) {
                     strValWapp.value += " La Aseguradora no existe en la tabla Documentos por Aseguradora."
                     errorCount++;
