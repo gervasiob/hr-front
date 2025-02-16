@@ -346,15 +346,15 @@ export const BRANDS = [
 ];
 
 export const CHECKLIST_KEYS = [
-    { value: 'entrega_de_mercaderia', label: "Confirmación de Cliente" },
-    { value: 'gestion_documental', label: "Documentación" },
-    { value: 'orden_compra_conformada', label: "Ingresar OC" },
-    { value: 'armado_y_embalaje', label: "Gomería" },
-    { value: 'generacion_lote', label: "Creación Lote" },
-    { value: 'proforma', label: "Proforma" },
-    { value: 'fletero', label: "Envío" },
-    { value: 'cliente_recepcion', label: "Recepción Cliente" },
-    { value: 'facturacion_final', label: "Facturación" },
+    { value: 'entrega_de_mercaderia', label: "Confirmación de Cliente", order: 1 },
+    { value: 'gestion_documental', label: "Documentación", order: 2 },
+    { value: 'orden_compra_conformada', label: "Ingresar OC", order: 3 },
+    { value: 'armado_y_embalaje', label: "Gomería", order: 4 },
+    { value: 'generacion_lote', label: "Creación Lote", order: 5 },
+    { value: 'proforma', label: "Proforma", order: 6 },
+    { value: 'fletero', label: "Envío", order: 7 },
+    { value: 'cliente_recepcion', label: "Recepción Cliente", order: 8 },
+    { value: 'facturacion_final', label: "Facturación", order: 9 },
 ]
 export const ENTREGAS_TIPOS = [
     { value: 0, label: "Sin Entregada" },
