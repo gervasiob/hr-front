@@ -13,9 +13,9 @@
             </a-row>
         </a-form>
     </div>
-    <PedidoTab :pedido-id="pedidoId" :button-link="false"/>
+    <PedidoTab :pedido-id="pedidoId" :button-link="false" />
     <BasicDetails title="Detalle Pedido" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
-        :checkList="checkList" />
+        :checkList="checkList" pedidosAll="true" />
 </template>
 
 <script>
@@ -63,7 +63,7 @@ export default {
                     nota_pedido_id__icontains: formState.pedidoId,
                 };
                 const quoteResponse = await getQuotes(params);
-                console.log('quote response all pedidos', quoteResponse.results[0])
+
                 let dataResult = [];
                 dataResult = quoteResponse.results[0];
                 quoteId.value = dataResult.id;
