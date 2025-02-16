@@ -63,7 +63,9 @@
         </div>
     </div>
     <div class="button-submit">
-        <a-button type="primary" @click="handleSubmit">Guardar</a-button>
+        <a-tooltip key="tooltipBtn" :title="blockTooltip" color="red" placement="rightTop">
+            <a-button type="primary" @click="handleSubmit" :disabled="disabledBtn">Guardar</a-button>
+        </a-tooltip>
     </div>
 </template>
 
@@ -120,6 +122,10 @@ export default {
             type: Number,
             default: null,
         },
+        pedidosAll: {
+            type: Boolean,
+            default: false,
+        }
     },
     setup(props) {
         const descriptionFields = ref(props.generalFields);
@@ -136,6 +142,8 @@ export default {
         const imageUrl = ref(null);
         const entrega_tipo = ref(props.entregaTipoValue);
         const tipoList = ENTREGAS_TIPOS;
+        const disabledBtn = ref(true);
+        const blockTooltip = ref('Busque un número de pedido válido');
         const onCheckAllChange = e => {
             Object.assign(state, {
                 checkedList: e.target.checked ? props.checkList : [],
@@ -165,12 +173,6 @@ export default {
                     [props.imageSlotName]: imageUrl.value ? imageUrl.value : undefined,
                 };
             }
-            // if (props. && props.imageSlotName) {
-            //     params = {
-            //         ...params,
-            //         [props.imageSlotName]: imageUrl.value ? imageUrl.value : undefined,
-            //     };
-            // }
             const responseSave = await apiChecklist('put', params, checklistData.value.id)
             props.onSubmit();
             setTimeout(() => {
@@ -217,11 +219,32 @@ export default {
                     const matchedKey = CHECKLIST_KEYS.find((item) => item.value === key);
                     return {
                         label: matchedKey ? matchedKey.label : key.replace(/_/g, ' '),
+                        order: matchedKey ? matchedKey.order : 0,
                         value: key,
                         checked: !!checklistItem[key],
                     };
                 });
 
+                if (filteredCheckList.value[0].order > 1) {
+                    const prevCheckKey = CHECKLIST_KEYS.find((item) => item.order === filteredCheckList.value[0].order - 1);
+                    const prevCheckState = checklistData.value[prevCheckKey.value];
+                    if (!prevCheckState) {
+                        disabledBtn.value = true;
+                        blockTooltip.value = "Debe primero confirmar el paso: " + prevCheckKey.label;
+                    }
+                    else {
+                        disabledBtn.value = false;
+                        blockTooltip.value = "";
+                    }
+                }
+                else {
+                    disabledBtn.value = false;
+                    blockTooltip.value = "";
+                }
+                if (props.pedidosAll) {
+                    disabledBtn.value = false;
+                    blockTooltip.value = "";
+                }
                 // Sincronizar estado inicial de los checkboxes
                 state.checkedList = props.checkList.filter((key) => checklistItem[key] === true);
             } catch (error) {
@@ -261,7 +284,7 @@ export default {
             },
             { immediate: true } // Ejecuta también la primera vez si el valor ya está definido
         );
-      
+
         return {
             descriptionFields,
             onCheckAllChange,
@@ -275,6 +298,8 @@ export default {
             handleUpload,
             tipoList,
             entrega_tipo,
+            disabledBtn,
+            blockTooltip,
         }
     }
 
@@ -317,6 +342,7 @@ export default {
     border: 1px solid var(--principal);
     margin-bottom: 1%;
 }
+
 .type-slot {
     margin-top: 1%;
 }
