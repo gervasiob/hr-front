@@ -2460,9 +2460,11 @@ export default {
             // control teléfono coordinador
             const idRole = await getRoles({ name: 'Coordinador' });
             const coord = await getUsers({ roles: idRole.results[0].id });
-            if (coord.count != 1) {
+            if (coord.count < 1) {
                 strValWapp.value += " Debe existir al menos un coordinador en el sistema."
                 errorCount++;
+                return errorCount ? false : true;
+
             }
             const coordPhone = coord.results[0].phone;
             if (!phonePattern.test(coordPhone)) {
