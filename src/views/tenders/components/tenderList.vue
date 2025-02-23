@@ -26,14 +26,19 @@
                 </a-col>
             </a-row>
             <a-row :gutter="24">
-                <a-col :span="6">
+                <a-col :span="4">
                     <a-form-item label="Nro Siniestro" name="claim_id">
                         <a-input v-model:value="filterInputs.claim_id" allowClear />
                     </a-form-item>
                 </a-col>
-                <a-col :span="6">
+                <a-col :span="4">
                     <a-form-item label="Licitación id" name="tender_id">
                         <a-input v-model:value="filterInputs.id" allowClear />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="4">
+                    <a-form-item label="Patente" name="domain__icontains">
+                        <a-input v-model:value="filterInputs.domain__icontains" allowClear />
                     </a-form-item>
                 </a-col>
                 <a-col :span="6">

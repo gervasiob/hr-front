@@ -975,7 +975,7 @@
 import { cloneDeep, debounce } from 'lodash-es';
 import { ref, onMounted, watch, reactive, toRaw, computed, defineComponent, h } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { MinusCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
+import { ConsoleSqlOutlined, MinusCircleOutlined, PlusOutlined } from "@ant-design/icons-vue";
 
 import { getTendersIndex } from '@/api/tenders/tenders.js';
 import { getUserList, getUsers } from '@/api/users/users.js';
@@ -1458,6 +1458,15 @@ export default {
                 window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Debe completar datos de modelo de la rueda y sus medidas' }));
                 return;
             }
+            // Control de que se usen los mismos rodados.
+            const difRod = checkRod();
+            if (difRod) {
+                const cont = confirm("Los items tienen diferente rodado, desa continuar?")
+                if (!cont) {
+                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Modifique los valores de rodados de la Llanta y el Neumático' }));
+                    return;
+                }
+            }
             //chequear si todos los proveedores son Neumasur
             if (value === 'A') {
                 const neumasur = vendorList.value.find((item) => item.name === 'Neumasur');
@@ -1482,11 +1491,8 @@ export default {
             }
             //Chequeos para Whatsapp - Documentación y Calificación Clientes
             if (formTenderDetail.value.quote_state === 'Test passed U' || formTenderDetail.value.quote_state === 'Test passed F') {
-                console.log('va a verificar docs')
                 const resp3 = await checkVal(false, true);
                 if (!resp3) {
-                    console.log('respuesta 3', resp3)
-                    console.log('strValWapp.value 3', strValWapp.value)
                     window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + strValWapp.value }));
                     return;
                 }
@@ -2458,10 +2464,10 @@ export default {
             }
             console.log('verifica errorCount 4', errorCount)
             // control teléfono coordinador
-            const idRole = await getRoles({ name: 'Coordinador' });
+            const idRole = await getRoles({ name: 'Gestor/a' });
             const coord = await getUsers({ roles: idRole.results[0].id });
             if (coord.count < 1) {
-                strValWapp.value += " Debe existir al menos un coordinador en el sistema."
+                strValWapp.value += " Debe existir al menos un Gestor/a en el sistema."
                 errorCount++;
                 return errorCount ? false : true;
 
@@ -2471,12 +2477,10 @@ export default {
                 strValWapp.value += " El número de teléfono del primer coordinador debe ser como 541145336682, mínimo 10 dígitos y comenzar con 54."
                 errorCount++;
             }
-
             // Tiene que existir un details seleccionado:
             // 1. Verificar si al menos uno tiene `po = true`
             if (verificarSku) {
                 const errorSku = await checkSkus();
-                console.log('errorSku', errorSku)
                 errorCount += errorSku;
             }
             if (verificarDocs) {
@@ -2497,7 +2501,9 @@ export default {
                 const itemsWithPoTrue = form.items.filter(item => item.po);
 
                 // 3. Obtener solo los SKUs de esos objetos
-                const skusWithPoTrue = itemsWithPoTrue.map(item => item.sku);
+                const skusWithPoTrue = itemsWithPoTrue.map(item => {
+                    return { sku: item.sku, type: item.type }
+                });
                 const resProd = await getProduct({ sku: skusWithPoTrue[0] });
                 //image
                 // control sku E y tiene imágenes
@@ -2507,11 +2513,14 @@ export default {
                     return errorCount;
                 }
                 const imgProd = resProd.results[0].image;
-                if (!imgProd) {
+                if (!imgProd && itemsWithPoTrue[0].type === 'Llanta') {
                     strValWapp.value += " El SKU no tiene imagen."
                     errorCount++;
                 }
-                const validationPromises = skusWithPoTrue.map(async (sku) => {
+
+                const validationPromises = skusWithPoTrue.map(async (item) => {
+                    const sku = item.sku;
+                    const type = item.type;
                     try {
                         const resProd = await getProduct({ sku });
 
@@ -2523,7 +2532,9 @@ export default {
 
                         // Verificar si el producto tiene imágenes
                         const imgProd = resProd.results[0]?.image;
-                        if (!imgProd) {
+                        console.log('sku', sku)
+                        console.log('type', type)
+                        if (!imgProd && type === 'Llanta') {
                             strValWapp.value += `\nEl SKU ${sku} no tiene imagen.`;
                             return { sku, error: 'No tiene imagen.' };
                         }
@@ -2601,6 +2612,34 @@ export default {
                 errorCount++;
             }
             return errorCount;
+        }
+        const checkRod = () => {
+            const items = form.items;
+            const filteredItems = items.filter(item => item.type === 'Neumatico' || item.type === 'Llanta');
+
+            const rodadoPattern = /R\d{2}/;
+
+            const rodado = filteredItems[0]?.llanta_type;
+
+            if (!rodado || !rodadoPattern.test(rodado)) {
+                return true;
+            }
+
+            const extractedRodados = items.map(item => {
+                const rodadoMatch = item.llanta_type.match(rodadoPattern);
+                return rodadoMatch ? rodadoMatch[0] : null;
+            });
+            let error = false;
+
+            const firstRodado = extractedRodados[0];
+
+            for (let i = 1; i < extractedRodados.length; i++) {
+                if (extractedRodados[i] !== firstRodado) {
+                    error = true;
+                    break;
+                }
+            }
+            return error;
         }
         watch(
             () => route.path,
