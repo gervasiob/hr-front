@@ -25,6 +25,34 @@ export const ASEGURADORAS = [
 
 export const TENDER_STATES = [
     {
+        label: 'Test Proveedores',
+        value: 'Test passed B',
+        color: '#A8B2D0',
+        back: '#A8B2D0',
+
+    },
+    {
+        label: 'Test validación clientes',
+        value: 'Test passed A',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test documentación',
+        value: 'Test passed U',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test Calificación Clientes',
+        value: 'Test passed F',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
         label: 'Adjudicado',
         value: 'A',
         color: 'volcano', // Rojo
@@ -113,27 +141,6 @@ export const TENDER_STATES = [
         value: 'LO',
         color: '#C5C308',
         back: '#C5C308',
-
-    },
-    {
-        label: 'Test validación clientes y proveedores',
-        value: 'Test passed A',
-        color: '#D9B2C0',
-        back: '#D9B2C0',
-
-    },
-    {
-        label: 'Test documentación',
-        value: 'Test passed U',
-        color: '#D9B2C0',
-        back: '#D9B2C0',
-
-    },
-    {
-        label: 'Test Calificación Clientes',
-        value: 'Test passed F',
-        color: '#D9B2C0',
-        back: '#D9B2C0',
 
     },
 ];
