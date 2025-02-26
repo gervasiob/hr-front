@@ -1465,12 +1465,14 @@ export default {
                 return;
             }
             // Control de que se usen los mismos rodados.
-            const difRod = checkRod();
-            if (difRod) {
-                const cont = confirm("Los items tienen diferente rodado, desa continuar?")
-                if (!cont) {
-                    window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Modifique los valores de rodados de la Llanta y el Neumático' }));
-                    return;
+            if (value === 'E') {
+                const difRod = checkRod();
+                if (difRod) {
+                    const cont = confirm("Los items tienen diferente rodado, desa continuar?")
+                    if (!cont) {
+                        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Validación: Modifique los valores de rodados de la Llanta y el Neumático' }));
+                        return;
+                    }
                 }
             }
             //chequear si todos los proveedores son Neumasur
@@ -2540,11 +2542,12 @@ export default {
                         const imgProd = resProd.results[0]?.image;
                         console.log('sku', sku)
                         console.log('type', type)
-                        if (!imgProd && type === 'Llanta') {
-                            strValWapp.value += `\nEl SKU ${sku} no tiene imagen.`;
-                            return { sku, error: 'No tiene imagen.' };
+                        if (type === 'Llanta') {
+                            if (!imgProd ) {
+                                strValWapp.value += `\nEl SKU ${sku} no tiene imagen.`;
+                                return { sku, error: 'No tiene imagen.' };
+                            }
                         }
-
                         return { sku, error: null }; // Sin errores
                     } catch (error) {
                         console.error(`Error al procesar el SKU ${sku}:`, error);
