@@ -2512,19 +2512,20 @@ export default {
                 const skusWithPoTrue = itemsWithPoTrue.map(item => {
                     return { sku: item.sku, type: item.type }
                 });
-                const resProd = await getProduct({ sku: skusWithPoTrue[0] });
-                //image
-                // control sku E y tiene imágenes
-                if (!resProd.count) {
-                    strValWapp.value += " Debe existir el sku en la tabla Productos."
-                    errorCount++;
-                    return errorCount;
-                }
-                const imgProd = resProd.results[0].image;
-                if (!imgProd && itemsWithPoTrue[0].type === 'Llanta') {
-                    strValWapp.value += " El SKU no tiene imagen."
-                    errorCount++;
-                }
+                // const resProd = await getProduct({ sku: skusWithPoTrue[0] });
+                // //image
+                // // control sku E y tiene imágenes
+                // if (!resProd.count) {
+                //     strValWapp.value += " Debe existir el sku en la tabla Productos."
+                //     errorCount++;
+                //     return errorCount;
+                // }
+                // const imgProd = resProd.results[0].image;
+                // console.log()
+                // if (!imgProd && itemsWithPoTrue[0].type === 'Llanta') {
+                //     strValWapp.value += " El SKU no tiene imagen. err 1."
+                //     errorCount++;
+                // }
 
                 const validationPromises = skusWithPoTrue.map(async (item) => {
                     const sku = item.sku;
@@ -2544,15 +2545,15 @@ export default {
                         console.log('type', type)
                         if (type === 'Llanta') {
                             if (!imgProd ) {
-                                strValWapp.value += `\nEl SKU ${sku} no tiene imagen.`;
+                                strValWapp.value += `\nEl SKU ${sku} no tiene imagen. err 2.`;
                                 return { sku, error: 'No tiene imagen.' };
                             }
                         }
                         return { sku, error: null }; // Sin errores
                     } catch (error) {
                         console.error(`Error al procesar el SKU ${sku}:`, error);
-                        strValWapp.value += `\nHubo un error al procesar el SKU ${sku}.`;
-                        return { sku, error: 'Error en la API.' };
+                        strValWapp.value += `\nHubo un error al procesar el SKU ${sku}. err 3.`;
+                        return { sku, error: 'Error en la API.' }; 
                     }
                 });
 
