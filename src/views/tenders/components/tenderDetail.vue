@@ -48,11 +48,14 @@
                 </a-input>
             </a-form-item>
             <a-form-item label="Marca" name="marca">
-                <a-input v-model:value="formTenderDetail.tender_data.brand">
-                    <template #prefix>
-                        <UserOutlined class="site-form-item-icon" />
-                    </template>
-                </a-input>
+                <a-select placeholder="Ingrese su búsqueda" style="min-width: 170px"
+                    v-model:value="formTenderDetail.tender_data.brand" allowClear show-search
+                    :filter-option="filterOption">
+                    <a-select-option v-for="(item, index) in brandList" :key="index" :value="item.label"
+                        :label="item.label">
+                        {{ item.label }}
+                    </a-select-option>
+                </a-select>
             </a-form-item>
             <a-form-item label="Modelo" name="vehicle">
                 <!-- <a-input v-model:value="formTenderDetail.tender_data.vehicle">
@@ -202,8 +205,21 @@
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Marca" class="a-descriptions-item">
-                <div class="item-d" :class="{ 'no-background': handleEdit() }">
-                    <a-input v-model:value="formTenderDetail.tender_data.brand" :readonly="handleEdit()" />
+                <div class="item-d" :class="{ 'no-background': handleEdit(1) }">
+                    <!-- <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" /> -->
+                    <div v-if="!handleEdit(1)">
+                        <a-select placeholder="Ingrese su búsqueda" style="min-width: 135px"
+                            v-model:value="formTenderDetail.tender_data.brand" allowClear show-search
+                            :filter-option="filterOption" :readonly="handleEdit(1)">
+                            <a-select-option v-for="(item, index) in brandList" :key="index" :value="item.label"
+                                :label="item.label">
+                                {{ item.label }}
+                            </a-select-option>
+                        </a-select>
+                    </div>
+                    <div v-else>
+                        <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" />
+                    </div>
                 </div>
             </a-descriptions-item>
             <a-descriptions-item label="Modelo" class="a-descriptions-item">
@@ -887,7 +903,7 @@
                 <a-divider style="border-color: #563CCA" dashed />
                 <div
                     v-if="formTenderDetail.quote_state === 'N' || formTenderDetail.quote_state === 'E' || formTenderDetail.quote_state === 'C'
-                        || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed U' || formTenderDetail.quote_state === 'Test passed F'">
+                        || formTenderDetail.quote_state === 'Test passed A' || formTenderDetail.quote_state === 'Test passed B' || formTenderDetail.quote_state === 'Test passed U' || formTenderDetail.quote_state === 'Test passed F'">
                     <a-row>
                         <a-col :span="8">
                             <a-button type="primary" size="large" class="hover-button-grey" @click="onSave('C')"
@@ -948,7 +964,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                            formatCurrency(totalPo) }}</span>
+                                formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -1002,6 +1018,7 @@ import { tableStockColumns } from '../config/columnsStock.js';
 import {
     TENDER_STATES, DELIVERY_TIMES, TIRE_BRANDS, MODELS, LLANTA_TYPES,
     TIRE_HEIGHT, TIRE_WIDTH, TIRE_TREAD, QUOTE_DETAILS, GROUPS,
+    BRANDS,
 } from '@/common/common';
 import { formRules } from '../config/rules.js';
 import { formatCurrency, formatNumber } from '@/utils/utils.js';
@@ -1841,6 +1858,7 @@ export default {
                 console.log('error in get vehicle list', error)
             }
         }
+        const brandList = ref(BRANDS);
         const getDescriptionListData = async () => {
             try {
                 const res = await getDescriptionList();
@@ -2544,7 +2562,7 @@ export default {
                         console.log('sku', sku)
                         console.log('type', type)
                         if (type === 'Llanta') {
-                            if (!imgProd ) {
+                            if (!imgProd) {
                                 strValWapp.value += `\nEl SKU ${sku} no tiene imagen. err 2.`;
                                 return { sku, error: 'No tiene imagen.' };
                             }
@@ -2553,7 +2571,7 @@ export default {
                     } catch (error) {
                         console.error(`Error al procesar el SKU ${sku}:`, error);
                         strValWapp.value += `\nHubo un error al procesar el SKU ${sku}. err 3.`;
-                        return { sku, error: 'Error en la API.' }; 
+                        return { sku, error: 'Error en la API.' };
                     }
                 });
 
@@ -2781,6 +2799,7 @@ export default {
             totalSelectedIva,
             selectState,
             checkSelectState,
+            brandList,
         }
     }
 }
