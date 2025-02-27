@@ -218,7 +218,7 @@
                         </a-select>
                     </div>
                     <div v-else>
-                        <a-input v-model:value="formTenderDetail.tender_data.vehicle" :readonly="handleEdit(1)" />
+                        <a-input v-model:value="formTenderDetail.tender_data.brand" :readonly="handleEdit(1)" />
                     </div>
                 </div>
             </a-descriptions-item>
