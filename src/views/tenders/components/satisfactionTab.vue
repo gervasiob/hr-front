@@ -7,7 +7,7 @@
             </a-col>
             <a-col :span="40" class="cal-prom">
 
-                <a-rate v-model:value="formData.calificacion_promedio" readonly />
+                <a-rate v-model:value="formData.calificacion_promedio" :count="3" readonly />
 
             </a-col>
         </a-row>
@@ -16,22 +16,22 @@
 
         <a-descriptions-item label="Pregunta 1">
             <div class="item-d">
-                <a-rate v-model:value="formData.int_feedback" readonly />
+                <a-rate v-model:value="formData.int_feedback" :count="3" readonly />
             </div>
         </a-descriptions-item>
         <a-descriptions-item label="Pregunta 2">
             <div class="item-d">
-                <a-rate v-model:value="formData.int_feedback1" readonly />
+                <a-rate v-model:value="formData.int_feedback1" :count="3" readonly />
             </div>
         </a-descriptions-item>
         <a-descriptions-item label="Pregunta 3">
             <div class="item-d">
-                <a-rate v-model:value="formData.int_feedback2" readonly />
+                <a-rate v-model:value="formData.int_feedback2" :count="3" readonly />
             </div>
         </a-descriptions-item>
         <a-descriptions-item label="Pregunta 4">
             <div class="item-d">
-                <a-rate v-model:value="formData.int_feedback3" readonly />
+                <a-rate v-model:value="formData.int_feedback3" :count="3" readonly />
             </div>
         </a-descriptions-item>
     </a-descriptions>
