@@ -24,7 +24,7 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item label="Estado" name="quote_state">
+            <!-- <a-form-item label="Estado" name="quote_state">
                 <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
                     v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
@@ -32,7 +32,7 @@
                         {{ item.label }}
                     </a-select-option>
                 </a-select>
-            </a-form-item>
+            </a-form-item> -->
             <a-form-item label="Dominio" name="add_domain">
                 <a-input v-model:value="formTenderDetail.add_domain">
                     <template #prefix>
@@ -79,13 +79,13 @@
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Fecha Siniestro" name="add_claim_date">
+            <!-- <a-form-item label="Fecha Siniestro" name="add_claim_date">
                 <a-input type="date" v-model:value="formTenderDetail.add_claim_date">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
-            </a-form-item>
+            </a-form-item> -->
             <a-form-item label="Nombre Cliente" name="name">
                 <a-input v-model:value="formTenderDetail.tender_data.name">
                     <template #prefix>
@@ -958,7 +958,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -1920,6 +1920,7 @@ export default {
                     daytona_ids: null,
                     quote_detail: '',
                     quote_state: 'N',
+                    add_claim_date: new Date().toISOString().split('T')[0],
                     spare_tire_amount: 0,
                     freight: 0,
                     fee: 0,
