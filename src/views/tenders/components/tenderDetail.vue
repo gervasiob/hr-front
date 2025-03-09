@@ -24,7 +24,7 @@
                     </a-select-option>
                 </a-select>
             </a-form-item>
-            <a-form-item label="Estado" name="quote_state">
+            <!-- <a-form-item label="Estado" name="quote_state">
                 <a-select placeholder="Ingrese su búsqueda" style="min-width: 140px"
                     v-model:value="formTenderDetail.quote_state" allowClear show-search :filter-option="filterOption">
                     <a-select-option v-for="(item, index) in estadoList" :key="index" :value="item.value"
@@ -32,7 +32,7 @@
                         {{ item.label }}
                     </a-select-option>
                 </a-select>
-            </a-form-item>
+            </a-form-item> -->
             <a-form-item label="Dominio" name="add_domain">
                 <a-input v-model:value="formTenderDetail.add_domain">
                     <template #prefix>
@@ -79,13 +79,13 @@
                     </template>
                 </a-input>
             </a-form-item>
-            <a-form-item label="Fecha Siniestro" name="add_claim_date">
+            <!-- <a-form-item label="Fecha Siniestro" name="add_claim_date">
                 <a-input type="date" v-model:value="formTenderDetail.add_claim_date">
                     <template #prefix>
                         <UserOutlined class="site-form-item-icon" />
                     </template>
                 </a-input>
-            </a-form-item>
+            </a-form-item> -->
             <a-form-item label="Nombre Cliente" name="name">
                 <a-input v-model:value="formTenderDetail.tender_data.name">
                     <template #prefix>
@@ -809,8 +809,8 @@
                                         :not-found-content="item.fetching ? undefined : null"
                                         @search="(value) => handleSearchDescription(value, index)" /></a-col>
                                 <a-col :span="4" :class="{ 'highlight-error': item.error && !item.sku }"><a-input
-                                        v-model:value="item.sku" placeholder="SKU" :readonly="true"
-                                        style="min-width: 120px;" /></a-col>
+                                        v-model:value="item.sku" placeholder="SKU"
+                                        :onChange="handleChangeSku(item, index)" style="min-width: 120px;" /></a-col>
                             </a-row>
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
                                 <a-col :span="8" :offset="4"
@@ -964,7 +964,7 @@
                     </a-col> -->
                     <a-col :offset="18">
                         <div class="total-oc"> <span>TOTAL OC: {{
-                                formatCurrency(totalPo) }}</span>
+                            formatCurrency(totalPo) }}</span>
                         </div>
                     </a-col>
                 </a-row>
@@ -1726,17 +1726,29 @@ export default {
         const handleChangeDeliveryTime = () => {
             console.log('handle dT');
         }
-        const handleChangeSku = async (item, key) => {
+
+        const handleChangeSku = debounce(async (item, key) => {
             const params = {
-                code: item,
-            }
+                code__icontains: item.sku,
+            };
+
             const res = await getCosts(params);
-            const description = res.results[0].detail;  // Obtén la descripción del resultado
-            const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
-            editableData[key]['llanta_type'] = description;
-            editableData[key]['price_final'] = price_final;
-            console.log('handle sku', res.results[0]);
-        }
+
+            let description = "";
+            let price_final = 0;
+            let resSku = item.sku;
+
+            if (res.count) {
+                description = res.results[0].detail;
+                price_final = res.results[0].cost_amount;
+                resSku = res.results[0].code;
+            }
+
+            form.items[key]['llanta_type'] = description;
+            form.items[key]['price_final'] = price_final;
+            form.items[key]['sku'] = resSku;
+        }, 2000);
+
         const calculateDetails = () => {
             const details = form.value;
 
@@ -1926,6 +1938,7 @@ export default {
                     daytona_ids: null,
                     quote_detail: '',
                     quote_state: 'N',
+                    add_claim_date: new Date().toISOString().split('T')[0],
                     spare_tire_amount: 0,
                     freight: 0,
                     fee: 0,
