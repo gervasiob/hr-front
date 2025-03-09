@@ -803,8 +803,8 @@
                                         :not-found-content="item.fetching ? undefined : null"
                                         @search="(value) => handleSearchDescription(value, index)" /></a-col>
                                 <a-col :span="4" :class="{ 'highlight-error': item.error && !item.sku }"><a-input
-                                        v-model:value="item.sku" placeholder="SKU" :readonly="true"
-                                        style="min-width: 120px;" /></a-col>
+                                        v-model:value="item.sku" placeholder="SKU"
+                                        :onChange="handleChangeSku(item, index)" style="min-width: 120px;" /></a-col>
                             </a-row>
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
                                 <a-col :span="8" :offset="4"
@@ -1720,17 +1720,29 @@ export default {
         const handleChangeDeliveryTime = () => {
             console.log('handle dT');
         }
-        const handleChangeSku = async (item, key) => {
+
+        const handleChangeSku = debounce(async (item, key) => {
             const params = {
-                code: item,
-            }
+                code__icontains: item.sku,
+            };
+
             const res = await getCosts(params);
-            const description = res.results[0].detail;  // Obtén la descripción del resultado
-            const price_final = res.results[0].cost_amount;  // Obtén la descripción del resultado
-            editableData[key]['llanta_type'] = description;
-            editableData[key]['price_final'] = price_final;
-            console.log('handle sku', res.results[0]);
-        }
+
+            let description = "";
+            let price_final = 0;
+            let resSku = item.sku;
+
+            if (res.count) {
+                description = res.results[0].detail;
+                price_final = res.results[0].cost_amount;
+                resSku = res.results[0].code;
+            }
+
+            form.items[key]['llanta_type'] = description;
+            form.items[key]['price_final'] = price_final;
+            form.items[key]['sku'] = resSku;
+        }, 2000);
+
         const calculateDetails = () => {
             const details = form.value;
 
