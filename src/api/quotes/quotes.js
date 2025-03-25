@@ -56,7 +56,7 @@ export async function getQuoteStateChangesTimestamp(params) {
 }
 export async function exportQuotes(params) {
     try {
-        const response = await axios.get('https://dft-back-dev-2484ff5ddb07.herokuapp.com/quotes/export/', {
+        const response = await axios.get('http://192.168.0.206:8001/quotes/export/', {
             params,
             responseType: 'blob', // Importante para recibir los datos como un blob
         });

@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
+export const BASE_URL = 'http://192.168.0.206:8001/';
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
