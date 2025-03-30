@@ -1,5 +1,5 @@
 import axios from 'axios';
-export const BASE_URL = 'http://192.168.0.206:8001/';
+export const BASE_URL = 'http://192.168.0.206:8001/front/';
 
 const apiClient = axios.create({
     baseURL: BASE_URL,
