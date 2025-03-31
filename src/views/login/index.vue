@@ -4,10 +4,11 @@
       <div class="login-title">
         <h2>INICIO DE SESIÓN</h2>
       </div>
-      <a-form layout="vertical" @submit="handleSubmit">
+      <a-form layout="vertical" :model="loginForm" @submit.prevent="handleSubmit">
         <a-form-item>
           <div class="item-d">
-            <a-input placeholder="Ingrese su usuario" v-model="loginForm.username">
+            <a-input name="username" placeholder="Ingrese su usuario" v-model:value="loginForm.username"
+              autocomplete="username">
               <template #prefix>
                 <UserOutlined class="site-form-item-icon" />
               </template>
@@ -15,7 +16,8 @@
           </div>
         </a-form-item>
         <a-form-item>
-          <a-input type="password" placeholder="Ingrese su contraseña" v-model="loginForm.password">
+          <a-input name="password" type="password" placeholder="Ingrese su contraseña"
+            v-model:value="loginForm.password" autocomplete="current-password">
             <template #prefix>
               <LockOutlined class="site-form-item-icon" />
             </template>
@@ -36,9 +38,11 @@
 </template>
 
 <script>
-import { reactive } from 'vue';
+import { onMounted, ref } from 'vue';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
+import { getToken, setTokenHeader } from '@/api/apiUrls';
+
 export default {
   name: 'LoginIndex',
   components: {
@@ -47,17 +51,30 @@ export default {
   },
   setup() {
     const router = useRouter(); // Importar el router
-    const loginForm = reactive({
+    const loginForm = ref({
       username: '',
       password: '',
       remember: false,
     });
 
-    const handleSubmit = (e) => {
-      e.preventDefault();
+    const handleSubmit = async () => {
       console.log(loginForm);
-      router.push({ path:'/Licitaciones' });
-      // Aquí iría la lógica para manejar el inicio de sesión
+      if (!loginForm.value.username || !loginForm.value.password) {
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Debe ingresar usuario y contraseña' }));
+        return;
+      }
+      try {
+        const params = {
+          username: loginForm.value.username,
+          password: loginForm.value.password,
+        };
+        const response = await getToken(params);
+        console.log('response', response);
+        setTokenHeader();
+      } catch (error) {
+        console.error('Error logging in', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error en el logueo: ' + error }));
+      }
     };
 
     const handleForgotPassword = () => {
@@ -65,6 +82,12 @@ export default {
       // Aquí iría la lógica para manejar el olvidé mi contraseña
     };
 
+    onMounted(() => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        router.push({ path: '/Licitaciones' });
+      }
+    })
     return {
       loginForm,
       handleSubmit,
@@ -80,7 +103,7 @@ export default {
   background-image: url('@/assets/fondo-login.png');
   background-size: cover;
   background-position: center;
-  height: 100vh;
+  height: 60vh;
   display: flex;
   align-items: center;
   justify-content: center;

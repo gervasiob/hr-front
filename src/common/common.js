@@ -25,69 +25,123 @@ export const ASEGURADORAS = [
 
 export const TENDER_STATES = [
     {
+        label: 'Test Proveedores',
+        value: 'Test passed B',
+        color: '#A8B2D0',
+        back: '#A8B2D0',
+
+    },
+    {
+        label: 'Test validación clientes',
+        value: 'Test passed A',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test documentación',
+        value: 'Test passed U',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
+        label: 'Test Calificación Clientes',
+        value: 'Test passed F',
+        color: '#D9B2C0',
+        back: '#D9B2C0',
+
+    },
+    {
         label: 'Adjudicado',
         value: 'A',
-        color: 'volcano' // Rojo
+        color: 'volcano', // Rojo
+        back: '#8FEF9E', //verde
     },
     {
         label: 'Entregado',
         value: 'D',
-        color: 'green' // Naranja
+        color: 'green', // Naranja
+        back: 'green' // Naranja
     },
     {
         label: 'Evaluado',
         value: 'E',
         color: 'purple',
+        back: '#D5BDF0',
     },
     {
         label: 'Cancelado',
         value: 'C',
         color: 'red',
+        back: 'red',
     },
     {
         label: 'Ganado',
         value: 'U',
         color: '#F50085',
+        back: '#edaace',
     },
     {
         label: 'Rechazado/Sin Resolucion',
         value: 'G',
         color: '#79979B',
+        back: '#79979B',
     },
     {
         label: 'Documentación Observada',
         value: 'J',
         color: '#2B7D73',
+        back: '#2B7D73',
     },
     {
         label: 'Pendiente',
         value: 'N',
-        color: 'gold'
+        color: 'gold',
+        back: '#F0E24A',
     },
     {
         label: 'Solicitud Cambio de Costo',
         value: 'O',
         color: '#789E15',
+        back: '#789E15',
     },
     {
         label: 'Rechazado',
         value: 'R',
-        color: 'default' // Rechazado
+        color: 'default', // Rechazado
+        back: 'default', // Rechazado
     },
     {
         label: 'Adjudicado Pendiente',
         value: 'S',
         color: '#C361CA',
+        back: '#C361CA',
     },
     {
         label: 'Licitado',
         value: 'V',
-        color: 'blue'
+        color: 'blue',
+        back: 'blue',
+    },
+    {
+        label: 'Listo para Licitar',
+        value: 'Z',
+        color: '#162957',
+        back: '#162957',
     },
     {
         label: 'Adjudicado/Rechazado',
         value: 'W',
         color: '#A52A2A',
+        back: '#A52A2A',
+    },
+    {
+        label: 'Perdida',
+        value: 'LO',
+        color: '#C5C308',
+        back: '#C5C308',
+
     },
 ];
 export const PRIORITY_VALUES = [
@@ -259,7 +313,59 @@ export const GROUPS = [
     { value: 'Otros', label: "Otros" },
 ];
 export const VENDOR_TYPE = [
-    { value: 0, label: 'Proveedor' },
-    { value: 1, label: 'Cía Aseguradora' },
-    { value: 2, label: 'Sucursal Daytona' },
+    { value: 0, name: 'Proveedor' },
+    { value: 1, name: 'Cía Aseguradora' },
+    { value: 2, name: 'Sucursal Daytona' },
+    { value: 3, name: 'Sedes' },
+    { value: 4, name: 'Transporte' },
 ];
+export const YES_NO = [{ value: false, label: 'NO', name: 'NO' }, { value: true, label: 'SI', name: 'SI' }];
+export const HAS_IMAGE = [{ value: 'N', label: 'NO', name: 'NO' }, { value: 'S', label: 'SI', name: 'SI' }];
+export const BRANDS = [
+    { value: 25, label: "ALFA ROMEO" },
+    { value: 3, label: "AUDI" },
+    { value: 2, label: "BMW" },
+    { value: 8, label: "CHEVROLET" },
+    { value: 15, label: "CITROEN" },
+    { value: 27, label: "DODGE" },
+    { value: 1, label: "FIAT" },
+    { value: 7, label: "FORD" },
+    { value: 11, label: "HYUNDAI" },
+    { value: 26, label: "JAGUAR" },
+    { value: 20, label: "JEEP" },
+    { value: 12, label: "KIA" },
+    { value: 24, label: "LEXUS" },
+    { value: 22, label: "LAND ROVER" },
+    { value: 19, label: "MAZDA" },
+    { value: 4, label: "MERCEDES-BENZ" },
+    { value: 29, label: "MITSUBISHI" },
+    { value: 9, label: "NISSAN" },
+    { value: 13, label: "PEUGEOT" },
+    { value: 23, label: "PORSCHE" },
+    { value: 14, label: "RENAULT" },
+    { value: 28, label: "RAM" },
+    { value: 16, label: "SUZUKI" },
+    { value: 18, label: "SUBARU" },
+    { value: 21, label: "TESLA" },
+    { value: 5, label: "TOYOTA" },
+    { value: 10, label: "VOLKSWAGEN" },
+    { value: 19, label: "VOLVO" }
+];
+
+export const CHECKLIST_KEYS = [
+    { value: 'entrega_de_mercaderia', label: "Confirmación de Cliente", order: 1 },
+    { value: 'gestion_documental', label: "Documentación", order: 2 },
+    { value: 'orden_compra_conformada', label: "Ingresar OC", order: 3 },
+    { value: 'armado_y_embalaje', label: "Gomería", order: 4 },
+    { value: 'generacion_lote', label: "Creación Lote", order: 5 },
+    { value: 'proforma', label: "Proforma", order: 6 },
+    { value: 'fletero', label: "Envío", order: 7 },
+    { value: 'cliente_recepcion', label: "Recepción Cliente", order: 8 },
+    { value: 'facturacion_final', label: "Facturación", order: 9 },
+]
+export const ENTREGAS_TIPOS = [
+    { value: 0, label: "Sin Entregada" },
+    { value: 1, label: "Entrega en Domicilio" },
+    { value: 2, label: "Entrega en Sucursal" },
+
+]

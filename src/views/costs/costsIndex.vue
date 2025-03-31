@@ -28,10 +28,18 @@
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <div>
-    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
-    <a-modal v-model:open="open" title="Producto" @ok="handleOk" @cancel="handleCancel">
-      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
-    </a-modal>
+    <a-row>
+      <a-col :span="20"><a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+        <a-modal v-model:open="open" title="Producto" @ok="handleOk" @cancel="handleCancel">
+          <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+        </a-modal></a-col>
+      <a-col :span="4"> <a-button type="primary" :size="size" @click="handleExport">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          Exportar
+        </a-button></a-col>
+    </a-row>
   </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
@@ -113,11 +121,14 @@ import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { apiExport } from '@/api/export/export.js';
 
 export default {
   name: 'costsList',
   components: {
     ModalPlatform,
+    DownloadOutlined,
   },
   setup() {
     const formRef = ref();
@@ -214,20 +225,30 @@ export default {
       const data = dataSource.value.filter(item => key === item.key)[0];
       Object.assign(data, editableData[key]);
       delete editableData[key];
-      console.log(data)
-      if (data.id > 0) {
-        const params = {
-          ...data,
-        }
-        updateCosts(data.id, params).then(() => {
-          fetchData();
-        });
-      } else {
-        const { id, ...dataWithoutId } = data;
-        addCosts(dataWithoutId).then(() => {
-          fetchData();
-        });
+      if (data.model === "" || !data.model) {
+        data.model = "Sin Modelo";
       }
+      try {
+        if (data.id > 0) {
+          const params = {
+            ...data,
+          }
+          updateCosts(data.id, params).then(() => {
+            fetchData();
+          });
+        } else {
+          const { id, ...dataWithoutId } = data;
+          addCosts(dataWithoutId).then(() => {
+            fetchData();
+          });
+        }
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+        current.value = 1;
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
+      }
+
     };
     const cancel = (key) => {
       console.log('cancel', key)
@@ -306,9 +327,13 @@ export default {
       formState.value = form;
       addCosts(formState.value).then(() => {
         formState.value = {};
+        current.value = 1;
         fetchData();
       });
     };
+    const handleExport = async () => {
+      await apiExport('costs', {});
+    }
     return {
       formRef,
       formState,
@@ -316,7 +341,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,
@@ -341,6 +365,7 @@ export default {
       handleCancel,
       formatCurrency,
       formatNumber,
+      handleExport,
     }
   }
 }

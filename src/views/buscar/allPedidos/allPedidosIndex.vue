@@ -1,0 +1,106 @@
+<template>
+    <div>
+        <a-form layout="horizontal" :model="formState" v-bind="formItemLayout">
+            <a-row>
+                <a-col span="12">
+                    <a-form-item label="Número de Pedido">
+                        <a-input v-model:value="formState.pedidoId" placeholder="input placeholder" />
+                    </a-form-item></a-col>
+                <a-col span="8">
+                    <a-form-item>
+                        <a-button type="primary" @Click="handleSearch">Buscar</a-button>
+                    </a-form-item></a-col>
+            </a-row>
+        </a-form>
+    </div>
+    <PedidoTab :pedido-id="pedidoId" :button-link="false" />
+    <BasicDetails title="Detalle Pedido" :onSubmit="sendDataToAPI" :dataSource="data" :pedidoId="pedidoId"
+        :checkList="checkList" pedidosAll="true" />
+</template>
+
+<script>
+import { onMounted, reactive, ref } from 'vue';
+import { useRoute } from 'vue-router';
+
+import BasicDetails from '@/components/details/basicDetails.vue';
+
+import { getQuotes, updateQuotes } from '@/api/quotes/quotes';
+import PedidoTab from '@/components/tabs/pedidoTab.vue';
+
+export default {
+    name: 'AlmacennDetail',
+    components: {
+        BasicDetails,
+        PedidoTab,
+    },
+
+    setup() {
+        const formState = reactive({
+            pedidoId: '',
+        });
+        const sendDataToAPI = async (data) => {
+            console.log("Datos enviados:", data);
+            try {
+
+            } catch (error) {
+                window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
+                return;
+            } finally {
+                window.dispatchEvent(new CustomEvent('message-success', { detail: 'Guardado Exitoso' }));
+            }
+
+        }
+        const data = ref([]);
+        const quoteId = ref(null);
+        const pedidoId = ref(null);
+        const route = useRoute();
+        let paramId = ref(route.params.id);
+        const checkList = ref(['entrega_de_mercaderia', 'gestion_documental', 'orden_compra_conformada',
+            'armado_y_embalaje', 'generacion_lote', 'proforma', 'fletero', 'cliente_recepcion', 'facturacion_final'])
+        const fetchData = async () => {
+            try {
+                const params = {
+                    nota_pedido_id__icontains: formState.pedidoId,
+                };
+                const quoteResponse = await getQuotes(params);
+
+                let dataResult = [];
+                dataResult = quoteResponse.results[0];
+                quoteId.value = dataResult.id;
+                pedidoId.value = dataResult.nota_pedido_id;
+                data.value = {
+                    ...dataResult,
+                    domain: dataResult.tender_data?.domain || 'Sin datos',
+                    brand: dataResult.tender_data?.brand || 'Sin datos',
+                    chasis: dataResult.tender_data?.chasis || 'Sin datos',
+                    vehicle: dataResult.tender_data?.vehicle || 'Sin datos',
+                    vehicle_year: dataResult.tender_data?.vehicle_year || 'Sin datos',
+                    claim_date: dataResult.tender_data?.claim_date || 'Sin datos',
+                };
+            } catch (error) {
+                console.error('Error fetching tender data:', error);
+                location.reload();
+            }
+        };
+        onMounted(() => {
+            if (paramId.value) {
+                formState.pedidoId = paramId.value
+                fetchData();
+            }
+        })
+        const handleSearch = () => {
+            fetchData();
+        }
+        return {
+            sendDataToAPI,
+            data,
+            pedidoId,
+            checkList,
+            formState,
+            handleSearch,
+        }
+    }
+}
+</script>
+
+<style></style>

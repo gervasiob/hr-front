@@ -70,12 +70,10 @@ export const tableColumns = [
         // onFilter: (value, record) => record.claim_state === value,
     },
     {
-        title: 'Prioridad',
-        key: 'priority',
-        dataIndex: 'priority',
-        sorter: (a, b) => a.id - b.id,
-        sorter: (a, b) => a.priority - b.priority,
-        filters: PRIORITY_VALUES.map((item) => ({ text: item.label, value: item.value })),
-        onFilter: (value, record) => record.priority === value,
+        title: 'Modelo',
+        key: 'vehicle',
+        dataIndex: 'vehicle',
+        sorter: (a, b) => a.vehicle.localeCompare (b.vehicle),
+    
     },
 ];

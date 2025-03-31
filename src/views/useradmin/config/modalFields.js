@@ -16,6 +16,15 @@ export const modalFields = [
         type: 'input',
         default: '',
     },
+    {
+        name: 'password',
+        label: 'Password',
+        type: 'input',
+        default: '',
+        rules: {
+            password: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
+    },
 
     {
         name: 'roles',

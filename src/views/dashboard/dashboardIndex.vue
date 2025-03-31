@@ -69,12 +69,110 @@
             </a-col>
         </a-row>
     </div>
+    <div class="filters">
+        <a-form layout="horizontal" ref="formRef" :model="filterInputs">
+
+            <a-row :gutter="24">
+                <a-col :span="8">
+                    <a-form-item label="Fecha Siniestro Desde" name="claim_date_before">
+                        <a-date-picker v-model:value="filterInputs.claim_date_before" allowClear
+                            style="width: 200px;" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="8">
+                    <a-form-item label="Fecha Siniestro Hasta" name="claim_date_after">
+                        <a-date-picker v-model:value="filterInputs.claim_date_after" allowClear style="width: 200px;" />
+                    </a-form-item>
+                </a-col>
+            </a-row>
+            <a-row>
+                <a-col :span="8">
+                    <a-form-item label="Fecha Creación Desde" name="created_at_before">
+                        <a-date-picker v-model:value="filterInputs.created_at_before" allowClear
+                            style="width: 200px;" />
+                    </a-form-item>
+                </a-col>
+                <a-col :span="8">
+                    <a-form-item label="Fecha Creación Hasta" name="created_at_after">
+                        <a-date-picker v-model:value="filterInputs.created_at_after" allowClear style="width: 200px;" />
+                    </a-form-item>
+                </a-col>
+
+                <a-col :span="8"  style="text-align: right">
+                    <a-button type="primary" danger @click="fetchData">Buscar</a-button>
+                    <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
+                </a-col>
+            </a-row>
+        </a-form>
+    </div>
+
+    <div>
+        <h3 style="color:black">Tablero de Compañias</h3>
+        <a-table :columns="columnsCompanies" :data-source="dataSourceCompanies" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Tablero de Plataforma</h3>
+        <a-table :columns="columnsPlatforms" :data-source="dataSourcePlatforms" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking de Neumáticos Más Vendidos Adjudicados</h3>
+        <a-table :columns="columnsTopSkuNeumatico" :data-source="dataSourceTopSkuNeumatico" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking de Neumáticos Más Vendidos Oc</h3>
+        <a-table :columns="columnsTopSkuNeumaticoOc" :data-source="dataSourceTopSkuNeumaticoOc" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking de Llantas Más Vendidas Adjudicadas</h3>
+        <a-table :columns="columnsTopSkuLlanta" :data-source="dataSourceTopSkuLlanta" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking de Llantas Más Vendidas Oc</h3>
+        <a-table :columns="columnsTopSkuLlantaOc" :data-source="dataSourceTopSkuLlantaOc" />
+    </div>
+
+    <div>
+        <h3 style="color:black">Ranking Vehiculos Mas Vendidos</h3>
+        <a-table :columns="columnsTopBrandModel" :data-source="dataSourceTopBrandModel" />
+    </div>
+
+
+    <div class="clean-contanier">
+        <a-row :gutter="24">
+            <!-- <a-col :span="6">
+                <div class="graph-2">Grafico 5</div>
+            </a-col>
+            <a-col :span="9">
+                <div class="graph-2">Grafico 6</div>
+            </a-col> -->
+            <a-col :span="9">
+                <div class="graph-2">
+                    <TireTypeNameChart :chart-data="tireTypeNameData" />
+                </div>
+            </a-col>
+        </a-row>
+    </div>
+
+
 
 </template>
 
 <script>
 import { onMounted, ref } from 'vue';
-import { getQuotesAchievement, getQuotesAggregation, getQuotesAchievementPercentage, getTireTipeNameSummary, getQuotesValues } from '@/api/dashboard/dashboard';
+import { getQuotesAchievement, getQuotesAggregation, getTireTipeNameSummary, getQuotesValues } from '@/api/dashboard/dashboard';
+import { getQuotesDashboard } from '@/api/dashboard/dashboard';
+import { tableColumnsCompanies } from './config/columnsCompanies.js';
+import { tableColumnsPlatforms } from './config/columnsPlatforms.js';
+import { tableColumnsTopSkuNeumatico } from './config/columnsTopSkuNeumatico.js';
+import { tableColumnsTopSkuNeumaticoOc } from './config/columnsTopSkuNeumaticoOc.js';
+import { tableColumnsTopSkuLlanta } from './config/columnsTopSkuLlanta.js';
+import { tableColumnsTopSkuLlantaOc } from './config/columnsTopSkuLlantaOc.js';
+import { tableColumnsTopBrandModel } from './config/columnsTopBrandModel.js';
 import QuotesAchievementChart from './components/quotesAchievement.vue';
 import QuotesAggregationChart from './components/quotesAggregation.vue';
 import TireTypeNameChart from './components/tireTypeName.vue';
@@ -89,24 +187,90 @@ export default {
         PieChart,
     },
     setup() {
+        const formRef = ref();
         const quotesAchievementData = ref([]);
         const quotesAggregationData = ref([]);
         const tireTypeNameData = ref([]);
         const quotesValuesData = ref({});
         const wonQuotesData = ref({});
         const tenderQuotesData = ref({});
+        // const adjudicatedByCompany = ref([]);
+        const columnsCompanies = tableColumnsCompanies;
+        const dataSourceCompanies = ref([]);
+        const columnsPlatforms = tableColumnsPlatforms;
+        const dataSourcePlatforms = ref([]);
+        const columnsTopSkuNeumatico = tableColumnsTopSkuNeumatico;
+        const dataSourceTopSkuNeumatico = ref([]);
+        const columnsTopSkuNeumaticoOc = tableColumnsTopSkuNeumaticoOc;
+        const dataSourceTopSkuNeumaticoOc = ref([]);
+        const columnsTopSkuLlanta = tableColumnsTopSkuLlanta;
+        const dataSourceTopSkuLlanta = ref([]);
+        const columnsTopSkuLlantaOc = tableColumnsTopSkuLlantaOc;
+        const dataSourceTopSkuLlantaOc = ref([]);
+        const columnsTopBrandModel = tableColumnsTopBrandModel;
+        const dataSourceTopBrandModel = ref([]);
+        const filterInputs = ref({});
+
         const fetchData = async (params = {}) => {
             try {
-                quotesAchievementData.value = await getQuotesAchievement(params);
-                console.log('achivement', quotesAchievementData)
+                const responseAchievement = await getQuotesAchievement(params);
+                quotesAchievementData.value = responseAchievement.filter((item) => item.company_name !== null);
                 quotesAggregationData.value = await getQuotesAggregation(params);
-                console.log('aggregation', quotesAggregationData)
-                const responsec = await getQuotesAchievementPercentage(params);
-                console.log('percentage', responsec)
+                // console.log('aggregation', quotesAggregationData)
+                // const responsec = await getQuotesAchievementPercentage(params);
+                // console.log('percentage', responsec)
                 tireTypeNameData.value = await getTireTipeNameSummary(params);
-                console.log('summary', tireTypeNameData)
+                // console.log('summary', tireTypeNameData)
+                const fullParams = {
+                    ...params,
+                    claim_date_before: filterInputs.value.claim_date_before ? new Date(filterInputs.value.claim_date_before).toISOString().split('T')[0] : null,
+                    claim_date_after: filterInputs.value.claim_date_after ? new Date(filterInputs.value.claim_date_after).toISOString().split('T')[0] : null,
+                    created_at_before: filterInputs.value.created_at_before ? new Date(filterInputs.value.created_at_before).toISOString().split('T')[0] : null,
+                    created_at_after: filterInputs.value.created_at_after ? new Date(filterInputs.value.created_at_after).toISOString().split('T')[0] : null,
+                }
+                const response = await getQuotesDashboard(fullParams);
+                response.companies.map((item) => {
+                    let participation = parseFloat(item.participation);
+                    let adjudicated = parseFloat(item.adjudicated);
+
+                    // Si participation es NaN (no es un número), asigna un valor por defecto
+                    if (isNaN(participation)) {
+                        participation = 0;
+                    }
+                    if (isNaN(adjudicated)) {
+                        adjudicated = 0;
+                    }
+
+                    // Calcula el porcentaje y formatea el valor
+                    item.adjudicated = (adjudicated * 100).toFixed(2) + "%";
+                    item.participation = (participation * 100).toFixed(2) + "%";
+
+                })
+                response.platforms.map((item) => {
+                    let participation = parseFloat(item.participation);
+                    let adjudicated = parseFloat(item.adjudicated);
+
+                    // Si participation es NaN (no es un número), asigna un valor por defecto
+                    if (isNaN(participation)) {
+                        participation = 0;
+                    }
+                    if (isNaN(adjudicated)) {
+                        adjudicated = 0;
+                    }
+
+                    // Calcula el porcentaje y formatea el valor
+                    item.adjudicated = (adjudicated * 100).toFixed(2) + "%";
+                    item.participation = (participation * 100).toFixed(2) + "%";
+
+                })
                 quotesValuesData.value = await getQuotesValues(params);
-                console.log('quotes-values', quotesValuesData.value)
+                dataSourceCompanies.value = response.companies;
+                dataSourcePlatforms.value = response.platforms;
+                dataSourceTopSkuNeumatico.value = response.top_20_neumatico_type_a_quote_state;
+                dataSourceTopSkuNeumaticoOc.value = response.top_20_neumatico_type_o_quote_state;
+                dataSourceTopSkuLlanta.value = response.top_20_llanta_type_a_quote_state;
+                dataSourceTopSkuLlantaOc.value = response.top_20_llanta_type_o_quote_state;
+                dataSourceTopBrandModel.value = response.top_20_brand_model;
 
                 wonQuotesData.value = {
                     quantity: quotesValuesData.value.won_quotes_quantity,
@@ -123,7 +287,11 @@ export default {
             }
 
         };
-
+        const resetFilters = () => {
+            formRef.value.resetFields();
+            filterInputs.value = {};
+            fetchData();
+        };
         onMounted(() => {
             fetchData();
         });
@@ -135,12 +303,30 @@ export default {
             quotesValuesData,
             wonQuotesData,
             tenderQuotesData,
+            columnsCompanies,
+            dataSourceCompanies,
+            columnsPlatforms,
+            dataSourcePlatforms,
+            columnsTopSkuNeumatico,
+            dataSourceTopSkuNeumatico,
+            columnsTopSkuNeumaticoOc,
+            dataSourceTopSkuNeumaticoOc,
+            columnsTopSkuLlanta,
+            dataSourceTopSkuLlanta,
+            columnsTopSkuLlantaOc,
+            dataSourceTopSkuLlantaOc,
+            columnsTopBrandModel,
+            dataSourceTopBrandModel,
+            filterInputs,
+            formRef,
+            resetFilters,
+
         }
     }
 }
 </script>
 
-<style>
+<style scoped>
 .back-contanier {
     background-color: var(--back);
     width: 100%;
@@ -172,5 +358,28 @@ export default {
 
     margin-top: 20px;
     color: var(--principal)
+}
+
+:deep(.ant-table-thead .ant-table-cell) {
+    background-color: var(--principal);
+    color: white;
+}
+
+:deep(.ant-table-thead:hover .ant-table-cell:hover) {
+    background-color: var(--mute);
+    color: black;
+}
+
+:deep(.ant-table-thead .ant-table-column-sort) {
+    background-color: var(--secondary) !important;
+    color: black !important;
+}
+
+.filters {
+    margin-top: 1%;
+    margin-bottom: 1%;
+    background-color: var(--mute);
+    padding: 2%;
+    border-radius: 20px;
 }
 </style>

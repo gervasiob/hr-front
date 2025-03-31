@@ -20,17 +20,24 @@
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <div>
-    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
-    <a-modal v-model:open="open" title="Detalle - Movimiento" @ok="handleOk" @cancel="handleCancel">
-      <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
-    </a-modal>
+    <a-row>
+      <a-col :span="20"><a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+        <a-modal v-model:open="open" title="Detalle - Movimiento" @ok="handleOk" @cancel="handleCancel">
+          <ModalPlatform @form-finish="handleFormFinish" ref="formComponent" :modalFields="modalFielsProps" />
+        </a-modal></a-col>
+      <a-col :span="4"> <a-button type="primary" :size="size" @click="handleExport">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          Exportar
+        </a-button></a-col>
+    </a-row>
   </div>
   <a-table :columns="columns" :data-source="dataSource" :customHeaderRow="customHeaderRow" :pagination="pagination"
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template
-        v-if="['product_id', 'sku', 'quote_id'].includes(column.dataIndex)">
+      <template v-if="['product_id', 'sku', 'quote_id'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -39,23 +46,21 @@
           </template>
         </div>
       </template>
-      <template
-        v-if="[ 'quantity'].includes(column.dataIndex)">
+      <template v-if="['quantity'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
-            {{ formatNumber (text) }}
+            {{ formatNumber(text) }}
           </template>
         </div>
       </template>
-      <template
-        v-if="['price_wo_iva', 'price', 'amount_wo_iva', 'total_amount'].includes(column.dataIndex)">
+      <template v-if="['price_wo_iva', 'price', 'amount_wo_iva', 'total_amount'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
           <template v-else>
-            {{ formatCurrency (text) }}
+            {{ formatCurrency(text) }}
           </template>
         </div>
       </template>
@@ -99,11 +104,14 @@ import { formatCurrency, formatNumber } from '@/utils/utils.js';
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { apiExport } from '@/api/export/export.js';
 
 export default {
   name: 'detailsList',
   components: {
     ModalPlatform,
+    DownloadOutlined,
   },
   setup() {
     const formRef = ref();
@@ -202,22 +210,30 @@ export default {
       Object.assign(data, editableData[key]);
       delete editableData[key];
       console.log(data)
-      if (data.url === "") {
-        data.url = null;
-      }
-      if (data.id > 0) {
-        const params = {
-          ...data,
+      try {
+        if (data.url === "") {
+          data.url = null;
         }
-        updateDetails(data.id, params).then(() => {
-          fetchData();
-        });
-      } else {
-        const { id, ...dataWithoutId } = data;
-        addDetails(dataWithoutId).then(() => {
-          fetchData();
-        });
+        if (data.id > 0) {
+          const params = {
+            ...data,
+          }
+          updateDetails(data.id, params).then(() => {
+            fetchData();
+          });
+        } else {
+          const { id, ...dataWithoutId } = data;
+          addDetails(dataWithoutId).then(() => {
+            fetchData();
+          });
+        }
+        current.value = 1;
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
+
     };
     const cancel = (key) => {
       console.log('cancel', key)
@@ -293,9 +309,13 @@ export default {
       formState.value = form;
       addDetails(formState.value).then(() => {
         formState.value = {};
+        current.value = 1;
         fetchData();
       });
     };
+    const handleExport = async () => {
+      await apiExport('details', {});
+    }
     return {
       formRef,
       formState,
@@ -303,7 +323,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,
@@ -328,6 +347,7 @@ export default {
       handleCancel,
       formatCurrency,
       formatNumber,
+      handleExport,
     }
   }
 }

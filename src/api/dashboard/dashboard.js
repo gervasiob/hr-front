@@ -18,3 +18,6 @@ export async function getTireTipeNameSummary(params) {
 export async function getQuotesValues(params) {
     return await apiRequest('get', 'quotes-values', params);
 }
+export async function getQuotesDashboard(params) {
+    return await apiRequest('get', 'quotes-dashboard/', params);
+}

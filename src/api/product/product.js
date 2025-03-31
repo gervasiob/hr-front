@@ -1,6 +1,6 @@
 import { apiRequest } from '../apiUrls.js';
 
-const ENDPOINT = 'product/';
+const ENDPOINT = 'products/';
 
 export async function getProduct(params, id = null) {
     return await apiRequest('get', ENDPOINT, params, id);
@@ -15,5 +15,15 @@ export async function deleteProduct(id, params) {
     return await apiRequest('delete', ENDPOINT, params, id);
 }
 export async function getProductList(params) {
-    return await apiRequest('get', 'products_deep ', params);
+    return await apiRequest('get', 'products_deep/', params);
+}
+export async function getPriceRequest(params) {
+    return await apiRequest('post', 'price_request/', params);
+}
+export async function uploadProductImage(productId, file) {
+    const formData = new FormData();
+    formData.append('product_id', productId);
+    formData.append('file', file);
+
+    return await apiRequest('post', 'upload-product-image/', formData);
 }
