@@ -1,21 +1,19 @@
 <template>
   <a-layout style="background: #fff">
     <a-layout style="background: #fff">
-      <a-layout-sider :style="siderStyle" v-model:collapsed="collapsed" collapsible>
-        <a-menu v-model:selectedKeys="current" :items="items" @click="handleMenuSelect" /></a-layout-sider>
       <a-layout-content :style="contentStyle">
-        <a-row :gutter="24">
+        <a-row :gutter="24" style="height: fit-content;">
           <a-col :span="20">
             <div class="title">
               <div class="logo-container">
                 <img src="@/assets/daytona-logo.png" alt="Daytona Logo" class="logo-image" />
               </div>
-              <h4 class="sub-title">DFT - Daytona Fast Track</h4>
+              <h5 class="sub-title">DFT - Daytona Fast Track</h5>
 
             </div>
           </a-col>
           <a-col :span="4">
-            <div class="notification" v-show="!loginRoute">
+            <div class="notification" v-show="!loginRoute" v-if="!hideMenu">
               <a-row>
                 <a-col class="notification">
                   <BellOutlined :class="{ animatebell: animateBell }" @click="openNotification" />
@@ -35,9 +33,11 @@
                 }}</a-button> -->
             </div>
           </a-col>
-
           <a-divider style="height: 4px; background-color: #EC2233"></a-divider>
         </a-row>
+        <a-layout-content :style="siderStyle" v-model:collapsed="collapsed" collapsible>
+          <a-menu v-model:selectedKeys="current" v-if="!hideMenu" :items="items" @click="handleMenuSelect"
+            mode="horizontal" /></a-layout-content>
         <RouterView />
       </a-layout-content>
     </a-layout>
@@ -47,7 +47,7 @@
 </template>
 
 <script>
-import { onMounted, ref, watch, onUnmounted, inject } from 'vue';
+import { onMounted, ref, watch, onUnmounted, inject, computed } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
 import { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
@@ -86,10 +86,12 @@ export default {
     const newNotificationsList = ref([]);
     const notificationOn = ref(localStorageData.notificationOn);
     const intervalId = ref(null);
-    const router = useRouter(); // Importar el router
+    const router = useRouter();
     let newNotificationsString = '';
-    const route = useRoute(); // Obtener la ruta actual
-
+    const route = useRoute();
+    const hideMenu = computed(() => {
+      return route.meta.hideMenu || false;
+    });
     const handleMenuSelect = (key) => {
       const path = key.item.path;
       if (route.path === path) {
@@ -121,6 +123,7 @@ export default {
       color: '#fff',
       backgroundColor: '#fff',
       marginTop: '50px',
+      marginBottom: '50px',
     };
     const footerStyle = {
       textAlign: 'center',
@@ -154,7 +157,17 @@ export default {
     }
 
     onMounted(() => {
-      items.value = menuList.filter((item) => item.key === 'login');
+      const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga los roles del usuario
+
+      // Si está en la ruta de login, muestra solo el menú de login
+      if (route.path === '/login') {
+        items.value = menuList.filter((item) => item.key === 'login');
+        loginRoute.value = true;
+      } else {
+        // Filtra los menús según los roles del usuario
+        items.value = filterMenuByRoles(menuList, userRoles);
+        loginRoute.value = false;
+      }
       window.addEventListener('message-info', handleMessageInfo);
       window.addEventListener('message-success', handleMessageSuccess);
       window.addEventListener('message-error', handleMessageError);
@@ -188,7 +201,6 @@ export default {
     // Notificaciones
     const [messageApi, contextHolder] = message.useMessage();
     const handleMessageInfo = (event) => {
-      console.log('mensaje', event)
       message.info(event.detail);
     }
     const handleMessageSuccess = (event) => {
@@ -198,12 +210,31 @@ export default {
       message.error(event.detail);
     }
 
+    // Función para filtrar los menús basados en roles
+    function filterMenuByRoles(menuList, userRoles) {
+      return menuList
+        .filter(menu => {
+          // Verifica si el menú es accesible por al menos uno de los roles del usuario
+          return menu.roles ? menu.roles.some(role => userRoles.includes(role)) : true;
+        })
+        .map(menu => {
+          if (menu.children) {
+            // Si el menú tiene hijos, también filtra los hijos por roles
+            return {
+              ...menu,
+              children: filterMenuByRoles(menu.children, userRoles)
+            };
+          }
+          return menu;
+        });
+    }
     watch(() => route.path, (newPath) => {
+      const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga roles actualizados
       if (newPath === '/login') {
         items.value = menuList.filter((item) => item.key === 'login');
         loginRoute.value = true;
       } else {
-        items.value = menuList.filter((item) => item.key !== 'login');
+        items.value = filterMenuByRoles(menuList, userRoles); // Filtra los menús según los roles
         loginRoute.value = false;
       }
     }, { immediate: true });
@@ -231,6 +262,7 @@ export default {
       loginRoute,
       minutesAdjudicated,
       animateBell,
+      hideMenu,
 
     }
 
@@ -242,14 +274,14 @@ export default {
 
 <style scoped>
 .logo-container {
-  height: 80px;
+  height: 55px;
   overflow: hidden;
   position: relative;
 }
 
 .logo-image {
-  width: 40%;
-  height: 120px;
+  width: 20%;
+  height: 80px;
 }
 
 .title {
@@ -295,7 +327,7 @@ export default {
 
 .notification {
   color: var(--principal);
-  font-size: 40px;
+  font-size: 30px;
 }
 
 :deep(.ant-switch-checked) {

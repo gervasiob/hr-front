@@ -1,9 +1,7 @@
 import { h } from 'vue';
 import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
-import TenderIndex from '../views/tenders/index.vue';
-import useradmin from '../views/useradmin/index.vue';
 
-import tenderDetail from '@/views/tenders/components/tenderDetail.vue';
+const basicAuth = ['Admin', 'Usuario', 'Agente'];
 export const menuList = [
     {
         key: 'login',
@@ -11,12 +9,22 @@ export const menuList = [
         icon: () => h(AppstoreOutlined),
         label: 'LOGIN',
         title: 'Login',
+        roles: ['guest'] // Solo visible para invitados (no logueados)
+    },
+    {
+        key: 'principal',
+        path: '/principal',
+        icon: () => h(AppstoreOutlined),
+        label: 'PRINCIPAL',
+        title: 'PRINCIPAL',
+        roles: basicAuth,
     },
     {
         key: 'licitacionesMenu',
         icon: () => h(MailOutlined),
         label: 'LICITACIONES',
         title: 'Licitaciones',
+        roles: basicAuth, // Visible solo para admin y usuarios normales
         children: [
             {
                 key: 'nuevaLicitacion',
@@ -24,6 +32,7 @@ export const menuList = [
                 name: 'Nueva Licitacion',
                 label: 'NUEVA LICITACIÓN',
                 title: 'NUEVA LICITACIÓN',
+                roles: basicAuth, // Visible solo para admin y usuarios normales
             },
             {
                 key: 'licitaciones',
@@ -31,6 +40,7 @@ export const menuList = [
                 name: 'Licitaciones Pendientes',
                 label: 'LICITACIONES PENDIENTES',
                 title: 'LICITACIONES PENDIENTES',
+                roles: basicAuth, // Visible solo para admin y usuarios normales
             },
             {
                 key: 'licitacionesEvaluadas',
@@ -38,6 +48,7 @@ export const menuList = [
                 name: 'Licitaciones Evaluadas',
                 label: 'LICITACIONES EVALUADAS',
                 title: 'LICITACIONES EVALUADAS',
+                roles: basicAuth,
             },
             {
                 key: 'licitacionesSucursal',
@@ -45,6 +56,7 @@ export const menuList = [
                 name: 'Licitaciones Sucursal',
                 label: 'LICITACIONES ADJUDICADAS',
                 title: 'LICITACIONES SUCURSAL',
+                roles: basicAuth,
             },
             {
                 key: 'licitacionesNoPendientes',
@@ -52,6 +64,167 @@ export const menuList = [
                 name: 'Licitaciones no Pendientes',
                 label: 'LISTADO DE LICITACIONES',
                 title: 'LICITACIONES NO PENDIENTES',
+                roles: basicAuth,
+            },
+            {
+                key: 'licitacionesPerdidas',
+                path: '/Perdidas',
+                name: 'Licitaciones Perdidas',
+                label: 'LISTADO DE PERDIDAS',
+                roles: ['Admin'],
+            },
+        ]
+    },
+    {
+        key: 'pedidos',
+        icon: () => h(SettingOutlined),
+        label: 'PEDIDOS',
+        title: 'Pedidos',
+        roles: ['Admin', 'Agente', 'Almacen', 'Facturacion', 'Gomeria', 'Documentacion', 'Flete'],
+        children: [
+            {
+                key: 'validacion',
+                path: '/pedidos/validacion',
+                name: 'ValidacionClientes',
+                label: 'VALIDACIÓN CLIENTES',
+                title: 'VALIDACIÓN CLIENTES',
+            },
+            {
+                key: 'documentacion',
+                path: '/pedidos/documentacion',
+                name: 'Documentacion',
+                label: 'DOCUMENTACIÓN',
+                title: 'DOCUMENTACIÓN',
+            },
+            {
+                key: 'recepcion',
+                path: '/pedidos/recepcion-mercaderia',
+                name: 'RecepcionMercaderia',
+                label: 'RECEPCIÓN MERCADERÍA',
+                title: 'RECEPCIÓN MERCADERÍA',
+            },
+
+            {
+                key: 'gomerica',
+                path: '/pedidos/gomeria',
+                name: 'Gomeria',
+                label: 'GOMERÍA',
+                title: 'GOMERÍA',
+            },
+            {
+                key: 'creacionLotes',
+                path: '/pedidos/creacion-lotes',
+                name: 'CreacionLotes',
+                label: 'CREACIÓN LOTES',
+                title: 'CREACIÓN LOTES',
+            },
+            // {
+            //     key: 'upload-documents',
+            //     path: '/upload-documents',
+            //     name: 'Carga Documentacion',
+            //     label: 'CARGA DOCUMENTACIÓN',
+            //     title: 'CARGA DOCUMENTACIÓN',
+            // },
+            {
+                key: 'proforma',
+                path: '/pedidos/proforma',
+                name: 'Proforma',
+                label: 'PROFORMA',
+                title: 'PROFORMA',
+            },
+            {
+                key: 'envios',
+                path: '/pedidos/envios',
+                name: 'Envios',
+                label: 'ENVÍOS',
+                title: 'ENVÍOS',
+            },
+            {
+                key: 'recepcion-clientes',
+                path: '/pedidos/recepcion-clientes',
+                name: 'Recepcion',
+                label: 'RECEPCIÓN',
+                title: 'RECEPCIÓN',
+            },
+            {
+                key: 'facturacion',
+                path: '/pedidos/facturacion',
+                name: 'Facturacion',
+                label: 'FACTURACIÓN',
+                title: 'FACTURACIÓN',
+            },
+        ]
+    },
+    {
+        key: 'buscar',
+        icon: () => h(SettingOutlined),
+        label: 'BUSCAR POR PEDIDO',
+        title: 'Buscar por Pedido',
+        roles: ['Admin', 'Agente', 'Almacen', 'Facturacion', 'Gomeria', 'Documentacion', 'Flete'],
+        children: [
+            {
+                key: 'sdocumentacoin',
+                path: '/buscar/documentacion',
+                name: 'SDocumentacion',
+                label: 'DOCUMENTACIÓN',
+                title: 'DOCUMENTACIÓN',
+            },
+            {
+                key: 'srecepcion',
+                path: '/buscar/recepcion-mercaderia',
+                name: 'SRecepcionMercaderia',
+                label: 'RECEPCIÓN MERCADERÍA',
+                title: 'RECEPCIÓN MERCADERÍA',
+            },
+            {
+                key: 'sgomerica',
+                path: '/buscar/gomeria',
+                name: 'SGomeria',
+                label: 'GOMERÍA',
+                title: 'GOMERÍA',
+            },
+            {
+                key: 'screacionLotes',
+                path: '/buscar/creacion-lotes',
+                name: 'SCreacionLotes',
+                label: 'CREACIÓN LOTES',
+                title: 'CREACIÓN LOTES',
+            },
+            {
+                key: 'sproforma',
+                path: '/buscar/proforma',
+                name: 'SProforma',
+                label: 'PROFORMA',
+                title: 'PROFORMA',
+            },
+
+            {
+                key: 'senvios',
+                path: '/buscar/envios',
+                name: 'SEnvios',
+                label: 'ENVÍOS',
+                title: 'ENVÍOS',
+            },
+            {
+                key: 'srecepcion-clientes',
+                path: '/buscar/recepcion-clientes',
+                name: 'SRecepcion',
+                label: 'RECEPCIÓN',
+                title: 'RECEPCIÓN',
+            },
+            {
+                key: 'sfacturacion',
+                path: '/buscar/facturacion',
+                name: 'SFacturacion',
+                label: 'FACTURACIÓN',
+                title: 'FACTURACIÓN',
+            },
+            {
+                key: 'todos',
+                path: '/buscar/todos',
+                name: 'Todos',
+                label: 'TODOS LOS PEDIDOS',
+                title: 'TODOS LOS PEDIDOS',
             },
         ]
     },
@@ -60,78 +233,156 @@ export const menuList = [
         icon: () => h(SettingOutlined),
         label: 'CONFIGURACION',
         title: 'Administracion',
+        roles: ['Admin'],
         children: [
             {
-                key: 'roles',
-                path: '/adm/roles',
-                name: 'Roles',
-                label: 'ROLES',
-                title: 'ROLES',
+                key: 'admUser',
+                label: 'ADM USUARIOS',
+                roles: ['Admin'],
+                children: [
+                    {
+                        key: 'roles',
+                        path: '/adm/roles',
+                        name: 'Roles',
+                        label: 'ROLES',
+                        title: 'ROLES',
+                    },
+                    {
+                        key: 'users',
+                        path: '/adm/users',
+                        name: 'Usuarios',
+                        label: 'USUARIOS',
+                        title: 'USUARIOS',
+                    },
+                ],
             },
             {
-                key: 'users',
-                path: '/adm/users',
-                name: 'Usuarios',
-                label: 'USUARIOS',
-                title: 'USUARIOS',
+                key: 'admProd',
+                label: 'ADM PRODUCTOS',
+                roles: ['Admin'],
+                children: [
+                    {
+                        key: 'product',
+                        path: '/adm/products',
+                        name: 'Productos',
+                        label: 'PRODUCTOS',
+                        title: 'PRODUCTOS',
+                    },
+                    {
+                        key: 'costs',
+                        path: '/adm/costs',
+                        name: 'Costo',
+                        label: 'COSTOS',
+                        title: 'COSTOS',
+                    },
+                    {
+                        key: 'stocks',
+                        path: '/adm/stocks',
+                        name: 'Stocks',
+                        label: 'STOCKS',
+                        title: 'STOCKS',
+                    },
+                    {
+                        key: 'details',
+                        path: '/adm/details',
+                        name: 'Detalles',
+                        label: 'DETALLES',
+                        title: 'DETALLES',
+                    },
+                ],
+            },
+            {
+                key: 'admTables',
+                label: 'ADM TABLAS',
+                roles: ['Admin'],
+                children: [
+                    {
+                        key: 'platforms',
+                        path: '/adm/platforms',
+                        name: 'Plataformas',
+                        label: 'PLATAFORMAS',
+                        title: 'PLATAFORMAS',
+                    },
+                    {
+                        key: 'vendors',
+                        path: '/adm/vendors',
+                        name: 'Proveedores',
+                        label: 'PROV - ASEG - SUC',
+                        title: 'PROVEEDORES',
+                    },
+                    {
+                        key: 'vehicles',
+                        path: '/adm/vehicles',
+                        name: 'Vehiculos',
+                        label: 'VEHICULOS',
+                        title: 'VEHICULOS',
+                    },
+                    {
+                        key: 'documentacion',
+                        path: '/adm/documentacion',
+                        name: 'Documentacion',
+                        label: 'DOCUMENTACIÓN',
+                        title: 'DOCUMENTACIÓN',
+                    },
+                    {
+                        key: 'documentsbyvendors',
+                        path: '/adm/documentsbyvendors',
+                        name: 'DocumentosPorAseguradoras',
+                        label: 'DOCUMENTOS POR ASEGURADORAS',
+                        title: 'DOCUMENTOS POR ASEGURADORAS',
+                    },
+                ],
+            },
+            {
+                key: 'admGral',
+                label: 'ADM GENERAL',
+                roles: ['Admin'],
+                children: [
+                    {
+                        key: 'Orders',
+                        path: '/adm/orders',
+                        name: 'Ordenes de Compra',
+                        label: 'ORDEN DE COMPRA',
+                        title: 'ORDEN DE COMPRA',
+                    },
+                    {
+                        key: 'whatsapp',
+                        path: '/adm/whatsapp',
+                        name: 'Whatsapp',
+                        label: 'WHATSAPP',
+                        title: 'WHATSAPP',
+                    },
+                ],
+            },
+            {
+                key: 'admConfig',
+                label: 'ADM CONFIGURACIONES',
+                roles: ['Admin'],
+                children: [
+                    {
+                        key: 'criterias',
+                        path: '/adm/criterias',
+                        name: 'Criterios',
+                        label: 'CRITERIOS',
+                        title: 'CRITERIOS',
+                    },
+
+
+                    {
+                        key: 'configurations',
+                        path: '/adm/configurations',
+                        name: 'Configuraciones',
+                        label: 'CONFIGURACIONES',
+                        title: 'CONFIGURACIONES',
+                    },
+                ],
             },
 
-            {
-                key: 'platforms',
-                path: '/adm/platforms',
-                name: 'Plataformas',
-                label: 'PLATAFORMAS',
-                title: 'PLATAFORMAS',
-            },
-            {
-                key: 'vendors',
-                path: '/adm/vendors',
-                name: 'Proveedores',
-                label: 'PROV - ASEG - SUC',
-                title: 'PROVEEDORES',
-            },
-            {
-                key: 'stocks',
-                path: '/adm/stocks',
-                name: 'Stocks',
-                label: 'STOCKS',
-                title: 'STOCKS',
-            },
-            // {
-            //     key: 'product',
-            //     path: '/adm/products',
-            //     name: 'Productos',
-            //     label: 'PRODUCTOS',
-            //     title: 'PRODUCTOS',
-            // },
-            {
-                key: 'details',
-                path: '/adm/details',
-                name: 'Detalles',
-                label: 'DETALLES',
-                title: 'DETALLES',
-            },
-            {
-                key: 'costs',
-                path: '/adm/costs',
-                name: 'Costo',
-                label: 'PRODUCTOS',
-                title: 'PRODUCTOS',
-            },
-            {
-                key: 'Orders',
-                path: '/adm/orders',
-                name: 'Ordenes de Compra',
-                label: 'ORDEN DE COMPRA',
-                title: 'ORDEN DE COMPRA',
-            },
-            {
-                key: 'criterias',
-                path: '/adm/criterias',
-                name: 'Criterios',
-                label: 'CRITERIOS',
-                title: 'CRITERIOS',
-            },
+
+
+
+
+
         ]
     },
 
@@ -140,6 +391,7 @@ export const menuList = [
         icon: () => h(SettingOutlined),
         label: 'CARGA DATOS',
         title: 'Configuración',
+        roles: basicAuth,
         children: [
             {
                 key: 'costos',
@@ -152,11 +404,12 @@ export const menuList = [
         ],
     },
     {
-        key: 'resportes',
+        key: 'reportes',
         path: '/reports',
         icon: () => h(AppstoreOutlined),
         label: 'REPORTES',
         title: 'REPORTES',
+        roles: ['Admin'],
     },
     {
         key: 'dashboard',
@@ -164,6 +417,7 @@ export const menuList = [
         icon: () => h(AppstoreOutlined),
         label: 'DASHBOARD',
         title: 'DASHBOARD',
+        roles: ['Admin'],
     },
     {
         key: 'logout',
@@ -171,5 +425,7 @@ export const menuList = [
         icon: () => h(AppstoreOutlined),
         label: 'LOGOUT',
         title: 'LOGOUT',
+        roles: basicAuth,
     },
+
 ];

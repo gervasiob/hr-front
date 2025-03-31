@@ -1,5 +1,27 @@
-import { VENDOR_TYPE } from "@/common/common";
+import { getDocumentTypeList } from "@/api/documentacion/documentacion";
+import { BRANDS, GROUPS, VENDOR_TYPE } from "@/common/common";
+const documents = await getDocumentTypeList();
 export const modalFields = [
+    {
+        name: 'product_feedback',
+        label: 'Calificación',
+        type: 'rate',
+        desc: ['Muy Malo', 'Malo', 'Regular', 'Bueno', 'Muy Bueno'],
+        color: 'red',
+        default: null,
+    },
+    {
+        name: 'hinet_code',
+        label: 'Código Hinet',
+        type: 'input',
+        default: null,
+    },
+    {
+        name: 'hinet_id',
+        label: 'Id Hinet',
+        type: 'input',
+        default: null,
+    },
     {
         name: 'social_name',
         label: 'Razón Social',
@@ -51,6 +73,32 @@ export const modalFields = [
         }
     },
     {
+        name: 'type_group',
+        label: 'Grupo',
+        type: 'select',
+        mode: 'multiple',
+        default: [],
+        options: GROUPS.map((item) => {
+            return {
+                value: item.value,
+                name: item.label,
+            }
+        }),
+    },
+    {
+        name: 'marcas',
+        label: 'Marcas',
+        type: 'select',
+        mode: 'multiple',
+        default: [],
+        options: BRANDS.map((item) => {
+            return {
+                value: item.label,
+                name: item.label,
+            }
+        }),
+    },
+    {
         name: 'mail',
         label: 'Mail',
         type: 'input',
@@ -76,6 +124,9 @@ export const modalFields = [
         label: 'Dirección',
         type: 'input',
         default: null,
+        rules: {
+            address: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
+        }
     },
     {
         name: 'city',
@@ -98,6 +149,14 @@ export const modalFields = [
         type: 'input',
         default: null,
     },
+    // {
+    //     name: 'documents',
+    //     label: 'Documentos',
+    //     type: 'select',
+    //     mode: 'multiple',
+    //     default: [],
+    //     options: documents,
+    // },
     {
         name: 'freight',
         label: 'Flete',

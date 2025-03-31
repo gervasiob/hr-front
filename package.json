@@ -16,6 +16,7 @@
     "date-fns": "^3.6.0",
     "echarts": "^5.5.1",
     "html2pdf.js": "^0.10.2",
+    "lodash": "^4.17.21",
     "serve": "^14.2.3",
     "vue": "^3.4.21",
     "vue-image-lightbox": "^7.2.0",

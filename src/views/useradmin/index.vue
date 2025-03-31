@@ -49,7 +49,7 @@
     :loading="loading" @change="handleTableChange">
     <template #bodyCell="{ column, text, record }">
 
-      <template v-if="['username', 'email'].includes(column.dataIndex)">
+      <template v-if="['username', 'email', 'phone'].includes(column.dataIndex)">
         <div>
           <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
             style="margin: -5px 0;" />
@@ -58,11 +58,21 @@
           </template>
         </div>
       </template>
+
+      <template v-if="['password'].includes(column.dataIndex)">
+        <div>
+          <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />
+          <template v-else>
+
+          </template>
+        </div>
+      </template>
       <template v-if="['roles'].includes(column.dataIndex)">
         <div>
           <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
             v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
-            :filter-option="filterOption" mode="multiple">
+            :filter-option="filterOption" mode="multiple" :style="{ minWidth: '150px' }">
             <a-select-option v-for="(item, index) in roleList" :key="index" :value="item.value" :label="item.name">
               {{ item.name }}
             </a-select-option>
@@ -136,6 +146,7 @@ export default {
         const response = await getUsers(fullParams);
         dataSource.value = response.results.map((users, index) => ({
           ...users,
+          password: '',
           key: index
         }));
         total.value = response.count;
@@ -241,6 +252,7 @@ export default {
     };
     const save = key => {
       const data = dataSource.value.filter(item => key === item.key)[0];
+      console.log('data', data)
       Object.assign(data, editableData[key]);
       delete editableData[key];
       let rolesParam = [];
@@ -254,16 +266,41 @@ export default {
         ...data,
         roles: rolesParam,
       }
-      if (data.id > 0) {
+      try {
 
-        updateUsers(data.id, params).then(() => {
-          fetchData();
-        });
-      } else {
-        const { id, ...dataWithoutId } = params;
-        addUsers(dataWithoutId).then(() => {
-          fetchData();
-        });
+
+        let fullParams = params;
+        if (data.id > 0) {
+          let { id, ...dataWithoutId } = params;
+
+          if (params.password === "" || !params.password) {
+            let { id, password, ...dataWithoutId } = params;
+            fullParams = dataWithoutId;
+          } else {
+            let { id, ...dataWithoutId } = params;
+            fullParams = dataWithoutId;
+          }
+          updateUsers(data.id, fullParams).then(() => {
+            fetchData();
+          })
+        } else {
+          let { id, ...dataWithoutId } = params;
+          if (params.password === "" || !params.password) {
+            let { id, password, ...dataWithoutId } = params;
+            fullParams = dataWithoutId;
+          } else {
+            let { id, ...dataWithoutId } = params;
+            fullParams = dataWithoutId;
+          }
+          addUsers(dataWithoutId).then(() => {
+            fetchData();
+          });
+        }
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
+        current.value = 1;
+      } catch (error) {
+        console.error('Error handling form finish:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
     };
     const cancel = (key) => {
@@ -351,7 +388,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,

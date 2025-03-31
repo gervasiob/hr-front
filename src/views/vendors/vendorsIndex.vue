@@ -2,51 +2,32 @@
   <div class="filters">
     <a-form layout="horizontal" ref="formRef" :model="filterInputs">
       <a-row :gutter="24">
-        <!-- <a-col :span="12">
-          <a-form-item label="Aseguradora" name="aseguradora">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.company_id" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(aseguradora, index) in aseguradoraList" :key="index" :value="aseguradora.value"
-                :label="aseguradora.label">
-                {{ aseguradora.label }}
-              </a-select-option>
-            </a-select>
-          </a-form-item>
-        </a-col> -->
-
-        <a-col :span="8">
+        <a-col :span="6">
           <a-form-item label="Tipo" name="name">
             <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.vendor_type" allowClear show-search
-              :filter-option="filterOption" style="width: 300px;">
+              :filter-option="filterOption" style="min-width: 120px;">
               <a-select-option v-for="(item, index) in vendorsList" :key="index" :value="item.value" :label="item.name">
                 {{ item.name }}
               </a-select-option>
             </a-select>
           </a-form-item>
         </a-col>
-        <!-- <a-col :span="12">
-            <a-form-item label="Rol Id" name="rol_id">
-              <a-input v-model:value="filterInputs.claim_id" allowClear />
-            </a-form-item>
-          </a-col> -->
-
-
-        <!-- <a-col :span="6">
-          <a-form-item label="Licitación id" name="tender_id">
+        <a-col :span="3">
+          <a-form-item label="Id" name="id">
             <a-input v-model:value="filterInputs.id" allowClear />
           </a-form-item>
-        </a-col> -->
-        <!-- <a-col :span="6">
-          <a-form-item label="Agente" name="agent">
-            <a-select placeholder="Ingrese su búsqueda" v-model:value="filterInputs.agent" allowClear show-search
-              :filter-option="filterOption">
-              <a-select-option v-for="(item, index) in agents" :key="index" :value="item.id" :label="(item.fullName)">
-                {{ item.fullName }}
-              </a-select-option>
-            </a-select>
+        </a-col>
+        <a-col :span="6">
+          <a-form-item label="Nombre" name="social_name">
+            <a-input v-model:value="filterInputs.social_name__icontains" allowClear />
           </a-form-item>
-        </a-col> -->
-        <a-col :span="8" :offset="6" style="text-align: right">
+        </a-col>
+        <a-col :span="4">
+          <a-form-item label="Marcas" name="marcas__icontains" v-show="filterInputs.vendor_type === 0">
+            <a-input v-model:value="filterInputs.marcas__icontains" allowClear />
+          </a-form-item>
+        </a-col>
+        <a-col :span="5" style="text-align: right">
           <a-button type="primary" danger @click="onSearch">Buscar</a-button>
           <a-button style="margin: 0 8px" @click="() => resetFilters()">Borrar Filtros</a-button>
         </a-col>
@@ -57,11 +38,19 @@
   <!-- Table -->
   <!-- <a-button class="editable-add-btn" style="margin-bottom: 8px" @click="handleAdd">AGREGAR ITEM</a-button> -->
   <div>
-    <a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
-    <a-modal v-model:open="open" title="Prov - Aseg - Suc" @ok="handleOk" @cancel="handleCancel">
-      <ModalPlatform ref="formComponent" :modalFields="modalFielsProps" :formData="formDataProps"
-        @form-finish="handleFormFinish" />
-    </a-modal>
+    <a-row>
+      <a-col :span="20"><a-button class="editable-add-btn" @click="showModal">AGREGAR ITEM</a-button>
+        <a-modal v-model:open="open" title="Prov - Aseg - Suc" @ok="handleOk" @cancel="handleCancel">
+          <ModalPlatform ref="formComponent" :modalFields="modalFielsProps" :formData="formDataProps"
+            @form-finish="handleFormFinish" />
+        </a-modal></a-col>
+      <a-col :span="4"> <a-button type="primary" :size="size" @click="handleExport">
+          <template #icon>
+            <DownloadOutlined />
+          </template>
+          Exportar
+        </a-button></a-col>
+    </a-row>
   </div>
   <a-table :columns="columns" :data-source="dataSource" :pagination="pagination" :loading="loading"
     @change="handleTableChange">
@@ -95,6 +84,21 @@
           </template>
         </div>
       </template>
+      <template v-if="['marcas'].includes(column.dataIndex)">
+        <div>
+          <!-- <a-input v-if="editableData[record.key]" v-model:value="editableData[record.key][column.dataIndex]"
+            style="margin: -5px 0;" />  -->
+          <a-select placeholder="Ingrese su búsqueda" v-if="editableData[record.key]"
+            v-model:value="editableData[record.key][column.dataIndex]" allowClear show-search
+            :filter-option="filterOption" style="width: 200px;">
+            <a-select-option v-for="(item, index) in brands" :key="index" :value="item.value" :label="item.name">
+              {{ item.name }}
+            </a-select-option>
+          </a-select>
+          <template v-else>
+            {{ text.length < 2 ? '' : text }} </template>
+        </div>
+      </template>
 
       <template v-else-if="column.dataIndex === 'operation'">
         <div class="editable-row-operations">
@@ -105,7 +109,7 @@
             </a-popconfirm>
           </span>
           <span v-else>
-            <a @click="handleEdit(record.key)">Edit</a>
+            <a @click="handleEdit(record)">Edit</a>
             <a-popconfirm v-if="dataSource.length" title="Confirma eliminación?" @confirm="onDelete(record.key)">
               <a>Eliminar</a>
             </a-popconfirm>
@@ -117,7 +121,7 @@
 </template>
 
 <script>
-import { reactive, ref, onMounted, computed, nextTick } from 'vue';
+import { reactive, ref, onMounted, computed } from 'vue';
 import { usePagination } from 'vue-request';
 import { cloneDeep } from 'lodash-es';
 import { tableColumns } from './config/columns.js';
@@ -126,11 +130,16 @@ import { getVendors, addVendors, updateVendors, deleteVendors } from '@/api/vend
 
 import { modalFields } from './config/modalFields.js';
 import ModalPlatform from '@/components/modal/modalPlatform.vue';
+import { VENDOR_TYPE } from '@/common/common.js';
+import { apiDocumentacion, getDocumentTypeList, vendorDocument, vendorUploadDocuments } from '@/api/documentacion/documentacion.js';
+import { DownloadOutlined } from '@ant-design/icons-vue';
+import { apiExport } from '@/api/export/export.js';
 
 export default {
   name: 'VendorsList',
   components: {
     ModalPlatform,
+    DownloadOutlined,
   },
   setup() {
     const formRef = ref();
@@ -140,13 +149,9 @@ export default {
     });
 
     const columns = tableColumns;
-    const vendorsList = ref([
-      { value: 0, name: 'Proveedor' },
-      { value: 1, name: 'Comp. Aseguradora' },
-      { value: 2, name: 'Sucursal' },
-    ]);
+    const vendorsList = VENDOR_TYPE;
 
-    const customHeaderRow = (column) => {
+    const customHeaderRow = () => {
       return {
         class: 'custom-header',
       };
@@ -163,7 +168,10 @@ export default {
           ...item,
           key: index,
           user: null,
+          marcas: item.marcas && item.marcas.length > 2 ? item.marcas : [],
+          type_group: item.type_group,
         }));
+
 
         total.value = response.count;
         return dataSource.value;
@@ -300,7 +308,7 @@ export default {
 
     };
     const getName = (item) => {
-      const vendor = vendorsList.value.find((vendor) => vendor.value === item);
+      const vendor = vendorsList.find((vendor) => vendor.value === item);
       if (vendor) {
 
         return vendor.name
@@ -333,22 +341,30 @@ export default {
 
     const handleFormFinish = async (form) => {
       formState.value = form;
-      console.log('form handleFormFinish', form);
 
+      const marcasArray = form.marcas;
+      let marcasString = '';
+      if (marcasArray) {
+        marcasString = `[${marcasArray.join(",")}]`
+      }
+      const typeArray = form.type_group;
+      let typeString = null;
+      if (typeArray.length > 0) {
+        typeString = `[${typeArray.join(",")}]`
+      }
       try {
         if (form.hasOwnProperty('id') && form.id) {
           // Caso de edición
-          console.log('Edit mode', form);
           if (form.comercial_name === '') {
             form.comercial_name = null;
           }
 
           const params = {
             ...form,
+            marcas: marcasString,
+            type_group: typeString,
           };
-
           await updateVendors(form.id, params);
-          console.log('Vendor updated successfully');
           window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro actualizado con éxito' }));
           formComponent.value.resetForm();
           formState.value = {};
@@ -356,31 +372,60 @@ export default {
 
         } else {
           // Caso de adición
-          console.log('Add mode', formState.value);
           await addVendors(formState.value);
           console.log('Vendor added successfully');
           window.dispatchEvent(new CustomEvent('message-success', { detail: 'Registro agregado con éxito' }));
           formComponent.value.resetForm();
-          formState.value = {}; // Reinicia el estado del formulario
+          formState.value = {};
           formDataProps.value = {};
 
         }
 
         // Vuelve a cargar los datos después de la operación
+        current.value = 1;
         fetchData(filterInputs.value);
       } catch (error) {
         console.error('Error handling form finish:', error);
-        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error }));
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error: ' + error.response.data.error }));
       }
     };
     let formDataProps = ref({});
     const handleEdit = (key) => {
-      const data = dataSource.value.filter(item => key === item.key)[0];
-      console.log('data', data)
-      formDataProps.value = { ...data };
+      const data = dataSource.value.filter(item => item === key)[0];
+      console.log('key', key)
+      const originalObject = {
+        marcas: data.marcas
+      };
+      // Convierte la cadena a un array
+      let transformedObject = originalObject.marcas;
+      if (originalObject.marcas.length > 0) {
+        transformedObject = {
+          marcas: originalObject.marcas
+            .replace(/^\[|\]$/g, '') // Elimina los corchetes inicial y final
+            .split(',') // Divide por comas
+            .map((marca) => marca.trim()) // Elimina espacios adicionales
+        };
+      }
+      let transformType = data.type_group;
+      if (data.type_group) {
+        if (data.type_group.length > 0) {
+          transformType = {
+            groupType: data.type_group
+              .replace(/^\[|\]$/g, '')
+              .split(',')
+              .map((item) => item.trim())
+          };
+        }
+      } else {
+        transformType = [];
+      }
+      formDataProps.value = { ...data, marcas: transformedObject.marcas, documents: [], type_group: transformType.groupType };
       open.value = true;
 
     };
+    const handleExport = async () => {
+      await apiExport('vendors', {});
+    }
     return {
       formRef,
       formState,
@@ -388,7 +433,6 @@ export default {
       dataSource,
       onSearch,
       filterInputs,
-      onSearch,
       filterOption,
       resetFilters,
       customHeaderRow,
@@ -414,6 +458,7 @@ export default {
       handleCancel,
       formDataProps,
       handleEdit,
+      handleExport,
     }
   }
 }

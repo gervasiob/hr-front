@@ -22,8 +22,16 @@ export const tableColumns = [
         dataIndex: 'email',
     },
     {
+        title: 'Teléfono',
+        dataIndex: 'phone',
+    },
+    {
         title: 'Rol',
         dataIndex: 'roles',
+    },
+    {
+        title: 'Nueva Password',
+        dataIndex: 'password',
     },
     {
         title: 'Operation',
