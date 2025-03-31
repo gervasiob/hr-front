@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build && xcopy /E /Y /I dist\\* ..\\front\\",
     "start": "serve -s dist -l $PORT",
     "serve": "vue-cli-service serve"
   },
@@ -29,9 +29,11 @@
     "@eslint/js": "^9.8.0",
     "@vitejs/plugin-vue": "^5.0.4",
     "@vue/cli-service": "^5.0.8",
+    "cross-env": "^7.0.3",
     "eslint": "^9.8.0",
     "eslint-plugin-vue": "^9.27.0",
     "globals": "^15.8.0",
+    "rimraf": "^6.0.1",
     "vite": "^5.2.8"
   },
   "engines": {
