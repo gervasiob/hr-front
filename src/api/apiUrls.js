@@ -1,17 +1,19 @@
 import axios from 'axios';
-export const BASE_URL = 'http://192.168.0.206:8001/front/';
+// export const BASE_URL = 'http://192.168.0.206:8001/';
 import { useRoute } from 'vue-router';
 
-const stage = import.meta.env.VITE_STAGE;
+const stage = 'PROD';
 localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 // export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
-// export let BASE_URL;
-// if (stage && stage === 'UAT') {
-//     BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
-// } else {
-//     BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
-// }
+export let BASE_URL;
+if (stage && stage === 'UAT') {
+    BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
+} else if  (stage && stage === 'PROD') {
+    BASE_URL = 'http://192.168.0.206:8001/';
+} else {
+    BASE_URL = 'https://dft-back-dev-2484ff5ddb07.herokuapp.com/';
+}
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
