@@ -349,7 +349,7 @@ export default {
       }
       const typeArray = form.type_group;
       let typeString = null;
-      if (typeArray.length > 0) {
+      if (typeArray?.length > 0) {
         typeString = `[${typeArray.join(",")}]`
       }
       try {
@@ -392,7 +392,6 @@ export default {
     let formDataProps = ref({});
     const handleEdit = (key) => {
       const data = dataSource.value.filter(item => item === key)[0];
-      console.log('key', key)
       const originalObject = {
         marcas: data.marcas
       };
