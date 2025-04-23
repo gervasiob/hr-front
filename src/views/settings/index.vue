@@ -63,7 +63,12 @@ export default {
             }
             if (info.file.status === 'error') {
                 loading.value = false;
-                message.error('Upload error');
+                const response = info.file.response;
+            if (response && response.error) {
+                message.error(`Error al subir: ${response.error}`);
+            } else {
+                message.error('Error al subir archivo');
+            }
             }
         };
 
