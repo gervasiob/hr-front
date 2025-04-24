@@ -774,7 +774,7 @@
                         <span style="width: 100px;">Total S/IVA</span>
                         <span style="width: 120px;">Total + Fee</span>
                     </div> -->
-                     <div class="not-quote">
+                    <div class="not-quote">
                         <a-form-item label="CREAR NOTA DE PEDIDO EN HINET">
                             <a-switch v-model:checked="formTenderDetail.create_pedido"
                                 style="background-color: var(--border-item); border: none; margin: 1%;" />
@@ -810,7 +810,8 @@
                                         @search="(value) => handleSearchDescription(value, index)" /></a-col>
                                 <a-col :span="4" :class="{ 'highlight-error': item.error && !item.sku }"><a-input
                                         v-model:value="item.sku" placeholder="SKU"
-                                        :onChange="handleChangeSku(item, index)" style="min-width: 120px;" /></a-col>
+                                        @change="() => handleChangeSku(item, index)"
+                                        style="min-width: 120px;" /></a-col>
                             </a-row>
                             <a-row :gutter="24" style="margin-bottom: 0.5%;">
                                 <a-col :span="8" :offset="4"
@@ -1733,7 +1734,6 @@ export default {
             };
 
             const res = await getCosts(params);
-
             let description = "";
             let price_final = 0;
             let resSku = item.sku;
@@ -1770,7 +1770,6 @@ export default {
             const desciptionItem = await fetchDescription(item);
             // const desciptionItem = descriptionList.value.find((item) => item.value = item)
             const sku = desciptionItem[0].sku;
-            console.log('description item', desciptionItem[0].sku)
             const params = {
                 code: sku,
             }
@@ -1948,14 +1947,12 @@ export default {
                     },
                     create_pedido: null,
                 }
-                console.log('user', localStorage.getItem('user_id'))
-                console.log('formTender', formTenderDetail.value)
+
             }
             getConfigurationsKey();
         })
         const getConfigurationsKey = async () => {
             const resConfiguration = await apiConfigurations('get', { name: 'select_state' });
-            console.log('resconfig', resConfiguration)
             const resConfigurationFiltered = resConfiguration.results.find((item) => item.name === 'select_state')
             if (resConfigurationFiltered) {
                 selectState.value = resConfigurationFiltered.enable;
@@ -2273,7 +2270,6 @@ export default {
             Promise.all(promises2)
                 .then((res) => {
                     if (res && res.length > 0) {
-                        console.log('ingresa al if', res)
                         res.forEach((stockItem) => {
                             if (stockItem && dataStock.value.length > 0) {
                                 const item = dataStock.value.find((dataItem) => dataItem.sku === stockItem.codigo);
@@ -2447,6 +2443,7 @@ export default {
         };
 
         const updateCalculatedFields = (item, index) => {
+            console.log('item updateCalculatedFields', item)
             const priceWithoutTax = (item.price_final || 0) / 1.21;
             const totalWithoutTax = priceWithoutTax * (item.quantity || 0);
 
@@ -2454,8 +2451,7 @@ export default {
             if (formTenderDetail.value.fee > 0) {
                 totalWithFee = totalWithoutTax * (1 + formTenderDetail.value.fee / 100);
             }
-            console.log('sin iva', totalWithoutTax)
-            console.log('price_final', item.price_final)
+            console.log('totalWithoutTax', totalWithoutTax)
             form.items[index].amount_wo_iva = totalWithoutTax;
             item.total = totalWithFee;
             calculateTireType();
