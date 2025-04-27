@@ -5,3 +5,11 @@
 [build.environment]
   NODE_VERSION = "20"
   NPM_VERSION = "10"
+  GO_IMPORT_PATH = ""
+  RUBY_VERSION = ""
+  PYTHON_VERSION = ""
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
