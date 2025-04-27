@@ -1,15 +1,17 @@
 [build]
-  command = "npm run build"
+  command = "npm install && npm run build"
   publish = "dist"
+  base = "/"
 
 [build.environment]
   NODE_VERSION = "20"
   NPM_VERSION = "10"
-  GO_IMPORT_PATH = ""
-  RUBY_VERSION = ""
-  PYTHON_VERSION = ""
+  CI = "true"
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
+[build.processing]
+  skip_processing = true
