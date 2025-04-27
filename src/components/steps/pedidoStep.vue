@@ -142,4 +142,4 @@ export default {
 .div-checklist {
     margin-bottom: 1%;
 }
-</style>
+</style>@/api/candidates/checklists

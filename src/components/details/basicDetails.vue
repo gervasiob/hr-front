@@ -346,4 +346,4 @@ export default {
 .type-slot {
     margin-top: 1%;
 }
-</style>
+</style>@/api/candidates/checklists

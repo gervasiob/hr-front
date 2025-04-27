@@ -1,5 +1,5 @@
 import { h } from 'vue';
-import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined } from '@ant-design/icons-vue';
+import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons-vue';
 
 const basicAuth = ['Admin', 'Usuario', 'Agente'];
 export const menuList = [
@@ -20,213 +20,24 @@ export const menuList = [
         roles: basicAuth,
     },
     {
-        key: 'licitacionesMenu',
-        icon: () => h(MailOutlined),
-        label: 'LICITACIONES',
-        title: 'Licitaciones',
-        roles: basicAuth, // Visible solo para admin y usuarios normales
-        children: [
-            {
-                key: 'nuevaLicitacion',
-                path: '/nueva-licitacion',
-                name: 'Nueva Licitacion',
-                label: 'NUEVA LICITACIÓN',
-                title: 'NUEVA LICITACIÓN',
-                roles: basicAuth, // Visible solo para admin y usuarios normales
-            },
-            {
-                key: 'licitaciones',
-                path: '/Licitaciones',
-                name: 'Licitaciones Pendientes',
-                label: 'LICITACIONES PENDIENTES',
-                title: 'LICITACIONES PENDIENTES',
-                roles: basicAuth, // Visible solo para admin y usuarios normales
-            },
-            {
-                key: 'licitacionesEvaluadas',
-                path: '/Evaluadas',
-                name: 'Licitaciones Evaluadas',
-                label: 'LICITACIONES EVALUADAS',
-                title: 'LICITACIONES EVALUADAS',
-                roles: basicAuth,
-            },
-            {
-                key: 'licitacionesSucursal',
-                path: '/Sucursal',
-                name: 'Licitaciones Sucursal',
-                label: 'LICITACIONES ADJUDICADAS',
-                title: 'LICITACIONES SUCURSAL',
-                roles: basicAuth,
-            },
-            {
-                key: 'licitacionesNoPendientes',
-                path: '/No-pendientes',
-                name: 'Licitaciones no Pendientes',
-                label: 'LISTADO DE LICITACIONES',
-                title: 'LICITACIONES NO PENDIENTES',
-                roles: basicAuth,
-            },
-            {
-                key: 'licitacionesPerdidas',
-                path: '/Perdidas',
-                name: 'Licitaciones Perdidas',
-                label: 'LISTADO DE PERDIDAS',
-                roles: ['Admin'],
-            },
-        ]
-    },
-    {
-        key: 'pedidos',
+        key: 'candidatos',
         icon: () => h(SettingOutlined),
-        label: 'PEDIDOS',
-        title: 'Pedidos',
-        roles: ['Admin', 'Agente', 'Almacen', 'Facturacion', 'Gomeria', 'Documentacion', 'Flete'],
+        label: 'CANDIDATOS',
+        roles: basicAuth,
         children: [
             {
-                key: 'validacion',
-                path: '/pedidos/validacion',
-                name: 'ValidacionClientes',
-                label: 'VALIDACIÓN CLIENTES',
-                title: 'VALIDACIÓN CLIENTES',
+                key: 'candidatos-new',
+                label: 'NUEVO CANDIDATO',
+                roles: basicAuth,
+                path: '/candidatos/new',
             },
             {
-                key: 'documentacion',
-                path: '/pedidos/documentacion',
-                name: 'Documentacion',
-                label: 'DOCUMENTACIÓN',
-                title: 'DOCUMENTACIÓN',
+                key: 'candidatos-list',
+                label: 'LISTA DE CANDIDATOS',
+                roles: basicAuth,
+                path: '/candidatos/list',
             },
-            {
-                key: 'recepcion',
-                path: '/pedidos/recepcion-mercaderia',
-                name: 'RecepcionMercaderia',
-                label: 'RECEPCIÓN MERCADERÍA',
-                title: 'RECEPCIÓN MERCADERÍA',
-            },
-
-            {
-                key: 'gomerica',
-                path: '/pedidos/gomeria',
-                name: 'Gomeria',
-                label: 'GOMERÍA',
-                title: 'GOMERÍA',
-            },
-            {
-                key: 'creacionLotes',
-                path: '/pedidos/creacion-lotes',
-                name: 'CreacionLotes',
-                label: 'CREACIÓN LOTES',
-                title: 'CREACIÓN LOTES',
-            },
-            // {
-            //     key: 'upload-documents',
-            //     path: '/upload-documents',
-            //     name: 'Carga Documentacion',
-            //     label: 'CARGA DOCUMENTACIÓN',
-            //     title: 'CARGA DOCUMENTACIÓN',
-            // },
-            {
-                key: 'proforma',
-                path: '/pedidos/proforma',
-                name: 'Proforma',
-                label: 'PROFORMA',
-                title: 'PROFORMA',
-            },
-            {
-                key: 'envios',
-                path: '/pedidos/envios',
-                name: 'Envios',
-                label: 'ENVÍOS',
-                title: 'ENVÍOS',
-            },
-            {
-                key: 'recepcion-clientes',
-                path: '/pedidos/recepcion-clientes',
-                name: 'Recepcion',
-                label: 'RECEPCIÓN',
-                title: 'RECEPCIÓN',
-            },
-            {
-                key: 'facturacion',
-                path: '/pedidos/facturacion',
-                name: 'Facturacion',
-                label: 'FACTURACIÓN',
-                title: 'FACTURACIÓN',
-            },
-        ]
-    },
-    {
-        key: 'buscar',
-        icon: () => h(SettingOutlined),
-        label: 'BUSCAR POR PEDIDO',
-        title: 'Buscar por Pedido',
-        roles: ['Admin', 'Agente', 'Almacen', 'Facturacion', 'Gomeria', 'Documentacion', 'Flete'],
-        children: [
-            {
-                key: 'sdocumentacoin',
-                path: '/buscar/documentacion',
-                name: 'SDocumentacion',
-                label: 'DOCUMENTACIÓN',
-                title: 'DOCUMENTACIÓN',
-            },
-            {
-                key: 'srecepcion',
-                path: '/buscar/recepcion-mercaderia',
-                name: 'SRecepcionMercaderia',
-                label: 'RECEPCIÓN MERCADERÍA',
-                title: 'RECEPCIÓN MERCADERÍA',
-            },
-            {
-                key: 'sgomerica',
-                path: '/buscar/gomeria',
-                name: 'SGomeria',
-                label: 'GOMERÍA',
-                title: 'GOMERÍA',
-            },
-            {
-                key: 'screacionLotes',
-                path: '/buscar/creacion-lotes',
-                name: 'SCreacionLotes',
-                label: 'CREACIÓN LOTES',
-                title: 'CREACIÓN LOTES',
-            },
-            {
-                key: 'sproforma',
-                path: '/buscar/proforma',
-                name: 'SProforma',
-                label: 'PROFORMA',
-                title: 'PROFORMA',
-            },
-
-            {
-                key: 'senvios',
-                path: '/buscar/envios',
-                name: 'SEnvios',
-                label: 'ENVÍOS',
-                title: 'ENVÍOS',
-            },
-            {
-                key: 'srecepcion-clientes',
-                path: '/buscar/recepcion-clientes',
-                name: 'SRecepcion',
-                label: 'RECEPCIÓN',
-                title: 'RECEPCIÓN',
-            },
-            {
-                key: 'sfacturacion',
-                path: '/buscar/facturacion',
-                name: 'SFacturacion',
-                label: 'FACTURACIÓN',
-                title: 'FACTURACIÓN',
-            },
-            {
-                key: 'todos',
-                path: '/buscar/todos',
-                name: 'Todos',
-                label: 'TODOS LOS PEDIDOS',
-                title: 'TODOS LOS PEDIDOS',
-            },
-        ]
+        ],
     },
     {
         key: 'administracion',
@@ -389,17 +200,23 @@ export const menuList = [
     {
         key: 'config',
         icon: () => h(SettingOutlined),
-        label: 'CARGA DATOS',
+        label: 'CARGA/DESCARGA DATOS',
         title: 'Configuración',
         roles: basicAuth,
         children: [
             {
-                key: 'costos',
-                path: '/Costos',
-                name: 'Costos',
+                key: 'upload',
+                path: '/upload',
+                name: 'Importar',
                 icon: () => h(UploadOutlined),
-                label: 'COSTOS',
-                title: 'Costos',
+                label: 'IMPORTAR',
+            },
+            {
+                key: 'download',
+                path: '/download',
+                name: 'Exportar',
+                icon: () => h(DownloadOutlined),
+                label: 'EXPORTAR',
             },
         ],
     },

@@ -2,13 +2,13 @@
   <a-layout style="background: #fff">
     <a-layout style="background: #fff">
       <a-layout-content :style="contentStyle">
-        <a-row :gutter="24" style="height: fit-content;">
+        <a-row :gutter="24" style="height: fit-content; display: none">
           <a-col :span="20">
             <div class="title">
               <div class="logo-container">
                 <img src="@/assets/daytona-logo.png" alt="Daytona Logo" class="logo-image" />
               </div>
-              <h5 class="sub-title">DFT - Daytona Fast Track</h5>
+              <h5 class="sub-title">HR</h5>
 
             </div>
           </a-col>
@@ -50,19 +50,17 @@
 import { onMounted, ref, watch, onUnmounted, inject, computed } from 'vue';
 import { menuList } from '@/config/menu'
 import { useRouter, useRoute } from 'vue-router';
-import { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
+import { BellOutlined, CheckOutlined, CloseOutlined } from '@ant-design/icons-vue';
 import { notification } from 'ant-design-vue';
-import { getQuoteStateChanges, getQuoteStateChangesTimestamp } from '@/api/quotes/quotes.js';
 import { message } from 'ant-design-vue';
 
 
 export default {
-  name: 'Daytona-App',
-  components: { BellOutlined, PlusOutlined, CheckOutlined, CloseOutlined },
+  name: 'HR-App',
+  components: { BellOutlined, CheckOutlined, CloseOutlined },
   setup() {
     const localStorageData = inject('localStorageData');
     const openNotification = () => {
-      const key = `open${Date.now()}`;
       const listHtml = newNotificationsList.value.map(item => ` ${item}`).join(',');
       const descriptionHtml = `${listHtml}`;
       notification.open({
@@ -133,18 +131,6 @@ export default {
     const fetchData = async (params = {}) => {
       try {
 
-        const response = await getQuoteStateChangesTimestamp();
-
-        quotesLength.value = response.total_quantity;
-        if (quotesLength.value > 0) {
-          newNotifications.value = true;
-          newNotificationsList.value = response.quotes.map((item) => `Nro Siniestro: ${item.claim_id}`);
-          animateBell.value = true;
-          setTimeout(() => animateBell.value = false, 1000);
-        }
-        else {
-          newNotifications.value = false;
-        }
       } catch (error) {
         console.error("Error fetching quotes:", error);
       }
