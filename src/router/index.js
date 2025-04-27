@@ -158,7 +158,8 @@ router.beforeEach(async (to, from, next) => {
 
     // Validate token
     const token = localStorage.getItem('token');
-    const isDev = import.meta.env.MODE === 'development';
+    // const isDev = import.meta.env.MODE === 'development';
+    const isDev = true;
 
     if (!token || token === 'undefined') {
         console.log('Token inválido o no encontrado');

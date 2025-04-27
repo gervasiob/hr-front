@@ -9,7 +9,7 @@ localStorage.setItem('stage', stage)
 export let BASE_URL;
 if (stage && stage === 'DEV') {
     BASE_URL = 'https://ketos-hr.onrender.com/api/';
-} else if  (stage && stage === 'PROD') {
+} else if (stage && stage === 'PROD') {
     BASE_URL = 'https://ketos-hr.onrender.com/api/';
 } else {
     BASE_URL = 'https://ketos-hr.onrender.com/api/';
@@ -66,7 +66,12 @@ export async function apiRequest(method, endpoint, params, id = null, isFile = f
         }
 
         const response = await apiClient(config);
-        return response.data;
+        if (isFile) {
+            console.log('response', response)
+            return response;
+        } else {
+            return response.data;
+        }
     } catch (error) {
         console.error(`Error with ${method} request to ${endpoint}:`, error);
         throw error;
