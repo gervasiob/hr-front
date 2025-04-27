@@ -5,40 +5,11 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build && xcopy /E /Y /I dist\\* ..\\front\\",
-    "start": "serve -s dist -l $PORT",
-    "serve": "vue-cli-service serve"
+    "build": "vite build",
+    "preview": "vite preview",
+    "start": "vite preview",
+    "deploy": "git add . && git commit -m \"deploy update\" && git push"
   },
-  "dependencies": {
-    "@ant-design/icons-vue": "^7.0.1",
-    "ant-design-vue": "^4.2.1",
-    "axios": "^1.7.2",
-    "date-fns": "^3.6.0",
-    "echarts": "^5.5.1",
-    "html2pdf.js": "^0.10.2",
-    "lodash": "^4.17.21",
-    "serve": "^14.2.3",
-    "vue": "^3.4.21",
-    "vue-image-lightbox": "^7.2.0",
-    "vue-lazyload": "^3.0.0",
-    "vue-request": "^2.0.4",
-    "vue-router": "^4.3.2",
-    "vue-zoom-on-hover": "^1.0.6",
-    "vxe-table": "^4.13.11",
-    "xe-utils": "^3.7.4"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.8.0",
-    "@vitejs/plugin-vue": "^5.0.4",
-    "@vue/cli-service": "^5.0.8",
-    "cross-env": "^7.0.3",
-    "eslint": "^9.8.0",
-    "eslint-plugin-vue": "^9.27.0",
-    "globals": "^15.8.0",
-    "rimraf": "^6.0.1",
-    "vite": "^5.2.8"
-  },
-  "engines": {
-    "node": "20.x"
-  }
+  "start": "serve -s dist -l $PORT",
+  "serve": "vue-cli-service serve"
 }
