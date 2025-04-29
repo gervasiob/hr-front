@@ -7,19 +7,23 @@ localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 // export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
 export let BASE_URL;
+export let BASE_URL_LOGIN;
 if (stage && stage === 'DEV') {
     BASE_URL = 'https://ketos-hr.onrender.com/api/';
+    BASE_URL_LOGIN = 'https://ketos-hr.onrender.com/';
 } else if (stage && stage === 'PROD') {
     BASE_URL = 'https://ketos-hr.onrender.com/api/';
+    BASE_URL_LOGIN = 'https://ketos-hr.onrender.com/';
 } else {
     BASE_URL = 'https://ketos-hr.onrender.com/api/';
+    BASE_URL_LOGIN = 'https://ketos-hr.onrender.com/';
 }
-// const token = localStorage.getItem('token');
-// if (token) {
-//     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
-// } else {
-//     console.log('no token', token)
-// }
+const token = localStorage.getItem('token');
+if (token) {
+    axios.defaults.headers.common['Authorization'] = `Token ${token}`;
+} else {
+    console.log('no token', token)
+}
 
 // console.log('stage', stage)
 // if (stage === 'DEV') {
@@ -79,7 +83,7 @@ export async function apiRequest(method, endpoint, params, id = null, isFile = f
 }
 
 export async function getToken(credentials) {
-    const url_endpoint = `${BASE_URL}login/`;
+    const url_endpoint = `${BASE_URL_LOGIN}login/`;
     try {
         const response = await axios.post(url_endpoint, credentials);
         const token = response.data.token;
@@ -101,7 +105,7 @@ export async function getToken(credentials) {
     }
 }
 export async function validateToken(credentials) {
-    const url_endpoint = `${BASE_URL}user-token/`;
+    const url_endpoint = `${BASE_URL_LOGIN}user-token/`;
     try {
         const response = await axios.post(url_endpoint, credentials);
 
