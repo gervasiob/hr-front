@@ -1,30 +1,33 @@
-export const candidateColumns = [
-  { 
-    field: 'name', 
-    title: 'Name', 
-    width: 200, 
-    sortable: true 
-  },
-  { 
-    field: 'email', 
-    title: 'Email', 
-    width: 200 
-  },
-  { 
-    field: 'phone', 
-    title: 'Phone', 
-    width: 150 
-  },
-  { 
-    field: 'status', 
-    title: 'Status', 
-    width: 120,
-    slots: { default: 'status' }
-  },
-  { 
-    field: 'actions', 
-    title: 'Actions', 
-    width: 150,
-    slots: { default: 'actions' }
+// src/views/candidates/config/columns.js
+
+export const columns = [
+  { title: 'Nombre', field: 'first_name', sorter: true },
+  { title: 'Apellido', field: 'last_name', sorter: true },
+  { title: 'Email', field: 'email', sorter: true },
+  { title: 'Cuil', field: 'cuil', sorter: true },
+  { title: 'Blacklist', field: 'is_blacklisted', sorter: true },
+  { title: 'Disponible', field: 'available_to_apply', sorter: true },
+  {
+    title: 'Acciones',
+    field: 'actions',
+    operation: {
+      slots: true,
+      align: 'center',
+      width: 160,
+      actions: [
+        {
+          label: 'Editar',
+          type: 'link',
+          event: 'edit',
+          danger: false
+        },
+        {
+          label: 'Eliminar',
+          type: 'link',
+          event: 'delete',
+          danger: true
+        }
+      ]
+    }
   }
 ]

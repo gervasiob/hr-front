@@ -1,84 +1,115 @@
 <template>
   <div class="candidates">
-    <div class="container">
-      <div class="header-container">
-        <h2>Candidates</h2>
-        <button class="btn-primary" @click="handleCreate">
-          Create Candidate
-        </button>
+    <div class="header">
+      <h2>Candidatos</h2>
+      <div class="actions">
+        <a-button type="primary" @click="openForm(null)">Nuevo Candidato</a-button>
       </div>
-
-      <BasicTable :columns="columns" :items="candidates" :loading="loading" @row-click="handleRowClick">
-        <!-- SLOT para columna 'status' -->
-        <template #status="{ record }">
-          <span :class="getStatusClass(record.status)">{{ record.status }}</span>
-        </template>
-
-        <!-- SLOT para columna 'actions' -->
-        <template #actions="{ record }">
-          <div class="actions">
-            <button class="btn-edit" @click="handleEdit(record)">
-              Edit
-            </button>
-            <button class="btn-delete" @click="handleDelete(record)">
-              Delete
-            </button>
-          </div>
-        </template>
-      </BasicTable>
     </div>
+
+    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
+
+    <BasicTable :columns="columns" :items="candidates" :loading="loading" @edit="handleEdit" @delete="handleDelete"
+      @cv="handleViewCV" @sort-change="handleSort" />
+
+    <a-modal v-model:open="showForm" title="Formulario de Candidato" width="1000px" ok-text="Guardar"
+      cancel-text="Cancelar">
+      <CandidateForm :id="selectedId" :fields="fields" :model="'candidates'" :on-submit="handleProcessedForm"
+        :fetch-data="fetchCandidates" />
+    </a-modal>
   </div>
 </template>
+
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import BasicTable from '@/components/BasicTable.vue'
-import { candidateColumns } from './config/columns'
+import BasicFilter from '@/components/filters/basicFilters.vue'
+import CandidateForm from './components/form.vue'
+import { fetch } from '@/api/model/model.js'
+import { columns } from './config/columns'
+import { filters } from './config/filters'
+import { candidateFormFields as fields } from './config/formFields.js'
 
-defineOptions({
-  name: 'CandidatesIndex',
-})
-
+const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
+const filterParams = ref({})
+const showForm = ref(false)
+const selectedId = ref(null)
 
-// Use the imported columns configuration
-const columns = candidateColumns
+onMounted(fetchCandidates)
 
-const getStatusClass = (status) => {
-  return {
-    'status-active': status === 'active',
-    'status-inactive': status === 'inactive',
-    'status-pending': status === 'pending'
-  }
-}
-
-const handleRowClick = (row) => {
-  console.log('Row clicked:', row)
-}
-
-const handleCreate = () => {
-  // Handle create action
-}
-
-const handleEdit = (row) => {
-  // Handle edit action
-}
-
-const handleDelete = (row) => {
-  // Handle delete action
-}
-
-onMounted(async () => {
+async function fetchCandidates() {
+  loading.value = true
   try {
-    loading.value = true
-    // Add your API call here to fetch candidates
-    // candidates.value = await fetchCandidates()
-  } catch (error) {
-    console.error('Error fetching candidates:', error)
+    const baseParams = Object.fromEntries(
+      Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
+    )
+
+    const params = ordering.value ? { ...baseParams, ordering: ordering.value } : baseParams
+
+    const data = await fetch('get', 'candidates/', params)
+    candidates.value = data.results || data
+  } catch (e) {
+    console.error('Error al cargar candidatos', e)
   } finally {
     loading.value = false
   }
-})
+}
+
+function applyFilterParams(filters) {
+  filterParams.value = filters
+  fetchCandidates()
+}
+
+function openForm(id = null) {
+  selectedId.value = id
+  showForm.value = true
+}
+
+function handleEdit(candidate) {
+  openForm(candidate.id)
+}
+
+function handleDelete(candidate) {
+  console.log('Eliminar candidato', candidate)
+  // Confirmación y eliminación real aquí
+  try {
+    fetch('delete', 'candidates/', null, candidate.id)
+    fetchCandidates()
+  } catch (e) {
+    console.error('Error al eliminar candidato', e) 
+  }
+}
+
+function handleViewCV(candidate) {
+  router.push({ name: 'FormattedCV', params: { candidateId: candidate.id } })
+}
+
+async function handleProcessedForm(processedForm) {
+  try {
+    if (processedForm.id) {
+      await fetch('put', 'candidates/', processedForm, processedForm.id)
+    } else {
+      await fetch('post', 'candidates/', processedForm)
+    }
+    showForm.value = false
+    fetchCandidates()
+  } catch (error) {
+    console.error('Error al guardar candidato:', error)
+  }
+}
+const ordering = ref(null)
+
+function handleSort(order) {
+  ordering.value = order
+  fetchCandidates()
+}
+// async function handleDownloadTemplate() {
+//   // Requiere implementación si se necesita
+//   console.warn('Descarga de template aún no implementada')
+// }
 </script>
 
 <style scoped>
@@ -86,56 +117,16 @@ onMounted(async () => {
   padding: 20px;
 }
 
-.header-container {
+.header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
+  margin-bottom: 16px;
+  padding: 0.5%;
 }
 
 .actions {
   display: flex;
-  gap: 8px;
-}
-
-.status-active {
-  color: var(--color-success, green);
-  font-weight: 500;
-}
-
-.status-inactive {
-  color: var(--color-danger, red);
-  font-weight: 500;
-}
-
-.status-pending {
-  color: var(--color-warning, orange);
-  font-weight: 500;
-}
-
-.btn-primary {
-  background-color: var(--principal);
-  color: white;
-  padding: 8px 16px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-edit, .btn-delete {
-  padding: 4px 8px;
-  border-radius: 4px;
-  border: none;
-  cursor: pointer;
-}
-
-.btn-edit {
-  background-color: var(--color-info, #4299e1);
-  color: white;
-}
-
-.btn-delete {
-  background-color: var(--color-danger, #e53e3e);
-  color: white;
+  gap: 10px;
 }
 </style>
