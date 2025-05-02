@@ -100,7 +100,7 @@ export default {
 
 <style scoped>
 .login-background {
-  background-image: url('@/assets/fondo-login.png');
+  background-image: url('@/assets/fondo-login.avif');
   background-size: cover;
   background-position: center;
   height: 60vh;
