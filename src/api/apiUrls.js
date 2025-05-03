@@ -42,15 +42,6 @@ const apiClient = axios.create({
 export async function apiRequest(method, endpoint, params, id = null, isFile = false) {
     const url_endpoint = id ? `${BASE_URL}${endpoint}${id}/` : `${BASE_URL}${endpoint}`;
     try {
-        // const response = await apiClient({
-        //     method: method,
-        //     url: url_endpoint,
-        //     // params: params,
-        //     params: method === 'get' || method === 'delete' ? params : undefined,
-        //     data: method === 'post' || method === 'put' ? params : undefined,
-        //     headers: params instanceof FormData ? { 'Content-Type': 'multipart/form-data' } : undefined,
-        // });
-        // return response.data;
         const config = {
             method: method.toLowerCase(),
             url: url_endpoint,
@@ -70,17 +61,16 @@ export async function apiRequest(method, endpoint, params, id = null, isFile = f
         }
 
         const response = await apiClient(config);
-        if (isFile) {
-            console.log('response', response)
-            return response;
-        } else {
-            return response.data;
-        }
+
+        // 🔧 CORRECCIÓN AQUÍ
+        return isFile ? response.data : response.data;
+
     } catch (error) {
         console.error(`Error with ${method} request to ${endpoint}:`, error);
         throw error;
     }
 }
+
 
 export async function getToken(credentials) {
     const url_endpoint = `${BASE_URL_LOGIN}login/`;

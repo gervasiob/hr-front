@@ -217,14 +217,9 @@ async function handleDownloadTemplate() {
 
     const response = await exportToExcel('candidate', baseParams)
 
-    if (!response.ok) throw new Error('Error al descargar el archivo')
+    // if (!response.ok) throw new Error('Error al descargar el archivo')
 
-    const blob = await response.blob()
-    const link = document.createElement('a')
-    link.href = window.URL.createObjectURL(blob)
-    link.download = 'candidatos.xlsx'
-    link.click()
-    link.remove()
+    
 
     message.success('Archivo descargado correctamente')
   } catch (error) {
