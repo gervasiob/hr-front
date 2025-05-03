@@ -1,8 +1,8 @@
 import { apiRequest } from '../apiUrls.js';
 
 // Export records to Excel
-export async function exportToExcel(model) {
-    return await apiRequest('get', `export/${model}/`);
+export async function exportToExcel(model, params = {}) {
+    return await apiRequest('get', `export/${model}/`, params);
 }
 
 // Download empty template

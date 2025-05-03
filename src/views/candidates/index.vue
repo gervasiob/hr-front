@@ -1,35 +1,47 @@
 <template>
   <div class="candidates">
     <div class="header">
-      <h2>Candidatos</h2>
-      <div class="actions">
-        <a-button type="primary" @click="openForm(null)">Nuevo Candidato</a-button>
-      </div>
+      <a-row>
+        <a-col :span="12" style="text-align: left">
+          <h2>Candidatos</h2>
+        </a-col>
+        <a-col :span="6">
+          <a-button type="primary" @click="openForm(null)">Nuevo Candidato</a-button>
+        </a-col>
+        <a-col :span="6">
+          <a-button type="default" @click="handleDownloadTemplate">
+            Descargar listado
+          </a-button>
+        </a-col>
+      </a-row>
+
     </div>
 
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
-    <BasicTable :columns="columns" :items="candidates" :loading="loading" @edit="handleEdit" @delete="handleDelete"
-      @cv="handleViewCV" @sort-change="handleSort" />
+    <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario de Candidato" width="1000px" ok-text="Guardar"
-      cancel-text="Cancelar">
-      <CandidateForm :id="selectedId" :fields="fields" :model="'candidates'" :on-submit="handleProcessedForm"
-        :fetch-data="fetchCandidates" />
+      cancel-text="Cancelar" :confirm-loading="modalLoading" @ok="handleModalOk">
+      <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="'candidates'"
+        :on-submit="handleProcessedForm" :fetch-data="fetchCandidates" />
     </a-modal>
   </div>
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import BasicTable from '@/components/BasicTable.vue'
+import BasicTable from '@/components/basicTable/basicTable.vue'
 import BasicFilter from '@/components/filters/basicFilters.vue'
-import CandidateForm from './components/form.vue'
+import BasicForm from '@/components/form/basicForm.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
 import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
+import { Modal, message } from 'ant-design-vue'
+import { downloadTemplate, exportToExcel } from '@/api/model/importExport'
 
 const router = useRouter()
 const loading = ref(false)
@@ -37,8 +49,31 @@ const candidates = ref([])
 const filterParams = ref({})
 const showForm = ref(false)
 const selectedId = ref(null)
+const newForm = ref(false)
+const formRef = ref(null)
+const modalLoading = ref(false)
+const currentPage = ref(1)
+const pageSize = ref(10)
 
 onMounted(fetchCandidates)
+
+// async function fetchCandidates() {
+//   loading.value = true
+//   try {
+//     const baseParams = Object.fromEntries(
+//       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
+//     )
+
+//     const params = ordering.value ? { ...baseParams, ordering: ordering.value } : baseParams
+
+//     const data = await fetch('get', 'candidates/', params)
+//     candidates.value = data.results || data
+//   } catch (e) {
+//     console.error('Error al cargar candidatos', e)
+//   } finally {
+//     loading.value = false
+//   }
+// }
 
 async function fetchCandidates() {
   loading.value = true
@@ -47,41 +82,63 @@ async function fetchCandidates() {
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
     )
 
-    const params = ordering.value ? { ...baseParams, ordering: ordering.value } : baseParams
+    const limit = pageSize.value
+    const offset = (currentPage.value - 1) * pageSize.value
+    const orderingParam = ordering.value ? { ordering: ordering.value } : {}
+
+    const params = {
+      ...baseParams,
+      ...orderingParam,
+      limit,
+      offset
+    }
 
     const data = await fetch('get', 'candidates/', params)
-    candidates.value = data.results || data
+    if ('results' in data && 'count' in data) {
+      candidates.value = data.results
+      totalItems.value = data.count
+    } else {
+      candidates.value = data
+      totalItems.value = data.length
+    }
   } catch (e) {
     console.error('Error al cargar candidatos', e)
   } finally {
     loading.value = false
   }
 }
+const totalItems = ref(0)
 
-function applyFilterParams(filters) {
-  filterParams.value = filters
+const pagination = computed(() => ({
+  current: currentPage.value,
+  pageSize: pageSize.value,
+  total: totalItems.value,
+  showSizeChanger: true,
+  pageSizeOptions: ['10', '20', '50', '100'],
+  showTotal: total => `Total ${total} registros`
+}))
+function handlePaginationChange(paginationInfo) {
+  currentPage.value = paginationInfo.current
+  pageSize.value = paginationInfo.pageSize
   fetchCandidates()
 }
 
-function openForm(id = null) {
+function applyFilterParams(filters) {
+  filterParams.value = filters
+  currentPage.value = 1
+  fetchCandidates()
+}
+
+function openForm(id = null, isNew = true) {
   selectedId.value = id
+  newForm.value = isNew
   showForm.value = true
 }
 
 function handleEdit(candidate) {
-  openForm(candidate.id)
+  openForm(candidate.id, false)
 }
 
-function handleDelete(candidate) {
-  console.log('Eliminar candidato', candidate)
-  // Confirmación y eliminación real aquí
-  try {
-    fetch('delete', 'candidates/', null, candidate.id)
-    fetchCandidates()
-  } catch (e) {
-    console.error('Error al eliminar candidato', e) 
-  }
-}
 
 function handleViewCV(candidate) {
   router.push({ name: 'FormattedCV', params: { candidateId: candidate.id } })
@@ -94,22 +151,88 @@ async function handleProcessedForm(processedForm) {
     } else {
       await fetch('post', 'candidates/', processedForm)
     }
+    message.success('Candidato guardado correctamente')
     showForm.value = false
     fetchCandidates()
   } catch (error) {
     console.error('Error al guardar candidato:', error)
+
+    // Si error es un objeto con detalles de validación
+    if (error?.response?.data) {
+      const messages = Object.values(error.response.data).flat().join(' ')
+      message.error(`Errores: ${messages}`)
+    } else {
+      message.error('Error inesperado al guardar el candidato')
+    }
+
+    throw error  // Esto permite que el modal no se cierre si hay error
   }
 }
+
 const ordering = ref(null)
 
 function handleSort(order) {
   ordering.value = order
+  currentPage.value = 1
   fetchCandidates()
 }
-// async function handleDownloadTemplate() {
-//   // Requiere implementación si se necesita
-//   console.warn('Descarga de template aún no implementada')
-// }
+async function handleModalOk() {
+  if (formRef.value?.handleSubmit) {
+    modalLoading.value = true
+    try {
+      await formRef.value.handleSubmit()
+      showForm.value = false
+    } catch (error) {
+      console.warn('Error en el form:', error)
+      // Modal no se cierra si hay error
+    } finally {
+      modalLoading.value = false
+    }
+  }
+}
+function handleDelete(candidate) {
+  Modal.confirm({
+    title: '¿Estás seguro?',
+    content: `¿Querés eliminar al candidato "${candidate.first_name} ${candidate.last_name}"?`,
+    okText: 'Sí, eliminar',
+    cancelText: 'Cancelar',
+    okType: 'danger',
+    onOk: async () => {
+      try {
+        await fetch('delete', 'candidates/', null, candidate.id)
+        message.success('Candidato eliminado correctamente')
+        fetchCandidates()
+      } catch (e) {
+        console.error('Error al eliminar candidato', e)
+        message.error('Error al eliminar el candidato')
+      }
+    }
+  })
+}
+async function handleDownloadTemplate() {
+  try {
+    const baseParams = Object.fromEntries(
+      Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
+    )
+
+    const response = await exportToExcel('candidate', baseParams)
+
+    if (!response.ok) throw new Error('Error al descargar el archivo')
+
+    const blob = await response.blob()
+    const link = document.createElement('a')
+    link.href = window.URL.createObjectURL(blob)
+    link.download = 'candidatos.xlsx'
+    link.click()
+    link.remove()
+
+    message.success('Archivo descargado correctamente')
+  } catch (error) {
+    console.error('Error al descargar listado:', error)
+    message.error('Ocurrió un error al descargar el listado')
+  }
+}
+
 </script>
 
 <style scoped>
@@ -118,8 +241,6 @@ function handleSort(order) {
 }
 
 .header {
-  display: flex;
-  justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
   padding: 0.5%;

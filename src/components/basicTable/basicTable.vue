@@ -1,14 +1,13 @@
 <template>
   <div class="basic-table">
     <a-table
-  :columns="transformedColumns"
-  :data-source="items"
-  :loading="loading"
-  row-key="id"
-  :pagination="true"
-  @change="handleTableChange"
-  @row-click="handleRowClick"
->
+      :columns="transformedColumns"
+      :data-source="items"
+      :loading="loading"
+      row-key="id"
+      :pagination="pagination"
+      @change="handleTableChange"
+    >
       <template #bodyCell="{ column, record }">
         <template v-if="column.operation?.slots">
           <div class="operation-buttons" v-if="column.operation.actions">
@@ -28,54 +27,64 @@
           {{ record[column.dataIndex] }}
         </template>
       </template>
+      <template #row="{ record }">
+        <tr @click="handleRowClick(record)" style="cursor: pointer;"></tr>
+      </template>
     </a-table>
   </div>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from 'vue'
 
 const props = defineProps({
   columns: Array,
   items: Array,
-  loading: Boolean
-});
+  loading: Boolean,
+  pagination: {
+    type: Object,
+    default: () => ({
+      pageSize: 10,
+      showSizeChanger: true,
+      pageSizeOptions: ['10', '20', '50', '100'],
+      showTotal: total => `Total ${total} registros`
+    })
+  }
+})
 
-const emit = defineEmits(['edit', 'delete', 'cv', 'row-click']);
+const emit = defineEmits(['edit', 'delete', 'cv', 'row-click', 'sort-change', 'pagination-change'])
 
-const transformedColumns = computed(() => 
+const transformedColumns = computed(() =>
   props.columns.map(column => ({
     title: column.title,
     dataIndex: column.field,
     key: column.field,
     width: column.width,
-    sorter: column.sorter && {
-      compare: (a, b) => {
-        const valueA = a[column.field];
-        const valueB = b[column.field];
-        if (typeof valueA === 'string') {
-          return valueA.localeCompare(valueB);
-        }
-        return valueA - valueB;
-      },
-      multiple: 2
-    },
+    sorter: column.sorter ? true : false,
     align: column.operation?.align || 'left',
     operation: column.operation,
     ...column
   }))
-);
+)
 
 function handleRowClick(record) {
-  emit('row-click', record);
+  emit('row-click', record)
 }
+
 function handleTableChange(pagination, filters, sorter) {
-  if (sorter && sorter.field) {
-    const field = sorter.field
-    const order = sorter.order === 'descend' ? `-${field}` : field
-    emit('sort-change', order)
-  }
+  const order = sorter?.field
+    ? sorter.order === 'descend'
+      ? `-${sorter.field}`
+      : sorter.field
+    : null;
+
+  emit('pagination-change', {
+    page: pagination.current,
+    pageSize: pagination.pageSize,
+    order,
+  });
 }
+
 </script>
 
 <style scoped>

@@ -3,10 +3,10 @@ import dayjs from 'dayjs'
 export const candidateFormFields = [
     { label: 'Nombre', field: 'first_name', type: 'input', span: 12, required: true },
     { label: 'Apellido', field: 'last_name', type: 'input', span: 12, required: true },
-    { label: 'DNI', field: 'dni', type: 'input', span: 12 },
-    { label: 'Fecha de nacimiento', field: 'birth_date', type: 'date', span: 12 },
+    { label: 'DNI', field: 'dni', type: 'input', span: 12, required: true },
+    { label: 'Fecha de nacimiento', field: 'birth_date', type: 'date', span: 12, required: true },
     {
-        label: 'Edad', field: 'age', type: 'input', span: 12,
+        label: 'Edad', field: 'age', type: 'input', span: 12, required: true,
         calculateFrom: {
             dependsOn: 'birth_date',
             compute: function (birthDate) {
@@ -16,9 +16,9 @@ export const candidateFormFields = [
             }
         }
     },
-    { label: 'CUIL', field: 'cuil', type: 'input', span: 12 },
+    { label: 'CUIL', field: 'cuil', type: 'input', span: 12, required: true },
     {
-        label: 'Género', field: 'gender', type: 'select', span: 12, options: [
+        label: 'Género', field: 'gender', type: 'select', span: 12, required: true, options: [
             { label: 'Masculino', value: 'M' },
             { label: 'Femenino', value: 'F' },
             { label: 'Otro', value: 'O' }
@@ -26,10 +26,10 @@ export const candidateFormFields = [
     },
     { label: 'Email', field: 'email', type: 'input', span: 12, required: true },
     { label: 'Email Alternativo', field: 'alt_email', type: 'input', span: 12 },
-    { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12 },
-    { label: 'Dirección', field: 'address', type: 'input', span: 12 },
-    { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12 },
-    { label: 'Provincia', field: 'province', type: 'input', span: 12 },
+    { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true },
+    { label: 'Dirección', field: 'address', type: 'input', span: 12, required: true },
+    { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12, required: true },
+    { label: 'Provincia', field: 'province', type: 'input', span: 12, required: true },
     { label: 'País', field: 'country', type: 'input', span: 12 },
     { label: 'Blacklist', field: 'is_blacklisted', type: 'switch', span: 12 },
     { label: 'Razones de Blacklist', field: 'blacklist_reason', type: 'textarea', span: 24 },

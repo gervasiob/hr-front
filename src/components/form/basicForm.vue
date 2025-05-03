@@ -21,9 +21,9 @@
                 </a-col>
             </template>
         </a-row>
-        <div class="form-actions">
+        <!-- <div class="form-actions">
             <a-button type="primary" @click="handleSubmit">Guardar</a-button>
-        </div>
+        </div> -->
     </a-form>
 </template>
 
@@ -38,6 +38,10 @@ const props = defineProps({
         type: String,
         required: true,
     },
+    new: {
+        type: Boolean,
+        default: false
+    },
     fields: {
         type: Array,
         required: true
@@ -49,9 +53,13 @@ const props = defineProps({
     fetchData: {
         type: Function,
         default: null
+    },
+    isNew: {
+        type: Boolean,
+        default: false
     }
 })
-
+defineExpose({ handleSubmit })
 const form = ref({})
 const formRef = ref(null)
 
@@ -118,18 +126,30 @@ async function handleSubmit() {
         })
 
         await props.onSubmit(processedForm)
+        form.value = {}
         if (props.fetchData) await props.fetchData()
     } catch (error) {
         console.error('Validación fallida:', error)
     }
 }
 // Cargar datos al cambiar el ID
+// Update the watch section
 watch(
     () => props.id,
     async (newId) => {
-        await loadForm(newId)
+        await loadForm(newId);
     },
     { immediate: true }
+)
+
+// Separate watch for new prop
+watch(
+    () => props.isNew,
+    (isNew) => {
+        if (isNew === true || isNew === 'true') {
+            form.value = {};
+        }
+    }
 )
 
 // Aplicar watchers a campos con cálculo automático
