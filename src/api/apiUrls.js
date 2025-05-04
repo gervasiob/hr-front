@@ -2,37 +2,32 @@ import axios from 'axios';
 // export const BASE_URL = 'http://192.168.0.206:8001/';
 import { useRoute } from 'vue-router';
 
-const stage = 'PROD'; // Cambiar por PROD
+// const stage = 'PROD'; // Cambiar por PROD
+const stage = import.meta.env.VITE_STAGE; // Cambiar por PROD
 localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 // export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
 export let BASE_URL;
 export let BASE_URL_LOGIN;
-if (stage && stage === 'DEV') {
-    BASE_URL = 'https://ketos-hr.onrender.com/api/';
-    BASE_URL_LOGIN = 'https://ketos-hr.onrender.com/';
+if (stage && stage === 'dev') {
+    BASE_URL = import.meta.env.VITE_BASE_URL_API;
+    BASE_URL_LOGIN = import.meta.env.VITE_BASE_URL_LOGIN;
 } else if (stage && stage === 'PROD') {
-    BASE_URL = 'https://ketos-hr.onrender.com/api/';
-    BASE_URL_LOGIN = 'https://ketos-hr.onrender.com/';
+    BASE_URL = import.meta.env.VITE_BASE_URL_API;
+    BASE_URL_LOGIN = import.meta.env.VITE_BASE_URL_LOGIN;
 } else {
-    BASE_URL = 'https://ketos-hr.onrender.com/api/';
-    BASE_URL_LOGIN = 'https://ketos-hr.onrender.com/';
+    BASE_URL = import.meta.env.VITE_BASE_URL_API;
+    BASE_URL_LOGIN = import.meta.env.VITE_BASE_URL_LOGIN;
 }
+
+// Add this for debugging
+console.log('BASE_URL_LOGIN:', BASE_URL_LOGIN);
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
 } else {
     console.log('no token', token)
 }
-
-// console.log('stage', stage)
-// if (stage === 'DEV') {
-//     BASE_URL = import.meta.env.VITE_BACKEND_DEV_BASE_URL;
-// }
-// if (stage === 'UAT') {
-//     BASE_URL = import.meta.env.VITE_BACKEND_UAT_BASE_URL;
-// }
-
 
 const apiClient = axios.create({
     baseURL: BASE_URL,

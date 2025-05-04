@@ -90,16 +90,33 @@ export default {
     const hideMenu = computed(() => {
       return route.meta.hideMenu || false;
     });
-    const handleMenuSelect = (key) => {
-      const path = key.item.path;
-      if (route.path === path) {
-        router.push({ path: '/' }).then(() => {
-          router.push({ path });
-        });
+    const handleMenuSelect = ({ key }) => {
+      const allItems = flattenMenu(menuList); // 👉 usar el menuList original
+      const selectedItem = allItems.find(item => item.key === key);
+
+      if (selectedItem?.path) {
+        if (route.path === selectedItem.path) {
+          router.push({ path: '/' }).then(() => {
+            router.push({ path: selectedItem.path });
+          });
+        } else {
+          router.push({ path: selectedItem.path });
+        }
       } else {
-        router.push({ path });
+        console.warn(`No se encontró ruta para el menú con key: ${key}`);
       }
     };
+
+    function flattenMenu(menuItems) {
+      return menuItems.reduce((acc, item) => {
+        if (item.children) {
+          return acc.concat(flattenMenu(item.children));
+        }
+        return acc.concat(item);
+      }, []);
+    }
+
+
     const handleNotification = () => {
       console.log('click')
     }
@@ -197,22 +214,52 @@ export default {
     }
 
     // Función para filtrar los menús basados en roles
+    // function filterMenuByRoles(menuList, userRoles) {
+    //   return menuList
+    //     .filter(menu => {
+    //       // Verifica si el menú es accesible por al menos uno de los roles del usuario
+    //       return menu.roles ? menu.roles.some(role => userRoles.includes(role)) : true;
+    //     })
+    //     .map(menu => {
+    //       if (menu.children) {
+    //         // Si el menú tiene hijos, también filtra los hijos por roles
+    //         return {
+    //           ...menu,
+    //           children: filterMenuByRoles(menu.children, userRoles)
+    //         };
+    //       }
+    //       return menu;
+    //     });
+    // }
     function filterMenuByRoles(menuList, userRoles) {
       return menuList
         .filter(menu => {
-          // Verifica si el menú es accesible por al menos uno de los roles del usuario
           return menu.roles ? menu.roles.some(role => userRoles.includes(role)) : true;
         })
         .map(menu => {
           if (menu.children) {
-            // Si el menú tiene hijos, también filtra los hijos por roles
-            return {
-              ...menu,
-              children: filterMenuByRoles(menu.children, userRoles)
-            };
+            const filteredChildren = filterMenuByRoles(menu.children, userRoles);
+            return filteredChildren.length > 0 ? { ...menu, children: filteredChildren } : null;
           }
-          return menu;
-        });
+          return menu.path ? menu : null;
+        })
+        .filter(Boolean);
+    }
+
+    function transformMenuItems(menu) {
+      return menu.map(item => {
+        const transformed = {
+          key: item.key,
+          label: item.label,
+          icon: item.icon ? item.icon() : undefined,
+        };
+
+        if (item.children && item.children.length) {
+          transformed.children = transformMenuItems(item.children);
+        }
+
+        return transformed;
+      });
     }
     watch(() => route.path, (newPath) => {
       const userRoles = JSON.parse(localStorage.getItem('roles')) || []; // Carga roles actualizados
@@ -220,7 +267,8 @@ export default {
         items.value = menuList.filter((item) => item.key === 'login');
         loginRoute.value = true;
       } else {
-        items.value = filterMenuByRoles(menuList, userRoles); // Filtra los menús según los roles
+        const filtered = filterMenuByRoles(menuList, userRoles);
+        items.value = transformMenuItems(filtered);
         loginRoute.value = false;
       }
     }, { immediate: true });

@@ -56,10 +56,10 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'Candidatos'
-const itemText = 'Candidato'
-const modelName = 'candidates'
-const modelNameSingle = 'candidate'
+const titleText = 'Sub Perfiles'
+const itemText = 'Sub Perfil'
+const modelName = 'sub-profiles'
+const modelNameSingle = 'sub-profile'
 const endpoint = modelName + '/'
 
 

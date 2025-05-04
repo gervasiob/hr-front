@@ -58,11 +58,17 @@ export default {
     });
 
     const handleSubmit = async () => {
-      console.log(loginForm);
+
+      // if (import.meta.env.VITE_STAGE === 'dev') {
+      //   localStorage.setItem('token', '1234567890');
+      //   router.push({ path: '/principal' });
+      //   return;
+      // }
       if (!loginForm.value.username || !loginForm.value.password) {
         window.dispatchEvent(new CustomEvent('message-error', { detail: 'Debe ingresar usuario y contraseña' }));
         return;
       }
+
       try {
         const params = {
           username: loginForm.value.username,
@@ -85,7 +91,7 @@ export default {
     onMounted(() => {
       const token = localStorage.getItem('token');
       if (token) {
-        router.push({ path: '/Licitaciones' });
+        router.push({ path: '/principal' });
       }
     })
     return {

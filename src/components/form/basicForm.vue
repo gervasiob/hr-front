@@ -9,12 +9,9 @@
                         </template>
                         <template v-else>
                             <component :is="getComponent(field.type)" v-model:value="form[field.field]"
-                                v-bind="getComponentProps(field)" :options="field.options || []" style="width: 100%">
-                                <template v-if="field.type === 'select'">
-                                    <a-select-option v-for="opt in field.options" :key="opt.value" :value="opt.value">
-                                        {{ opt.label }}
-                                    </a-select-option>
-                                </template>
+                                v-bind="getComponentProps(field)"
+                                :options="field.type === 'api-select' ? apiSelectOptions[field.field] : field.options || []"
+                                style="width: 100%">
                             </component>
                         </template>
                     </a-form-item>
@@ -28,7 +25,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import { fetch } from '@/api/model/model.js'
 
@@ -98,13 +95,14 @@ async function loadForm(id) {
 
 const getComponent = (type) => {
     switch (type) {
-        case 'input': return 'a-input'
-        case 'textarea': return 'a-textarea'
-        case 'date': return 'a-date-picker'
-        case 'select': return 'a-select'
-        case 'switch': return 'a-switch'
-        case 'tag': return 'a-select'
-        default: return 'a-input'
+        case 'input': return 'a-input';
+        case 'textarea': return 'a-textarea';
+        case 'date': return 'a-date-picker';
+        case 'select': return 'a-select';
+        case 'api-select': return 'a-select';
+        case 'switch': return 'a-switch';
+        case 'tag': return 'a-select';
+        default: return 'a-input';
     }
 }
 
@@ -151,6 +149,10 @@ watch(
         }
     }
 )
+// Ejecutar al montar
+onMounted(async () => {
+    await loadApiSelectOptions();
+});
 
 // Aplicar watchers a campos con cálculo automático
 props.fields.forEach(field => {
@@ -167,7 +169,30 @@ props.fields.forEach(field => {
         )
     }
 })
+const apiSelectOptions = ref({}) // almacena las opciones para cada campo api-select
 
+async function loadApiSelectOptions() {
+    const promises = props.fields
+        .filter(field => field.type === 'api-select')
+        .map(async field => {
+            try {
+                const data = await fetch('list', field.endpoint, {
+                    valueField: field.valueField,
+                    nameField: field.nameField
+                });
+
+                apiSelectOptions.value[field.field] = data.map(item => ({
+                    value: item[field.valueField],
+                    label: item[field.nameField]
+                }));
+            } catch (error) {
+                console.error(`Error loading api-select options for ${field.field}:`, error);
+                apiSelectOptions.value[field.field] = [];
+            }
+        });
+
+    await Promise.all(promises);
+}
 </script>
 
 <style scoped>

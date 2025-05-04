@@ -1,23 +1,34 @@
 import { h } from 'vue';
-import { MailOutlined, AppstoreOutlined, SettingOutlined, UploadOutlined, DownloadOutlined } from '@ant-design/icons-vue';
+import {
+    MailOutlined,
+    AppstoreOutlined,
+    SettingOutlined,
+    UploadOutlined,
+    DownloadOutlined,
+} from '@ant-design/icons-vue';
 
 const basicAuth = ['Admin', 'Usuario', 'Agente'];
+
 export const menuList = [
     {
         key: 'login',
         path: '/login',
+        component: () => import('@/views/login/index.vue'),
         icon: () => h(AppstoreOutlined),
         label: 'LOGIN',
         title: 'Login',
-        roles: ['guest'] // Solo visible para invitados (no logueados)
+        roles: ['guest'],
+        name: 'Login',
     },
     {
         key: 'principal',
         path: '/principal',
+        component: () => import('@/views/candidates/index.vue'),
         icon: () => h(AppstoreOutlined),
         label: 'PRINCIPAL',
         title: 'PRINCIPAL',
         roles: basicAuth,
+        name: 'Principal',
     },
     {
         key: 'candidatos',
@@ -25,178 +36,198 @@ export const menuList = [
         label: 'CANDIDATOS',
         roles: basicAuth,
         children: [
-            {
-                key: 'candidatos-new',
-                label: 'NUEVO CANDIDATO',
-                roles: basicAuth,
-                path: '/candidatos/new',
-            },
+            // {
+            //     key: 'candidatos-new',
+            //     label: 'NUEVO CANDIDATO',
+            //     path: '/candidatos/new',
+            //     component: () => import('@/views/candidates/index.vue'),
+            //     roles: basicAuth,
+            //     name: 'NuevoCandidato',
+            // },
             {
                 key: 'candidatos-list',
                 label: 'LISTA DE CANDIDATOS',
-                roles: basicAuth,
                 path: '/candidatos/list',
+                component: () => import('@/views/candidates/index.vue'),
+                roles: basicAuth,
+                name: 'ListaCandidatos',
             },
         ],
     },
+    // ADM
     {
-        key: 'administracion',
+        key: 'adm',
         icon: () => h(SettingOutlined),
-        label: 'CONFIGURACION',
-        title: 'Administracion',
-        roles: ['Admin'],
+        label: 'ADMINISTRACION',
+        roles: basicAuth,
         children: [
             {
-                key: 'admUser',
-                label: 'ADM USUARIOS',
-                roles: ['Admin'],
-                children: [
-                    {
-                        key: 'roles',
-                        path: '/adm/roles',
-                        name: 'Roles',
-                        label: 'ROLES',
-                        title: 'ROLES',
-                    },
-                    {
-                        key: 'users',
-                        path: '/adm/users',
-                        name: 'Usuarios',
-                        label: 'USUARIOS',
-                        title: 'USUARIOS',
-                    },
-                ],
+                key: 'primary-profile',
+                label: 'Perfil Principal',
+                path: '/adm/primary-profile/',
+                component: () => import('@/views/adm/primaryProfiles/index.vue'),
+                roles: basicAuth,
+                name: 'PerfilPrincipal',
             },
             {
-                key: 'admProd',
-                label: 'ADM PRODUCTOS',
-                roles: ['Admin'],
-                children: [
-                    {
-                        key: 'product',
-                        path: '/adm/products',
-                        name: 'Productos',
-                        label: 'PRODUCTOS',
-                        title: 'PRODUCTOS',
-                    },
-                    {
-                        key: 'costs',
-                        path: '/adm/costs',
-                        name: 'Costo',
-                        label: 'COSTOS',
-                        title: 'COSTOS',
-                    },
-                    {
-                        key: 'stocks',
-                        path: '/adm/stocks',
-                        name: 'Stocks',
-                        label: 'STOCKS',
-                        title: 'STOCKS',
-                    },
-                    {
-                        key: 'details',
-                        path: '/adm/details',
-                        name: 'Detalles',
-                        label: 'DETALLES',
-                        title: 'DETALLES',
-                    },
-                ],
+                key: 'sub-profile',
+                label: 'Sub Perfil',
+                path: '/adm/sub-profile/',
+                component: () => import('@/views/adm/subProfiles/index.vue'),
+                roles: basicAuth,
+                name: 'SubPerfil',
             },
-            {
-                key: 'admTables',
-                label: 'ADM TABLAS',
-                roles: ['Admin'],
-                children: [
-                    {
-                        key: 'platforms',
-                        path: '/adm/platforms',
-                        name: 'Plataformas',
-                        label: 'PLATAFORMAS',
-                        title: 'PLATAFORMAS',
-                    },
-                    {
-                        key: 'vendors',
-                        path: '/adm/vendors',
-                        name: 'Proveedores',
-                        label: 'PROV - ASEG - SUC',
-                        title: 'PROVEEDORES',
-                    },
-                    {
-                        key: 'vehicles',
-                        path: '/adm/vehicles',
-                        name: 'Vehiculos',
-                        label: 'VEHICULOS',
-                        title: 'VEHICULOS',
-                    },
-                    {
-                        key: 'documentacion',
-                        path: '/adm/documentacion',
-                        name: 'Documentacion',
-                        label: 'DOCUMENTACIÓN',
-                        title: 'DOCUMENTACIÓN',
-                    },
-                    {
-                        key: 'documentsbyvendors',
-                        path: '/adm/documentsbyvendors',
-                        name: 'DocumentosPorAseguradoras',
-                        label: 'DOCUMENTOS POR ASEGURADORAS',
-                        title: 'DOCUMENTOS POR ASEGURADORAS',
-                    },
-                ],
-            },
-            {
-                key: 'admGral',
-                label: 'ADM GENERAL',
-                roles: ['Admin'],
-                children: [
-                    {
-                        key: 'Orders',
-                        path: '/adm/orders',
-                        name: 'Ordenes de Compra',
-                        label: 'ORDEN DE COMPRA',
-                        title: 'ORDEN DE COMPRA',
-                    },
-                    {
-                        key: 'whatsapp',
-                        path: '/adm/whatsapp',
-                        name: 'Whatsapp',
-                        label: 'WHATSAPP',
-                        title: 'WHATSAPP',
-                    },
-                ],
-            },
-            {
-                key: 'admConfig',
-                label: 'ADM CONFIGURACIONES',
-                roles: ['Admin'],
-                children: [
-                    {
-                        key: 'criterias',
-                        path: '/adm/criterias',
-                        name: 'Criterios',
-                        label: 'CRITERIOS',
-                        title: 'CRITERIOS',
-                    },
-
-
-                    {
-                        key: 'configurations',
-                        path: '/adm/configurations',
-                        name: 'Configuraciones',
-                        label: 'CONFIGURACIONES',
-                        title: 'CONFIGURACIONES',
-                    },
-                ],
-            },
-
-
-
-
-
-
-        ]
+        ],
     },
-
+    // {
+    //     key: 'administracion',
+    //     icon: () => h(SettingOutlined),
+    //     label: 'CONFIGURACION',
+    //     title: 'Administracion',
+    //     roles: ['Admin'],
+    //     children: [
+    //         {
+    //             key: 'admUser',
+    //             label: 'ADM USUARIOS',
+    //             roles: ['Admin'],
+    //             children: [
+    //                 {
+    //                     key: 'roles',
+    //                     path: '/adm/roles',
+    //                     name: 'Roles',
+    //                     label: 'ROLES',
+    //                     title: 'ROLES',
+    //                 },
+    //                 {
+    //                     key: 'users',
+    //                     path: '/adm/users',
+    //                     name: 'Usuarios',
+    //                     label: 'USUARIOS',
+    //                     title: 'USUARIOS',
+    //                 },
+    //             ],
+    //         },
+    //         {
+    //             key: 'admProd',
+    //             label: 'ADM PRODUCTOS',
+    //             roles: ['Admin'],
+    //             children: [
+    //                 {
+    //                     key: 'product',
+    //                     path: '/adm/products',
+    //                     name: 'Productos',
+    //                     label: 'PRODUCTOS',
+    //                     title: 'PRODUCTOS',
+    //                 },
+    //                 {
+    //                     key: 'costs',
+    //                     path: '/adm/costs',
+    //                     name: 'Costo',
+    //                     label: 'COSTOS',
+    //                     title: 'COSTOS',
+    //                 },
+    //                 {
+    //                     key: 'stocks',
+    //                     path: '/adm/stocks',
+    //                     name: 'Stocks',
+    //                     label: 'STOCKS',
+    //                     title: 'STOCKS',
+    //                 },
+    //                 {
+    //                     key: 'details',
+    //                     path: '/adm/details',
+    //                     name: 'Detalles',
+    //                     label: 'DETALLES',
+    //                     title: 'DETALLES',
+    //                 },
+    //             ],
+    //         },
+    //         {
+    //             key: 'admTables',
+    //             label: 'ADM TABLAS',
+    //             roles: ['Admin'],
+    //             children: [
+    //                 {
+    //                     key: 'platforms',
+    //                     path: '/adm/platforms',
+    //                     name: 'Plataformas',
+    //                     label: 'PLATAFORMAS',
+    //                     title: 'PLATAFORMAS',
+    //                 },
+    //                 {
+    //                     key: 'vendors',
+    //                     path: '/adm/vendors',
+    //                     name: 'Proveedores',
+    //                     label: 'PROV - ASEG - SUC',
+    //                     title: 'PROVEEDORES',
+    //                 },
+    //                 {
+    //                     key: 'vehicles',
+    //                     path: '/adm/vehicles',
+    //                     name: 'Vehiculos',
+    //                     label: 'VEHICULOS',
+    //                     title: 'VEHICULOS',
+    //                 },
+    //                 {
+    //                     key: 'documentacion',
+    //                     path: '/adm/documentacion',
+    //                     name: 'Documentacion',
+    //                     label: 'DOCUMENTACIÓN',
+    //                     title: 'DOCUMENTACIÓN',
+    //                 },
+    //                 {
+    //                     key: 'documentsbyvendors',
+    //                     path: '/adm/documentsbyvendors',
+    //                     name: 'DocumentosPorAseguradoras',
+    //                     label: 'DOCUMENTOS POR ASEGURADORAS',
+    //                     title: 'DOCUMENTOS POR ASEGURADORAS',
+    //                 },
+    //             ],
+    //         },
+    //         {
+    //             key: 'admGral',
+    //             label: 'ADM GENERAL',
+    //             roles: ['Admin'],
+    //             children: [
+    //                 {
+    //                     key: 'Orders',
+    //                     path: '/adm/orders',
+    //                     name: 'OrdenesDeCompra',
+    //                     label: 'ORDEN DE COMPRA',
+    //                     title: 'ORDEN DE COMPRA',
+    //                 },
+    //                 {
+    //                     key: 'whatsapp',
+    //                     path: '/adm/whatsapp',
+    //                     name: 'Whatsapp',
+    //                     label: 'WHATSAPP',
+    //                     title: 'WHATSAPP',
+    //                 },
+    //             ],
+    //         },
+    //         {
+    //             key: 'admConfig',
+    //             label: 'ADM CONFIGURACIONES',
+    //             roles: ['Admin'],
+    //             children: [
+    //                 {
+    //                     key: 'criterias',
+    //                     path: '/adm/criterias',
+    //                     name: 'Criterios',
+    //                     label: 'CRITERIOS',
+    //                     title: 'CRITERIOS',
+    //                 },
+    //                 {
+    //                     key: 'configurations',
+    //                     path: '/adm/configurations',
+    //                     name: 'Configuraciones',
+    //                     label: 'CONFIGURACIONES',
+    //                     title: 'CONFIGURACIONES',
+    //                 },
+    //             ],
+    //         },
+    //     ],
+    // },
     {
         key: 'config',
         icon: () => h(SettingOutlined),
@@ -207,6 +238,7 @@ export const menuList = [
             {
                 key: 'upload',
                 path: '/upload',
+                component: () => import('@/views/adm/upload/index.vue'),
                 name: 'Importar',
                 icon: () => h(UploadOutlined),
                 label: 'IMPORTAR',
@@ -214,28 +246,31 @@ export const menuList = [
             {
                 key: 'download',
                 path: '/download',
+                component: () => import('@/views/adm/upload/index.vue'),
                 name: 'Exportar',
                 icon: () => h(DownloadOutlined),
                 label: 'EXPORTAR',
             },
         ],
     },
-    {
-        key: 'reportes',
-        path: '/reports',
-        icon: () => h(AppstoreOutlined),
-        label: 'REPORTES',
-        title: 'REPORTES',
-        roles: ['Admin'],
-    },
-    {
-        key: 'dashboard',
-        path: '/dashboard',
-        icon: () => h(AppstoreOutlined),
-        label: 'DASHBOARD',
-        title: 'DASHBOARD',
-        roles: ['Admin'],
-    },
+    // {
+    //     key: 'reportes',
+    //     path: '/reports',
+    //     icon: () => h(AppstoreOutlined),
+    //     label: 'REPORTES',
+    //     title: 'REPORTES',
+    //     roles: ['Admin'],
+    //     name: 'Reportes',
+    // },
+    // {
+    //     key: 'dashboard',
+    //     path: '/dashboard',
+    //     icon: () => h(AppstoreOutlined),
+    //     label: 'DASHBOARD',
+    //     title: 'DASHBOARD',
+    //     roles: ['Admin'],
+    //     name: 'Dashboard',
+    // },
     {
         key: 'logout',
         path: '/logout',
@@ -243,6 +278,6 @@ export const menuList = [
         label: 'LOGOUT',
         title: 'LOGOUT',
         roles: basicAuth,
+        name: 'Logout',
     },
-
 ];
