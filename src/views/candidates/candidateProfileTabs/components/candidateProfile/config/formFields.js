@@ -1,37 +1,59 @@
 // src/views/candidatelanguage/config/formFields.js
 export const candidateFormFields = [
+    // {
+    //     label: 'Candidato',
+    //     field: 'candidate_id',
+    //     type: 'input',
+    //     mode: 'single',
+    //     span: 12,
+    //     required: true,
+    // },
     {
-        label: 'Candidato',
-        field: 'candidate_id',
+        label: 'Perfil',
+        field: 'primary_profile',
         type: 'api-select',
         mode: 'single',
         span: 12,
         required: true,
-        endpoint: 'candidates/', // <- el endpoint real que usás
-        valueField: 'id',       // <- nombre del campo que se usará como `value`
-        nameField: 'name',      // <- nombre del campo que se usará como `label`
-    },
-    {
-        label: 'Idioma',
-        field: 'language_id',
-        type: 'api-select',
-        mode: 'single',
-        span: 12,
-        required: true,
-        endpoint: 'languages/', // <- el endpoint real que usás
+        endpoint: 'primary-profiles/', // <- el endpoint real que usás
         valueField: 'id',
         nameField: 'name',
     },
     {
-        label: 'Nivel Escrito',
-        field: 'written_level',
+        label: 'Sub Perfil',
+        field: 'sub_profile',
+        type: 'api-select',
+        mode: 'single',
+        span: 12,
+        required: true,
+        endpoint: 'sub-profiles/', // <- el endpoint real que usás
+        valueField: 'id',
+        nameField: 'name',
+    },
+    {
+        label: 'Senirority',
+        field: 'seniority',
         type: 'input',
         span: 12,
         required: true,
     },
     {
-        label: 'Nivel Hablado',
-        field: 'oral_level',
+        label: 'Trabajo Actual',
+        field: 'current_job',
+        type: 'input',
+        span: 12,
+        required: true,
+    },
+    {
+        label: 'Años de experiencia',
+        field: 'experience_years',
+        type: 'input',
+        span: 12,
+        required: true,
+    },
+    {
+        label: 'Skills',
+        field: 'skills_description',
         type: 'input',
         span: 12,
         required: true,

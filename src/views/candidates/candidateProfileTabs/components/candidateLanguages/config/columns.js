@@ -1,16 +1,9 @@
 // src/views/candidatelanguage/config/columns.js
 
 export const columns = [
+
   {
-    title: 'Candidato', field: 'candidate_id',
-    cast: {
-      source: 'candidates/',
-      valueField: 'id',
-      labelField: 'name',
-    },
-  },
-  {
-    title: 'Idioma', field: 'language_id',
+    title: 'Idioma', field: 'language',
     cast: {
       source: 'languages/',
       valueField: 'id',

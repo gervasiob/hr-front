@@ -5,7 +5,7 @@
   </div>
   <a-tabs class="tabs" v-model:activeKey="activeKey">
     <a-tab-pane v-for="tab in tabs" :key="tab.key" :tab="tab.title">
-      <component :is="tab.component" :selected-id="id" />
+      <component :is="tab.component" :selected-id="id" :candidate-id="id" @refresh-data="fetchCandidateData" />
     </a-tab-pane>
   </a-tabs>
 </template>
@@ -18,6 +18,7 @@ import PersonalData from './components/personalData/index.vue';
 import Profile from './components/candidateProfile/index.vue';
 import Languages from './components/candidateLanguages/index.vue';
 import Files from './components/cvFiles/index.vue';
+import FormattedCvs from './components/formattedCvs/index.vue';
 
 const route = useRoute();
 const id = ref(route.params.id);
@@ -44,6 +45,11 @@ const tabs = [
     key: '4',
     title: 'Archivos CVs',
     component: Files
+  },
+  {
+    key: '5',
+    title: 'CVs en Formato',
+    component: FormattedCvs
   }
 ];
 

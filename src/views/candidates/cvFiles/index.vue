@@ -1,13 +1,23 @@
 <template>
   <div class="candidates">
-    <a-row style="margin-bottom: 1%">
-      <a-col :span="20" style="text-align: left">
-        <h3>{{ titleText }}</h3>
-      </a-col>
-      <a-col :span="4" style="text-align: right">
-        <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
-      </a-col>
-    </a-row>
+    <div class="header">
+      <a-row>
+        <a-col :span="16" style="text-align: left">
+          <h2>{{ titleText }}</h2>
+        </a-col>
+        <a-col :span="4" style="text-align: right">
+          <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+        </a-col>
+        <a-col :span="4" style="text-align: right">
+          <a-button type="default" @click="handleDownloadTemplate">
+            Descargar listado
+          </a-button>
+        </a-col>
+      </a-row>
+
+    </div>
+
+    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
       @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
@@ -32,13 +42,6 @@ import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
-
-const props = defineProps({
-  candidateId: {
-    type: [Number, String],
-    default: null
-  }
-});
 
 const router = useRouter()
 const loading = ref(false)
@@ -79,7 +82,6 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      candidate: props.candidateId,
       limit,
       offset
     }
@@ -122,15 +124,13 @@ async function loadCastingLists() {
   const uniqueCasts = [...new Set(casts)]
 
   for (const source of uniqueCasts) {
-    if (localStorage.getItem(`cast_${source}`)) {
-      localStorage.removeItem(`cast_${source}`)
+    if (!localStorage.getItem(`cast_${source}`)) {
+      const data = await fetch('list', source, {
+        valueField: 'id',
+        nameField: 'name'
+      })
+      localStorage.setItem(`cast_${source}`, JSON.stringify(data))
     }
-    const data = await fetch('list', source, {
-      valueField: 'id',
-      nameField: 'name'
-    })
-    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
-
   }
 }
 
@@ -172,7 +172,6 @@ function handleViewCV(candidate) {
 }
 
 async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)

@@ -2,6 +2,14 @@
 
 export const columns = [
   {
+    title: 'Candidato', field: 'candidate',
+    cast: {
+      source: 'candidates/',
+      valueField: 'id',
+      labelField: 'email',
+    },
+  },
+  {
     title: 'Perfil', field: 'primary_profile',
     cast: {
       source: 'primary-profiles/',

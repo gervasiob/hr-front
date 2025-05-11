@@ -1,26 +1,16 @@
 <template>
   <div class="candidates">
-    <div class="header">
-      <a-row>
-        <a-col :span="16" style="text-align: left">
-          <h2>{{ titleText }}</h2>
-        </a-col>
-        <a-col :span="4" style="text-align: right">
-          <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
-        </a-col>
-        <a-col :span="4" style="text-align: right">
-          <a-button type="default" @click="handleDownloadTemplate">
-            Descargar listado
-          </a-button>
-        </a-col>
-      </a-row>
-
-    </div>
-
-    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
+    <a-row style="margin-bottom: 1%">
+      <a-col :span="20" style="text-align: left">
+        <h3>{{ titleText }}</h3>
+      </a-col>
+      <a-col :span="4" style="text-align: right">
+        <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+      </a-col>
+    </a-row>
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+      @delete="handleDelete" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -34,26 +24,32 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import BasicTable from '@/components/basicTable/basicTable.vue'
-import BasicFilter from '@/components/filters/basicFilters.vue'
 import BasicForm from '@/components/form/basicForm.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
-import { filters } from './config/filters'
+
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
+
+const props = defineProps({
+  candidateId: {
+    type: [Number, String],
+    default: null
+  }
+});
 
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
 const filterParams = ref({})
 const showForm = ref(false)
-const selectedId = ref(null)
 const newForm = ref(false)
 const formRef = ref(null)
 const modalLoading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
+const selectedId = ref(null)
 
 // config parameters
 // config parameters
@@ -82,6 +78,7 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
+      candidate: props.candidateId,
       limit,
       offset
     }
@@ -117,6 +114,7 @@ async function fetchQuery() {
 }
 
 async function loadCastingLists() {
+
   const casts = columns
     .filter(col => col.cast)
     .map(col => col.cast.source)
@@ -124,13 +122,15 @@ async function loadCastingLists() {
   const uniqueCasts = [...new Set(casts)]
 
   for (const source of uniqueCasts) {
-    if (!localStorage.getItem(`cast_${source}`)) {
-      const data = await fetch('list', source, {
-        valueField: 'id',
-        nameField: 'name'
-      })
-      localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+    if (localStorage.getItem(`cast_${source}`)) {
+      localStorage.removeItem(`cast_${source}`)
     }
+    const data = await fetch('list', source, {
+      valueField: 'id',
+      nameField: 'name'
+    })
+    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+
   }
 }
 
@@ -161,20 +161,17 @@ function applyFilterParams(filters) {
 
 function openForm(id = null, isNew = true) {
   selectedId.value = id
+  showForm.value = true
   newForm.value = isNew
   showForm.value = true
 }
 
-function handleEdit(candidate) {
-  openForm(candidate.id, false)
-}
-
-
-function handleViewCV(candidate) {
-  router.push({ name: 'FormattedCV', params: { candidateId: candidate.id } })
+function handleEdit(item) {
+  openForm(item.id, false)
 }
 
 async function handleProcessedForm(processedForm) {
+  processedForm = { ...processedForm, candidate: props.candidateId }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)

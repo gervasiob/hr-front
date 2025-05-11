@@ -125,13 +125,15 @@ async function loadCastingLists() {
   const uniqueCasts = [...new Set(casts)]
 
   for (const source of uniqueCasts) {
-    if (!localStorage.getItem(`cast_${source}`)) {
-      const data = await fetch('list', source, {
-        valueField: 'id',
-        nameField: 'name'
-      })
-      localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+    if (localStorage.getItem(`cast_${source}`)) {
+      localStorage.removeItem(`cast_${source}`)
     }
+    const data = await fetch('list', source, {
+      valueField: 'id',
+      nameField: 'name'
+    })
+    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+
   }
 }
 

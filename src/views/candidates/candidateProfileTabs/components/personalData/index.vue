@@ -1,18 +1,35 @@
 <template>
-    <BasicForm ref="formRef" :id="selectedId" :fields="fields" :model="modelName"
-        :on-submit="handleProcessedForm"  />
+    <div class="header-actions">
+        <a-button type="primary" @click="handleSave">Guardar</a-button>
+    </div>
+    <BasicForm ref="formRef" :id="currentId" :fields="fields" :model="modelName"
+        :on-submit="handleProcessedForm" />
 </template>
 
 <script setup>
+import { ref } from 'vue'
+import { fetch } from '@/api/model/model.js';
 import BasicForm from '@/components/form/basicForm.vue'
 import { candidateFormFields as fields } from './config/formFields.js';
+import { message } from 'ant-design-vue';
 
 const props = defineProps({
     selectedId: {
         type: [Number, String],
         default: null
     }
-})
+});
+
+const emit = defineEmits(['refreshData']);
+
+const formRef = ref(null);
+const currentId = ref(props.selectedId);
+
+async function handleSave() {
+    if (formRef.value) {
+        await formRef.value.handleSubmit();
+    }
+}
 
 // config parameters
 const titleText = 'Datos Personales'
@@ -29,8 +46,8 @@ async function handleProcessedForm(processedForm) {
             await fetch('post', endpoint, processedForm)
         }
         message.success(itemText + ' guardado correctamente')
-        showForm.value = false
-        fetchQuery()
+        currentId.value = processedForm.id
+        emit('refreshData')  // Emit the event after successful save
     } catch (error) {
         console.error('Error al guardar item:', error)
 
@@ -47,6 +64,9 @@ async function handleProcessedForm(processedForm) {
 }
 </script>
 
-<style>
-
+<style scoped>
+.header-actions {
+    text-align: right;
+    margin-bottom: 16px;
+}
 </style>

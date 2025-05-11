@@ -1,13 +1,23 @@
 <template>
   <div class="candidates">
-    <a-row style="margin-bottom: 1%">
-      <a-col :span="20" style="text-align: left">
-        <h3>{{ titleText }}</h3>
-      </a-col>
-      <a-col :span="4" style="text-align: right">
-        <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
-      </a-col>
-    </a-row>
+    <div class="header">
+      <a-row>
+        <a-col :span="16" style="text-align: left">
+          <h2>{{ titleText }}</h2>
+        </a-col>
+        <a-col :span="4" style="text-align: right">
+          <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+        </a-col>
+        <a-col :span="4" style="text-align: right">
+          <a-button type="default" @click="handleDownloadTemplate">
+            Descargar listado
+          </a-button>
+        </a-col>
+      </a-row>
+
+    </div>
+
+    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
       @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
@@ -33,13 +43,6 @@ import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
 
-const props = defineProps({
-  candidateId: {
-    type: [Number, String],
-    default: null
-  }
-});
-
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
@@ -54,10 +57,10 @@ const pageSize = ref(10)
 
 // config parameters
 // config parameters
-const titleText = 'CVs'
-const itemText = 'CV'
-const modelName = 'cv-files'
-const modelNameSingle = 'cv-file'
+const titleText = 'Perfil Candidatos'
+const itemText = 'Perfil Candidato'
+const modelName = 'candidate-profiles'
+const modelNameSingle = 'candidate-profile'
 const endpoint = modelName + '/'
 
 onMounted(async () => {
@@ -79,7 +82,6 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      candidate: props.candidateId,
       limit,
       offset
     }
@@ -144,9 +146,12 @@ const pagination = computed(() => ({
   pageSizeOptions: ['10', '20', '50', '100'],
   showTotal: total => `Total ${total} registros`
 }))
-function handlePaginationChange(paginationInfo) {
-  currentPage.value = paginationInfo.current
-  pageSize.value = paginationInfo.pageSize
+function handlePaginationChange({ page, pageSize: newSize, order }) {
+  currentPage.value = page || 1
+  pageSize.value = newSize || 10
+  if (order !== undefined) {
+    ordering.value = order
+  }
   fetchQuery()
 }
 
@@ -172,7 +177,6 @@ function handleViewCV(candidate) {
 }
 
 async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)

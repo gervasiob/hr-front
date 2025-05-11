@@ -1,19 +1,24 @@
-// src/views/cvFiles/config/columns.js
+// src/views/candidatelanguage/config/columns.js
 
 export const columns = [
   {
-    title: 'Archivo CV', field: 'original_cv',
+    title: 'Candidato', field: 'candidate',
+    cast: {
+      source: 'candidates/',
+      valueField: 'id',
+      labelField: 'email  ',
+    },
   },
   {
-    title: 'CV con Formato', field: 'formatted_cv_id',
+    title: 'Idioma', field: 'language',
     cast: {
-      source: 'formatted_cvs/',
+      source: 'languages/',
       valueField: 'id',
       labelField: 'name',
     },
   },
-  { title: 'Fecha Actualizado', field: 'uploaded_at', sorter: true },
-  { title: 'Activo', field: 'is_active', sorter: true },
+  { title: 'Nivel Escrito', field: 'written_level', sorter: true },
+  { title: 'Nivel Oral', field: 'oral_level', sorter: true },
   {
     title: 'Acciones',
     field: 'actions',

@@ -2,6 +2,14 @@
 
 export const columns = [
   {
+    title: 'Candidato', field: 'candidate_id',
+    cast: {
+      source: 'candidates/',
+      valueField: 'id',
+      labelField: 'name',
+    },
+  },
+  {
     title: 'Archivo CV', field: 'original_cv',
   },
   {
