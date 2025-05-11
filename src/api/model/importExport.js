@@ -3,6 +3,7 @@ import { apiRequest } from '../apiUrls.js';
 // Export records to Excel
 export async function exportToExcel(model, params = {}) {
     try {
+        console.log('Exportando a Excel:', model, params);
         const response = await apiRequest('get', `export/${model}/`, params, null, true);
 
         if (!response || !(response instanceof Blob)) {

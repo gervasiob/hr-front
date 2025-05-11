@@ -56,16 +56,17 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'Candidatos'
-const itemText = 'Candidato'
-const modelName = 'candidates'
-const modelNameSingle = 'candidate'
+// config parameters
+const titleText = 'Perfil Candidatos'
+const itemText = 'Perfil Candidato'
+const modelName = 'candidate-profiles'
+const modelNameSingle = 'candidate-profile'
 const endpoint = modelName + '/'
 
-
-onMounted(fetchQuery)
-
-
+onMounted(async () => {
+  await loadCastingLists()
+  await fetchQuery()
+})
 
 async function fetchQuery() {
   loading.value = true
@@ -86,19 +87,53 @@ async function fetchQuery() {
     }
 
     const data = await fetch('get', endpoint, params)
+    let result = []
+
     if ('results' in data && 'count' in data) {
-      candidates.value = data.results
+      result = data.results
       totalItems.value = data.count
     } else {
-      candidates.value = data
+      result = data
       totalItems.value = data.length
     }
+
+    // ⬇️ Casteo de columnas
+    candidates.value = result.map(item => {
+      const newItem = { ...item }
+      columns.forEach(col => {
+        if (col.cast) {
+          const list = JSON.parse(localStorage.getItem(`cast_${col.cast.source}`) || '[]')
+          const found = list.find(el => el[col.cast.valueField] === item[col.field])
+          if (found) newItem[col.field] = found[col.cast.labelField]
+        }
+      })
+      return newItem
+    })
   } catch (e) {
     console.error('Error al cargar listado', e)
   } finally {
     loading.value = false
   }
 }
+
+async function loadCastingLists() {
+  const casts = columns
+    .filter(col => col.cast)
+    .map(col => col.cast.source)
+
+  const uniqueCasts = [...new Set(casts)]
+
+  for (const source of uniqueCasts) {
+    if (!localStorage.getItem(`cast_${source}`)) {
+      const data = await fetch('list', source, {
+        valueField: 'id',
+        nameField: 'name'
+      })
+      localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+    }
+  }
+}
+
 const totalItems = ref(0)
 
 const pagination = computed(() => ({
@@ -109,9 +144,12 @@ const pagination = computed(() => ({
   pageSizeOptions: ['10', '20', '50', '100'],
   showTotal: total => `Total ${total} registros`
 }))
-function handlePaginationChange(paginationInfo) {
-  currentPage.value = paginationInfo.current
-  pageSize.value = paginationInfo.pageSize
+function handlePaginationChange({ page, pageSize: newSize, order }) {
+  currentPage.value = page || 1
+  pageSize.value = newSize || 10
+  if (order !== undefined) {
+    ordering.value = order
+  }
   fetchQuery()
 }
 

@@ -5,8 +5,9 @@ export const columns = [
   { title: 'Apellido', field: 'last_name', sorter: true },
   { title: 'Email', field: 'email', sorter: true },
   { title: 'Cuil', field: 'cuil', sorter: true },
-  { title: 'Blacklist', field: 'is_blacklisted', sorter: true },
-  { title: 'Disponible', field: 'available_to_apply', sorter: true },
+  { title: 'Blacklist', field: 'is_blacklisted', type: 'boolean', sorter: true },
+  { title: 'Disponible', field: 'available_to_apply', type: 'boolean', sorter: true },
+  { title: 'Fecha de actualización', field: 'last_updated', type: 'datetime', sorter: true },
   {
     title: 'Acciones',
     field: 'actions',
@@ -26,7 +27,14 @@ export const columns = [
           type: 'link',
           event: 'delete',
           danger: true
+        },
+        {
+          label: 'Ver Perfil',
+          type: 'link',
+          event: 'open-profile',
+          danger: false
         }
+
       ]
     }
   }

@@ -107,10 +107,31 @@ const getComponent = (type) => {
 }
 
 const getComponentProps = (field) => {
-    if (field.type === 'date') return { format: 'DD/MM/YYYY' }
-    if (field.type === 'tag') return { mode: 'tags', placeholder: 'Escriba y presione enter', allowClear: true }
-    return {}
-}
+    const base = {
+        style: 'width: 100%',
+        allowClear: true,
+        showSearch: true,
+        filterOption,
+        mode: field.mode || undefined,
+        placeholder: field.placeholder || `Seleccione ${field.label.toLowerCase()}`
+    };
+
+    switch (field.type) {
+        case 'date':
+            return { format: 'DD/MM/YYYY', style: 'width: 100%' };
+        case 'tag':
+            return { ...base, mode: 'tags', placeholder: 'Escriba y presione enter' };
+        case 'select':
+        case 'api-select':
+            return base;
+        default:
+            return {};
+    }
+};
+const filterOption = (input, option) =>
+    option?.label?.toLowerCase().includes(input.toLowerCase()) ||
+        option?.children?.toLowerCase().includes(input.toLowerCase());
+
 
 async function handleSubmit() {
     try {

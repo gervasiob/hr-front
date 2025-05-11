@@ -233,9 +233,7 @@ export default {
     // }
     function filterMenuByRoles(menuList, userRoles) {
       return menuList
-        .filter(menu => {
-          return menu.roles ? menu.roles.some(role => userRoles.includes(role)) : true;
-        })
+        .filter(item => !item.hideInMenu && item.roles?.some(role => userRoles.includes(role)))
         .map(menu => {
           if (menu.children) {
             const filteredChildren = filterMenuByRoles(menu.children, userRoles);

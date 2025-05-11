@@ -11,7 +11,7 @@ function extractRoutesFromMenu(menuItems) {
                     path: item.path,
                     name: item.name || item.label,
                     component: item.component,
-                    meta: { roles: item.roles || [] },
+                    meta: { title: item.title, roles: item.roles || [], hideInMenu: item.hideInMenu || false },
                 });
             }
             if (item.children) {

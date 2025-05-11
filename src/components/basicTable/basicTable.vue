@@ -1,28 +1,25 @@
 <template>
   <div class="basic-table">
-    <a-table
-      :columns="transformedColumns"
-      :data-source="items"
-      :loading="loading"
-      row-key="id"
-      :pagination="pagination"
-      @change="handleTableChange"
-    >
+    <a-table :columns="transformedColumns" :data-source="items" :loading="loading" row-key="id" :pagination="pagination"
+      @change="handleTableChange">
       <template #bodyCell="{ column, record }">
         <template v-if="column.operation?.slots">
           <div class="operation-buttons" v-if="column.operation.actions">
-            <a-button
-              v-for="(action, index) in column.operation.actions"
-              :key="index"
-              type="link"
-              :danger="action.danger"
-              @click="$emit(action.event, record)"
-            >
+            <a-button v-for="(action, index) in column.operation.actions" :key="index" type="link"
+              :danger="action.danger" @click="$emit(action.event, record)">
               {{ action.label }}
             </a-button>
           </div>
           <slot v-else :name="column.field" :record="record"></slot>
         </template>
+        <template v-else-if="column.type === 'boolean'">
+          <a-tag :color="record[column.dataIndex] ? 'green' : 'red'">
+            {{ record[column.dataIndex] ? 'Sí' : 'No' }}
+          </a-tag>
+        </template>
+          <template v-else-if="column.type === 'datetime'">
+            {{ dayjs(record[column.dataIndex]).isValid() ? dayjs(record[column.dataIndex]).format('DD/MM/YYYY') : '' }}
+          </template>
         <template v-else>
           {{ record[column.dataIndex] }}
         </template>
@@ -36,6 +33,7 @@
 
 <script setup>
 import { computed } from 'vue'
+import dayjs from 'dayjs'
 
 const props = defineProps({
   columns: Array,

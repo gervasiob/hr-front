@@ -5,6 +5,7 @@ export const candidateFormFields = [
         label: 'Perfil',
         field: 'primary_profile',
         type: 'api-select',
+        mode: 'single',
         span: 12,
         required: true,
         endpoint: 'primary-profiles/', // <- el endpoint real que usás

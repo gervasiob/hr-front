@@ -13,8 +13,14 @@ export const filters = [
         label: 'Perfil',
         field: 'primary_profile',
         model: 'primary_profile',
-        type: 'text',
-        placeholder: 'Buscar por nombre',
-        span: 8
+        mode: 'multiple',
+        type: 'api-select',
+        placeholder: 'Seleccionar Perfil',
+        span: 8,
+        apiSource: {
+            endpoint: 'primary-profiles/',
+            valueField: 'id',
+            nameField: 'name'
+        }
     },
 ];

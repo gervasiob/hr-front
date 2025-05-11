@@ -1,15 +1,27 @@
-// src/views/candidates/config/columns.js
+// src/views/cvFiles/config/columns.js
 
 export const columns = [
-  { title: 'Sub Perfil', field: 'name', sorter: true },
   {
-    title: 'Perfil', field: 'primary_profile',
+    title: 'Candidato', field: 'candidate_id',
     cast: {
-      source: 'primary-profiles/',
+      source: 'candidates/',
       valueField: 'id',
       labelField: 'name',
     },
   },
+  {
+    title: 'Archivo CV', field: 'original_cv',
+  },
+  {
+    title: 'CV con Formato', field: 'formatted_cv_id',
+    cast: {
+      source: 'formatted_cvs/',
+      valueField: 'id',
+      labelField: 'name',
+    },
+  },
+  { title: 'Fecha Actualizado', field: 'uploaded_at', sorter: true },
+  { title: 'Activo', field: 'is_active', sorter: true },
   {
     title: 'Acciones',
     field: 'actions',

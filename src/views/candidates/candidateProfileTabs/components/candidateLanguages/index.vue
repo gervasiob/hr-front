@@ -35,7 +35,7 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import BasicTable from '@/components/basicTable/basicTable.vue'
 import BasicFilter from '@/components/filters/basicFilters.vue'
-import BasicForm from '@/components/form/basicForm.vue'
+import BasicForm from '@/components/form/basicform.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
 import { filters } from './config/filters'
@@ -56,16 +56,16 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'Perfiles'
-const itemText = 'Perfil'
-const modelName = 'primary-profiles'
-const modelNameSingle = 'primary-profile'
+const titleText = 'Candidatos Idiomas'
+const itemText = 'Candidato Idiomas'
+const modelName = 'candidate-languages'
+const modelNameSingle = 'candidate-language'
 const endpoint = modelName + '/'
 
-
-onMounted(fetchQuery)
-
-
+onMounted(async () => {
+  await loadCastingLists()
+  await fetchQuery()
+})
 
 async function fetchQuery() {
   loading.value = true
@@ -86,19 +86,53 @@ async function fetchQuery() {
     }
 
     const data = await fetch('get', endpoint, params)
+    let result = []
+
     if ('results' in data && 'count' in data) {
-      candidates.value = data.results
+      result = data.results
       totalItems.value = data.count
     } else {
-      candidates.value = data
+      result = data
       totalItems.value = data.length
     }
+
+    // ⬇️ Casteo de columnas
+    candidates.value = result.map(item => {
+      const newItem = { ...item }
+      columns.forEach(col => {
+        if (col.cast) {
+          const list = JSON.parse(localStorage.getItem(`cast_${col.cast.source}`) || '[]')
+          const found = list.find(el => el[col.cast.valueField] === item[col.field])
+          if (found) newItem[col.field] = found[col.cast.labelField]
+        }
+      })
+      return newItem
+    })
   } catch (e) {
     console.error('Error al cargar listado', e)
   } finally {
     loading.value = false
   }
 }
+
+async function loadCastingLists() {
+  const casts = columns
+    .filter(col => col.cast)
+    .map(col => col.cast.source)
+
+  const uniqueCasts = [...new Set(casts)]
+
+  for (const source of uniqueCasts) {
+    if (!localStorage.getItem(`cast_${source}`)) {
+      const data = await fetch('list', source, {
+        valueField: 'id',
+        nameField: 'name'
+      })
+      localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+    }
+  }
+}
+
 const totalItems = ref(0)
 
 const pagination = computed(() => ({
@@ -117,7 +151,6 @@ function handlePaginationChange({ page, pageSize: newSize, order }) {
   }
   fetchQuery()
 }
-
 function applyFilterParams(filters) {
   filterParams.value = filters
   currentPage.value = 1
@@ -210,7 +243,7 @@ async function handleDownloadTemplate() {
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
     )
 
-    const response = await exportToExcel(modelName, baseParams)
+    const response = await exportToExcel(modelNameSingle, baseParams)
 
     message.success('Archivo descargado correctamente')
   } catch (error) {

@@ -3,15 +3,27 @@
         <a-form :model="filters" layout="inline" @submit.prevent="applyFilters">
             <template v-for="filter in filterConfig" :key="filter.field">
                 <a-form-item :label="filter.label">
-                    <component :is="filter.type === 'select' ? 'a-select' : 'a-input'"
-                        v-model:value="filters[filter.field]" :options="filter.options || []"
-                        :placeholder="filter.placeholder" allow-clear style="min-width: 180px">
-                        <template v-if="filter.type === 'select'" v-for="opt in filter.options" :key="opt.value">
-                            <a-select-option :value="opt.value">{{ opt.label }}</a-select-option>
-                        </template>
-                    </component>
+                    <!-- API SELECT dinámico -->
+                    <a-select v-if="filter.type === 'api-select'" v-model:value="filters[filter.field]"
+                        :options="selectOptions[filter.field] || []" :placeholder="filter.placeholder || filter.label"
+                        :mode="filter.mode || 'single'" allow-clear show-search :filter-option="filterOption"
+                        style="min-width: 180px" />
+
+                    <!-- SELECT estático -->
+                    <a-select v-else-if="filter.type === 'select'" v-model:value="filters[filter.field]"
+                        :placeholder="filter.placeholder || filter.label" :mode="filter.mode || 'single'" allow-clear
+                        show-search :filter-option="filterOption" style="min-width: 180px">
+                        <a-select-option v-for="opt in filter.options" :key="opt.value" :value="opt.value">
+                            {{ opt.label }}
+                        </a-select-option>
+                    </a-select>
+
+                    <!-- INPUT por defecto -->
+                    <a-input v-else v-model:value="filters[filter.field]"
+                        :placeholder="filter.placeholder || filter.label" allow-clear style="min-width: 180px" />
                 </a-form-item>
             </template>
+
             <a-button type="primary" html-type="submit">Buscar</a-button>
             <a-button @click="resetFilters">Reset</a-button>
         </a-form>
@@ -19,28 +31,52 @@
 </template>
 
 <script setup>
-import { reactive } from 'vue'
+import { ref, onMounted, reactive } from 'vue';
+import { fetch } from '@/api/model/model.js';
 
 const props = defineProps({
     filterConfig: {
         type: Array,
         required: true
     }
-})
+});
 
-const emit = defineEmits(['filter-change'])
+const emit = defineEmits(['filter-change']);
 
-const filters = reactive({})
-props.filterConfig.forEach(f => filters[f.field] = null)
+const selectOptions = ref({});
+const filters = reactive({});
+
+// Inicializar filtros
+props.filterConfig.forEach(f => (filters[f.field] = f.mode === 'multiple' ? [] : null));
+
+// Función común para búsqueda
+const filterOption = (input, option) =>
+    option.label?.toLowerCase().includes(input.toLowerCase()) ||
+    option.children?.toLowerCase().includes(input.toLowerCase());
 
 function applyFilters() {
-    emit('filter-change', { ...filters })
+    emit('filter-change', { ...filters });
 }
 
 function resetFilters() {
-    props.filterConfig.forEach(f => filters[f.field] = null)
-    emit('filter-change', { ...filters })
+    props.filterConfig.forEach(f => (filters[f.field] = f.mode === 'multiple' ? [] : null));
+    emit('filter-change', { ...filters });
 }
+
+onMounted(() => {
+    props.filterConfig.forEach(async (filter) => {
+        if (filter.type === 'api-select' && filter.apiSource) {
+            const options = await fetch('list', filter.apiSource.endpoint, {
+                valueField: filter.apiSource.valueField,
+                nameField: filter.apiSource.nameField,
+            });
+            selectOptions.value[filter.field] = options.map(opt => ({
+                label: opt.label || opt[filter.apiSource.nameField],
+                value: opt.value || opt[filter.apiSource.valueField],
+            }));
+        }
+    });
+});
 </script>
 
 <style scoped>

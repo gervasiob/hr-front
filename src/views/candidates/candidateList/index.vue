@@ -20,7 +20,8 @@
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
+      @open-profile="handleOpenProfile" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -56,10 +57,10 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'Perfiles'
-const itemText = 'Perfil'
-const modelName = 'primary-profiles'
-const modelNameSingle = 'primary-profile'
+const titleText = 'Candidatos'
+const itemText = 'Candidato'
+const modelName = 'candidates'
+const modelNameSingle = 'candidate'
 const endpoint = modelName + '/'
 
 
@@ -210,7 +211,7 @@ async function handleDownloadTemplate() {
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
     )
 
-    const response = await exportToExcel(modelName, baseParams)
+    const response = await exportToExcel(modelNameSingle, baseParams)
 
     message.success('Archivo descargado correctamente')
   } catch (error) {
@@ -218,7 +219,12 @@ async function handleDownloadTemplate() {
     message.error('Ocurrió un error al descargar el listado')
   }
 }
-
+// Funciones a completar
+function handleOpenProfile(record) {
+  const profileId = record.id;
+  const url = `/candidates/candidate-profile/${profileId}`;
+  router.push({ name: 'PerfilCandidato', params: { id: profileId } });
+}
 </script>
 
 <style scoped>
