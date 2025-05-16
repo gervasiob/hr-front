@@ -3,10 +3,10 @@ import axios from 'axios';
 import { useRoute } from 'vue-router';
 
 // const stage = 'PROD'; // Cambiar por PROD
-const stage = import.meta.env.VITE_STAGE; // Cambiar por PROD
+const stage = 'dev'; // Cambiar por PROD
 localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
-// export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
+
 export let BASE_URL = 'http://54.226.252.233:8000/api/';
 export let BASE_URL_LOGIN= 'http://54.226.252.233:8000/'
 
