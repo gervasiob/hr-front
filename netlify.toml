@@ -11,7 +11,7 @@
 
 [[redirects]]
   from = "/back/*"
-  to = "https://54.226.252.233/:splat"
+  to = "http://54.226.252.233:8000/:splat"
   status = 200
   force = true
 
