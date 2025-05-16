@@ -7,18 +7,9 @@ const stage = import.meta.env.VITE_STAGE; // Cambiar por PROD
 localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 // export const BASE_URL = 'https://dft-back-uat-b85d882277cf.herokuapp.com/';
-export let BASE_URL;
-export let BASE_URL_LOGIN;
-if (stage && stage === 'dev') {
-    BASE_URL = import.meta.env.VITE_BASE_URL_API;
-    BASE_URL_LOGIN = import.meta.env.VITE_BASE_URL_LOGIN;
-} else if (stage && stage === 'PROD') {
-    BASE_URL = import.meta.env.VITE_BASE_URL_API;
-    BASE_URL_LOGIN = import.meta.env.VITE_BASE_URL_LOGIN;
-} else {
-    BASE_URL = import.meta.env.VITE_BASE_URL_API;
-    BASE_URL_LOGIN = import.meta.env.VITE_BASE_URL_LOGIN;
-}
+export let BASE_URL = 'http://54.226.252.233:8000/api/';
+export let BASE_URL_LOGIN= 'http://54.226.252.233:8000/'
+
 
 // Add this for debugging
 console.log('BASE_URL_LOGIN:', BASE_URL_LOGIN);
