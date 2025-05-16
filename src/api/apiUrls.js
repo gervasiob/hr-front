@@ -7,8 +7,8 @@ const stage = 'dev'; // Cambiar por PROD
 localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 
-export let BASE_URL = 'http://54.226.252.233:8000/api/';
-export let BASE_URL_LOGIN= 'http://54.226.252.233:8000/'
+export let BASE_URL = 'https://54.226.252.233/api/';
+export let BASE_URL_LOGIN= 'https://54.226.252.233/'
 
 
 // Add this for debugging
