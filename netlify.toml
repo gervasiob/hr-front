@@ -10,12 +10,13 @@
   framework = "vite"
 
 [[redirects]]
+  from = "/back/*"
+  to = "https://54.226.252.233/:splat"
+  status = 200
+  force = true
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
 
-[[redirects]]
-  from = "/back/*"
-  to = "http://54.226.252.233:8000/:splat"
-  status = 200
-  force = true
