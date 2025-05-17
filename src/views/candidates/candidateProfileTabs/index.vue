@@ -45,7 +45,7 @@ const tabs = [
     key: '4',
     title: 'Archivos CVs',
     component: Files
-  },
+  },  
   {
     key: '5',
     title: 'CVs en Formato',

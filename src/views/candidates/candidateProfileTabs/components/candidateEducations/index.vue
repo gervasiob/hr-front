@@ -10,27 +10,12 @@
     </a-row>
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+      @delete="handleDelete" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
-        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" >
-            <template #custom-field>
-                <a-form-item label="Archivo CV" name="file">
-                    <a-upload
-                        v-model:fileList="fileList"
-                        :customRequest="handleUpload"
-                        :beforeUpload="beforeUpload"
-                        :maxCount="1">
-                        <a-button>
-                            <upload-outlined></upload-outlined>
-                            Seleccionar archivo
-                        </a-button>
-                    </a-upload>
-                </a-form-item>
-            </template>
-    </BasicForm>
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
     </a-modal>
   </div>
 </template>
@@ -39,21 +24,23 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import BasicTable from '@/components/basicTable/basicTable.vue'
-import BasicFilter from '@/components/filters/basicFilters.vue'
 import BasicForm from '@/components/form/basicForm.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
-import { filters } from './config/filters'
+
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
-import { UploadOutlined } from '@ant-design/icons-vue'
 
 const props = defineProps({
   candidateId: {
     type: [Number, String],
     default: null
-  }
+  },
+  formattedCvId: {
+    type: [Number, String],
+    default: null
+  },
 });
 
 const router = useRouter()
@@ -61,21 +48,20 @@ const loading = ref(false)
 const candidates = ref([])
 const filterParams = ref({})
 const showForm = ref(false)
-const selectedId = ref(null)
 const newForm = ref(false)
 const formRef = ref(null)
 const modalLoading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
-// config parameters
-const titleText = 'CVs'
-const itemText = 'CV'
-const modelName = 'cv-files'
-const modelNameSingle = 'cv-file'
-const endpoint = modelName + '/'
+const selectedId = ref(null)
 
-// File variables
-const fileList = ref([])
+// config parameters
+// config parameters
+const titleText = 'Educación'
+const itemText = 'Item de Educación'
+const modelName = 'formatted-cv-educations'
+const modelNameSingle = 'formattedcveducation'
+const endpoint = modelName + '/'
 
 onMounted(async () => {
   await loadCastingLists()
@@ -92,11 +78,12 @@ async function fetchQuery() {
     const limit = pageSize.value
     const offset = (currentPage.value - 1) * pageSize.value
     const orderingParam = ordering.value ? { ordering: ordering.value } : {}
-
+    console.log('formattedCvId', props.formattedCvId)
     const params = {
       ...baseParams,
       ...orderingParam,
       candidate: props.candidateId,
+      formatted_cv: props.formattedCvId,
       limit,
       offset
     }
@@ -132,6 +119,7 @@ async function fetchQuery() {
 }
 
 async function loadCastingLists() {
+
   const casts = columns
     .filter(col => col.cast)
     .map(col => col.cast.source)
@@ -161,9 +149,12 @@ const pagination = computed(() => ({
   pageSizeOptions: ['10', '20', '50', '100'],
   showTotal: total => `Total ${total} registros`
 }))
-function handlePaginationChange(paginationInfo) {
-  currentPage.value = paginationInfo.current
-  pageSize.value = paginationInfo.pageSize
+function handlePaginationChange({ page, pageSize: newSize, order }) {
+  currentPage.value = page || 1
+  pageSize.value = newSize || 10
+  if (order !== undefined) {
+    ordering.value = order
+  }
   fetchQuery()
 }
 
@@ -175,17 +166,13 @@ function applyFilterParams(filters) {
 
 function openForm(id = null, isNew = true) {
   selectedId.value = id
+  showForm.value = true
   newForm.value = isNew
   showForm.value = true
 }
 
-function handleEdit(candidate) {
-  openForm(candidate.id, false)
-}
-
-
-function handleViewCV(candidate) {
-  router.push({ name: 'FormattedCV', params: { candidateId: candidate.id } })
+function handleEdit(item) {
+  openForm(item.id, false)
 }
 
 async function handleProcessedForm(processedForm) {
@@ -266,33 +253,6 @@ async function handleDownloadTemplate() {
   } catch (error) {
     console.error('Error al descargar listado:', error)
     message.error('Ocurrió un error al descargar el listado')
-  }
-}
-
-// Add these new functions
-function beforeUpload(file) {
-  const isPDF = file.type === 'application/pdf'
-  if (!isPDF) {
-    message.error('Solo se permiten archivos PDF!')
-    return false
-  }
-  return true
-}
-
-async function handleUpload({ file, onSuccess, onError }) {
-  try {
-    const formData = new FormData()
-    formData.append('file', file)
-    formData.append('candidate', props.candidateId)
-
-    const response = await fetch('post', 'upload-cv/', formData)
-    onSuccess(response)
-    message.success('Archivo subido correctamente')
-    await fetchQuery()
-  } catch (error) {
-    console.error('Error uploading file:', error)
-    onError(error)
-    message.error('Error al subir el archivo')
   }
 }
 

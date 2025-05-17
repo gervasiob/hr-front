@@ -50,7 +50,14 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['edit', 'delete', 'cv', 'row-click', 'sort-change', 'pagination-change'])
+const emit = defineEmits([
+  'edit',
+  'delete',
+  'cv',
+  'sort-change',
+  'pagination-change',
+  'open-profile'
+])
 
 const transformedColumns = computed(() =>
   props.columns.map(column => ({

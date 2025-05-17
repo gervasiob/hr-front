@@ -17,10 +17,12 @@
                     </a-form-item>
                 </a-col>
             </template>
+            
+            <!-- Custom field slot -->
+            <a-col :span="24">
+                <slot name="custom-field"></slot>
+            </a-col>
         </a-row>
-        <!-- <div class="form-actions">
-            <a-button type="primary" @click="handleSubmit">Guardar</a-button>
-        </div> -->
     </a-form>
 </template>
 
