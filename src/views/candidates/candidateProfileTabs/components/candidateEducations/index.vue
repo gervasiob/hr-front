@@ -78,7 +78,7 @@ async function fetchQuery() {
     const limit = pageSize.value
     const offset = (currentPage.value - 1) * pageSize.value
     const orderingParam = ordering.value ? { ordering: ordering.value } : {}
-    console.log('formattedCvId', props.formattedCvId)
+
     const params = {
       ...baseParams,
       ...orderingParam,
@@ -176,7 +176,7 @@ function handleEdit(item) {
 }
 
 async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId }
+  processedForm = { ...processedForm, candidate: props.candidateId, formatted_cv: props.formattedCvId, }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)

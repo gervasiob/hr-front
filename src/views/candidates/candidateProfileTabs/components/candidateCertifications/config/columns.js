@@ -1,26 +1,11 @@
 // src/views/candidatelanguage/config/columns.js
 
 export const columns = [
-  {
-    title: 'Perfil', field: 'primary_profile',
-    cast: {
-      source: 'primary-profiles/',
-      valueField: 'id',
-      labelField: 'name',
-    },
-  },
-  {
-    title: 'Sub Perfil', field: 'sub_profile',
-    cast: {
-      source: 'sub-profiles/',
-      valueField: 'id',
-      labelField: 'name',
-    },
-  },
-  { title: 'Nivel Sr', field: 'seniority', sorter: true },
-  { title: 'Trabajo Actual', field: 'current_job', sorter: true },
-  { title: 'Años de experiencia', field: 'experience_years', sorter: true },
-  { title: 'Skills', field: 'skills_description', sorter: true },
+
+  { title: 'Nombre', field: 'certification_name', sorter: true },
+  { title: 'Institución', field: 'institution_name', sorter: true },
+  { title: 'Fecha de Emisión', field: 'issue_date', sorter: true },
+  { title: 'Fecha de Vencimiento', field: 'expiration_date', sorter: true },
   {
     title: 'Acciones',
     field: 'actions',

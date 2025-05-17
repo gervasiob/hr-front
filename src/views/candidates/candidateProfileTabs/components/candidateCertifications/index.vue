@@ -57,10 +57,10 @@ const selectedId = ref(null)
 
 // config parameters
 // config parameters
-const titleText = 'Perfil Candidatos'
-const itemText = 'Perfil Candidato'
-const modelName = 'candidate-profiles'
-const modelNameSingle = 'candidate-profile'
+const titleText = 'Certificaciones'
+const itemText = 'Certificación'
+const modelName = 'formatted-cv-certifications'
+const modelNameSingle = 'formatted-cv-certification'
 const endpoint = modelName + '/'
 
 onMounted(async () => {
@@ -176,7 +176,7 @@ function handleEdit(item) {
 }
 
 async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId }
+  processedForm = { ...processedForm, candidate: props.candidateId, formatted_cv: props.formattedCvId, }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)
