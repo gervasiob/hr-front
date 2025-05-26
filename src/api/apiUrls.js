@@ -8,7 +8,7 @@ localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 
 export let BASE_URL = 'https://ngovatek.com/api/';
-export let BASE_URL_LOGIN = 'https://ngovatek.com/'
+export let BASE_URL_LOGIN = 'https://ngovatek.com/api/'
 
 
 // Add this for debugging
