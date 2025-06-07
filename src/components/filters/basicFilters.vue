@@ -18,6 +18,11 @@
                         </a-select-option>
                     </a-select>
 
+                    <!-- CHECKBOX -->
+                    <a-checkbox v-else-if="filter.type === 'checkbox'" v-model:checked="filters[filter.field]">
+                        <!-- {{ filter.checkboxLabel || filter.label }} -->
+                    </a-checkbox>
+
                     <!-- INPUT por defecto -->
                     <a-input v-else v-model:value="filters[filter.field]"
                         :placeholder="filter.placeholder || filter.label" allow-clear style="min-width: 180px" />
@@ -47,7 +52,15 @@ const selectOptions = ref({});
 const filters = reactive({});
 
 // Inicializar filtros
-props.filterConfig.forEach(f => (filters[f.field] = f.mode === 'multiple' ? [] : null));
+props.filterConfig.forEach(f => {
+    if (f.mode === 'multiple') {
+        filters[f.field] = [];
+    } else if (f.type === 'checkbox') {
+        filters[f.field] = false;
+    } else {
+        filters[f.field] = null;
+    }
+});
 
 // Función común para búsqueda
 const filterOption = (input, option) =>
@@ -70,6 +83,7 @@ onMounted(() => {
                 valueField: filter.apiSource.valueField,
                 nameField: filter.apiSource.nameField,
             });
+            console.log('options', options);
             selectOptions.value[filter.field] = options.map(opt => ({
                 label: opt.label || opt[filter.apiSource.nameField],
                 value: opt.value || opt[filter.apiSource.valueField],

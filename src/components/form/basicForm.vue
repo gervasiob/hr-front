@@ -145,7 +145,6 @@ async function handleSubmit() {
                 processedForm[field.field] = dayjs(processedForm[field.field]).format('YYYY-MM-DD')
             }
         })
-
         await props.onSubmit(processedForm)
         form.value = {}
         if (props.fetchData) await props.fetchData()

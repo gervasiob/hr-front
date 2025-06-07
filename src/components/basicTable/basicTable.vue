@@ -17,6 +17,13 @@
             {{ record[column.dataIndex] ? 'Sí' : 'No' }}
           </a-tag>
         </template>
+        <template v-else-if="column.type === 'tag'">
+          <template v-if="record[column.dataIndex]">
+            <a-tag v-for="tag in record[column.dataIndex].split(',')" :key="tag.trim()" color="blue">
+              {{ tag.trim() }}
+            </a-tag>
+          </template>
+        </template>
           <template v-else-if="column.type === 'datetime'">
             {{ dayjs(record[column.dataIndex]).isValid() ? dayjs(record[column.dataIndex]).format('DD/MM/YYYY') : '' }}
           </template>

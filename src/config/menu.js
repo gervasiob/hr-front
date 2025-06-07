@@ -1,324 +1,62 @@
 import { h } from 'vue';
 import {
-    MailOutlined,
     AppstoreOutlined,
     SettingOutlined,
     UploadOutlined,
     DownloadOutlined,
 } from '@ant-design/icons-vue';
+import axios from 'axios';
 
-const basicAuth = ['Admin', 'Usuario', 'Agente'];
+import { fetch } from '@/api/model/model.js'
 
-export const menuList = [
-    {
-        key: 'login',
-        path: '/login',
-        component: () => import('@/views/login/index.vue'),
-        icon: () => h(AppstoreOutlined),
-        label: 'LOGIN',
-        title: 'Login',
-        roles: ['guest'],
-        name: 'Login',
-    },
-    {
-        key: 'principal',
-        path: '/principal',
-        component: () => import('@/views/candidates/candidateList/index.vue'),
-        icon: () => h(AppstoreOutlined),
-        label: 'PRINCIPAL',
-        title: 'PRINCIPAL',
-        roles: basicAuth,
-        name: 'Principal',
-    },
-    {
-        key: 'candidatos',
-        icon: () => h(SettingOutlined),
-        label: 'CANDIDATOS',
-        roles: basicAuth,
-        children: [
-            // {
-            //     key: 'candidatos-new',
-            //     label: 'NUEVO CANDIDATO',
-            //     path: '/candidatos/new',
-            //     component: () => import('@/views/candidates/index.vue'),
-            //     roles: basicAuth,
-            //     name: 'NuevoCandidato',
-            // },
-            {
-                key: 'candidatos-list',
-                label: 'LISTA DE CANDIDATOS',
-                path: '/candidatos/list',
-                component: () => import('@/views/candidates/candidateList/index.vue'),
-                roles: basicAuth,
-                name: 'ListaCandidatos',
+// Map de íconos string → componente Vue
+const iconMap = {
+    AppstoreOutlined: () => h(AppstoreOutlined),
+    SettingOutlined: () => h(SettingOutlined),
+    UploadOutlined: () => h(UploadOutlined),
+    DownloadOutlined: () => h(DownloadOutlined),
+};
+
+// Transforma respuesta JSON en estructura del menú
+// Mapeamos todos los .vue de la carpeta /views
+const viewModules = import.meta.glob('@/views/**/*.vue');
+
+function buildMenu(items) {
+    return items.map((item) => {
+        const path = `/src/views${item.component}`;  // Ojo: sin @
+        const route = {
+            id: item.id,
+            key: item.key,
+            path: item.path,
+            name: item.name,
+            label: item.label,
+            title: item.title || item.label,
+            icon: iconMap[item.icon] || undefined,
+            component: viewModules[path] || undefined,
+            parent: item.parent,
+            meta: {
+                roles: item.roles || [],
+                hideInMenu: item.hide_in_menu || false,
             },
-            {
-                key: 'candidate-profile',
-                label: 'PERFIL CANDIDATO',
-                path: '/candidates/candidate-profile/:id',
-                component: () => import('@/views/candidates/candidateProfileTabs/index.vue'),
-                roles: basicAuth,
-                name: 'PerfilCandidato',
-                hideInMenu: true,
-            },
-            {
-                key: 'candidatos-profiles',
-                label: 'PERFILES CANDIDATOS',
-                path: '/candidatos/candidatos-profiles',
-                component: () => import('@/views/candidates/candidateProfile/index.vue'),
-                roles: basicAuth,
-                name: 'PerfilesDeCandidatos',
-            },
-            {
-                key: 'cv-files',
-                label: 'CV CANDIDATOS',
-                path: '/candidatos/cv-files',
-                component: () => import('@/views/candidates/cvFiles/index.vue'),
-                roles: basicAuth,
-                name: 'CvCandidatos',
-            },
-            {
-                key: 'candidatos-languages',
-                label: 'IDIOMAS CANDIDATOS',
-                path: '/candidatos/candidatos-languages',
-                component: () => import('@/views/candidates/candidateLanguages/index.vue'),
-                roles: basicAuth,
-                name: 'IdiomaCandidatos',
-            },
-        ],
-    },
-    // ADM
-    {
-        key: 'adm',
-        icon: () => h(SettingOutlined),
-        label: 'ADMINISTRACION',
-        roles: basicAuth,
-        children: [
-            {
-                key: 'primary-profile',
-                label: 'Perfil Principal',
-                path: '/adm/primary-profile/',
-                component: () => import('@/views/adm/primaryProfiles/index.vue'),
-                roles: basicAuth,
-                name: 'PerfilPrincipal',
-            },
-            {
-                key: 'sub-profile',
-                label: 'Sub Perfil',
-                path: '/adm/sub-profile/',
-                component: () => import('@/views/adm/subProfiles/index.vue'),
-                roles: basicAuth,
-                name: 'SubPerfil',
-            },
-            {
-                key: 'languages',
-                label: 'Idiomas',
-                path: '/adm/languages/',
-                component: () => import('@/views/adm/languages/index.vue'),
-                roles: basicAuth,
-                name: 'Idiomas',
-            },
-        ],
-    },
-    // {
-    //     key: 'administracion',
-    //     icon: () => h(SettingOutlined),
-    //     label: 'CONFIGURACION',
-    //     title: 'Administracion',
-    //     roles: ['Admin'],
-    //     children: [
-    //         {
-    //             key: 'admUser',
-    //             label: 'ADM USUARIOS',
-    //             roles: ['Admin'],
-    //             children: [
-    //                 {
-    //                     key: 'roles',
-    //                     path: '/adm/roles',
-    //                     name: 'Roles',
-    //                     label: 'ROLES',
-    //                     title: 'ROLES',
-    //                 },
-    //                 {
-    //                     key: 'users',
-    //                     path: '/adm/users',
-    //                     name: 'Usuarios',
-    //                     label: 'USUARIOS',
-    //                     title: 'USUARIOS',
-    //                 },
-    //             ],
-    //         },
-    //         {
-    //             key: 'admProd',
-    //             label: 'ADM PRODUCTOS',
-    //             roles: ['Admin'],
-    //             children: [
-    //                 {
-    //                     key: 'product',
-    //                     path: '/adm/products',
-    //                     name: 'Productos',
-    //                     label: 'PRODUCTOS',
-    //                     title: 'PRODUCTOS',
-    //                 },
-    //                 {
-    //                     key: 'costs',
-    //                     path: '/adm/costs',
-    //                     name: 'Costo',
-    //                     label: 'COSTOS',
-    //                     title: 'COSTOS',
-    //                 },
-    //                 {
-    //                     key: 'stocks',
-    //                     path: '/adm/stocks',
-    //                     name: 'Stocks',
-    //                     label: 'STOCKS',
-    //                     title: 'STOCKS',
-    //                 },
-    //                 {
-    //                     key: 'details',
-    //                     path: '/adm/details',
-    //                     name: 'Detalles',
-    //                     label: 'DETALLES',
-    //                     title: 'DETALLES',
-    //                 },
-    //             ],
-    //         },
-    //         {
-    //             key: 'admTables',
-    //             label: 'ADM TABLAS',
-    //             roles: ['Admin'],
-    //             children: [
-    //                 {
-    //                     key: 'platforms',
-    //                     path: '/adm/platforms',
-    //                     name: 'Plataformas',
-    //                     label: 'PLATAFORMAS',
-    //                     title: 'PLATAFORMAS',
-    //                 },
-    //                 {
-    //                     key: 'vendors',
-    //                     path: '/adm/vendors',
-    //                     name: 'Proveedores',
-    //                     label: 'PROV - ASEG - SUC',
-    //                     title: 'PROVEEDORES',
-    //                 },
-    //                 {
-    //                     key: 'vehicles',
-    //                     path: '/adm/vehicles',
-    //                     name: 'Vehiculos',
-    //                     label: 'VEHICULOS',
-    //                     title: 'VEHICULOS',
-    //                 },
-    //                 {
-    //                     key: 'documentacion',
-    //                     path: '/adm/documentacion',
-    //                     name: 'Documentacion',
-    //                     label: 'DOCUMENTACIÓN',
-    //                     title: 'DOCUMENTACIÓN',
-    //                 },
-    //                 {
-    //                     key: 'documentsbyvendors',
-    //                     path: '/adm/documentsbyvendors',
-    //                     name: 'DocumentosPorAseguradoras',
-    //                     label: 'DOCUMENTOS POR ASEGURADORAS',
-    //                     title: 'DOCUMENTOS POR ASEGURADORAS',
-    //                 },
-    //             ],
-    //         },
-    //         {
-    //             key: 'admGral',
-    //             label: 'ADM GENERAL',
-    //             roles: ['Admin'],
-    //             children: [
-    //                 {
-    //                     key: 'Orders',
-    //                     path: '/adm/orders',
-    //                     name: 'OrdenesDeCompra',
-    //                     label: 'ORDEN DE COMPRA',
-    //                     title: 'ORDEN DE COMPRA',
-    //                 },
-    //                 {
-    //                     key: 'whatsapp',
-    //                     path: '/adm/whatsapp',
-    //                     name: 'Whatsapp',
-    //                     label: 'WHATSAPP',
-    //                     title: 'WHATSAPP',
-    //                 },
-    //             ],
-    //         },
-    //         {
-    //             key: 'admConfig',
-    //             label: 'ADM CONFIGURACIONES',
-    //             roles: ['Admin'],
-    //             children: [
-    //                 {
-    //                     key: 'criterias',
-    //                     path: '/adm/criterias',
-    //                     name: 'Criterios',
-    //                     label: 'CRITERIOS',
-    //                     title: 'CRITERIOS',
-    //                 },
-    //                 {
-    //                     key: 'configurations',
-    //                     path: '/adm/configurations',
-    //                     name: 'Configuraciones',
-    //                     label: 'CONFIGURACIONES',
-    //                     title: 'CONFIGURACIONES',
-    //                 },
-    //             ],
-    //         },
-    //     ],
-    // },
-    {
-        key: 'config',
-        icon: () => h(SettingOutlined),
-        label: 'CARGA/DESCARGA DATOS',
-        title: 'Configuración',
-        roles: basicAuth,
-        children: [
-            {
-                key: 'upload',
-                path: '/upload',
-                component: () => import('@/views/adm/upload/index.vue'),
-                name: 'Importar',
-                icon: () => h(UploadOutlined),
-                label: 'IMPORTAR',
-            },
-            {
-                key: 'download',
-                path: '/download',
-                component: () => import('@/views/adm/upload/index.vue'),
-                name: 'Exportar',
-                icon: () => h(DownloadOutlined),
-                label: 'EXPORTAR',
-            },
-        ],
-    },
-    // {
-    //     key: 'reportes',
-    //     path: '/reports',
-    //     icon: () => h(AppstoreOutlined),
-    //     label: 'REPORTES',
-    //     title: 'REPORTES',
-    //     roles: ['Admin'],
-    //     name: 'Reportes',
-    // },
-    // {
-    //     key: 'dashboard',
-    //     path: '/dashboard',
-    //     icon: () => h(AppstoreOutlined),
-    //     label: 'DASHBOARD',
-    //     title: 'DASHBOARD',
-    //     roles: ['Admin'],
-    //     name: 'Dashboard',
-    // },
-    {
-        key: 'logout',
-        path: '/logout',
-        icon: () => h(AppstoreOutlined),
-        label: 'LOGOUT',
-        title: 'LOGOUT',
-        roles: basicAuth,
-        name: 'Logout',
-    },
-];
+        };
+
+        if (item.children?.length) {
+            route.children = buildMenu(item.children);
+        }
+
+        return route;
+    });
+}
+
+// Método para cargar y preparar el menú
+export async function loadMenu() {
+    try {
+        const response = await fetch('get', 'menu-items/', { ordering:'order'});
+
+        const menuData = response;
+        return buildMenu(menuData);
+    } catch (err) {
+        console.error('❌ Error al cargar el menú desde el backend:', err);
+        return [];
+    }
+}

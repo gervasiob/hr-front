@@ -19,9 +19,8 @@
 
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
-    <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
-      @open-profile="handleOpenProfile" />
+    <BasicTable ref="basic" :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -57,49 +56,98 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'Roles'
-const itemText = 'Rol'
-const modelName = 'roles'
-const modelNameSingle = 'role'
+const titleText = 'Menú Items'
+const itemText = 'Menú Item'
+const modelName = 'menu-items'
+const modelNameSingle = 'menu-item'
 const endpoint = modelName + '/'
 
 
-onMounted(fetchQuery)
-
-
+onMounted(async () => {
+  await loadCastingLists()
+  await fetchQuery()
+})
 
 async function fetchQuery() {
-  loading.value = true
+  loading.value = true;
   try {
     const baseParams = Object.fromEntries(
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
-    )
+    );
 
-    const limit = pageSize.value
-    const offset = (currentPage.value - 1) * pageSize.value
-    const orderingParam = ordering.value ? { ordering: ordering.value } : {}
+    const page = currentPage.value || 1;
+    const limit = pageSize.value || 10;
+    const offset = (page - 1) * limit;
+    const orderingParam = ordering.value ? { ordering: ordering.value } : {};
 
     const params = {
       ...baseParams,
       ...orderingParam,
       limit,
-      offset
+      offset,
+    };
+
+    console.log('Ordering:', ordering.value, 'Page:', page, 'Offset:', offset);
+
+    const data = await fetch('get', endpoint, params);
+    let result = [];
+
+    if ('results' in data && 'count' in data) {
+      result = data.results;
+      totalItems.value = data.count;
+    } else {
+      result = data;
+      totalItems.value = data.length;
     }
 
-    const data = await fetch('get', endpoint, params)
-    if ('results' in data && 'count' in data) {
-      candidates.value = data.results
-      totalItems.value = data.count
-    } else {
-      candidates.value = data
-      totalItems.value = data.length
-    }
+    // ⬇️ Función auxiliar para casteo robusto
+    const castValue = (value, castConfig) => {
+      const list = JSON.parse(localStorage.getItem(`cast_${castConfig.source}`) || '[]');
+      const getLabel = (id) => {
+        const found = list.find(el => el[castConfig.valueField] === id);
+        return found ? found[castConfig.labelField] : id;
+      };
+      return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
+    };
+
+    // ⬇️ Mapear resultados con casteo
+    candidates.value = result.map(item => {
+      const newItem = { ...item };
+      columns.forEach(col => {
+        if (col.cast) {
+          newItem[col.field] = castValue(item[col.field], col.cast);
+        }
+      });
+      return newItem;
+    });
+
   } catch (e) {
-    console.error('Error al cargar listado', e)
+    console.error('Error al cargar listado', e);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
+
+async function loadCastingLists() {
+  const casts = columns
+    .filter(col => col.cast)
+    .map(col => col.cast.source)
+
+  const uniqueCasts = [...new Set(casts)]
+
+  for (const source of uniqueCasts) {
+    if (localStorage.getItem(`cast_${source}`)) {
+      localStorage.removeItem(`cast_${source}`)
+    }
+    const data = await fetch('list', source, {
+      valueField: 'id',
+      nameField: 'name'
+    })
+    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+
+  }
+}
+
 const totalItems = ref(0)
 
 const pagination = computed(() => ({
@@ -219,12 +267,7 @@ async function handleDownloadTemplate() {
     message.error('Ocurrió un error al descargar el listado')
   }
 }
-// Funciones a completar
-function handleOpenProfile(record) {
-  const profileId = record.id;
-  const url = `/candidates/candidate-profile/${profileId}`;
-  router.push({ name: 'PerfilCandidato', params: { id: profileId } });
-}
+
 </script>
 
 <style scoped>

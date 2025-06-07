@@ -20,8 +20,7 @@
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
-      @open-profile="handleOpenProfile" />
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -57,16 +56,17 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'Roles'
-const itemText = 'Rol'
-const modelName = 'roles'
-const modelNameSingle = 'role'
+const titleText = 'Sub Perfiles'
+const itemText = 'Sub Perfil'
+const modelName = 'sub-profiles'
+const modelNameSingle = 'sub-profile'
 const endpoint = modelName + '/'
 
 
-onMounted(fetchQuery)
-
-
+onMounted(async () => {
+  await loadCastingLists()
+  await fetchQuery()
+})
 
 async function fetchQuery() {
   loading.value = true
@@ -75,10 +75,11 @@ async function fetchQuery() {
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
     )
 
-    const limit = pageSize.value
-    const offset = (currentPage.value - 1) * pageSize.value
+    const page = currentPage.value || 1
+    const limit = pageSize.value || 10
+    const offset = (page - 1) * limit
     const orderingParam = ordering.value ? { ordering: ordering.value } : {}
-
+    console.log('Ordering:', ordering.value, 'Page:', page, 'Offset:', offset)
     const params = {
       ...baseParams,
       ...orderingParam,
@@ -87,19 +88,55 @@ async function fetchQuery() {
     }
 
     const data = await fetch('get', endpoint, params)
+    let result = []
+
     if ('results' in data && 'count' in data) {
-      candidates.value = data.results
+      result = data.results
       totalItems.value = data.count
     } else {
-      candidates.value = data
+      result = data
       totalItems.value = data.length
     }
+
+    // ⬇️ Casteo de columnas
+    candidates.value = result.map(item => {
+      const newItem = { ...item }
+      columns.forEach(col => {
+        if (col.cast) {
+          const list = JSON.parse(localStorage.getItem(`cast_${col.cast.source}`) || '[]')
+          const found = list.find(el => el[col.cast.valueField] === item[col.field])
+          if (found) newItem[col.field] = found[col.cast.labelField]
+        }
+      })
+      return newItem
+    })
   } catch (e) {
     console.error('Error al cargar listado', e)
   } finally {
     loading.value = false
   }
 }
+
+async function loadCastingLists() {
+  const casts = columns
+    .filter(col => col.cast)
+    .map(col => col.cast.source)
+
+  const uniqueCasts = [...new Set(casts)]
+
+  for (const source of uniqueCasts) {
+    if (localStorage.getItem(`cast_${source}`)) {
+      localStorage.removeItem(`cast_${source}`)
+    }
+    const data = await fetch('list', source, {
+      valueField: 'id',
+      nameField: 'name'
+    })
+    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+
+  }
+}
+
 const totalItems = ref(0)
 
 const pagination = computed(() => ({
@@ -219,12 +256,7 @@ async function handleDownloadTemplate() {
     message.error('Ocurrió un error al descargar el listado')
   }
 }
-// Funciones a completar
-function handleOpenProfile(record) {
-  const profileId = record.id;
-  const url = `/candidates/candidate-profile/${profileId}`;
-  router.push({ name: 'PerfilCandidato', params: { id: profileId } });
-}
+
 </script>
 
 <style scoped>

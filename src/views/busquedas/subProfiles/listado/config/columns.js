@@ -1,7 +1,15 @@
 // src/views/candidates/config/columns.js
 
 export const columns = [
-  { title: 'Rol', field: 'name', sorter: true },
+  { title: 'Sub Perfil', field: 'name', sorter: true },
+  {
+    title: 'Perfil', field: 'primary_profile',
+    cast: {
+      source: 'primary-profiles/',
+      valueField: 'id',
+      labelField: 'name',
+    },
+  },
   {
     title: 'Acciones',
     field: 'actions',
@@ -21,14 +29,7 @@ export const columns = [
           type: 'link',
           event: 'delete',
           danger: true
-        },
-        {
-          label: 'Ver Perfil',
-          type: 'link',
-          event: 'open-profile',
-          danger: false
         }
-
       ]
     }
   }
