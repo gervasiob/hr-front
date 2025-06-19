@@ -67,7 +67,6 @@ export async function getToken(credentials) {
         const email = response.data.email;
         const roles = response.data.roles;
         const name = response.data.name;
-        console.log('response', response);
         localStorage.setItem('token', token);
         localStorage.setItem('user_id', userId);
         localStorage.setItem('email', email);

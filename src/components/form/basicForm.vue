@@ -17,7 +17,7 @@
                     </a-form-item>
                 </a-col>
             </template>
-            
+
             <!-- Custom field slot -->
             <a-col :span="24">
                 <slot name="custom-field"></slot>
@@ -132,7 +132,7 @@ const getComponentProps = (field) => {
 };
 const filterOption = (input, option) =>
     option?.label?.toLowerCase().includes(input.toLowerCase()) ||
-        option?.children?.toLowerCase().includes(input.toLowerCase());
+    option?.children?.toLowerCase().includes(input.toLowerCase());
 
 
 async function handleSubmit() {
@@ -198,11 +198,12 @@ async function loadApiSelectOptions() {
         .filter(field => field.type === 'api-select')
         .map(async field => {
             try {
+
                 const data = await fetch('list', field.endpoint, {
                     valueField: field.valueField,
-                    nameField: field.nameField
+                    nameField: field.nameField,
+                    add_field: field.addField || null,
                 });
-
                 apiSelectOptions.value[field.field] = data.map(item => ({
                     value: item[field.valueField],
                     label: item[field.nameField]

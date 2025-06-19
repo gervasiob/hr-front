@@ -82,8 +82,8 @@ onMounted(() => {
             const options = await fetch('list', filter.apiSource.endpoint, {
                 valueField: filter.apiSource.valueField,
                 nameField: filter.apiSource.nameField,
+                params: filter.apiSource.params || {},
             });
-            console.log('options', options);
             selectOptions.value[filter.field] = options.map(opt => ({
                 label: opt.label || opt[filter.apiSource.nameField],
                 value: opt.value || opt[filter.apiSource.valueField],
