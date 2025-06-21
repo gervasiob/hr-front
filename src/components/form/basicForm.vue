@@ -126,6 +126,8 @@ const getComponentProps = (field) => {
         case 'select':
         case 'api-select':
             return base;
+        case 'textarea':
+            return { rows: field.rows || 3 };
         default:
             return {};
     }

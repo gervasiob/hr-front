@@ -1,6 +1,8 @@
 export const columns = [
-  { title: 'Nombre', field: 'name', sorter: true },
-  { title: 'Por defecto', field: 'is_default', type: 'boolean', sorter: true },
+  { title: 'Descripción del Puesto', field: 'job_description', sorter: false },
+  { title: 'Skills Requeridas', field: 'required_skills', sorter: false },
+  { title: 'Skills Opcionales', field: 'optional_skills', sorter: false },
+  { title: 'Soft Skills', field: 'soft_skills', sorter: false },
   {
     title: 'Acciones',
     field: 'actions',

@@ -56,10 +56,10 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'PCP'
-const itemText = 'Búsqueda'
-const modelName = 'search-requests'
-const modelNameSingle = 'search-request'
+const titleText = 'ESTADO DE BÚSQUEDAS'
+const itemText = 'Estado'
+const modelName = 'catalog-search-states'
+const modelNameSingle = 'catalog-search-state'
 const endpoint = modelName + '/'
 
 

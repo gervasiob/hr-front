@@ -53,6 +53,8 @@ export async function setupDynamicRoutes() {
     const dynamicRoutes = extractRoutesFromMenu(menuData);
 
     dynamicRoutes.forEach((route) => {
+        const path = typeof route === 'string' ? route : route.path;
+        if (!path.startsWith('/')) { return; }
         router.addRoute(route);
     });
 }

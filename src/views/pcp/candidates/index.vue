@@ -3,7 +3,7 @@
     <div class="header">
       <a-row>
         <a-col :span="16" style="text-align: left">
-          <h2>{{ titleText }}</h2>
+          <h2>{{ titleText + ': ' + searchTitle  }}</h2>
         </a-col>
         <a-col :span="4" style="text-align: right">
           <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
@@ -43,6 +43,8 @@ import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
 
+import { useRoute } from 'vue-router';
+
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
@@ -56,18 +58,49 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'MODALIDADES'
-const itemText = 'Modalidad'
-const modelName = 'catalog-modalities'
-const modelNameSingle = 'catalog-modalitie'
+const titleText = 'PCP CANDIDATOS: ';
+const itemText = 'Candidatos'
+const modelName = 'search-trackings'
+const modelNameSingle = 'search-tracking'
 const endpoint = modelName + '/'
-
+const route = useRoute();
+const id = ref(route.params.id);
+const searchTitle = ref('');
 
 onMounted(async () => {
   await loadCastingLists()
+  await getSearch()
   await fetchQuery()
 })
 
+async function getSearch() {
+  try {
+    if (id.value) {
+      const data = await fetch('get', 'search-requests', { id: id.value });
+      if (data && data.length > 0) {
+        const { code, client, profile, subprofile } = data[0];
+        let profileName = ""
+        let subprofileName = ""
+        if (profile) {
+          const profileData = await fetch('get', 'primary-profiles', { id: profile });
+          if (profileData && profileData.length > 0) {
+            profileName = profileData[0].name;
+          }
+        }
+        if (subprofile) {
+          const subprofileData = await fetch('get', 'sub-profiles', { id: subprofile });
+          if (subprofileData && subprofileData.length > 0) {
+            subprofileName = subprofileData[0].name;
+          }
+        }
+        searchTitle.value = code + " - " + client +" - " + profileName + " - " + subprofileName ;
+       
+      }
+    }
+  } catch (error) {
+    
+  }
+}
 async function fetchQuery() {
   loading.value = true;
   try {
@@ -83,6 +116,7 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
+      id: id.value,
       limit,
       offset,
     };
@@ -190,7 +224,12 @@ function handleViewCV(candidate) {
 
 async function handleProcessedForm(processedForm) {
   try {
-    if (processedForm.id) {
+
+    if (!id.value) {
+      return;
+    }
+    processedForm.search = id.value
+    if (candidates.value.length > 0) {
       await fetch('put', endpoint, processedForm, processedForm.id)
     } else {
       await fetch('post', endpoint, processedForm)

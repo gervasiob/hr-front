@@ -20,7 +20,8 @@
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
+      @open-detail="handleOpenDetail" @open-candidates="handleOpenCandidates" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -59,7 +60,7 @@ const pageSize = ref(10)
 const titleText = 'PCP'
 const itemText = 'Búsqueda'
 const modelName = 'search-requests'
-const modelNameSingle = 'search-request'
+const modelNameSingle = 'searchrequest'
 const endpoint = modelName + '/'
 
 
@@ -267,7 +268,17 @@ async function handleDownloadTemplate() {
     message.error('Ocurrió un error al descargar el listado')
   }
 }
-
+// Funciones a completar
+function handleOpenDetail(record) {
+  const detail = record.id;
+  const url = `/pcp/detail/${detail}`;
+  router.push({ name: 'Detalle de Búsqueda', params: { id: detail } });
+}
+function handleOpenCandidates(record) {
+  const detail = record.id;
+  const url = `/pcp/candidates/${detail}`;
+  router.push({ name: 'DETALLE CANDIDATOS', params: { id: detail } });
+}
 </script>
 
 <style scoped>

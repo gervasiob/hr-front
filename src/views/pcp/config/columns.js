@@ -1,22 +1,69 @@
 // src/views/pcp/config/columns.js
 
 export const columns = [
-
+  {
+    title: 'Búsqueda', field: 'code', 
+    width: 160,
+    sorter: true
+  },
   { title: 'Fecha Apertura', field: 'opening_date', type: 'datetime', sorter: true },
   { title: 'Comercial', field: 'requester', sorter: true },
 // responsable
-  { title: 'Búsqueda', field: 'code', sorter: true },
-  { title: 'Reclutadores', field: 'recruiter', sorter: true },
+
+  {
+    title: 'Reclutadores', field: 'recruiter', sorter: true,
+    cast: {
+      source: 'users/',
+      valueField: 'id',
+      labelField: 'username',
+    }, },
   // días t
   { title: 'Cliente', field: 'client', sorter: true },
-  { title: 'País', field: 'country', sorter: true },
-  { title: 'Perfil', field: 'profile', sorter: true },
-  { title: 'Subperfil', field: 'subprofile', sorter: true },
-  { title: 'Seniority', field: 'seniority', sorter: true },
-  { title: 'Modalidad', field: 'modality', sorter: true },
+  {
+    title: 'País', field: 'country', sorter: true,
+    cast: {
+      source: 'catalog-countries/',
+      valueField: 'id',
+      labelField: 'code',
+    }, },
+  {
+    title: 'Perfil', field: 'profile', sorter: true,
+    cast: {
+      source: 'primary-profiles/',
+      valueField: 'id',
+      labelField: 'name',
+    }, },
+  {
+    title: 'Subperfil', field: 'subprofile', sorter: true,
+    cast: {
+      source: 'sub-profiles/',
+      valueField: 'id',
+      labelField: 'name',
+    }, },
+  {
+    title: 'Seniority', field: 'seniority', sorter: true,
+    cast: {
+      source: 'seniority-levels/',
+      valueField: 'id',
+      labelField: 'name',
+    }, },
+  {
+    title: 'Modalidad', field: 'modality', sorter: true,
+      cast: {
+      source: 'catalog-modalities/',
+      valueField: 'id',
+      labelField: 'name',
+    },
+  },
   { title: 'Inglés requerido', field: 'english_required', type: 'boolean', sorter: true },
   { title: 'Tope salarial', field: 'salary_cap', sorter: true },
-  { title: 'Tipo contratación', field: 'hiring_type', sorter: true },
+  {
+    title: 'Tipo contratación', field: 'hiring_type', sorter: true,
+    cast: {
+      source: 'catalog-hiring-types/',
+      valueField: 'id',
+      labelField: 'name',
+    }, },
   { title: 'Quién Contrata?', field: 'hired_by', sorter: true },
   // wordpress
   // LinkedinFilled
@@ -39,14 +86,25 @@ export const columns = [
   {
     title: 'Acciones',
     field: 'actions',
+    width: 200,
     operation: {
       slots: true,
       align: 'center',
-      width: 160,
       actions: [
         { label: 'Editar', type: 'link', event: 'edit', danger: false },
         { label: 'Eliminar', type: 'link', event: 'delete', danger: true },
-        { label: 'Ver Detalle', type: 'link', event: 'open-detail', danger: false }
+        { 
+          label: 'Ver Detalle', 
+          type: 'link', 
+          event: 'open-detail', 
+          danger: false,
+        },
+        { 
+          label: 'Ver Candidatos', 
+          type: 'link', 
+          event: 'open-candidates', 
+          danger: false,
+        },
       ]
     }
   }

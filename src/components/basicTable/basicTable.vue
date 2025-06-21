@@ -1,7 +1,7 @@
 <template>
   <div class="basic-table">
     <a-table :columns="transformedColumns" :data-source="items" :loading="loading" row-key="id" :pagination="pagination"
-      @change="handleTableChange">
+      :scroll="{ x: 1500 }" @change="handleTableChange">
       <template #bodyCell="{ column, record }">
         <template v-if="column.operation?.slots">
           <div class="operation-buttons" v-if="column.operation.actions">
@@ -24,9 +24,9 @@
             </a-tag>
           </template>
         </template>
-          <template v-else-if="column.type === 'datetime'">
-            {{ dayjs(record[column.dataIndex]).isValid() ? dayjs(record[column.dataIndex]).format('DD/MM/YYYY') : '' }}
-          </template>
+        <template v-else-if="column.type === 'datetime'">
+          {{ dayjs(record[column.dataIndex]).isValid() ? dayjs(record[column.dataIndex]).format('DD/MM/YYYY') : '' }}
+        </template>
         <template v-else>
           {{ record[column.dataIndex] }}
         </template>

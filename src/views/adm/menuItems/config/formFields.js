@@ -2,7 +2,15 @@
 export const candidateFormFields = [
     { label: 'Clave', field: 'key', type: 'input', span: 12, required: true },
     { label: 'Etiqueta', field: 'label', type: 'input', span: 12, required: true },
-    { label: 'Ruta', field: 'path', type: 'input', span: 12, required: true },
+    {
+        label: 'Ruta', field: 'path', type: 'input', span: 12, required: true,
+        rules: {
+            path: [
+                { required: true, message: 'La ruta es requerida', trigger: 'change' },
+                { pattern: /^\//, message: 'Debe comenzar con /', trigger: 'change' }
+            ]
+        }
+    },
     { label: 'Nombre', field: 'name', type: 'input', span: 12, required: true },
     { label: 'Título', field: 'title', type: 'input', span: 12, required: true },
     { label: 'Icono', field: 'icon', type: 'input', span: 12, required: false },
