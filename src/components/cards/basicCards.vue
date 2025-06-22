@@ -40,7 +40,7 @@
 import { ref, onMounted, onBeforeUnmount } from 'vue';
 import { ExportOutlined } from '@ant-design/icons-vue';
 
-import { navigateTo } from '@/utils/utils';
+// import { navigateTo } from '@/utils/utils';
 import { TENDER_STATES } from '@/common/common';
 import { upperCase } from 'lodash';
 
