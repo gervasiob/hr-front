@@ -4,7 +4,7 @@ export const candidateFormFields = [
         field: 'job_description',
         type: 'textarea',
         span: 24,
-        rows: 8, 
+        rows: 8,
         required: true
     },
     {
@@ -12,7 +12,7 @@ export const candidateFormFields = [
         field: 'required_skills',
         type: 'textarea',
         span: 24,
-        rows: 6, 
+        rows: 6,
         required: true
     },
     {
@@ -26,5 +26,5 @@ export const candidateFormFields = [
         field: 'soft_skills',
         type: 'textarea',
         span: 24
-    }
+    },
 ]

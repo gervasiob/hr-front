@@ -1,5 +1,12 @@
 export const columns = [
-  { title: 'Nombre del Candidato', field: 'candidate_name', sorter: true },
+  {
+    title: 'Mail del Candidato', field: 'candidate', sorter: true,
+    cast: {
+      source: 'candidates/',
+      valueField: 'id',
+      labelField: 'email',
+    }, 
+   },
   {
     title: 'Reclutador', field: 'recruiter', sorter: true,
     cast: {

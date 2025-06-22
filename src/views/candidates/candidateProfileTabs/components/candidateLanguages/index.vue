@@ -220,9 +220,12 @@ async function handleModalOk() {
   }
 }
 function handleDelete(item) {
+  const deleteItem = Object.entries(item)
+    .map(([key, value]) => `${key}: ${typeof value === 'string' ? `'${value}'` : value}`)
+    .join(', ');
   Modal.confirm({
     title: '¿Estás seguro?',
-    content: `¿Querés eliminar el registro "${item}"?`,
+    content: `¿Querés eliminar el registro "${deleteItem}"?`,
     okText: 'Sí, eliminar',
     cancelText: 'Cancelar',
     okType: 'danger',

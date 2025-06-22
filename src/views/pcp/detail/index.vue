@@ -3,7 +3,7 @@
     <div class="header">
       <a-row>
         <a-col :span="16" style="text-align: left">
-          <h2>{{ titleText + ': ' + searchTitle  }}</h2>
+          <h2>{{ titleText + ': ' + searchTitle }}</h2>
         </a-col>
         <a-col :span="4" style="text-align: right">
           <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
@@ -25,7 +25,12 @@
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
-        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery">
+        <template #custom-field>
+          <clientProposal v-model:selectedId="selectedId" />
+          <questionRequired v-model:selectedId="selectedId" />
+        </template>
+      </BasicForm>
     </a-modal>
   </div>
 </template>
@@ -44,7 +49,8 @@ import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
 
 import { useRoute } from 'vue-router';
-
+import clientProposal from './components/clientProposal/index.vue'
+import questionRequired from './components/questionRequired/index.vue'
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
@@ -116,7 +122,7 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      id: id.value,
+      search: id.value,
       limit,
       offset,
     };

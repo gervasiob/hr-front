@@ -1,10 +1,10 @@
 export const filters = [
     {
         label: 'Candidato',
-        field: 'candidate_name',
-        model: 'candidate_name',
+        field: 'candidate',
+        model: 'candidate',
         type: 'text',
-        placeholder: 'Buscar por nombre',
+        placeholder: 'Buscar por id',
         span: 8
     },
     {

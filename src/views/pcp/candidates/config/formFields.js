@@ -1,10 +1,14 @@
 export const candidateFormFields = [
     {
-        label: 'Nombre del Candidato',
-        field: 'candidate_name',
-        type: 'input',
+        label: 'Mail del Candidato',
+        field: 'candidate',
+        type: 'api-select',
         span: 12,
         required: true,
+        mode: 'single',
+        endpoint: 'candidates/', // <- el endpoint real que usás
+        valueField: 'id',       // <- nombre del campo que se usará como `value`
+        nameField: 'email', 
     },
     {
         label: 'Reclutador',
