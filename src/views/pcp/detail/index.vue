@@ -122,7 +122,7 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      search: id.value,
+      id: id.value,
       limit,
       offset,
     };

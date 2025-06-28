@@ -40,6 +40,7 @@ export const columns = [
       width: 160,
       actions: [
         { label: 'Editar', type: 'link', event: 'edit', danger: false },
+        { label: 'Ver Informe', type: 'link', event: 'open-detail', danger: false },
         { label: 'Eliminar', type: 'link', event: 'delete', danger: true }
       ]
     }

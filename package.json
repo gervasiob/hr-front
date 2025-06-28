@@ -12,10 +12,13 @@
   },
   "dependencies": {
     "@ant-design/icons-vue": "^7.0.1",
+    "@tiptap/starter-kit": "^2.23.0",
+    "@tiptap/vue-3": "^2.23.0",
     "ant-design-vue": "^4.2.1",
     "axios": "^1.7.2",
     "date-fns": "^3.6.0",
     "echarts": "^5.5.1",
+    "html-docx-js": "^0.3.1",
     "html2pdf.js": "^0.10.2",
     "lodash": "^4.17.21",
     "serve": "^14.2.3",

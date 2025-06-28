@@ -3,7 +3,7 @@
     <div class="header">
       <a-row>
         <a-col :span="16" style="text-align: left">
-          <h2>{{ titleText + ': ' + searchTitle  }}</h2>
+          <h2>{{ titleText + searchTitle }}</h2>
         </a-col>
         <a-col :span="4" style="text-align: right">
           <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
@@ -20,7 +20,8 @@
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+      @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort"
+      @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -116,7 +117,7 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      id: id.value,
+      search: id.value,
       limit,
       offset,
     };
@@ -309,7 +310,12 @@ async function handleDownloadTemplate() {
     message.error('Ocurrió un error al descargar el listado')
   }
 }
-
+// Funciones a completar
+function handleOpenDetail(record) {
+  const detail = record.id;
+  const url = `/pcp/candidates/reports/${detail}`;
+  router.push({ name: 'INFORME', params: { id: detail } });
+}
 </script>
 
 <style scoped>

@@ -2,41 +2,22 @@
     <div class="upload-container">
         <h2>Importar Datos</h2>
         <div class="table-selector">
-            <a-select
-                v-model:value="selectedTable"
-                placeholder="Select a table"
-                style="width: 200px"
-                show-search
-                :filter-option="filterTables"
-                @change="handleTableChange"
-            >
+            <a-select v-model:value="selectedTable" placeholder="Select a table" style="width: 200px" show-search
+                :filter-option="filterTables" @change="handleTableChange">
                 <a-select-option v-for="table in availableTables" :key="table" :value="table">
                     {{ table }}
                 </a-select-option>
             </a-select>
-            
-            <a-button 
-                type="primary"
-                :disabled="!selectedTable"
-                @click="downloadTemplate"
-            >
+
+            <a-button type="primary" :disabled="!selectedTable" @click="downloadTemplate">
                 <template #icon><download-outlined /></template>
                 Download Template
             </a-button>
         </div>
 
-        <a-upload-dragger 
-            v-model:file-list="fileList" 
-            name="file" 
-            list-type="picture-card" 
-            class="avatar-uploader"
-            :show-upload-list="true" 
-            :action="importUrl"
-            :before-upload="beforeUpload" 
-            @change="handleChange" 
-            @drop="handleDrop"
-            :disabled="!selectedTable"
-        >
+        <a-upload-dragger v-model:file-list="fileList" name="file" list-type="picture-card" class="avatar-uploader"
+            :show-upload-list="true" :action="importUrl" :before-upload="beforeUpload" @change="handleChange"
+            @drop="handleDrop" :disabled="!selectedTable">
             <div v-if="imageUrl">
 
                 <p class="ant-upload-text">Archivo cargado con éxito</p>
@@ -54,7 +35,20 @@
                 </div>
             </div>
         </a-upload-dragger>
-
+        <div v-if="errorsList.length > 0" class="error-list">
+            <h3>Errores encontrados:</h3>
+            <a-list bordered :data-source="errorsList">
+                <template #renderItem="{ item }">
+                    <a-list-item>
+                        <a-list-item-meta :description="`${item}`" />
+                    </a-list-item>
+                </template>
+            </a-list>
+        </div>
+        <div v-if="errorText" class="error-list">
+            <h3>Error encontrado:</h3>
+            <span>{{ errorText }}</span>
+        </div>
     </div>
 </template>
 
@@ -63,9 +57,9 @@ import { ref, computed, onMounted } from 'vue';
 import { message } from 'ant-design-vue';
 import { LoadingOutlined, InboxOutlined, DownloadOutlined } from '@ant-design/icons-vue';
 import { getAvailableTables, downloadTemplate as getTemplate } from '@/api/model/importExport';
-
+import { BASE_URL } from '@/api/apiUrls';
 export default {
-    name: 'CostIndex',
+    name: 'UploadFiles',
     components: {
         LoadingOutlined,
         InboxOutlined,
@@ -81,7 +75,7 @@ export default {
 
         // Computed import URL based on selected table
         const importUrl = computed(() => {
-            return selectedTable.value ? `/api/import/${selectedTable.value}/` : '';
+            return selectedTable.value ? `${BASE_URL}import/${selectedTable.value}/` : '';
         });
 
         // Fetch available tables on component mount
@@ -102,20 +96,20 @@ export default {
         // Download template function
         const downloadTemplate = async () => {
             if (!selectedTable.value) return;
-            
+
             try {
                 loading.value = true;
                 const response = await getTemplate(selectedTable.value);
-                
+
                 // Create and trigger download
-                const url = window.URL.createObjectURL(new Blob([response.data]));
+                const url = window.URL.createObjectURL(new Blob([response]));
                 const link = document.createElement('a');
                 link.href = url;
                 link.setAttribute('download', `${selectedTable.value}_template.xlsx`);
                 document.body.appendChild(link);
                 link.click();
                 link.remove();
-                
+
                 message.success('Template downloaded successfully');
             } catch (error) {
                 message.error('Error downloading template ' + error);
@@ -132,10 +126,19 @@ export default {
             reader.addEventListener('load', () => callback(reader.result));
             reader.readAsDataURL(img);
         }
-
+        const errorsList = ref([]);
+        const errorText = ref(null);
         const handleChange = info => {
+            errorsList.value = [];
+            errorText.value = null;
             if (info.file.status === 'uploading') {
                 loading.value = true;
+                return;
+            }
+            errorsList.value = info.fileList[0].response?.report?.errors || [];
+            if (errorsList.length > 0) {
+                message.error(`Errores en la importación del archivo.`);
+                loading.value = false;
                 return;
             }
             if (info.file.status === 'done') {
@@ -150,11 +153,13 @@ export default {
             if (info.file.status === 'error') {
                 loading.value = false;
                 const response = info.file.response;
-            if (response && response.error) {
-                message.error(`Error al subir: ${response.error}`);
-            } else {
-                message.error('Error al subir archivo');
-            }
+                if (response && response.error) {
+                    message.error(`Error al subir archivo.`);
+
+                    errorText.value = response.error;
+                } else {
+                    message.error('Error al subir archivo');
+                }
             }
         };
 
@@ -199,6 +204,8 @@ export default {
             downloadTemplate,
             importUrl,
             filterTables,
+            errorsList,
+            errorText,
         };
     }
 };
@@ -224,7 +231,8 @@ h2 {
     color: var(--color-heading);
     margin-bottom: 24px;
 }
+
 .table-selector {
     margin-bottom: 24px;
-    }
+}
 </style>
