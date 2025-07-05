@@ -17,7 +17,7 @@
 
     </div>
 
-    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
+    <BasicFilter :filter-config="filters" :initial-values="filterParams" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
       @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
@@ -33,7 +33,6 @@
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import BasicTable from '@/components/basicTable/basicTable.vue'
 import BasicFilter from '@/components/filters/basicFilters.vue'
 import BasicForm from '@/components/form/basicForm.vue'
@@ -43,6 +42,8 @@ import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
+import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const router = useRouter()
 const loading = ref(false)
@@ -62,9 +63,31 @@ const itemText = 'Búsqueda'
 const modelName = 'search-requests'
 const modelNameSingle = 'searchrequest'
 const endpoint = modelName + '/'
+const route = useRoute();
 
+// Función para aplicar query parameters a los filtros
+function applyQueryParamsToFilters() {
+  const queryParams = route.query;
+  const initialFilters = {};
+  
+  // Obtener los campos disponibles en el filtro
+  const filterFields = filters.map(filter => filter.field);
+  
+  // Aplicar solo los query parameters que corresponden a campos de filtro
+  Object.keys(queryParams).forEach(key => {
+    if (filterFields.includes(key)) {
+      initialFilters[key] = queryParams[key];
+    }
+  });
+  // Si hay filtros iniciales, aplicarlos
+  if (Object.keys(initialFilters).length > 0) {
+    filterParams.value = initialFilters;
+  }
+}
 
 onMounted(async () => {
+  // Aplicar query parameters a los filtros antes de cargar datos
+  applyQueryParamsToFilters();
   await loadCastingLists()
   await fetchQuery()
 })
@@ -80,15 +103,31 @@ async function fetchQuery() {
     const limit = pageSize.value || 10;
     const offset = (page - 1) * limit;
     const orderingParam = ordering.value ? { ordering: ordering.value } : {};
-
+    let current_state = null
+    let recruiter = null
+    if (route.path === '/pcp/list/open') {
+      current_state = 1
+      filterParams.value.current_state = 1
+    }
+    console.log('route path', route.path)
+    if (route.path === '/principal') {
+      if (localStorage.getItem('user_id')) {
+        recruiter = localStorage.getItem('user_id')
+        filterParams.value.recruiter = recruiter
+      }
+      current_state = 1
+      filterParams.value.current_state = 1
+    }
     const params = {
       ...baseParams,
       ...orderingParam,
       limit,
       offset,
+      ...route.query,
+      current_state: current_state,
+      recruiter: recruiter
     };
-
-    console.log('Ordering:', ordering.value, 'Page:', page, 'Offset:', offset);
+    
 
     const data = await fetch('get', endpoint, params);
     let result = [];

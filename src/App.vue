@@ -29,7 +29,8 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const loginRoute = ref(false);
-    const hideMenu = computed(() => route.meta.hideMenu || false);
+
+    const hideMenu = computed(() => route.meta.hideInMenu || false);
 
     const handleMenuSelect = ({ key }) => {
       const findItem = (list) =>
@@ -40,7 +41,7 @@ export default {
         }, null);
 
       const selected = findItem(items.value);
-      if (selected?.path && selected.path !== route.path) {
+      if (selected?.path && selected.path !== route.path ) {
         router.push({ path: selected.path });
       }
     };

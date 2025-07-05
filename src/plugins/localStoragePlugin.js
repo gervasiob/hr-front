@@ -1,10 +1,16 @@
 export default {
     install(app) {
-        const localStorageData = {
-            notificationOn: localStorage.getItem('notificationOn') === 'true',
-            minutesAdjudicated: parseInt(localStorage.getItem('minutesAdjudicated'), 10) || 15,
+        const logout = () => {
+            localStorage.clear();
+            window.location.href = '/login';
         };
 
-        app.provide('localStorageData', localStorageData);
+        app.provide('localStorage', {
+            data: {
+                notificationOn: localStorage.getItem('notificationOn') === 'true',
+                minutesAdjudicated: parseInt(localStorage.getItem('minutesAdjudicated'), 10) || 15,
+            },
+            logout
+        });
     }
 }

@@ -36,7 +36,7 @@ function buildMenu(items) {
             parent: item.parent,
             meta: {
                 roles: item.roles || [],
-                hideInMenu: item.hide_in_menu || false,
+                hideInMenu: !item.is_active || false,
             },
         };
 

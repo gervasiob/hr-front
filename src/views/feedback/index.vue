@@ -3,7 +3,7 @@
     <div class="header">
       <a-row>
         <a-col :span="16" style="text-align: left">
-          <h2>{{ titleText + searchTitle }}</h2>
+          <h2>{{ titleText }}</h2>
         </a-col>
         <a-col :span="4" style="text-align: right">
           <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
@@ -59,13 +59,13 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'PCP CANDIDATOS: ';
-const itemText = 'Candidatos'
+const titleText = 'TABLA FEEDBACK: ';
+const itemText = 'Feedback'
 const modelName = 'search-trackings'
 const modelNameSingle = 'search-tracking'
 const endpoint = modelName + '/'
 const route = useRoute();
-const id = ref(route.params.id);
+
 const searchTitle = ref('');
 
 onMounted(async () => {
@@ -76,30 +76,28 @@ onMounted(async () => {
 
 async function getSearch() {
   try {
-    if (id.value) {
-      const data = await fetch('get', 'search-requests', { id: id.value });
-      if (data && data.length > 0) {
-        const { code, client, profile, subprofile } = data[0];
-        let profileName = ""
-        let subprofileName = ""
-        if (profile) {
-          const profileData = await fetch('get', 'primary-profiles', { id: profile });
-          if (profileData && profileData.length > 0) {
-            profileName = profileData[0].name;
-          }
+    const data = await fetch('get', 'search-requests');
+    if (data && data.length > 0) {
+      const { code, client, profile, subprofile } = data[0];
+      let profileName = ""
+      let subprofileName = ""
+      if (profile) {
+        const profileData = await fetch('get', 'primary-profiles', { id: profile });
+        if (profileData && profileData.length > 0) {
+          profileName = profileData[0].name;
         }
-        if (subprofile) {
-          const subprofileData = await fetch('get', 'sub-profiles', { id: subprofile });
-          if (subprofileData && subprofileData.length > 0) {
-            subprofileName = subprofileData[0].name;
-          }
-        }
-        searchTitle.value = code + " - " + client +" - " + profileName + " - " + subprofileName ;
-       
       }
+      if (subprofile) {
+        const subprofileData = await fetch('get', 'sub-profiles', { id: subprofile });
+        if (subprofileData && subprofileData.length > 0) {
+          subprofileName = subprofileData[0].name;
+        }
+      }
+      searchTitle.value = code + " - " + client + " - " + profileName + " - " + subprofileName;
+
     }
   } catch (error) {
-    
+
   }
 }
 async function fetchQuery() {
@@ -117,14 +115,13 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      search: id.value,
       limit,
       offset,
     };
 
     const data = await fetch('get', endpoint, params);
     let result = [];
-
+    
     if ('results' in data && 'count' in data) {
       result = data.results;
       totalItems.value = data.count;

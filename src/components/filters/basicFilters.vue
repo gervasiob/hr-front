@@ -36,13 +36,17 @@
 </template>
 
 <script setup>
-import { ref, onMounted, reactive } from 'vue';
+import { ref, onMounted, reactive, watch } from 'vue';
 import { fetch } from '@/api/model/model.js';
 
 const props = defineProps({
     filterConfig: {
         type: Array,
         required: true
+    },
+    initialValues: {
+        type: Object,
+        default: () => ({})
     }
 });
 
@@ -54,13 +58,22 @@ const filters = reactive({});
 // Inicializar filtros
 props.filterConfig.forEach(f => {
     if (f.mode === 'multiple') {
-        filters[f.field] = [];
+        filters[f.field] = props.initialValues[f.field] || [];
     } else if (f.type === 'checkbox') {
-        filters[f.field] = false;
+        filters[f.field] = props.initialValues[f.field] || false;
     } else {
-        filters[f.field] = null;
+        filters[f.field] = props.initialValues[f.field] || null;
     }
 });
+
+// Observar cambios en initialValues para aplicarlos
+watch(() => props.initialValues, (newValues) => {
+    Object.keys(newValues).forEach(key => {
+        if (filters.hasOwnProperty(key)) {
+            filters[key] = newValues[key];
+        }
+    });
+}, { immediate: true, deep: true });
 
 // Función común para búsqueda
 const filterOption = (input, option) =>

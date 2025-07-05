@@ -27,6 +27,19 @@
         <template v-else-if="column.type === 'datetime'">
           {{ dayjs(record[column.dataIndex]).isValid() ? dayjs(record[column.dataIndex]).format('DD/MM/YYYY') : '' }}
         </template>
+        <template v-else-if="column.type === 'button'">
+          <div class="button-cell">
+            <a-button 
+              type="primary" 
+              v-if="column.buttonConfig"
+              :href="column.buttonConfig.getUrl?.(record[column.dataIndex], record)"
+              :target="column.buttonConfig.target || '_self'"
+              @click="column.buttonConfig.onClick?.(record[column.dataIndex], record)"
+            >
+            {{ record[column.dataIndex] }}
+            </a-button>
+          </div>
+        </template>
         <template v-else>
           {{ record[column.dataIndex] }}
         </template>
@@ -105,6 +118,16 @@ function handleTableChange(pagination, filters, sorter) {
 }
 .operation-buttons {
   display: flex;
+  gap: 8px;
+}
+.button-cell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.button-cell {
+  display: flex;
+  align-items: center;
   gap: 8px;
 }
 </style>
