@@ -24,7 +24,8 @@
       @open-profile="handleOpenProfile" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
-      :confirm-loading="modalLoading" @ok="handleModalOk">
+      :confirm-loading="modalLoading" @ok="handleModalOk" :destroyOnClose="true">
+
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
         :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
     </a-modal>
@@ -141,6 +142,13 @@ function handleViewCV(candidate) {
 }
 
 async function handleProcessedForm(processedForm) {
+  console.log('processedForm', processedForm)
+  if (processedForm.is_blacklisted && !processedForm.blacklist_reason) {
+    message.error('Error: El candidato está en blacklist. Debe completar Razones de Blacklist.')
+
+    return;
+  }
+
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)
@@ -156,7 +164,6 @@ async function handleProcessedForm(processedForm) {
     // Si error es un objeto con detalles de validación
     if (error?.response?.data) {
       const messages = Object.values(error.response.data).flat().join(' ')
-      console.log('aca')
       message.error({
         content: () => `Errores: ${messages}`,
         class: 'custom-large-message',
