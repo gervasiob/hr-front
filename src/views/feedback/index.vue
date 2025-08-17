@@ -132,12 +132,23 @@ async function fetchQuery() {
 
     // ⬇️ Función auxiliar para casteo robusto
     const castValue = (value, castConfig) => {
-      const list = JSON.parse(localStorage.getItem(`cast_${castConfig.source}`) || '[]');
-      const getLabel = (id) => {
-        const found = list.find(el => el[castConfig.valueField] === id);
-        return found ? found[castConfig.labelField] : id;
-      };
-      return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
+      const storedData = localStorage.getItem(`cast_${castConfig.source}`);
+      if (!storedData || storedData === 'undefined') {
+        console.warn(`No data found in localStorage for cast_${castConfig.source}`);
+        return value; // Retornar el valor original si no hay datos
+      }
+      
+      try {
+        const list = JSON.parse(storedData);
+        const getLabel = (id) => {
+          const found = list.find(el => el[castConfig.valueField] === id);
+          return found ? found[castConfig.labelField] : id;
+        };
+        return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
+      } catch (error) {
+        console.error(`Error parsing localStorage data for cast_${castConfig.source}:`, error);
+        return value; // Retornar el valor original en caso de error
+      }
     };
 
     // ⬇️ Mapear resultados con casteo
@@ -166,15 +177,35 @@ async function loadCastingLists() {
   const uniqueCasts = [...new Set(casts)]
 
   for (const source of uniqueCasts) {
-    if (localStorage.getItem(`cast_${source}`)) {
-      localStorage.removeItem(`cast_${source}`)
+    try {
+      // Limpiar datos previos
+      if (localStorage.getItem(`cast_${source}`)) {
+        localStorage.removeItem(`cast_${source}`);
+      }
+      
+      const data = await fetch('list', source, {
+        valueField: 'id',
+        nameField: 'name'
+      });
+      
+      // Verificar que data existe y tiene la estructura esperada
+      let dataToStore = [];
+      if (data && Array.isArray(data)) {
+        dataToStore = data;
+      } else if (data && data.results && Array.isArray(data.results)) {
+        dataToStore = data.results;
+      } else {
+        console.warn(`No valid data received for source: ${source}`, data);
+      }
+      
+      localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
+      console.log(`Stored ${dataToStore.length} items for cast_${source}`);
+      
+    } catch (error) {
+      console.error(`Error loading casting list for ${source}:`, error);
+      // Guardar array vacío en caso de error para evitar problemas posteriores
+      localStorage.setItem(`cast_${source}`, JSON.stringify([]));
     }
-    const data = await fetch('list', source, {
-      valueField: 'id',
-      nameField: 'name'
-    })
-    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
-
   }
 }
 

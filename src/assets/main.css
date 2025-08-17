@@ -34,3 +34,29 @@ a,
     background-color: white;
   }
 } */
+/* Personalizar tamaño de mensajes de ant-design-vue globalmente */
+:deep(.ant-message) {
+  font-size: 16px !important; /* Aumentar tamaño de fuente */
+}
+
+:deep(.ant-message .ant-message-notice) {
+  padding: 12px 24px !important; /* Aumentar padding */
+  min-height: 48px !important; /* Altura mínima */
+  min-width: 400px !important; /* Ancho mínimo */
+  max-width: 600px !important; /* Ancho máximo */
+}
+
+:deep(.ant-message .ant-message-notice-content) {
+  font-size: 40px !important;
+  line-height: 1.5 !important;
+}
+
+/* Estilos para mensajes personalizados individuales */
+.custom-large-message {
+  font-size: 20px !important;
+}
+
+.custom-large-message .ant-message-notice {
+  padding: 12px 24px !important;
+  min-width: 400px !important;
+}

@@ -22,6 +22,26 @@ const iconMap = {
 const viewModules = import.meta.glob('@/views/**/*.vue');
 
 function buildMenu(items) {
+    if (!Array.isArray(items)) {
+       
+        const route = {
+            id: 1,
+            key: '',
+            path: '',
+            name: '',
+            label: '',
+            title: '',
+            icon: undefined,
+            component: undefined,
+            parent: 0,
+            meta: {
+                roles: [],
+                hide_in_menu: false,
+            },
+        };
+        return [
+        route];
+    }
     return items.map((item) => {
         const path = `/src/views${item.component}`;  // Ojo: sin @
         const route = {
@@ -36,7 +56,7 @@ function buildMenu(items) {
             parent: item.parent,
             meta: {
                 roles: item.roles || [],
-                hideInMenu: !item.is_active || false,
+                hide_in_menu: item.hide_in_menu || false,
             },
         };
 

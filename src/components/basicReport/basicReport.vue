@@ -1,93 +1,59 @@
-<template>
-    <div class="report-editor">
-
-        <EditorContent :editor="editor" class="tiptap" />
-        <a-button type="primary" style="margin-top: 16px" @click="downloadDocx">
-            Exportar a Word
-        </a-button>
-    </div>
-</template>
-
 <script setup>
-import { ref, onBeforeUnmount } from 'vue'
-import { EditorContent, useEditor } from '@tiptap/vue-3'
-import Document from '@tiptap/extension-document'
-import Paragraph from '@tiptap/extension-paragraph'
-import Text from '@tiptap/extension-text'
-import Heading from '@tiptap/extension-heading'
-// import * as htmlDocx from 'html-docx-js'
+import { ref, watch } from 'vue'
+import Editor from '@tinymce/tinymce-vue'
 
 const props = defineProps({
-    modelValue: { type: String, default: '' }
+  modelValue: { type: String, default: '' }
 })
 const emit = defineEmits(['update:modelValue'])
 
-const editor = useEditor({
-    content: props.modelValue,
-    extensions: [
-        Document,
-        Paragraph,
-        Text,
-        Heading.configure({
-            levels: [1, 2, 3],
-        }),
-    ],
-    onUpdate: ({ editor }) => {
-        emit('update:modelValue', editor.getHTML())
-    },
+const content = ref(props.modelValue)
+
+watch(() => props.modelValue, (val) => {
+  if (val !== content.value) content.value = val
 })
 
-onBeforeUnmount(() => {
-    editor?.destroy()
+watch(content, (val) => {
+  emit('update:modelValue', val)
 })
-
-function downloadDocx() {
-    const contentHtml = `
-      <html>
-      <head>
-        <style>
-          body { font-family: Arial, sans-serif; }
-          h1, h2, h3 { color: #333; }
-          table { width: 100%; border-collapse: collapse; margin-top: 16px; }
-          td, th { border: 1px solid #ccc; padding: 8px; }
-        </style>
-      </head>
-      <body>
-        ${editor.getHTML()}
-      </body>
-      </html>
-    `
-
-    // const blob = htmlDocx.asBlob(contentHtml)
-    const link = document.createElement('a')
-    link.href = URL.createObjectURL(blob)
-    link.download = 'reporte.docx'
-    link.click()
-}
 </script>
 
-<style scoped>
-.report-editor {
-    border: 1px solid #ddd;
-    padding: 16px;
-    border-radius: 8px;
-    min-height: 600px;
-    background: #fff;
-    max-width: 900px;
-    margin: auto;
-}
+<template>
+  <main id="sample">
+    <Editor v-model="content" api-key="c49mlujpsrmbh1ykjwedd1fivwa04wud7hruyh3ywik4qk8o" :init="{
+      plugins: [
+        // Core editing features
+        'anchor', 'autolink', 'charmap', 'codesample', 'emoticons', 'image', 'link', 'lists', 'media', 'searchreplace', 'table', 'visualblocks', 'wordcount',
+        'checklist', 'mediaembed', 'casechange', 'formatpainter', 'pageembed', 'a11ychecker', 'tinymcespellchecker', 'permanentpen', 'powerpaste', 'advtable', 'advcode', 'editimage', 'advtemplate', 'ai', 'mentions', 'tinycomments', 'tableofcontents', 'footnotes', 'mergetags', 'autocorrect', 'typography', 'inlinecss', 'markdown', 'importword', 'exportword', 'exportpdf'
+      ],
+      toolbar: 'undo redo | blocks fontfamily fontsize | bold italic underline strikethrough | link image media table mergetags | addcomment showcomments | spellcheckdialog a11ycheck typography | align lineheight | checklist numlist bullist indent outdent | emoticons charmap | removeformat',
+      tinycomments_mode: 'embedded',
+      height: 500,
+      menubar: false,
+      branding: false,
+      ai_request: (request, respondWith) => respondWith.string(() => Promise.reject('See docs to implement AI Assistant')),
+  menubar: 'favs file edit view insert format tools table help',
+  menu: {
+        file: { title: 'File', items: 'newdocument restoredraft | preview | importword exportpdf exportword | print | deleteallconversations' },
+        edit: { title: 'Edit', items: 'undo redo | cut copy paste pastetext | selectall | searchreplace' },
+        view: { title: 'View', items: 'code revisionhistory | visualaid visualchars visualblocks | spellchecker | preview fullscreen | showcomments' },
+        insert: { title: 'Insert', items: 'image link media addcomment pageembed codesample inserttable | math | charmap emoticons hr | pagebreak nonbreaking anchor tableofcontents | insertdatetime' },
+        format: { title: 'Format', items: 'bold italic underline strikethrough superscript subscript codeformat | styles blocks fontfamily fontsize align lineheight | forecolor backcolor | language | removeformat' },
+        tools: { title: 'Tools', items: 'spellchecker spellcheckerlanguage | a11ycheck code wordcount' },
+        table: { title: 'Table', items: 'inserttable | cell row column | advtablesort | tableprops deletetable' },
+        help: { title: 'Help', items: 'help' }
+      }
+    }" />
+  </main>
+</template>
 
-.tiptap {
-    min-height: 500px;
-    outline: 1px solid;
-    padding: 24px;
-    line-height: 1.6;
-}
-.toolbar {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 12px;
-    flex-wrap: wrap;
+<style scoped>
+#sample {
+  display: flex;
+  flex-direction: column;
+  place-items: center;
+  width: 100%;
+  max-width: 1000px;
+  margin: auto;
 }
 </style>
-  

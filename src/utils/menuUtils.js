@@ -33,7 +33,7 @@ export async function buildMenuTreeByRoles(flatMenu, userRoles, roleMap) {
         .filter(Boolean);
 
     const filtered = flatMenu.filter(item => {
-        if (item.meta.hideInMenu || item.meta.is_active) return false;
+        if (item.meta.hide_in_menu || item.meta.is_active) return false;
         if (!item.meta.roles || item.meta.roles.length === 0) return true;
         return item.meta.roles.some(roleId => roleIds.includes(Number(roleId)));
     });

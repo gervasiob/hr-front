@@ -5,48 +5,17 @@
                 <a-col :span="16" style="text-align: left">
                     <h2>{{ titleText + ': ' + searchTitle }}</h2>
                 </a-col>
-                <a-col :span="4" style="text-align: right">
-                    <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
-                </a-col>
-                <a-col :span="4" style="text-align: right">
-                    <a-button type="default" @click="handleDownloadTemplate">
-                        Descargar listado
-                    </a-button>
-                </a-col>
             </a-row>
 
         </div>
-        <basicReport v-model="report" />
+        <basicReport v-model="reportContent" />
     </div>
-
-    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
-
-    <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-        @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort"
-        @pagination-change="handlePaginationChange" />
-
-    <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
-        :confirm-loading="modalLoading" @ok="handleModalOk">
-        <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
-            :on-submit="handleProcessedForm" :fetch-data="fetchQuery">
-            <template #custom-field>
-                <clientProposal v-model:selectedId="selectedId" />
-                <questionRequired v-model:selectedId="selectedId" />
-            </template>
-        </BasicForm>
-    </a-modal>
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
-import BasicTable from '@/components/basicTable/basicTable.vue'
-import BasicFilter from '@/components/filters/basicFilters.vue'
-import BasicForm from '@/components/form/basicForm.vue'
 import { fetch } from '@/api/model/model.js'
-import { columns } from './config/columns'
-import { filters } from './config/filters'
-import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
 
@@ -54,7 +23,7 @@ import { useRoute } from 'vue-router';
 import clientProposal from '../../../detail/components/clientProposal/index.vue'
 import questionRequired from '../../../detail/components/questionRequired/index.vue'
 import basicReport from '@/components/basicReport/basicReport.vue'
-
+import { reportModel, candidate } from './config/report.js'
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
@@ -68,43 +37,91 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'INFORME: ';
+const titleText = 'INFORME';
 const itemText = 'Informe'
-const modelName = 'informes'
-const modelNameSingle = 'informe'
+const modelName = 'search-trackings'
+const modelNameSingle = 'search-tracking'
 const endpoint = modelName + '/'
 const route = useRoute();
 const id = ref(route.params.id);
 const searchTitle = ref('');
 const report = ref('')
+const reportData = ref(candidate)
+const reportContent = ref(reportModel(reportData.value))
+
+// Watch para actualizar el reporte cuando cambie reportData
+watch(reportData, (newData) => {
+    reportContent.value = reportModel(newData)
+}, { deep: true })
 
 onMounted(async () => {
-    await loadCastingLists()
     await getSearch()
     await fetchQuery()
 })
-
+async function getFormattedCv(FormattedCV) {
+    if (FormattedCV) {
+        const { candidate, experience_years, languages, technical_skills, summary } = FormattedCV;
+        
+    }
+}
 async function getSearch() {
     try {
         if (id.value) {
-            const data = await fetch('get', 'search-requests', { id: id.value });
+            const data = await fetch('get', 'search-trackings', { id: id.value });
+            console.log('data 1', data)
             if (data && data.length > 0) {
-                const { code, client, profile, subprofile } = data[0];
-                let profileName = ""
-                let subprofileName = ""
-                if (profile) {
-                    const profileData = await fetch('get', 'primary-profiles', { id: profile });
+                console.log('data[0]', data[0])
+                const { candidate, applied_date, recruiter, search, seniority } = data[0];
+                let candidateName = ""
+                let candidateResidence = ""
+                let profileId = ""
+                let subprofileId = ""
+                let seniorityId = ""
+                if (candidate) {
+                    const candidateData = await fetch('get', 'candidates', { id: candidate });
+                    if (candidateData && candidateData.length > 0) {
+                        candidateName = candidateData[0].first_name + ' ' + candidateData[0].last_name;
+                        candidateResidence = candidateData[0].address + ', ' + candidateData[0].province + ', ' + candidateData[0].country;
+                        const FormattedCV = await fetch('get', 'formatted-cvs', { candidate: candidate });
+                        if (FormattedCV && FormattedCV.length > 0) {
+                            const { experience_years, languages, technical_skills, summary } = FormattedCV[0];
+                            reportData.value.experience = experience_years;
+                            reportData.value.languages = languages;
+                            reportData.value.technical_skills = technical_skills;
+                            reportData.value.summary = summary;
+                            await getFormattedCv(FormattedCV[0]);
+                        }
+                    }
+                    console.log('candidateData', candidateData)
+                    reportData.value.name = candidateName;
+                    reportData.value.residence = candidateResidence;
+                }
+                if (search) {
+                    const searchData = await fetch('get', 'search-requests', { id: search });
+                    console.log('searchData', searchData)
+                    if (searchData && searchData.length > 0) {
+                        const { code, profile, subprofile, seniority } = searchData[0];
+                        profileId = profile;
+                        subprofileId = subprofile;
+                        reportData.value.code = code;
+                        seniorityId = seniority;
+                    }
+                }
+                if (profileId) {
+                    const profileData = await fetch('get', 'primary-profiles', { id: profileId });
                     if (profileData && profileData.length > 0) {
-                        profileName = profileData[0].name;
+                        const profileName = profileData[0].name;
+                        reportData.value.position = profileName;
                     }
                 }
-                if (subprofile) {
-                    const subprofileData = await fetch('get', 'sub-profiles', { id: subprofile });
+                if (subprofileId) {
+                    const subprofileData = await fetch('get','sub-profiles', { id: subprofileId });
                     if (subprofileData && subprofileData.length > 0) {
-                        subprofileName = subprofileData[0].name;
+                        const subprofileName = subprofileData[0].name;
+                        reportData.value.position = reportData.value.position + " " + subprofileName;
                     }
                 }
-                searchTitle.value = code + " - " + client + " - " + profileName + " - " + subprofileName;
+                searchTitle.value = candidateName;
 
             }
         }
@@ -142,51 +159,20 @@ async function fetchQuery() {
             totalItems.value = data.length;
         }
 
-        // ⬇️ Función auxiliar para casteo robusto
-        const castValue = (value, castConfig) => {
-            const list = JSON.parse(localStorage.getItem(`cast_${castConfig.source}`) || '[]');
-            const getLabel = (id) => {
-                const found = list.find(el => el[castConfig.valueField] === id);
-                return found ? found[castConfig.labelField] : id;
-            };
-            return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
-        };
-
-        // ⬇️ Mapear resultados con casteo
-        candidates.value = result.map(item => {
-            const newItem = { ...item };
-            columns.forEach(col => {
-                if (col.cast) {
-                    newItem[col.field] = castValue(item[col.field], col.cast);
-                }
-            });
-            return newItem;
-        });
+        // // ⬇️ Función auxiliar para casteo robusto
+        // const castValue = (value, castConfig) => {
+        //     const list = JSON.parse(localStorage.getItem(`cast_${castConfig.source}`) || '[]');
+        //     const getLabel = (id) => {
+        //         const found = list.find(el => el[castConfig.valueField] === id);
+        //         return found ? found[castConfig.labelField] : id;
+        //     };
+        //     return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
+        // };
 
     } catch (e) {
         console.error('Error al cargar listado', e);
     } finally {
         loading.value = false;
-    }
-}
-
-async function loadCastingLists() {
-    const casts = columns
-        .filter(col => col.cast)
-        .map(col => col.cast.source)
-
-    const uniqueCasts = [...new Set(casts)]
-
-    for (const source of uniqueCasts) {
-        if (localStorage.getItem(`cast_${source}`)) {
-            localStorage.removeItem(`cast_${source}`)
-        }
-        const data = await fetch('list', source, {
-            valueField: 'id',
-            nameField: 'name'
-        })
-        localStorage.setItem(`cast_${source}`, JSON.stringify(data))
-
     }
 }
 
@@ -267,60 +253,12 @@ function handleSort(order) {
     currentPage.value = 1
     fetchQuery()
 }
-async function handleModalOk() {
-    if (formRef.value?.handleSubmit) {
-        modalLoading.value = true
-        try {
-            await formRef.value.handleSubmit()
-            showForm.value = false
-        } catch (error) {
-            console.warn('Error en el form:', error)
-            // Modal no se cierra si hay error
-        } finally {
-            modalLoading.value = false
-        }
-    }
-}
-function handleDelete(item) {
-    Modal.confirm({
-        title: '¿Estás seguro?',
-        content: `¿Querés eliminar el registro "${item}"?`,
-        okText: 'Sí, eliminar',
-        cancelText: 'Cancelar',
-        okType: 'danger',
-        onOk: async () => {
-            try {
-                await fetch('delete', endpoint, null, item.id)
-                message.success('Item eliminado correctamente')
-                fetchQuery()
-            } catch (e) {
-                console.error('Error al eliminar item', e)
-                message.error('Error al eliminar item')
-            }
-        }
-    })
-}
-async function handleDownloadTemplate() {
-    try {
-        const baseParams = Object.fromEntries(
-            Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
-        )
 
-        const response = await exportToExcel(modelNameSingle, baseParams)
-
-        message.success('Archivo descargado correctamente')
-    } catch (error) {
-        console.error('Error al descargar listado:', error)
-        message.error('Ocurrió un error al descargar el listado')
-    }
-}
 
 </script>
 
 <style scoped>
-.candidates {
-    padding: 20px;
-}
+
 
 .header {
     align-items: center;

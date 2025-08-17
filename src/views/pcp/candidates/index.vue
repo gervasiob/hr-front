@@ -45,6 +45,7 @@ import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
 
 import { useRoute } from 'vue-router';
+import { color } from 'echarts'
 
 const router = useRouter()
 const loading = ref(false)
@@ -94,12 +95,12 @@ async function getSearch() {
             subprofileName = subprofileData[0].name;
           }
         }
-        searchTitle.value = code + " - " + client +" - " + profileName + " - " + subprofileName ;
-       
+        searchTitle.value = code + " - " + client + " - " + profileName + " - " + subprofileName;
+
       }
     }
   } catch (error) {
-    
+
   }
 }
 async function fetchQuery() {
@@ -242,7 +243,13 @@ async function handleProcessedForm(processedForm) {
     // Si error es un objeto con detalles de validación
     if (error?.response?.data) {
       const messages = Object.values(error.response.data).flat().join(' ')
-      message.error(`Errores: ${messages}`)
+      message.error({
+        content: () => `Errores: ${messages}`,
+        class: 'custom-large-message',
+        style: {
+          color: 'red',
+        }
+      })
     } else {
       message.error('Error inesperado al guardar el item')
     }
@@ -330,5 +337,9 @@ function handleOpenDetail(record) {
 .actions {
   display: flex;
   gap: 10px;
+}
+.custom-large-message {
+  font-size: 16px !important;
+  background-color: brown;
 }
 </style>

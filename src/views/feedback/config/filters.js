@@ -31,9 +31,15 @@ export const filters = [
         label: 'Seniority',
         field: 'seniority',
         model: 'seniority',
-        type: 'select',
-        placeholder: 'Seleccionar seniority',
-        span: 8
+        type: 'api-select',
+        placeholder: 'Seleccionar Seniority',
+        span: 8,
+
+        apiSource: {
+            endpoint: 'seniority-levels/',
+            valueField: 'id',
+            nameField: 'name'
+        }
     },
     {
         label: 'Contratado',

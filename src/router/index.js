@@ -15,7 +15,7 @@ function extractRoutesFromMenu(menuItems) {
                     meta: {
                         title: item.title,
                         roles: item.meta?.roles || [],
-                        hideInMenu: item.meta?.hideInMenu || false,
+                        hide_in_menu: item.meta?.hide_in_menu || false,
                     },
                 });
             }

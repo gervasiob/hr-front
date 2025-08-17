@@ -142,12 +142,23 @@ async function fetchQuery() {
 
     // ⬇️ Función auxiliar para casteo robusto
     const castValue = (value, castConfig) => {
-      const list = JSON.parse(localStorage.getItem(`cast_${castConfig.source}`) || '[]');
-      const getLabel = (id) => {
-        const found = list.find(el => el[castConfig.valueField] === id);
-        return found ? found[castConfig.labelField] : id;
-      };
-      return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
+      const storedData = localStorage.getItem(`cast_${castConfig.source}`);
+      if (!storedData || storedData === 'undefined') {
+        console.warn(`No data found in localStorage for cast_${castConfig.source}`);
+        return value; // Retornar el valor original si no hay datos
+      }
+      
+      try {
+        const list = JSON.parse(storedData);
+        const getLabel = (id) => {
+          const found = list.find(el => el[castConfig.valueField] === id);
+          return found ? found[castConfig.labelField] : id;
+        };
+        return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
+      } catch (error) {
+        console.error(`Error parsing localStorage data for cast_${castConfig.source}:`, error);
+        return value; // Retornar el valor original en caso de error
+      }
     };
 
     // ⬇️ Mapear resultados con casteo
@@ -183,7 +194,7 @@ async function loadCastingLists() {
       valueField: 'id',
       nameField: 'name'
     })
-    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+    localStorage.setItem(`cast_${source}`, JSON.stringify(data.results))
 
   }
 }

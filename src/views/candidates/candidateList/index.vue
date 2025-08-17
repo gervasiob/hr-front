@@ -156,7 +156,11 @@ async function handleProcessedForm(processedForm) {
     // Si error es un objeto con detalles de validación
     if (error?.response?.data) {
       const messages = Object.values(error.response.data).flat().join(' ')
-      message.error(`Errores: ${messages}`)
+      console.log('aca')
+      message.error({
+        content: () => `Errores: ${messages}`,
+        class: 'custom-large-message',
+      })
     } else {
       message.error('Error inesperado al guardar el item')
     }

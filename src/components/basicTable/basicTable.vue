@@ -7,6 +7,7 @@
           <div class="operation-buttons" v-if="column.operation.actions">
             <a-button v-for="(action, index) in column.operation.actions" :key="index" type="link"
               :danger="action.danger" @click="$emit(action.event, record)">
+              <component v-if="action.icon" :is="Icons[action.icon]" style="margin-right: 4px;" />
               {{ action.label }}
             </a-button>
           </div>
@@ -54,6 +55,7 @@
 <script setup>
 import { computed } from 'vue'
 import dayjs from 'dayjs'
+import * as Icons from '@ant-design/icons-vue'
 
 const props = defineProps({
   columns: Array,

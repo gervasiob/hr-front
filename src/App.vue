@@ -30,7 +30,7 @@ export default {
     const router = useRouter();
     const loginRoute = ref(false);
 
-    const hideMenu = computed(() => route.meta.hideInMenu || false);
+    const hideMenu = computed(() => route.meta.hide_in_menu || false);
 
     const handleMenuSelect = ({ key }) => {
       const findItem = (list) =>
@@ -56,18 +56,18 @@ export default {
       loginRoute.value = route.path === '/login';
     });
 
-    watch(
-      () => route.path,
-      async (newPath) => {
-        const userRoles = JSON.parse(localStorage.getItem('roles')) || [];
-        const roleMap = await fetchRoleMap();
-        const rawMenu = await loadMenu();
+    // watch(
+    //   () => route.path,
+    //   async (newPath) => {
+    //     const userRoles = JSON.parse(localStorage.getItem('roles')) || [];
+    //     const roleMap = await fetchRoleMap();
+    //     const rawMenu = await loadMenu();
 
-        const menuTree = await buildMenuTreeByRoles(rawMenu, userRoles, roleMap);
-        items.value = transformMenuItems(menuTree);
-        loginRoute.value = newPath === '/login';
-      }
-    );
+    //     const menuTree = await buildMenuTreeByRoles(rawMenu, userRoles, roleMap.results);
+    //     items.value = transformMenuItems(menuTree);
+    //     loginRoute.value = newPath === '/login';
+    //   }
+    // );
 
     return {
       current,

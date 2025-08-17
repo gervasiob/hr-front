@@ -59,7 +59,7 @@ export const menuList = [
                 component: () => import('@/views/candidates/candidateProfileTabs/index.vue'),
                 roles: basicAuth,
                 name: 'PerfilCandidato',
-                hideInMenu: true,
+                hide_in_menu: true,
             },
             {
                 key: 'candidatos-profiles',

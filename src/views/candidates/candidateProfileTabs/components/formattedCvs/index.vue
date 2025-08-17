@@ -5,15 +5,14 @@
     <div v-else>
         <div v-if="formattedCvId">
             <div class="header">
-                <h2>{{ titleText }}</h2>
-                <h2>{{ formattedCvId }}</h2>
+                <h2></h2>
                 <a-button type="primary" @click="showForm = true">
                     Editar Datos
                 </a-button>
             </div>
-            <div>
+            <!-- <div>
                 <h2>{{ titleText }}</h2>
-            </div>
+            </div> -->
             <div class="profile">
                 <candidateProfile :candidate-id="candidateId" />
                 <hr>
@@ -42,7 +41,7 @@
         </div>
 
         <a-modal v-model:open="showForm" :title="formattedCvId ? 'Editar CV' : 'Nuevo CV'" width="1000px"
-            @ok="handleSubmit">
+            @ok="handleSubmit" :destroyOnClose="true">
             <BasicForm ref="formRef" :id="formattedCvId" :fields="formFields" :model="'formatted-cvs'"
                 :on-submit="handleProcessedForm" />
         </a-modal>
@@ -59,6 +58,7 @@ import candidateLanguages from '../candidateLanguages/index.vue';
 import candidateEducations from '../candidateEducations/index.vue';
 import candidateWorkExperiences from '../candidateWorkExperiences/index.vue';
 import candidateCertifications from '../candidateCertifications/index.vue';
+import { candidateFormFields } from './config/formFields.js';
 
 const props = defineProps({
     candidateId: {
@@ -103,105 +103,21 @@ onMounted(fetchFormattedCV);
 const formRef = ref(null);
 const showForm = ref(false);
 
-const formFields = [
-    {
-        field: 'full_name',
-        label: 'Nombre Completo',
-        type: 'input',
-        required: true,
-        span: 12
-    },
-    {
-        field: 'phone_number',
-        label: 'Teléfono',
-        type: 'input',
-        required: true,
-        span: 12
-    },
-    {
-        field: 'email',
-        label: 'Email',
-        type: 'input',
-        required: true,
-        inputType: 'email',
-        span: 12
-    },
-    {
-        field: 'address',
-        label: 'Dirección',
-        type: 'textarea',
-        required: true,
-        span: 24
-    },
-    {
-        field: 'profile',
-        label: 'Perfil',
-        type: 'input',
-        required: true,
-        span: 8
-    },
-    {
-        field: 'sub_profile',
-        label: 'Subperfil',
-        type: 'input',
-        required: true,
-        span: 8
-    },
-    {
-        field: 'seniority',
-        label: 'Seniority',
-        type: 'input',
-        required: true,
-        span: 8
-    },
-    {
-        field: 'experience_years',
-        label: 'Años de experiencia',
-        type: 'input',
-        required: true,
-        span: 8
-    },
-    {
-        field: 'languages',
-        label: 'Idiomas',
-        type: 'tag',
-        required: true,
-        span: 12
-    },
-    {
-        field: 'technical_skills',
-        label: 'Conocimientos técnicos',
-        type: 'tag',
-        required: true,
-        span: 12
-    },
-    {
-        field: 'summary',
-        label: 'Resumen profesional',
-        type: 'textarea',
-        required: true,
-        span: 24
-    },
-    {
-        field: 'parsed_at',
-        label: 'Fecha de creación',
-        type: 'date',
-        required: true,
-        span: 24
-    }
-];
+const formFields = candidateFormFields;
 
 async function handleCreate() {
     showForm.value = true;
 }
 
 async function handleProcessedForm(formData) {
+    console.log('formData', formData);
+
     try {
         const data = {
             ...formData,
             candidate: props.candidateId
         };
-        
+
         if (formattedCvId.value) {
             await fetch('put', 'formatted-cvs/', data, formattedCvId.value);
             message.success('CV actualizado exitosamente');

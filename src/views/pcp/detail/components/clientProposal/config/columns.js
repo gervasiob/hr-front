@@ -28,8 +28,8 @@ export const columns = [
       align: 'center',
       width: 160,
       actions: [
-        { label: 'Editar', type: 'link', event: 'edit', danger: false },
-        { label: 'Eliminar', type: 'link', event: 'delete', danger: true }
+        { label: 'Editar', type: 'link', event: 'edit', danger: false, icon: 'EditOutlined' },
+        { label: 'Eliminar', type: 'link', event: 'delete', danger: true, icon: 'DeleteOutlined' }
       ]
     }
   }
