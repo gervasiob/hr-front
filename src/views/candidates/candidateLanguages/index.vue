@@ -87,8 +87,7 @@ async function fetchQuery() {
 
     const data = await fetch('get', endpoint, params)
     let result = []
-
-    if ('results' in data && 'count' in data) {
+    if ('results' in data) {
       result = data.results
       totalItems.value = data.count
     } else {

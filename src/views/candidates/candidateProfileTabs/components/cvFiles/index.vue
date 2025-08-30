@@ -286,7 +286,7 @@ async function handleUpload({ file, onSuccess, onError }) {
   try {
     const formData = new FormData()
     formData.append('file', file)
-    formData.append('candidate', props.candidateId)
+    formData.append('candidate_id', props.candidateId)
 
     const response = await fetch('post', 'upload-cv/', formData)
     onSuccess(response)

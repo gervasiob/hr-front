@@ -4,15 +4,27 @@
       <a-col :span="20" style="text-align: left">
         <h3>{{ titleText }}</h3>
       </a-col>
+      <a-col :span="4" style="text-align: right">
+        <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+      </a-col>
     </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" />
+
+    <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
+      @delete="handleDelete" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+
+    <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
+      :confirm-loading="modalLoading" @ok="handleModalOk">
+      <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import BasicFormItem from '@/components/formItem/BasicFormItem.vue'
+import BasicTable from '@/components/basicTable/basicTable.vue'
+import BasicForm from '@/components/form/basicForm.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
 

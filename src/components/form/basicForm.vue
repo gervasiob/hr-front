@@ -30,6 +30,7 @@
 import { ref, computed, watch, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import { fetch } from '@/api/model/model.js'
+import { result } from 'lodash';
 
 const props = defineProps({
     id: [Number, String],
@@ -201,15 +202,19 @@ async function loadApiSelectOptions() {
         .map(async field => {
             try {
 
-                const data = await fetch('list', field.endpoint, {
+                const res = await fetch('list', field.endpoint, {
                     valueField: field.valueField,
                     nameField: field.nameField,
                     add_field: field.addField || null,
                 });
+                let data = res;
+                if (res.hasOwnProperty('results')) {
+                    data = res.results
+                }
                 apiSelectOptions.value[field.field] = data.map(item => ({
                     value: item[field.valueField],
                     label: item[field.nameField]
-                }));
+                }));    
             } catch (error) {
                 console.error(`Error loading api-select options for ${field.field}:`, error);
                 apiSelectOptions.value[field.field] = [];

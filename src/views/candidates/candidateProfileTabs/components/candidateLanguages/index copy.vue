@@ -4,18 +4,31 @@
       <a-col :span="20" style="text-align: left">
         <h3>{{ titleText }}</h3>
       </a-col>
+      <a-col :span="4" style="text-align: right">
+        <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+      </a-col>
     </a-row>
     <BasicFormItem ref="formItemRef" :fields="fields" />
+    <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+
+    <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
+      :confirm-loading="modalLoading" @ok="handleModalOk">
+      <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import BasicFormItem from '@/components/formItem/BasicFormItem.vue'
+import BasicTable from '@/components/basicTable/basicTable.vue'
+import BasicFilter from '@/components/filters/basicFilters.vue'
+import BasicForm from '@/components/form/basicForm.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
-
+import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
@@ -24,11 +37,7 @@ const props = defineProps({
   candidateId: {
     type: [Number, String],
     default: null
-  },
-  formattedCvId: {
-    type: [Number, String],
-    default: null
-  },
+  }
 });
 
 const router = useRouter()
@@ -36,19 +45,18 @@ const loading = ref(false)
 const candidates = ref([])
 const filterParams = ref({})
 const showForm = ref(false)
+const selectedId = ref(null)
 const newForm = ref(false)
 const formRef = ref(null)
 const modalLoading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
-const selectedId = ref(null)
 
 // config parameters
-// config parameters
-const titleText = 'Certificaciones'
-const itemText = 'Certificación'
-const modelName = 'formatted-cv-certifications'
-const modelNameSingle = 'formatted-cv-certification'
+const titleText = 'Candidatos Idiomas'
+const itemText = 'Candidato Idiomas'
+const modelName = 'candidate-languages'
+const modelNameSingle = 'candidate-language'
 const endpoint = modelName + '/'
 
 onMounted(async () => {
@@ -71,7 +79,6 @@ async function fetchQuery() {
       ...baseParams,
       ...orderingParam,
       candidate: props.candidateId,
-      formattedCv: props.formattedCvId,
       limit,
       offset
     }
@@ -86,7 +93,6 @@ async function fetchQuery() {
       result = data
       totalItems.value = data.length
     }
-
     // ⬇️ Casteo de columnas
     candidates.value = result.map(item => {
       const newItem = { ...item }
@@ -145,7 +151,6 @@ function handlePaginationChange({ page, pageSize: newSize, order }) {
   }
   fetchQuery()
 }
-
 function applyFilterParams(filters) {
   filterParams.value = filters
   currentPage.value = 1
@@ -154,17 +159,21 @@ function applyFilterParams(filters) {
 
 function openForm(id = null, isNew = true) {
   selectedId.value = id
-  showForm.value = true
   newForm.value = isNew
   showForm.value = true
 }
 
-function handleEdit(item) {
-  openForm(item.id, false)
+function handleEdit(candidate) {
+  openForm(candidate.id, false)
+}
+
+
+function handleViewCV(candidate) {
+  router.push({ name: 'FormattedCV', params: { candidateId: candidate.id } })
 }
 
 async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId, formatted_cv: props.formattedCvId, }
+    processedForm = { ...processedForm, candidate: props.candidateId }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)
