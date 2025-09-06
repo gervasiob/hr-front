@@ -25,15 +25,23 @@ export const candidateFormFields = [
     {
         label: 'Nivel Escrito',
         field: 'written_level',
-        type: 'input',
+        type: 'api-select',
+        mode: 'single',
         span: 12,
         required: true,
+        endpoint: 'wrriten-level/', // <- el endpoint real que usás
+        valueField: 'id',
+        nameField: 'name',
     },
     {
         label: 'Nivel Hablado',
         field: 'oral_level',
-        type: 'input',
+        type: 'api-select',
+        mode: 'single',
         span: 12,
         required: true,
+        endpoint: 'oral-level/', // <- el endpoint real que usás
+        valueField: 'id',
+        nameField: 'name',
     },
 ];

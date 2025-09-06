@@ -1,54 +1,65 @@
 <template>
   <div class="candidates">
-    <a-row style="margin-bottom: 1%">
-      <a-col :span="20" style="text-align: left">
-        <h3>{{ titleText }}</h3>
-      </a-col>
-    </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId" />
+    <div class="header">
+      <a-row>
+        <a-col :span="16" style="text-align: left">
+          <h2>{{ titleText }}</h2>
+        </a-col>
+        <a-col :span="4" style="text-align: right">
+          <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+        </a-col>
+        <a-col :span="4" style="text-align: right">
+          <a-button type="default" @click="handleDownloadTemplate">
+            Descargar listado
+          </a-button>
+        </a-col>
+      </a-row>
+
+    </div>
+
+    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
+
+    <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+
+    <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
+      :confirm-loading="modalLoading" @ok="handleModalOk">
+      <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
-import BasicFormItem from '@/components/formItem/BasicFormItem.vue'
+import BasicTable from '@/components/basicTable/basicTable.vue'
+import BasicFilter from '@/components/filters/basicFilters.vue'
+import BasicForm from '@/components/form/basicForm.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
-
+import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
-
-const props = defineProps({
-  candidateId: {
-    type: [Number, String],
-    default: null
-  },
-  formattedCvId: {
-    type: [Number, String],
-    default: null
-  },
-});
 
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
 const filterParams = ref({})
 const showForm = ref(false)
+const selectedId = ref(null)
 const newForm = ref(false)
 const formRef = ref(null)
 const modalLoading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
-const selectedId = ref(null)
 
 // config parameters
-// config parameters
-const titleText = 'Educación'
-const itemText = 'Item de Educación'
-const modelName = 'formatted-cv-educations'
-const modelNameSingle = 'formattedcveducation'
+const titleText = 'Nivel Oral'
+const itemText = 'Nivel Oral'
+const modelName = 'oral-level'
+const modelNameSingle = 'oralLevel'
 const endpoint = modelName + '/'
 
 onMounted(async () => {
@@ -70,8 +81,6 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      candidate: props.candidateId,
-      formatted_cv: props.formattedCvId,
       limit,
       offset
     }
@@ -107,7 +116,6 @@ async function fetchQuery() {
 }
 
 async function loadCastingLists() {
-
   const casts = columns
     .filter(col => col.cast)
     .map(col => col.cast.source)
@@ -115,15 +123,13 @@ async function loadCastingLists() {
   const uniqueCasts = [...new Set(casts)]
 
   for (const source of uniqueCasts) {
-    if (localStorage.getItem(`cast_${source}`)) {
-      localStorage.removeItem(`cast_${source}`)
+    if (!localStorage.getItem(`cast_${source}`)) {
+      const data = await fetch('list', source, {
+        valueField: 'id',
+        nameField: 'name'
+      })
+      localStorage.setItem(`cast_${source}`, JSON.stringify(data))
     }
-    const data = await fetch('list', source, {
-      valueField: 'id',
-      nameField: 'name'
-    })
-    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
-
   }
 }
 
@@ -154,17 +160,20 @@ function applyFilterParams(filters) {
 
 function openForm(id = null, isNew = true) {
   selectedId.value = id
-  showForm.value = true
   newForm.value = isNew
   showForm.value = true
 }
 
-function handleEdit(item) {
-  openForm(item.id, false)
+function handleEdit(candidate) {
+  openForm(candidate.id, false)
+}
+
+
+function handleViewCV(candidate) {
+  router.push({ name: 'FormattedCV', params: { candidateId: candidate.id } })
 }
 
 async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId, formatted_cv: props.formattedCvId, }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)

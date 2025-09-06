@@ -4,11 +4,8 @@
       <a-col :span="20" style="text-align: left">
         <h3>{{ titleText }}</h3>
       </a-col>
-      <a-col :span="4" style="text-align: right">
-        <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
-      </a-col>
     </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" />
+    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId" />
   </div>
 </template>
 

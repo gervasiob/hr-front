@@ -15,13 +15,14 @@
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
-        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" >
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" destroy-on-close="true">
             <template #custom-field>
                 <a-form-item label="Archivo CV" name="file">
                     <a-upload
-                        v-model:fileList="fileList"
+                        v-model:fileList="filteredFileList"
                         :customRequest="handleUpload"
                         :beforeUpload="beforeUpload"
+                        :remove="handleRemove"
                         :maxCount="1">
                         <a-button>
                             <upload-outlined></upload-outlined>
@@ -76,7 +77,10 @@ const endpoint = modelName + '/'
 
 // File variables
 const fileList = ref([])
-
+const filteredFileList = computed(() => {
+  const foundItem = fileList.value.find((item) => item.uid === selectedId.value)
+  return foundItem?.url ? [foundItem] : []
+})
 onMounted(async () => {
   await loadCastingLists()
   await fetchQuery()
@@ -107,8 +111,21 @@ async function fetchQuery() {
     if ('results' in data && 'count' in data) {
       result = data.results
       totalItems.value = data.count
+      fileList.value = result.map(item => ({
+        uid: item.id,
+        name: item.s3_url,
+        status: 'done',
+        url: item.s3_url,
+      }))
     } else {
       result = data
+      console.log('result', result)
+      fileList.value = result.map(item => ({
+        uid: item.id,
+        name: item.s3_url,
+        status: 'done',
+        url: item.s3_url,
+      }))
       totalItems.value = data.length
     }
 
@@ -175,6 +192,8 @@ function applyFilterParams(filters) {
 
 function openForm(id = null, isNew = true) {
   selectedId.value = id
+  console.log('selectId', selectedId.value)
+  console.log('fileList', fileList.value)
   newForm.value = isNew
   showForm.value = true
 }
@@ -292,10 +311,29 @@ async function handleUpload({ file, onSuccess, onError }) {
     onSuccess(response)
     message.success('Archivo subido correctamente')
     await fetchQuery()
+    showForm.value = false
   } catch (error) {
     console.error('Error uploading file:', error)
     onError(error)
     message.error('Error al subir el archivo')
+  }
+}
+
+async function handleRemove(file) {
+  try {
+    const formData = new FormData()
+    formData.append('uid', file.uid)
+    formData.append('candidate_id', props.candidateId)
+
+    const response = await fetch('delete', 'cv-files/', formData, file.uid)
+    message.success('Archivo eliminado correctamente')
+    await fetchQuery()
+    showForm.value = false
+    return true
+  } catch (error) {
+    console.error('Error deleting file:', error)
+    message.error('Error al eliminar el archivo')
+    return false
   }
 }
 

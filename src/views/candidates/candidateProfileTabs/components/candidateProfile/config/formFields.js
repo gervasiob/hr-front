@@ -33,9 +33,13 @@ export const candidateFormFields = [
     {
         label: 'Senirority',
         field: 'seniority',
-        type: 'input',
+        type: 'api-select',
+        mode: 'single',
         span: 12,
         required: true,
+        endpoint: 'seniority-levels/', // <- el endpoint real que usás
+        valueField: 'id',
+        nameField: 'name',
     },
     {
         label: 'Trabajo Actual',

@@ -5,7 +5,7 @@
         <h3>{{ titleText }}</h3>
       </a-col>
     </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" />
+    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId" />
   </div>
 </template>
 
@@ -28,7 +28,7 @@ const props = defineProps({
     default: null
   }
 });
-
+console.log('candidateId', props.candidateId)
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
