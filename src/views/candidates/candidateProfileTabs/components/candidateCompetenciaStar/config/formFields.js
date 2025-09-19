@@ -8,7 +8,7 @@ export const candidateFormFields = [
         span: 12,
         required: true,
         endpoint: 'competency-types/',
-        valueField: 'id',
+        valueField: 'name',
         nameField: 'name',
     },
     {
