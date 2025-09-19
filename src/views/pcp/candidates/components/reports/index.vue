@@ -91,6 +91,10 @@ async function getSearch() {
                             reportData.value.summary = summary;
                             await getFormattedCv(FormattedCV[0]);
                         }
+                        const profile = await fetch('get', 'primary-profiles', { id: candidateData[0].profile });
+                        if (profile && profile.length > 0) {
+                            profileId = profile[0].id;
+                        }
                     }
                     console.log('candidateData', candidateData)
                     reportData.value.name = candidateName;

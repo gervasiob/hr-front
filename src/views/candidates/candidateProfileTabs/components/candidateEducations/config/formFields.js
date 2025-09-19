@@ -17,14 +17,14 @@ export const candidateFormFields = [
     {
         label: 'Fecha de Inicio',
         field: 'start_date',
-        type: 'date',
+        type: 'input',
         span: 12,
         required: true,
     },
     {
         label: 'Fecha de Finalización',
         field: 'end_date',
-        type: 'date',
+        type: 'input',
         span: 12,
         required: true,
     },

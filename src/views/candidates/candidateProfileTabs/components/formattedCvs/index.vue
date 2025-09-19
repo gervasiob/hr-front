@@ -3,7 +3,7 @@
         <a-spin />
     </div>
     <div v-else>
-        <div v-if="formattedCvId">
+        <div v-if="formattedCvId" class="formatted-cv">
             <div class="header">
                 <h2></h2>
                 <a-button type="primary" @click="showForm = true">
@@ -13,25 +13,38 @@
             <!-- <div>
                 <h2>{{ titleText }}</h2>
             </div> -->
-            <div class="profile">
+            <div class="card">
                 <candidateProfile :candidate-id="candidateId" />
-                <hr>
             </div>
-            <div class="languages">
+            <div class="card">
                 <candidateLanguages :candidate-id="candidateId" />
-                <hr>
             </div>
-            <div class="educations">
+            <div class="card">
                 <candidateEducations :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
-                <hr>
             </div>
-            <div class="workExperiences">
+            <div class="card">
                 <candidateWorkExperiences :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
-                <hr>
             </div>
-            <div class="certifications">
+            <div class="card">
                 <candidateCertifications :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
-                <hr>
+            </div>
+            <div class="card">
+                <candidateSummary :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateAptitudes :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateEvaluacionesActitudinales :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateCompetenciasStar :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateOtrasEvaluaciones :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateOtrasDestrezas :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
             </div>
         </div>
         <div v-else class="create-cv">
@@ -59,6 +72,12 @@ import candidateEducations from '../candidateEducations/index.vue';
 import candidateWorkExperiences from '../candidateWorkExperiences/index.vue';
 import candidateCertifications from '../candidateCertifications/index.vue';
 import { candidateFormFields } from './config/formFields.js';
+import candidateSummary from '../candidateSummary/index.vue';
+import candidateAptitudes from '../candidateAptitudes/index.vue';
+import candidateEvaluacionesActitudinales from '../candiateEvaluacionesActitudinales/index.vue';
+import candidateCompetenciasStar from '../candidateCompetenciaStar/index.vue';
+import candidateOtrasEvaluaciones from '../candidateOtrasEvaluaciones/index.vue';
+import candidateOtrasDestrezas from '../candidateOtrasDestrezas/index.vue';
 
 const props = defineProps({
     candidateId: {
@@ -159,5 +178,14 @@ async function handleSubmit() {
     display: flex;
     justify-content: center;
     padding: 40px;
+}
+
+.formatted-cv {
+    background-color: rgb(222, 222, 222);
+}
+
+.card {
+    background-color: rgb(186, 198, 213);
+    margin: 2%;
 }
 </style>

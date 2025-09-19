@@ -8,8 +8,7 @@
                     <a-form-item :name="['items', index, field.field]" :rules="getFieldRules(field)">
                         <!-- Input básico -->
                         <a-input v-if="field.type === 'input'" v-model:value="item[field.field]"
-                            :placeholder="field.placeholder || field.label" 
-                            @change="() => onFieldChange(index)" />
+                            :placeholder="field.placeholder || field.label" @change="() => onFieldChange(index)" />
 
                         <!-- Select con API -->
                         <a-select v-else-if="field.type === 'api-select'" v-model:value="item[field.field]"
@@ -26,7 +25,8 @@
                         <!-- Select estático -->
                         <a-select v-else-if="field.type === 'select'" v-model:value="item[field.field]"
                             :placeholder="field.placeholder || 'Seleccionar ' + field.label"
-                            :mode="field.mode || 'single'" @change="() => onFieldChange(index)">
+                            :mode="field.mode || 'single'" @change="() => onFieldChange(index)" show-search
+                            :filter-option="true">
                             <a-select-option v-for="option in field.options" :key="option.value" :value="option.value">
                                 {{ option.label }}
                             </a-select-option>
@@ -34,7 +34,7 @@
 
                         <!-- Textarea -->
                         <a-textarea v-else-if="field.type === 'textarea'" v-model:value="item[field.field]"
-                            :placeholder="field.placeholder || field.label" :rows="field.rows || 4" 
+                            :placeholder="field.placeholder || field.label" :rows="field.rows || 4"
                             @change="() => onFieldChange(index)" />
 
                         <!-- Number input -->
@@ -44,7 +44,7 @@
 
                         <!-- Date picker -->
                         <a-date-picker v-else-if="field.type === 'date'" v-model:value="item[field.field]"
-                            :placeholder="field.placeholder || field.label" style="width: 100%" 
+                            :placeholder="field.placeholder || field.label" style="width: 100%"
                             @change="() => onFieldChange(index)" />
 
                         <!-- Checkbox -->
@@ -71,7 +71,7 @@
             </a-row>
         </template>
         <!-- Botón agregar -->
-        <a-form-item>
+        <a-form-item v-if="showButtonAdd">
             <a-button type="dashed" @click="addItem" block :icon="h(PlusOutlined)">
                 Agregar elemento
             </a-button>
@@ -87,7 +87,7 @@
 </template>
 
 <script setup>
-import { reactive, ref, onMounted, watch, h, nextTick } from 'vue';
+import { reactive, ref, onMounted, watch, h, nextTick, computed } from 'vue';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons-vue';
 import { fetch } from '@/api/model/model.js';
 
@@ -112,6 +112,10 @@ const props = defineProps({
     candidateId: {
         type: [Number, String],
         required: false
+    },
+    uniqueRow: {
+        type: Boolean,
+        default: false
     }
 });
 
@@ -133,9 +137,10 @@ const formData = reactive({
 // Inicializar datos del formulario
 const initializeFormData = () => {
     isInitializing.value = true;
-    
+
     if (props.initialData.length > 0) {
         formData.items = [...props.initialData];
+        originalData.value = JSON.parse(JSON.stringify(formData.items));
     } else {
         formData.items = [createNewItem()];
         originalData.value = JSON.parse(JSON.stringify(formData.items));
@@ -268,7 +273,11 @@ const removeItem = async (index) => {
             formData.items[index].candidate = parseInt(props.candidateId);
         }
         const id = formData.items[index].id
-        const response = await fetch('DELETE', props.saveEndpoint, {}, id);
+        const isValidId = id && Number.isInteger(Number(id)) && Number(id) > 0;
+        const method = isValidId ? 'PUT' : 'POST';
+        if (isValidId) {
+            const response = await fetch('DELETE', props.saveEndpoint, {}, id);
+        }
         formData.items.splice(index, 1);
         originalData.value.splice(index, 1);
         hasChanges.value.splice(index, 1);
@@ -291,6 +300,7 @@ const saveItem = async (index) => {
         // Determinar si usar POST o PUT basado en si el ID es un entero válido
         const itemId = formData.items[index].id;
         const isValidId = itemId && Number.isInteger(Number(itemId)) && Number(itemId) > 0;
+        console.log('isvalidId', isValidId)
         const method = isValidId ? 'PUT' : 'POST';
         
         const response = await fetch(method, props.saveEndpoint, formData.items[index], method === 'PUT' ? itemId : undefined);
@@ -448,6 +458,15 @@ const detectChanges = () => {
 const onFieldChange = (index) => {
     hasChanges.value[index] = true;
 };
+
+const showButtonAdd = computed(() => {
+    if (props.uniqueRow) {
+        if (formData.items.length > 0) {
+            return false
+        }
+    }
+    return true
+})
 
 // Watchers
 watch(() => props.initialData, () => {
