@@ -10,11 +10,13 @@ export async function fetch(method, endpoint, params, id = null ) {
             return await apiRequest('put', endpoint, params, id);
         case 'delete':
             return await apiRequest('delete', endpoint, params, id);
-        case 'list':
+        case 'list':  
             { const listParams = {
-                value_field: params.valueField,
-                name_field: params.nameField,
-                add_field: params.addField,
+                value_field: params?.valueField,
+                name_field: params?.nameField,
+                add_field: params?.addField,
+                // Merge any additionalFilters flat into query params
+                ...(params?.additionalFilters || {})
             }
             return await apiRequest('get', endpoint, listParams); }
         default:

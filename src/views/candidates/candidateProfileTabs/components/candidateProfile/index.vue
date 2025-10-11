@@ -28,7 +28,7 @@ const props = defineProps({
     default: null
   }
 });
-console.log('candidateId', props.candidateId)
+
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])

@@ -19,6 +19,7 @@ import Profile from './components/candidateProfile/index.vue';
 import Languages from './components/candidateLanguages/index.vue';
 import Files from './components/cvFiles/index.vue';
 import FormattedCvs from './components/formattedCvs/index.vue';
+import CandidateSearchs from './components/candidateSearchs/index.vue';
 
 const route = useRoute();
 const id = ref(route.params.id);
@@ -50,6 +51,11 @@ const tabs = [
     key: '5',
     title: 'CVs en Formato',
     component: FormattedCvs
+  },
+  {
+    key: '6',
+    title: 'Búsquedas del Candidato',
+    component: CandidateSearchs
   }
 ];
 

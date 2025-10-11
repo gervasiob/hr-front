@@ -5,13 +5,13 @@
                 <a-col :span="field.span || 24">
                     <a-form-item :label="field.label" :name="field.field">
                         <template v-if="field.type === 'switch'">
-                            <a-switch v-model:checked="form[field.field]" />
+                            <a-switch v-model:checked="form[field.field]" :disabled="isFieldDisabled(field)" />
                         </template>
                         <template v-else>
                             <component :is="getComponent(field.type)" v-model:value="form[field.field]"
                                 v-bind="getComponentProps(field)"
                                 :options="field.type === 'api-select' ? apiSelectOptions[field.field] : field.options || []"
-                                style="width: 100%">
+                                :disabled="isFieldDisabled(field)" style="width: 100%">
                             </component>
                         </template>
                     </a-form-item>
@@ -92,7 +92,7 @@ async function loadForm(id) {
         })
         form.value = { ...data }
     } else {
-        form.value = {}
+        form.value = buildDefaultForm()
     }
 }
 
@@ -116,23 +116,32 @@ const getComponentProps = (field) => {
         showSearch: true,
         filterOption,
         mode: field.mode || undefined,
-        placeholder: field.placeholder || `Seleccione ${field.label.toLowerCase()}`
+        placeholder: field.placeholder || `Seleccione ${field.label.toLowerCase()}`,
+        disabled: isFieldDisabled(field)
     };
 
     switch (field.type) {
         case 'date':
-            return { format: 'DD/MM/YYYY', style: 'width: 100%' };
+            return { ...base, format: 'DD/MM/YYYY' };
         case 'tag':
             return { ...base, mode: 'tags', placeholder: 'Escriba y presione enter' };
         case 'select':
         case 'api-select':
             return base;
         case 'textarea':
-            return { rows: field.rows || 3 };
+            return { ...base, rows: field.rows || 3, readonly: isFieldReadOnly(field) };
         default:
-            return {};
+            return { ...base, readonly: isFieldReadOnly(field) };
     }
 };
+
+// Helpers para control de readonly/disabled a nivel de campo
+function isFieldDisabled(field) {
+    return Boolean(field?.disabled || field?.readOnly || field?.readonly);
+}
+function isFieldReadOnly(field) {
+    return Boolean(field?.readOnly || field?.readonly);
+}
 const filterOption = (input, option) =>
     option?.label?.toLowerCase().includes(input.toLowerCase()) ||
     option?.children?.toLowerCase().includes(input.toLowerCase());
@@ -170,7 +179,7 @@ watch(
     () => props.isNew,
     (isNew) => {
         if (isNew === true || isNew === 'true') {
-            form.value = {};
+            form.value = buildDefaultForm();
         }
     }
 )
@@ -194,34 +203,91 @@ props.fields.forEach(field => {
         )
     }
 })
+
+// Watchers para selects dependientes
+props.fields
+    .filter(f => f.type === 'api-select' && f.dependsOn)
+    .forEach(f => {
+        watch(
+            () => form.value[f.dependsOn],
+            () => loadApiSelectOptionsForField(f),
+            { immediate: false }
+        )
+    })
 const apiSelectOptions = ref({}) // almacena las opciones para cada campo api-select
 
 async function loadApiSelectOptions() {
     const promises = props.fields
         .filter(field => field.type === 'api-select')
-        .map(async field => {
-            try {
-
-                const res = await fetch('list', field.endpoint, {
-                    valueField: field.valueField,
-                    nameField: field.nameField,
-                    add_field: field.addField || null,
-                });
-                let data = res;
-                if (res.hasOwnProperty('results')) {
-                    data = res.results
-                }
-                apiSelectOptions.value[field.field] = data.map(item => ({
-                    value: item[field.valueField],
-                    label: item[field.nameField]
-                }));    
-            } catch (error) {
-                console.error(`Error loading api-select options for ${field.field}:`, error);
-                apiSelectOptions.value[field.field] = [];
-            }
-        });
+        .map(field => loadApiSelectOptionsForField(field));
 
     await Promise.all(promises);
+}
+
+async function loadApiSelectOptionsForField(field) {
+    try {
+        const additionalFilters = {}
+        if (field.dependsOn) {
+            const depVal = form.value[field.dependsOn]
+            if (Array.isArray(depVal) && depVal.length) {
+                const paramName = field.dependsMultipleParam || `${field.dependsOn}__in`
+                additionalFilters[paramName] = depVal.join(',')
+            } else if (depVal !== undefined && depVal !== null && depVal !== '') {
+                const paramName = field.dependsParam || field.dependsOn
+                additionalFilters[paramName] = depVal
+            }
+        }
+        // Merge static additional filters if provided
+        Object.assign(additionalFilters, field.additionalFilters || {})
+
+        const res = await fetch('list', field.endpoint, {
+            valueField: field.valueField,
+            nameField: field.nameField,
+            addField: field.addField || null,
+            additionalFilters,
+        });
+        let data = res;
+        if (res && res.hasOwnProperty && res.hasOwnProperty('results')) {
+            data = res.results
+        }
+        apiSelectOptions.value[field.field] = (data || []).map(item => ({
+            value: item[field.valueField],
+            label: item[field.nameField]
+        }));
+    } catch (error) {
+        console.error(`Error loading api-select options for ${field.field}:`, error);
+        apiSelectOptions.value[field.field] = [];
+    }
+}
+
+// Construir objeto de formulario con valores por defecto
+function buildDefaultForm() {
+    const obj = {}
+    props.fields.forEach(field => {
+        if ('defaultValue' in field) {
+            obj[field.field] = field.defaultValue
+            return
+        }
+        switch (field.type) {
+            case 'switch':
+                obj[field.field] = false
+                break
+            case 'date':
+                obj[field.field] = null
+                break
+            case 'api-select':
+            case 'select':
+                obj[field.field] = field.mode === 'multiple' ? [] : undefined
+                break
+            case 'textarea':
+            case 'input':
+                obj[field.field] = ''
+                break
+            default:
+                obj[field.field] = undefined
+        }
+    })
+    return obj
 }
 </script>
 

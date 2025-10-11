@@ -5,7 +5,7 @@
             <a-row :gutter="16"
                 style="margin-bottom: 16px; padding: 16px; border: 1px solid #d9d9d9; border-radius: 6px;">
                 <a-col v-for="field in fields" :key="field.field" :span="field.span || 24">
-                    <a-form-item :name="['items', index, field.field]" :rules="getFieldRules(field)">
+<a-form-item :name="['items', index, field.field]" :rules="getFieldRules(field)" :validate-status="getValidateStatus(item[field.field], field)" :help="getHelpMessage(item[field.field], field)">
                         <!-- Input básico -->
                         <a-input v-if="field.type === 'input'" v-model:value="item[field.field]"
                             :placeholder="field.placeholder || field.label" @change="() => onFieldChange(index)" />
@@ -14,9 +14,9 @@
                         <a-select v-else-if="field.type === 'api-select'" v-model:value="item[field.field]"
                             :placeholder="field.placeholder || 'Seleccionar ' + field.label"
                             :loading="loadingOptions[field.field]" :mode="field.mode || 'single'" show-search
-                            :filter-option="false" @search="(value) => handleSearch(value, field.field)"
+                            :filter-option="false" @search="(value) => handleSearch(value, field.field, index)"
                             @change="() => onFieldChange(index)">
-                            <a-select-option v-for="option in getFilteredOptions(field.field)"
+                            <a-select-option v-for="option in getFilteredOptions(field.field, index)"
                                 :key="option[field.valueField || 'id']" :value="option[field.valueField || 'id']">
                                 {{ option[field.nameField || 'name'] }}
                             </a-select-option>
@@ -36,6 +36,13 @@
                         <a-textarea v-else-if="field.type === 'textarea'" v-model:value="item[field.field]"
                             :placeholder="field.placeholder || field.label" :rows="field.rows || 4"
                             @change="() => onFieldChange(index)" />
+
+                        <!-- Rich Text (HTML) -->
+                        <div v-else-if="field.type === 'richtext'" contenteditable="true" class="rich-editor"
+                            v-html="item[field.field]"
+                            :data-placeholder="field.placeholder || field.label"
+                            @input="(e) => { onRichInput(e, item, field.field); onFieldChange(index); }"
+                            @blur="() => onFieldChange(index)"></div>
 
                         <!-- Number input -->
                         <a-input-number v-else-if="field.type === 'number'" v-model:value="item[field.field]"
@@ -90,6 +97,7 @@
 import { reactive, ref, onMounted, watch, h, nextTick, computed } from 'vue';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons-vue';
 import { fetch } from '@/api/model/model.js';
+import { message } from 'ant-design-vue';
 
 // Props
 const props = defineProps({
@@ -164,6 +172,9 @@ const createNewItem = () => {
 
 // Obtener valor por defecto según el tipo de campo
 const getDefaultValue = (field) => {
+    // Priorizar defaultValue si viene definido en la configuración del campo
+    if ('defaultValue' in field) return field.defaultValue;
+
     switch (field.type) {
         case 'checkbox':
             return false;
@@ -173,6 +184,8 @@ const getDefaultValue = (field) => {
             return field.mode === 'multiple' ? [] : undefined;
         case 'select':
             return field.mode === 'multiple' ? [] : undefined;
+        case 'richtext':
+            return '';
         default:
             return '';
     }
@@ -213,18 +226,64 @@ const getFieldRules = (field) => {
     return rules;
 };
 
+// Helpers de validación visual de requeridos
+const isValueEmpty = (value, field) => {
+    if (Array.isArray(value)) return value.length === 0;
+    if (field.type === 'checkbox') return value !== true;
+    if (field.type === 'richtext') {
+        const plain = String(value || '')
+            .replace(/<[^>]*>/g, '')
+            .replace(/&nbsp;/g, ' ')
+            .trim();
+        return plain.length === 0;
+    }
+    return value === undefined || value === null || value === '';
+};
+
+const getValidateStatus = (value, field) => {
+    return field.required && isValueEmpty(value, field) ? 'error' : undefined;
+};
+
+const getHelpMessage = (value, field) => {
+    return field.required && isValueEmpty(value, field) ? `${field.label} es requerido` : undefined;
+};
+
+// Input handler para richtext
+const onRichInput = (e, item, fieldName) => {
+    item[fieldName] = e.target.innerHTML;
+};
+
 // Cargar opciones de API
-const loadApiOptions = async (field) => {
+const loadApiOptions = async (field, rowIndex) => {
     if (field.type !== 'api-select' || !field.endpoint) return;
 
     try {
         loadingOptions.value[field.field] = true;
+        const additionalFilters = {}
+        if (field.dependsOn) {
+            const depVal = formData.items[rowIndex]?.[field.dependsOn]
+            if (Array.isArray(depVal) && depVal.length) {
+                const paramName = field.dependsMultipleParam || `${field.dependsOn}__in`
+                additionalFilters[paramName] = depVal.join(',')
+            } else if (depVal !== undefined && depVal !== null && depVal !== '') {
+                const paramName = field.dependsParam || field.dependsOn
+                additionalFilters[paramName] = depVal
+            }
+        }
+        Object.assign(additionalFilters, field.additionalFilters || {})
+
         const response = await fetch('list', field.endpoint, {
             valueField: field.valueField || 'id',
             nameField: field.nameField || 'name',
-            addField: field.addField
+            addField: field.addField,
+            additionalFilters,
         });
-        fieldOptions.value[field.field] = response.data || response;
+        let data = response?.data ?? response;
+        if (data && typeof data === 'object' && 'results' in data) {
+            data = data.results;
+        }
+        if (!fieldOptions.value[rowIndex]) fieldOptions.value[rowIndex] = {};
+        fieldOptions.value[rowIndex][field.field] = Array.isArray(data) ? data : [];
     } catch (error) {
         console.error(`Error loading options for ${field.field}:`, error);
         fieldOptions.value[field.field] = [];
@@ -238,14 +297,15 @@ const searchTerms = ref({});
 const filteredOptions = ref({});
 
 // Manejar búsqueda en select
-const handleSearch = (value, fieldName) => {
-    searchTerms.value[fieldName] = value;
+const handleSearch = (value, fieldName, rowIndex) => {
+    if (!searchTerms.value[rowIndex]) searchTerms.value[rowIndex] = {};
+    searchTerms.value[rowIndex][fieldName] = value;
 };
 
 // Obtener opciones filtradas
-const getFilteredOptions = (fieldName) => {
-    const options = fieldOptions.value[fieldName] || [];
-    const searchTerm = searchTerms.value[fieldName];
+const getFilteredOptions = (fieldName, rowIndex) => {
+    const options = (fieldOptions.value[rowIndex] && fieldOptions.value[rowIndex][fieldName]) || [];
+    const searchTerm = searchTerms.value[rowIndex] ? searchTerms.value[rowIndex][fieldName] : '';
 
     if (!searchTerm) {
         return options;
@@ -264,6 +324,13 @@ const addItem = () => {
     formData.items.push(createNewItem());
     originalData.value.push(JSON.parse(JSON.stringify(formData.items[formData.items.length - 1])));
     hasChanges.value.push(true);
+    const newIndex = formData.items.length - 1;
+    // Cargar opciones para selects API en la nueva fila
+    props.fields.forEach(field => {
+        if (field.type === 'api-select') {
+            loadApiOptions(field, newIndex);
+        }
+    });
 };
 
 // Eliminar elemento
@@ -295,6 +362,16 @@ const saveItem = async (index) => {
         // Hacer petición al endpoint especificado con el item específico
         if (props.candidateId) {
             formData.items[index].candidate = parseInt(props.candidateId);
+        }
+
+        // Validación de campos requeridos antes de guardar
+        const missingRequired = props.fields
+            .filter(f => f.required)
+            .some(f => isValueEmpty(formData.items[index][f.field], f));
+        if (missingRequired) {
+            message.error('Debe completar todos los campos requeridos');
+            submitting.value = false;
+            return;
         }
         
         // Determinar si usar POST o PUT basado en si el ID es un entero válido
@@ -329,6 +406,18 @@ const onFinish = async (values) => {
         // Hacer petición al endpoint especificado
         if (props.candidateId) {
             values.items.map(i => i.candidate = parseInt(props.candidateId));
+        }
+
+        // Validación de requeridos para envío completo
+        const hasMissing = values.items.some((item, idx) => {
+            return props.fields
+                .filter(f => f.required)
+                .some(f => isValueEmpty(item[f.field], f));
+        });
+        if (hasMissing) {
+            message.error('Debe completar todos los campos requeridos');
+            submitting.value = false;
+            return;
         }
         const response = await fetch('POST', props.saveEndpoint, values.items[0]);
 
@@ -435,10 +524,10 @@ defineExpose({
 onMounted(() => {
     initializeFormData();
 
-    // Cargar opciones de API para campos que lo requieran
+    // Cargar opciones de API para campos que lo requieran por fila
     props.fields.forEach(field => {
         if (field.type === 'api-select') {
-            loadApiOptions(field);
+            formData.items.forEach((_, idx) => loadApiOptions(field, idx));
         }
     });
 });
@@ -479,10 +568,26 @@ watch(() => props.fields, () => {
     // Recargar opciones de API si cambian los campos
     props.fields.forEach(field => {
         if (field.type === 'api-select') {
-            loadApiOptions(field);
+            formData.items.forEach((_, idx) => loadApiOptions(field, idx));
         }
     });
 }, { deep: true });
+
+// Recargar opciones de selects dependientes cuando cambia el campo del que dependen
+props.fields
+    .filter(f => f.type === 'api-select' && f.dependsOn)
+    .forEach(f => {
+        watch(
+            () => formData.items.map(item => item?.[f.dependsOn]),
+            () => {
+                // Limpiar y recargar opciones por fila
+                formData.items.forEach((item, idx) => {
+                    item[f.field] = f.mode === 'multiple' ? [] : undefined;
+                    loadApiOptions(f, idx);
+                });
+            }
+        )
+    })
 
 // Variable para controlar si estamos inicializando
 const isInitializing = ref(false);
@@ -495,4 +600,14 @@ watch(() => formData.items, () => {
 }, { deep: true });
 </script>
 
-<style></style>
+<style>
+.rich-editor {
+    background-color: white;
+    min-height: 120px;
+    max-height: 370px;
+    overflow-y: auto;
+    padding: 8px;
+    border: 1px solid #d9d9d9;
+    border-radius: 6px;
+}
+</style>

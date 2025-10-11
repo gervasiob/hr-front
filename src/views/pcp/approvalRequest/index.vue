@@ -58,7 +58,7 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'PCP'
+const titleText = 'Búsquedas a Aprobar'
 const itemText = 'Búsqueda'
 const modelName = 'search-requests'
 const modelNameSingle = 'searchrequest'
@@ -69,10 +69,10 @@ const route = useRoute();
 function applyQueryParamsToFilters() {
   const queryParams = route.query;
   const initialFilters = {};
-  
+
   // Obtener los campos disponibles en el filtro
   const filterFields = filters.map(filter => filter.field);
-  
+
   // Aplicar solo los query parameters que corresponden a campos de filtro
   Object.keys(queryParams).forEach(key => {
     if (filterFields.includes(key)) {
@@ -109,6 +109,7 @@ async function fetchQuery() {
       current_state = 1
       filterParams.value.current_state = 1
     }
+    console.log('route path', route.path)
     if (route.path === '/principal') {
       if (localStorage.getItem('user_id')) {
         recruiter = localStorage.getItem('user_id')
@@ -126,7 +127,7 @@ async function fetchQuery() {
       current_state: current_state,
       recruiter: recruiter
     };
-    
+
 
     const data = await fetch('get', endpoint, params);
     let result = [];
@@ -146,7 +147,7 @@ async function fetchQuery() {
         console.warn(`No data found in localStorage for cast_${castConfig.source}`);
         return value; // Retornar el valor original si no hay datos
       }
-      
+
       try {
         const list = JSON.parse(storedData);
         const getLabel = (id) => {

@@ -12,7 +12,7 @@ export const filters = [
                 roleId: 6
             }
         }
-     },
+    },
     {
         label: 'Reclutador',
         field: 'recruiter',
@@ -27,7 +27,7 @@ export const filters = [
             nameField: 'username'
         }
     },
-    
+
     { label: 'Cliente', field: 'client', model: 'client', type: 'text', placeholder: 'Buscar por cliente', span: 8 },
     {
         label: 'País', field: 'country', model: 'country',
@@ -60,7 +60,7 @@ export const filters = [
             nameField: 'name',      // <- nombre del campo que se usará como `label`
         }
 
-     },
+    },
     {
         label: 'Modalidad', field: 'modality', model: 'modality', type: 'api-select', placeholder: 'Seleccionar modalidad', span: 8,
         mode: 'single',
@@ -69,7 +69,7 @@ export const filters = [
             valueField: 'id',       // <- nombre del campo que se usará como `value`
             nameField: 'name',      // <- nombre del campo que se usará como `label`
         }
-     },
+    },
 
     { label: 'Inglés requerido', field: 'english_required', model: 'english_required', type: 'checkbox', span: 8 },
     { label: 'Homeworking', field: 'homeworking', model: 'homeworking', type: 'checkbox', span: 8 },

@@ -5,14 +5,14 @@
         <a-col :span="16" style="text-align: left">
           <h2>{{ titleText }}</h2>
         </a-col>
-        <a-col :span="4" style="text-align: right">
+        <!-- <a-col :span="4" style="text-align: right">
           <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
-        </a-col>
-        <a-col :span="4" style="text-align: right">
+        </a-col> -->
+        <!-- <a-col :span="4" style="text-align: right">
           <a-button type="default" @click="handleDownloadTemplate">
             Descargar listado
           </a-button>
-        </a-col>
+        </a-col> -->
       </a-row>
 
     </div>
@@ -21,7 +21,7 @@
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
       @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
-      @open-detail="handleOpenDetail" @open-candidates="handleOpenCandidates" />
+      @open-detail="handleOpenDetail" @open-candidates="handleOpenCandidates" @add-to-search="handleAddToSearch" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -45,9 +45,19 @@ import { exportToExcel } from '@/api/model/importExport'
 import { useRoute } from 'vue-router';
 import { useRouter } from 'vue-router';
 
+const props = defineProps({
+  candidateId: {
+    type: [Number, String],
+    default: null
+  }
+});
+
+const emit = defineEmits(['refresh-both'])
+
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
+const trackedSearchIds = ref(new Set())
 const filterParams = ref({})
 const showForm = ref(false)
 const selectedId = ref(null)
@@ -58,7 +68,7 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'PCP'
+const titleText = 'PCP Abiertas'
 const itemText = 'Búsqueda'
 const modelName = 'search-requests'
 const modelNameSingle = 'searchrequest'
@@ -89,6 +99,7 @@ onMounted(async () => {
   // Aplicar query parameters a los filtros antes de cargar datos
   applyQueryParamsToFilters();
   await loadCastingLists()
+  await fetchTrackedSearchIds()
   await fetchQuery()
 })
 
@@ -105,18 +116,8 @@ async function fetchQuery() {
     const orderingParam = ordering.value ? { ordering: ordering.value } : {};
     let current_state = null
     let recruiter = null
-    if (route.path === '/pcp/list/open') {
-      current_state = 1
-      filterParams.value.current_state = 1
-    }
-    if (route.path === '/principal') {
-      if (localStorage.getItem('user_id')) {
-        recruiter = localStorage.getItem('user_id')
-        filterParams.value.recruiter = recruiter
-      }
-      current_state = 1
-      filterParams.value.current_state = 1
-    }
+    filterParams.value.current_state = 1
+
     const params = {
       ...baseParams,
       ...orderingParam,
@@ -161,7 +162,7 @@ async function fetchQuery() {
     };
 
     // ⬇️ Mapear resultados con casteo
-    candidates.value = result.map(item => {
+    const mapped = result.map(item => {
       const newItem = { ...item };
       columns.forEach(col => {
         if (col.cast) {
@@ -171,10 +172,40 @@ async function fetchQuery() {
       return newItem;
     });
 
+    // ⬇️ Filtrar búsquedas que ya estén en feedback (search-trackings) del candidato
+    if (trackedSearchIds.value && trackedSearchIds.value.size > 0) {
+      candidates.value = mapped.filter(item => !trackedSearchIds.value.has(item.id))
+    } else {
+      candidates.value = mapped
+    }
+
   } catch (e) {
     console.error('Error al cargar listado', e);
   } finally {
     loading.value = false;
+  }
+}
+
+async function fetchTrackedSearchIds() {
+  try {
+    if (!props.candidateId) {
+      trackedSearchIds.value = new Set()
+      return
+    }
+    const data = await fetch('get', 'search-trackings/', { candidate: props.candidateId, limit: 1000 })
+    let list = []
+    if (Array.isArray(data)) {
+      list = data
+    } else if (data && Array.isArray(data.results)) {
+      list = data.results
+    }
+    const ids = list
+      .map(it => it?.search)
+      .filter(id => id !== null && id !== undefined)
+    trackedSearchIds.value = new Set(ids)
+  } catch (e) {
+    console.warn('No se pudo obtener trackings del candidato para filtrar PCP:', e)
+    trackedSearchIds.value = new Set()
   }
 }
 
@@ -345,6 +376,56 @@ function handleOpenDetail(record) {
   const detail = record.id;
   const url = `/pcp/detail/${detail}`;
   router.push({ name: 'Detalle de Búsqueda', params: { id: detail } });
+}
+async function handleAddToSearch(record) {
+  try {
+    // Fecha de hoy en formato YYYY-MM-DD
+    const appliedDate = new Date().toISOString().slice(0, 10)
+
+    // Usuario actual desde localStorage
+    const recruiterId = localStorage.getItem('user_id')
+
+    // Obtener seniority del candidato
+    let seniorityId = null
+    if (props.candidateId) {
+      const candidateData = await fetch('get', 'candidates/', { id: props.candidateId })
+      if (Array.isArray(candidateData) && candidateData.length > 0) {
+        seniorityId = candidateData[0]?.seniority ?? null
+      } else if (candidateData && candidateData.results && candidateData.results.length > 0) {
+        seniorityId = candidateData.results[0]?.seniority ?? null
+      }
+    }
+
+    const payload = {
+      applied_date: appliedDate,
+      candidate: props.candidateId,
+      feedback_sent: false,
+      hired: false,
+      offer_sent: false,
+      preselected_client: false,
+      preselected_commercial: false,
+      psychotechnical_test: false,
+      recruiter: recruiterId ? Number(recruiterId) : 1,
+      search: record?.id ?? '1',
+      seniority: seniorityId,
+      technical_interview: false,
+    }
+
+    await fetch('post', 'search-trackings/', payload)
+    message.success('Candidato agregado a la búsqueda correctamente')
+    // Actualizar el set local y pedir refresco de ambas tablas
+    await fetchTrackedSearchIds()
+    await fetchQuery()
+    emit('refresh-both')
+  } catch (error) {
+    console.error('Error al agregar candidato a la búsqueda:', error)
+    if (error?.response?.data) {
+      const messages = Object.values(error.response.data).flat().join(' ')
+      message.error(`Errores: ${messages}`)
+    } else {
+      message.error('Error inesperado al agregar el candidato')
+    }
+  }
 }
 function handleOpenCandidates(record) {
   const detail = record.id;

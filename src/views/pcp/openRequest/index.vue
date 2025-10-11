@@ -58,7 +58,7 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'PCP'
+const titleText = 'Solicitud de Apertura'
 const itemText = 'Búsqueda'
 const modelName = 'search-requests'
 const modelNameSingle = 'searchrequest'
@@ -109,6 +109,7 @@ async function fetchQuery() {
       current_state = 1
       filterParams.value.current_state = 1
     }
+    console.log('route path', route.path)
     if (route.path === '/principal') {
       if (localStorage.getItem('user_id')) {
         recruiter = localStorage.getItem('user_id')
