@@ -112,15 +112,35 @@ async function loadCastingLists() {
   const uniqueCasts = [...new Set(casts)]
 
   for (const source of uniqueCasts) {
-    if (localStorage.getItem(`cast_${source}`)) {
-      localStorage.removeItem(`cast_${source}`)
-    }
-    const data = await fetch('list', source, {
-      valueField: 'id',
-      nameField: 'name'
-    })
-    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+    try {
+      // Limpiar datos previos
+      if (localStorage.getItem(`cast_${source}`)) {
+        localStorage.removeItem(`cast_${source}`);
+      }
 
+      const data = await fetch('list', source, {
+        valueField: 'id',
+        nameField: 'name'
+      });
+
+      // Verificar que data existe y tiene la estructura esperada
+      let dataToStore = [];
+      if (data && Array.isArray(data)) {
+        dataToStore = data;
+      } else if (data && data.results && Array.isArray(data.results)) {
+        dataToStore = data.results;
+      } else {
+        console.warn(`No valid data received for source: ${source}`, data);
+      }
+
+      localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
+      console.log(`Stored ${dataToStore.length} items for cast_${source}`);
+
+    } catch (error) {
+      console.error(`Error loading casting list for ${source}:`, error);
+      // Guardar array vacío en caso de error para evitar problemas posteriores
+      localStorage.setItem(`cast_${source}`, JSON.stringify([]));
+    }
   }
 }
 
