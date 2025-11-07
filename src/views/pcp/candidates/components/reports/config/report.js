@@ -1,10 +1,7 @@
 // report.js
 
 export const reportModel = (data) => {
-  // Use a default empty object for data if it's not provided
   const candidateData = data || {};
-
-  // Safely access properties using optional chaining and provide default values
   const name = candidateData.name ?? 'No disponible';
   const residence = candidateData.residence ?? 'No disponible';
   const position = candidateData.position ?? 'No disponible';
@@ -29,80 +26,5 @@ export const reportModel = (data) => {
 
   const all_skills = [...required_skills, ...acquired_skills];
 
-  return `
-  <h1 style="font-family: Calibri; font-size: 17pt;">${name}</h1>
-  <p style="font-family: Calibri; font-size: 11pt;"><strong>Residencia:</strong> ${residence}</p>
-  <p style="font-family: Calibri; font-size: 11pt;"><strong>DNI:</strong> ${dni}</p>
-  <p style="font-family: Calibri; font-size: 11pt;"><strong>Edad:</strong> ${age}</p>
-  <p style="font-family: Calibri; font-size: 11pt;"><strong>Email:</strong> ${email}</p>
-  <p style="font-family: Calibri; font-size: 11pt;"><strong>Teléfono:</strong> ${phone}</p>
-  <p style="font-family: Calibri; font-size: 11pt;"><strong>Años de Experiencia:</strong> ${experience_years}</p>
-  <p style="font-family: Calibri; font-size: 11pt;"><strong>Puesto a aplicar:</strong> ${position}</p>
-
-  <h2>RESUMEN DE LA ENTREVISTA</h2>
-  <p>${summary}</p>
-
-  <h3>Aptitudes</h3>
-  <table style="width: 100%; border-collapse: collapse; font-family: Calibri; font-size: 11pt; background-color: red">
-    <thead>
-      <tr style="background-color: #f2f2f2;">
-        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Aptitud</th>
-        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Origen</th>
-        <th style="border: 1px solid #ddd; padding: 8px; text-align: left;">Años de Experiencia</th>
-      </tr>
-    </thead>
-    <tbody>
-      ${all_skills.map(skill => `
-        <tr>
-          <td style="border: 1px solid #ddd; padding: 8px;">${skill.nombre}</td>
-          <td style="border: 1px solid #ddd; padding: 8px;">${skill.origen}</td>
-          <td style="border: 1px solid #ddd; padding: 8px;">No disponible</td>
-        </tr>
-      `).join('')}
-    </tbody>
-  </table>
-
-  <h3>Evaluación Actitudinal (1 a 10)</h3>
-  <p><strong>Puntaje:</strong> ${evaluation.puntaje ?? 'No disponible'}</p>
-  <p><strong>Comentario:</strong> ${evaluation.comentario ?? 'No disponible'}</p>
-
-  <h3>Competencias Evaluadas según el Modelo STAR</h3>
-  <ul>
-    ${star_competencies.map(comp => `<li><strong>${comp.competencia}:</strong> ${comp.nivel}</li>`).join('')}
-  </ul>
-
-  <h3>Otras evaluaciones</h3>
-  <p><strong>Motivación por la propuesta:</strong> ${motivation}</p>
-  <p><strong>Zona:</strong> ${location}</p>
-  <p><strong>Disposición para ir al lugar de trabajo:</strong> ${availability}</p>
-
-  <h3>Otras destrezas</h3>
-  <ul>
-    ${otherSkills.map(skill => `<li>${skill}</li>`).join('')}
-  </ul>
-
-  <h2>Descripción General del Perfil</h2>
-  ${(Array.isArray(experience) ? experience : []).map(job => `
-    <p><strong>${job.period ?? 'No disponible'}</strong></p>
-    <p><strong>${(job.position ?? 'No disponible').toUpperCase()}, en ${(job.company ?? 'No disponible').toUpperCase()}</strong></p>
-    <p>${job.description ?? ''}</p>
-  `).join('')}
-
-  <h2>EDUCACIÓN</h2>
-  ${education.map(ed => `
-    <p><strong>${ed.title ?? 'No disponible'}</strong> - ${ed.institution ?? 'No disponible'} (${ed.status ?? 'No disponible'})</p>
-  `).join('')}
-
-  <h2>CURSOS</h2>
-  <ul>
-    ${courses.map(course => `<li><strong>${course}</strong></li>`).join('')}
-  </ul>
-
-  <h2>IDIOMAS</h2>
-  <ul>
-    ${languages.map(lang => `<li>${(lang.name || lang) ?? 'No disponible'}: ${lang.level ?? 'Nivel no especificado'}</li>`).join('')}
-  </ul>
-
-  <hr />
-  <p style="font-size: 10pt; font-family: Calibri;">KETOS DELPHIN LATAM – Tel.: (5411) 4850.1390 – Twitter: @ketosdelphin – rrhh@ketos-delphin.com – http://www.ketos-delphin.com/</p>
-`};
+  return `<h1 style="font-family: Calibri; font-size: 17pt;">${name}</h1><p style="font-family: Calibri; font-size: 11pt;"><strong>Residencia:</strong> ${residence}</p><p style="font-family: Calibri; font-size: 11pt;"><strong>DNI:</strong> ${dni}</p><p style="font-family: Calibri; font-size: 11pt;"><strong>Edad:</strong> ${age}</p><p style="font-family: Calibri; font-size: 11pt;"><strong>Email:</strong> ${email}</p><p style="font-family: Calibri; font-size: 11pt;"><strong>Teléfono:</strong> ${phone}</p><p style="font-family: Calibri; font-size: 11pt;"><strong>Años de Experiencia:</strong> ${experience_years}</p><p style="font-family: Calibri; font-size: 11pt;"><strong>Puesto a aplicar:</strong> ${position}</p><h2>RESUMEN DE LA ENTREVISTA</h2><p>${summary}</p><h3>Aptitudes Requeridas / Adquiridas</h3><ul>${all_skills.map(skill => `<li><strong>${skill.nombre}</strong> - ${skill.origen}</li>`).join('')}</ul><h3>Evaluación Actitudinal (1 a 10)</h3><p><strong>Puntaje:</strong> ${evaluation.puntaje ?? 'No disponible'}</p><p><strong>Comentario:</strong> ${evaluation.comentario ?? 'No disponible'}</p><h3>Competencias Evaluadas según el Modelo STAR</h3><ul>${star_competencies.map(comp => `<li><strong>${comp.competencia}:</strong> ${comp.nivel}</li>`).join('')}</ul><h3>Otras evaluaciones</h3><p><strong>Motivación por la propuesta:</strong> ${motivation}</p><p><strong>Zona:</strong> ${location}</p><p><strong>Disposición para ir al lugar de trabajo:</strong> ${availability}</p><h3>Otras destrezas</h3><ul>${otherSkills.map(skill => `<li>${skill}</li>`).join('')}</ul><h2>Descripción General del Perfil</h2>${(Array.isArray(experience) ? experience : []).map(job => `<p><strong>${job.period ?? 'No disponible'}</strong></p><p><strong>${(job.position ?? 'No disponible').toUpperCase()}, en ${(job.company ?? 'No disponible').toUpperCase()}</strong></p><p>${job.description ?? ''}</p>`).join('')}<h2>EDUCACIÓN</h2>${education.map(ed => `<p><strong>${ed.title ?? 'No disponible'}</strong> - ${ed.institution ?? 'No disponible'} (${ed.status ?? 'No disponible'})</p>`).join('')}<h2>CURSOS</h2><ul>${courses.map(course => `<li><strong>${course}</strong></li>`).join('')}</ul><h2>IDIOMAS</h2><ul>${languages.map(lang => `<li>${(lang.name || lang) ?? 'No disponible'}: ${lang.level ?? 'Nivel no especificado'}</li>`).join('')}</ul><hr /><p style="font-size: 10pt; font-family: Calibri;">KETOS DELPHIN LATAM – Tel.: (5411) 4850.1390 – Twitter: @ketosdelphin – rrhh@ketos-delphin.com – http://www.ketos-delphin.com/</p>`;
+};

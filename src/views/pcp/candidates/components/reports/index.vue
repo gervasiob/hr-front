@@ -54,9 +54,25 @@ watch(reportData, (newData) => {
     reportContent.value = reportModel(newData)
 }, { deep: true })
 
+// Helper to get language details
+const getLanguageDetails = async (lang) => {
+    try {
+        const langDetails = await fetch('get', `languages/${lang.language}/`);
+        return {
+            name: langDetails.name || 'Idioma no especificado',
+            level: `Escrito: ${lang.written_level_obj?.name || 'N/A'}, Oral: ${lang.oral_level_obj?.name || 'N/A'}`,
+        };
+    } catch (error) {
+        console.error(`Error fetching language details for language ID ${lang.language}:`, error);
+        return {
+            name: 'Error al cargar idioma',
+            level: 'N/A',
+        };
+    }
+};
+
 onMounted(async () => {
     await getSearch()
-    await fetchQuery()
 })
 
 async function getSearch() {
@@ -64,7 +80,7 @@ async function getSearch() {
         if (id.value) {
             const data = await fetch('get', 'search-trackings', { id: id.value });
             if (data && data.length > 0) {
-                const { candidate, applied_date, recruiter, search, seniority } = data[0];
+                const { candidate, search } = data[0];
                 let profileId = ""
                 let subprofileId = ""
                 let seniorityId = ""
@@ -77,49 +93,70 @@ async function getSearch() {
                         const candidateName = firstCandidate.first_name + ' ' + firstCandidate.last_name;
                         const candidateResidence = firstCandidate.zone + ', ' + firstCandidate.province + ', ' + firstCandidate.country;
 
-                        reportData.value.name = candidateName;
-                        reportData.value.residence = candidateResidence;
-                        reportData.value.dni = firstCandidate.dni;
-                        reportData.value.age = firstCandidate.age;
-                        reportData.value.email = firstCandidate.email;
-                        reportData.value.phone = firstCandidate.phone;
+                        reportData.value = {
+                            ...reportData.value,
+                            id: firstCandidate.id,
+                            name: candidateName,
+                            residence: candidateResidence,
+                            dni: firstCandidate.dni,
+                            age: firstCandidate.age,
+                            email: firstCandidate.email,
+                            phone: firstCandidate.phone,
+                        };
                         searchTitle.value = candidateName;
 
                         const FormattedCV = await fetch('get', 'formatted-cvs', { candidate: candidate });
                         if (FormattedCV && FormattedCV.length > 0) {
-                            const { id, experience_years, languages, technical_skills, summary } = FormattedCV[0];
+                            const { id, experience_years, technical_skills, summary } = FormattedCV[0];
                             formattedCvId = id;
+                            reportData.value.formattedCvId = id;
                             reportData.value.experience_years = experience_years;
-                            reportData.value.languages = languages;
                             reportData.value.technical_skills = technical_skills;
                             reportData.value.summary = summary;
-                        }
-                        const profile = await fetch('get', 'primary-profiles', { id: firstCandidate.profile });
-                        if (profile && profile.length > 0) {
-                            profileId = profile[0].id;
                         }
                     }
                      // Fetch data from new endpoints
                     if (candidate && formattedCvId) {
-                        const summaryRes = await fetch('get', 'interview-summaries-new', { candidate, formattedCv: formattedCvId });
-                        if (summaryRes && summaryRes.length > 0) {
-                        reportData.value.summary = summaryRes[0].resumen;
-                        }
+                        const [summaryRes, aptitudesRes, evaluationRes, competenciesRes, otrasEvaluacionesRes, otrasDestrezasRes, candidateLanguagesRes] = await Promise.all([
+                            fetch('get', 'interview-summaries-new', { candidate, formattedCv: formattedCvId }),
+                            fetch('get', 'candidate-aptitudes', { candidate, formattedCv: formattedCvId }),
+                            fetch('get', 'evaluaciones-actitudinales', { candidate, formattedCv: formattedCvId }),
+                            fetch('get', 'competencias-star', { candidate, formattedCv: formattedCvId }),
+                            fetch('get', 'otras-evaluaciones/', { candidate, formattedCv: formattedCvId }),
+                            fetch('get', 'otras-destrezas/', { candidate, formattedCv: formattedCvId }),
+                            fetch('get', 'candidate-languages/', { candidate })
+                        ]);
 
-                        const aptitudesRes = await fetch('get', 'candidate-aptitudes', { candidate, formattedCv: formattedCvId });
+                        if (summaryRes && summaryRes.length > 0) {
+                            reportData.value.summary = summaryRes[0].resumen;
+                        }
                         if (aptitudesRes && aptitudesRes.length > 0) {
                             reportData.value.required_skills = aptitudesRes.filter(a => a.origen === 'REQUERIDA');
                             reportData.value.acquired_skills = aptitudesRes.filter(a => a.origen === 'ADQUIRIDA');
                         }
-
-                        const evaluationRes = await fetch('get', 'evaluaciones-actitudinales', { candidate, formattedCv: formattedCvId });
                         if (evaluationRes && evaluationRes.length > 0) {
-                        reportData.value.evaluation = evaluationRes[0];
+                            reportData.value.evaluation = evaluationRes[0];
+                        }
+                        if (competenciesRes && competenciesRes.length > 0) {
+                            reportData.value.star_competencies = competenciesRes;
+                        }
+                        
+                        const evalDataArray = otrasEvaluacionesRes?.results || otrasEvaluacionesRes;
+                        if (evalDataArray && evalDataArray.length > 0) {
+                            const evalData = evalDataArray[0];
+                            reportData.value.motivation = evalData.motivacion;
+                            reportData.value.location = evalData.zona;
+                            reportData.value.availability = `${evalData.disponibilidad_in_situ ? 'Sí' : 'No'} - ${evalData.comentario || ''}`;
                         }
 
-                        const competenciesRes = await fetch('get', 'competencias-star', { candidate, formattedCv: formattedCvId });
-                        if (competenciesRes && competenciesRes.length > 0) {
-                        reportData.value.star_competencies = competenciesRes;
+                        const destrezasDataArray = otrasDestrezasRes?.results || otrasDestrezasRes;
+                        if (destrezasDataArray && destrezasDataArray.length > 0) {
+                            reportData.value.otherSkills = destrezasDataArray.map(d => d.destreza);
+                        }
+
+                        const languagesDataArray = candidateLanguagesRes?.results || candidateLanguagesRes;
+                        if (languagesDataArray && languagesDataArray.length > 0) {
+                             reportData.value.languages = await Promise.all(languagesDataArray.map(getLanguageDetails));
                         }
                     }
                 }
@@ -150,124 +187,10 @@ async function getSearch() {
             }
         }
     } catch (error) {
-
+        console.error("Error fetching report data:", error);
+        message.error("No se pudieron cargar todos los datos del reporte.");
     }
 }
-async function fetchQuery() {
-    loading.value = true;
-    try {
-        const baseParams = Object.fromEntries(
-            Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
-        );
-
-        const page = currentPage.value || 1;
-        const limit = pageSize.value || 10;
-        const offset = (page - 1) * limit;
-        const orderingParam = ordering.value ? { ordering: ordering.value } : {};
-
-        const params = {
-            ...baseParams,
-            ...orderingParam,
-            id: id.value,
-            limit,
-            offset,
-        };
-        const data = await fetch('get', endpoint, params);
-        let result = [];
-
-        if ('results' in data && 'count' in data) {
-            result = data.results;
-            totalItems.value = data.count;
-        } else {
-            result = data;
-            totalItems.value = data.length;
-        }
-
-    } catch (e) {
-        console.error('Error al cargar listado', e);
-    } finally {
-        loading.value = false;
-    }
-}
-
-const totalItems = ref(0)
-
-const pagination = computed(() => ({
-    current: currentPage.value,
-    pageSize: pageSize.value,
-    total: totalItems.value,
-    showSizeChanger: true,
-    pageSizeOptions: ['10', '20', '50', '100'],
-    showTotal: total => `Total ${total} registros`
-}))
-function handlePaginationChange({ page, pageSize: newSize, order }) {
-    currentPage.value = page || 1
-    pageSize.value = newSize || 10
-    if (order !== undefined) {
-        ordering.value = order
-    }
-    fetchQuery()
-}
-
-function applyFilterParams(filters) {
-    filterParams.value = filters
-    currentPage.value = 1
-    fetchQuery()
-}
-
-function openForm(id = null, isNew = true) {
-    selectedId.value = id
-    newForm.value = isNew
-    showForm.value = true
-}
-
-function handleEdit(candidate) {
-    openForm(candidate.id, false)
-}
-
-
-function handleViewCV(candidate) {
-    router.push({ name: 'FormattedCV', params: { candidateId: candidate.id } })
-}
-
-async function handleProcessedForm(processedForm) {
-    try {
-
-        if (!id.value) {
-            return;
-        }
-        processedForm.search = id.value
-        if (candidates.value.length > 0) {
-            await fetch('put', endpoint, processedForm, processedForm.id)
-        } else {
-            await fetch('post', endpoint, processedForm)
-        }
-        message.success(itemText + ' guardado correctamente')
-        showForm.value = false
-        fetchQuery()
-    } catch (error) {
-        console.error('Error al guardar item:', error)
-
-        // Si error es un objeto con detalles de validación
-        if (error?.response?.data) {
-            const messages = Object.values(error.response.data).flat().join(' ')
-            message.error(`Errores: ${messages}`)
-        } else {
-            message.error('Error inesperado al guardar el item')
-        }
-
-        throw error  // Esto permite que el modal no se cierre si hay error
-    }
-}
-
-const ordering = ref(null)
-
-function handleSort(order) {
-    ordering.value = order
-    currentPage.value = 1
-    fetchQuery()
-}
-
 
 </script>
 
