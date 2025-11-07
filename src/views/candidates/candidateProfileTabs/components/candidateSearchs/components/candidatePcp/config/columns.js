@@ -9,8 +9,6 @@ export const columns = [
       slots: true,
       align: 'center',
       actions: [
-        { label: '', type: 'link', event: 'edit', danger: false, icon: 'EditOutlined' },
-
         {
           label: '',
           type: 'link',
@@ -24,6 +22,13 @@ export const columns = [
           event: 'open-candidates',
           danger: false,
           icon: 'UnorderedListOutlined'
+        },
+        {
+          label: '',
+          type: 'link',
+          event: 'add-to-search',
+          danger: false,
+          icon: 'PlusOutlined'
         },
       ]
     }
@@ -106,36 +111,7 @@ export const columns = [
     },
   },
   { title: 'Quién Contrata?', field: 'hired_by', sorter: true },
-  // wordpress
-  // LinkedinFilled
-  // cantidad de personas del mailing
-  // pindeed
-  // pfacebook
-  // entrevistasRealizadas
+
   { title: 'Link Informe de Esfuerzo', field: 'effort_report_url', sorter: false },
-  // tipo de cierre
-  // { title: 'Homeworking', field: 'homeworking', type: 'boolean', sorter: true },
-  // { title: 'Cobertura médica', field: 'health_coverage', type: 'boolean', sorter: true },
-  // { title: 'Horario laboral', field: 'working_hours', sorter: true },
-  // { title: 'Duración proyecto', field: 'project_duration', sorter: true },
-  // { title: 'Ajustes salariales', field: 'salary_adjustments', sorter: true },
-  // { title: 'Requiere idiomas', field: 'language_requirement', type: 'boolean', sorter: true },
-  // { title: 'Beneficios', field: 'benefits', sorter: false },
-  // { title: 'Estado', field: 'current_state', sorter: true },
-  // { title: 'Reporte cierre', field: 'close_report', sorter: false },
-
-  {
-    title: 'Acciones',
-    field: 'actions',
-    width: 200,
-    operation: {
-      slots: true,
-      align: 'center',
-      actions: [
-        { label: '', type: 'link', event: 'delete', danger: true, icon: 'DeleteOutlined' },
-
-      ]
-    }
-  }
 ]
 

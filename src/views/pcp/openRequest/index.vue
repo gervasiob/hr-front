@@ -1,110 +1,185 @@
 <template>
   <div class="candidates">
-    <a-row style="margin-bottom: 1%">
-      <a-col :span="20" style="text-align: left">
-        <h3>{{ titleText }}</h3>
-      </a-col>
-    </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId" />
+    <div class="header">
+      <a-row>
+        <a-col :span="16" style="text-align: left">
+          <h2>{{ titleText }}</h2>
+        </a-col>
+        <a-col :span="4" style="text-align: right">
+          <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+        </a-col>
+        <a-col :span="4" style="text-align: right">
+          <a-button type="default" @click="handleDownloadTemplate">
+            Descargar listado
+          </a-button>
+        </a-col>
+      </a-row>
+
+    </div>
+
+    <BasicFilter :filter-config="filters" :initial-values="filterParams" @filter-change="applyFilterParams" />
+
+    <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
+      @open-detail="handleOpenDetail" @open-candidates="handleOpenCandidates" />
+
+    <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
+      :confirm-loading="modalLoading" @ok="handleModalOk">
+      <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
+    </a-modal>
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted, computed } from 'vue'
-import { useRouter } from 'vue-router'
 import BasicTable from '@/components/basicTable/basicTable.vue'
+import BasicFilter from '@/components/filters/basicFilters.vue'
 import BasicForm from '@/components/form/basicForm.vue'
-import BasicFormItem from '@/components/formItem/BasicFormItem.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
-
+import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
-
-const props = defineProps({
-  candidateId: {
-    type: [Number, String],
-    default: null
-  }
-});
+import { useRoute } from 'vue-router';
+import { useRouter } from 'vue-router';
 
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
 const filterParams = ref({})
 const showForm = ref(false)
+const selectedId = ref(null)
 const newForm = ref(false)
 const formRef = ref(null)
 const modalLoading = ref(false)
 const currentPage = ref(1)
 const pageSize = ref(10)
-const selectedId = ref(null)
 
 // config parameters
-// config parameters
-const titleText = 'Perfil Candidatos'
-const itemText = 'Perfil Candidato'
-const modelName = 'candidate-profiles'
-const modelNameSingle = 'candidate-profile'
+const titleText = 'Solicitud de Apertura'
+const itemText = 'Búsqueda'
+const modelName = 'search-requests'
+const modelNameSingle = 'searchrequest'
 const endpoint = modelName + '/'
+const route = useRoute();
+
+// Función para aplicar query parameters a los filtros
+function applyQueryParamsToFilters() {
+  const queryParams = route.query;
+  const initialFilters = {};
+  
+  // Obtener los campos disponibles en el filtro
+  const filterFields = filters.map(filter => filter.field);
+  
+  // Aplicar solo los query parameters que corresponden a campos de filtro
+  Object.keys(queryParams).forEach(key => {
+    if (filterFields.includes(key)) {
+      initialFilters[key] = queryParams[key];
+    }
+  });
+  // Si hay filtros iniciales, aplicarlos
+  if (Object.keys(initialFilters).length > 0) {
+    filterParams.value = initialFilters;
+  }
+}
 
 onMounted(async () => {
+  // Aplicar query parameters a los filtros antes de cargar datos
+  applyQueryParamsToFilters();
   await loadCastingLists()
   await fetchQuery()
 })
 
 async function fetchQuery() {
-  loading.value = true
+  loading.value = true;
   try {
     const baseParams = Object.fromEntries(
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
-    )
+    );
 
-    const limit = pageSize.value
-    const offset = (currentPage.value - 1) * pageSize.value
-    const orderingParam = ordering.value ? { ordering: ordering.value } : {}
-
+    const page = currentPage.value || 1;
+    const limit = pageSize.value || 10;
+    const offset = (page - 1) * limit;
+    const orderingParam = ordering.value ? { ordering: ordering.value } : {};
+    let current_state = null
+    let recruiter = null
+    if (route.path === '/pcp/list/open') {
+      current_state = 1
+      filterParams.value.current_state = 1
+    }
+    console.log('route path', route.path)
+    if (route.path === '/principal') {
+      if (localStorage.getItem('user_id')) {
+        recruiter = localStorage.getItem('user_id')
+        filterParams.value.recruiter = recruiter
+      }
+      current_state = 1
+      filterParams.value.current_state = 1
+    }
     const params = {
       ...baseParams,
       ...orderingParam,
-      candidate: props.candidateId,
       limit,
-      offset
-    }
+      offset,
+      ...route.query,
+      current_state: current_state,
+      recruiter: recruiter
+    };
+    
 
-    const data = await fetch('get', endpoint, params)
-    let result = []
+    const data = await fetch('get', endpoint, params);
+    let result = [];
 
     if ('results' in data && 'count' in data) {
-      result = data.results
-      totalItems.value = data.count
+      result = data.results;
+      totalItems.value = data.count;
     } else {
-      result = data
-      totalItems.value = data.length
+      result = data;
+      totalItems.value = data.length;
     }
 
-    // ⬇️ Casteo de columnas
+    // ⬇️ Función auxiliar para casteo robusto
+    const castValue = (value, castConfig) => {
+      const storedData = localStorage.getItem(`cast_${castConfig.source}`);
+      if (!storedData || storedData === 'undefined') {
+        console.warn(`No data found in localStorage for cast_${castConfig.source}`);
+        return value; // Retornar el valor original si no hay datos
+      }
+      
+      try {
+        const list = JSON.parse(storedData);
+        const getLabel = (id) => {
+          const found = list.find(el => el[castConfig.valueField] === id);
+          return found ? found[castConfig.labelField] : id;
+        };
+        return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
+      } catch (error) {
+        console.error(`Error parsing localStorage data for cast_${castConfig.source}:`, error);
+        return value; // Retornar el valor original en caso de error
+      }
+    };
+
+    // ⬇️ Mapear resultados con casteo
     candidates.value = result.map(item => {
-      const newItem = { ...item }
+      const newItem = { ...item };
       columns.forEach(col => {
         if (col.cast) {
-          const list = JSON.parse(localStorage.getItem(`cast_${col.cast.source}`) || '[]')
-          const found = list.find(el => el[col.cast.valueField] === item[col.field])
-          if (found) newItem[col.field] = found[col.cast.labelField]
+          newItem[col.field] = castValue(item[col.field], col.cast);
         }
-      })
-      return newItem
-    })
+      });
+      return newItem;
+    });
+
   } catch (e) {
-    console.error('Error al cargar listado', e)
+    console.error('Error al cargar listado', e);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
 
 async function loadCastingLists() {
-
   const casts = columns
     .filter(col => col.cast)
     .map(col => col.cast.source)
@@ -171,17 +246,20 @@ function applyFilterParams(filters) {
 
 function openForm(id = null, isNew = true) {
   selectedId.value = id
-  showForm.value = true
   newForm.value = isNew
   showForm.value = true
 }
 
-function handleEdit(item) {
-  openForm(item.id, false)
+function handleEdit(candidate) {
+  openForm(candidate.id, false)
+}
+
+
+function handleViewCV(candidate) {
+  router.push({ name: 'FormattedCV', params: { candidateId: candidate.id } })
 }
 
 async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)
@@ -263,7 +341,17 @@ async function handleDownloadTemplate() {
     message.error('Ocurrió un error al descargar el listado')
   }
 }
-
+// Funciones a completar
+function handleOpenDetail(record) {
+  const detail = record.id;
+  const url = `/pcp/detail/${detail}`;
+  router.push({ name: 'Detalle de Búsqueda', params: { id: detail } });
+}
+function handleOpenCandidates(record) {
+  const detail = record.id;
+  const url = `/pcp/candidates/${detail}`;
+  router.push({ name: 'DETALLE CANDIDATOS', params: { id: detail } });
+}
 </script>
 
 <style scoped>

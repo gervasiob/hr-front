@@ -12,10 +12,11 @@
                     <!-- SELECT estático -->
                     <a-select v-else-if="filter.type === 'select'" v-model:value="filters[filter.field]"
                         :placeholder="filter.placeholder || filter.label" :mode="filter.mode || 'single'" allow-clear
-                        show-search :filter-option="filterOption" style="min-width: 180px">
-                        <a-select-option v-for="opt in filter.options" :key="opt.value" :value="opt.value">
+                        show-search :filter-option="filterOption" :options="selectOptions[filter.field] || []"
+                       style="min-width: 180px">
+                        <!-- <a-select-option v-for="opt in filter.options" :key="opt.value" :value="opt.value">
                             {{ opt.label }}
-                        </a-select-option>
+                        </a-select-option> -->
                     </a-select>
 
                     <!-- CHECKBOX -->
@@ -95,7 +96,9 @@ onMounted(() => {
             const options = await fetch('list', filter.apiSource.endpoint, {
                 valueField: filter.apiSource.valueField,
                 nameField: filter.apiSource.nameField,
-                params: filter.apiSource.params || {},
+                addField: filter.apiSource.addField || null,
+                // Pasar filtros adicionales para que lleguen como query params
+                additionalFilters: filter.apiSource.additionalFilters || {},
             });
             selectOptions.value[filter.field] = options.map(opt => ({
                 label: opt.label || opt[filter.apiSource.nameField],
