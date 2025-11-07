@@ -23,7 +23,7 @@ import { useRoute } from 'vue-router';
 import clientProposal from '../../../detail/components/clientProposal/index.vue'
 import questionRequired from '../../../detail/components/questionRequired/index.vue'
 import basicReport from '@/components/basicReport/basicReport.vue'
-import { reportModel, candidate } from './config/report.js'
+import { reportModel } from './config/report.js'
 const router = useRouter()
 const loading = ref(false)
 const candidates = ref([])
@@ -46,7 +46,7 @@ const route = useRoute();
 const id = ref(route.params.id);
 const searchTitle = ref('');
 const report = ref('')
-const reportData = ref(candidate)
+const reportData = ref({})
 const reportContent = ref(reportModel(reportData.value))
 
 // Watch para actualizar el reporte cuando cambie reportData
@@ -58,51 +58,73 @@ onMounted(async () => {
     await getSearch()
     await fetchQuery()
 })
-async function getFormattedCv(FormattedCV) {
-    if (FormattedCV) {
-        const { candidate, experience_years, languages, technical_skills, summary } = FormattedCV;
-        
-    }
-}
+
 async function getSearch() {
     try {
         if (id.value) {
             const data = await fetch('get', 'search-trackings', { id: id.value });
-            console.log('data 1', data)
             if (data && data.length > 0) {
-                console.log('data[0]', data[0])
                 const { candidate, applied_date, recruiter, search, seniority } = data[0];
-                let candidateName = ""
-                let candidateResidence = ""
                 let profileId = ""
                 let subprofileId = ""
                 let seniorityId = ""
+                let formattedCvId = "";
+
                 if (candidate) {
                     const candidateData = await fetch('get', 'candidates', { id: candidate });
                     if (candidateData && candidateData.length > 0) {
-                        candidateName = candidateData[0].first_name + ' ' + candidateData[0].last_name;
-                        candidateResidence = candidateData[0].address + ', ' + candidateData[0].province + ', ' + candidateData[0].country;
+                        const firstCandidate = candidateData[0];
+                        const candidateName = firstCandidate.first_name + ' ' + firstCandidate.last_name;
+                        const candidateResidence = firstCandidate.zone + ', ' + firstCandidate.province + ', ' + firstCandidate.country;
+
+                        reportData.value.name = candidateName;
+                        reportData.value.residence = candidateResidence;
+                        reportData.value.dni = firstCandidate.dni;
+                        reportData.value.age = firstCandidate.age;
+                        reportData.value.email = firstCandidate.email;
+                        reportData.value.phone = firstCandidate.phone;
+                        searchTitle.value = candidateName;
+
                         const FormattedCV = await fetch('get', 'formatted-cvs', { candidate: candidate });
                         if (FormattedCV && FormattedCV.length > 0) {
-                            const { experience_years, languages, technical_skills, summary } = FormattedCV[0];
-                            reportData.value.experience = experience_years;
+                            const { id, experience_years, languages, technical_skills, summary } = FormattedCV[0];
+                            formattedCvId = id;
+                            reportData.value.experience_years = experience_years;
                             reportData.value.languages = languages;
                             reportData.value.technical_skills = technical_skills;
                             reportData.value.summary = summary;
-                            await getFormattedCv(FormattedCV[0]);
                         }
-                        const profile = await fetch('get', 'primary-profiles', { id: candidateData[0].profile });
+                        const profile = await fetch('get', 'primary-profiles', { id: firstCandidate.profile });
                         if (profile && profile.length > 0) {
                             profileId = profile[0].id;
                         }
                     }
-                    console.log('candidateData', candidateData)
-                    reportData.value.name = candidateName;
-                    reportData.value.residence = candidateResidence;
+                     // Fetch data from new endpoints
+                    if (candidate && formattedCvId) {
+                        const summaryRes = await fetch('get', 'interview-summaries-new', { candidate, formattedCv: formattedCvId });
+                        if (summaryRes && summaryRes.length > 0) {
+                        reportData.value.summary = summaryRes[0].resumen;
+                        }
+
+                        const aptitudesRes = await fetch('get', 'candidate-aptitudes', { candidate, formattedCv: formattedCvId });
+                        if (aptitudesRes && aptitudesRes.length > 0) {
+                            reportData.value.required_skills = aptitudesRes.filter(a => a.origen === 'REQUERIDA');
+                            reportData.value.acquired_skills = aptitudesRes.filter(a => a.origen === 'ADQUIRIDA');
+                        }
+
+                        const evaluationRes = await fetch('get', 'evaluaciones-actitudinales', { candidate, formattedCv: formattedCvId });
+                        if (evaluationRes && evaluationRes.length > 0) {
+                        reportData.value.evaluation = evaluationRes[0];
+                        }
+
+                        const competenciesRes = await fetch('get', 'competencias-star', { candidate, formattedCv: formattedCvId });
+                        if (competenciesRes && competenciesRes.length > 0) {
+                        reportData.value.star_competencies = competenciesRes;
+                        }
+                    }
                 }
                 if (search) {
                     const searchData = await fetch('get', 'search-requests', { id: search });
-                    console.log('searchData', searchData)
                     if (searchData && searchData.length > 0) {
                         const { code, profile, subprofile, seniority } = searchData[0];
                         profileId = profile;
@@ -125,8 +147,6 @@ async function getSearch() {
                         reportData.value.position = reportData.value.position + " " + subprofileName;
                     }
                 }
-                searchTitle.value = candidateName;
-
             }
         }
     } catch (error) {
@@ -162,16 +182,6 @@ async function fetchQuery() {
             result = data;
             totalItems.value = data.length;
         }
-
-        // // ⬇️ Función auxiliar para casteo robusto
-        // const castValue = (value, castConfig) => {
-        //     const list = JSON.parse(localStorage.getItem(`cast_${castConfig.source}`) || '[]');
-        //     const getLabel = (id) => {
-        //         const found = list.find(el => el[castConfig.valueField] === id);
-        //         return found ? found[castConfig.labelField] : id;
-        //     };
-        //     return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
-        // };
 
     } catch (e) {
         console.error('Error al cargar listado', e);
