@@ -13,29 +13,29 @@
 //     return new Intl.NumberFormat('es-AR').format(value);
 // }
 
-// export function navigateTo(id = null, baseRoute, requiredId = false, params = {}, newTab = false) {
-//     let route = {};
-//     console.log('baseroute', baseRoute)
-//     if (requiredId) {
-//         if (id) {
-//             route = { path: `${baseRoute}/${id}` };
+export function navigateTo(id = null, baseRoute, requiredId = false, params = {}, newTab = false) {
+    let route = {};
+    console.log('baseroute', baseRoute)
+    if (requiredId) {
+        if (id) {
+            route = { path: `${baseRoute}/${id}` };
            
-//         } else {
-//             console.warn(`ID no encontrado para navegación.`);
-//             return;
-//         }
-//     } else {
-//         route = { path: baseRoute };
-//     }
-//     if (Object.keys(params).length > 0) {
-//         route.query = params; // Agregar parámetros si existen
-//     }
-//     if (!newTab) {
-//         router.push(route.path);
-//         return;
-//     }
-//     else {
-//         window.open(route.path, "_blank");
-//         return;
-//     }
-// }
+        } else {
+            console.warn(`ID no encontrado para navegación.`);
+            return;
+        }
+    } else {
+        route = { path: baseRoute };
+    }
+    if (Object.keys(params).length > 0) {
+        route.query = params; // Agregar parámetros si existen
+    }
+    if (!newTab) {
+        router.push(route.path);
+        return;
+    }
+    else {
+        window.open(route.path, "_blank");
+        return;
+    }
+}

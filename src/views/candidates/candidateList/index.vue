@@ -44,6 +44,7 @@ import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
+import { navigateTo } from '@/utils/utils';
 
 const router = useRouter()
 const loading = ref(false)
@@ -142,7 +143,6 @@ function handleViewCV(candidate) {
 }
 
 async function handleProcessedForm(processedForm) {
-  console.log('processedForm', processedForm)
   if (processedForm.is_blacklisted && !processedForm.blacklist_reason) {
     message.error('Error: El candidato está en blacklist. Debe completar Razones de Blacklist.')
 
@@ -153,7 +153,13 @@ async function handleProcessedForm(processedForm) {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)
     } else {
-      await fetch('post', endpoint, processedForm)
+      const res = await fetch('post', endpoint, processedForm)
+      const id = res.id
+      console.log('res', res)
+      if (id) {
+                const nextRoute = 'candidates/candidate-profile';
+                navigateTo(id, nextRoute, true, {}, false);
+            }
     }
     message.success(itemText + ' guardado correctamente')
     showForm.value = false
