@@ -156,7 +156,7 @@ async function handleProcessedForm(processedForm) {
       const id = res.id
       console.log('res', res)
       if (id) {
-                router.push({ name: 'candidate', params: { candidate: candidate.id } })
+                router.push({ name: 'candidate', params: { candidate: id } })
             }
     }
     message.success(itemText + ' guardado correctamente')
