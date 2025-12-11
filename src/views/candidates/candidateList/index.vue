@@ -44,7 +44,6 @@ import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
-import { navigateTo } from '@/utils/utils';
 
 const router = useRouter()
 const loading = ref(false)
@@ -158,7 +157,7 @@ async function handleProcessedForm(processedForm) {
       console.log('res', res)
       if (id) {
                 const nextRoute = 'candidates/candidate-profile';
-                navigateTo(id, nextRoute, true, {}, false);
+                router.push({ name: 'PerfilCandidato', params: { candidateId: candidate.id } })
             }
     }
     message.success(itemText + ' guardado correctamente')
