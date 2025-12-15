@@ -38,7 +38,7 @@ export const filters = [
         field: 'available_to_apply',
         model: 'available_to_apply',
         type: 'checkbox',
-        // checkboxLabel: 'Inactivo',
+        defaultValue: true,
         span: 8
     },
     // {

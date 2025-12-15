@@ -20,7 +20,7 @@ export function transformMenuItems(menu) {
 
 // 📥 Roles del backend
 export async function fetchRoleMap() {
-    return await fetch('list', 'roles', {
+    return await fetch('list', 'roles/', {
         valueField: 'id',
         nameField: 'name',
     });

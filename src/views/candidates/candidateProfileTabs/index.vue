@@ -37,11 +37,11 @@ const tabs = [
     title: 'Perfil',
     component: Profile
   },
-  {
-    key: '3',
-    title: 'Idiomas',
-    component: Languages
-  },
+  // {
+  //   key: '3',
+  //   title: 'Idiomas',
+  //   component: Languages
+  // },
   {
     key: '4',
     title: 'Archivos CVs',

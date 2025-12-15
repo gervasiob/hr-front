@@ -34,7 +34,7 @@ export const candidateFormFields = [
         dependsParam: 'primary_profile',
     },
     {
-        label: 'Senirority',
+        label: 'Seniority',
         field: 'seniority',
         type: 'api-select',
         mode: 'single',
@@ -43,6 +43,7 @@ export const candidateFormFields = [
         endpoint: 'seniority-levels/', // <- el endpoint real que usás
         valueField: 'id',
         nameField: 'name',
+        castResponseTo: 'integer',
     },
     {
         label: 'Trabajo Actual',

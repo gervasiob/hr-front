@@ -3,8 +3,8 @@ import dayjs from 'dayjs'
 export const candidateFormFields = [
     { label: 'Nombre', field: 'first_name', type: 'input', span: 12, required: true },
     { label: 'Apellido', field: 'last_name', type: 'input', span: 12, required: true },
-    { label: 'DNI', field: 'dni', type: 'input', span: 12, required: true },
-    { label: 'Fecha de nacimiento', field: 'birth_date', type: 'date', span: 12, required: true },
+    { label: 'DNI', field: 'dni', type: 'input', span: 12, required: false },
+    { label: 'Fecha de nacimiento', field: 'birth_date', type: 'date', span: 12, required: false },
     {
         label: 'Edad', field: 'age', type: 'input', span: 12, required: true,
         calculateFrom: {
@@ -16,7 +16,7 @@ export const candidateFormFields = [
             }
         }
     },
-    { label: 'CUIL', field: 'cuil', type: 'input', span: 12, required: true },
+    { label: 'CUIL', field: 'cuil', type: 'input', span: 12, required: false },
     {
         label: 'Género', field: 'gender', type: 'select', span: 12, required: true, options: [
             { label: 'Masculino', value: 'M' },
@@ -26,17 +26,25 @@ export const candidateFormFields = [
     },
     { label: 'Email', field: 'email', type: 'input', span: 12, required: true },
     { label: 'Email Alternativo', field: 'alt_email', type: 'input', span: 12 },
-    { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true },
+    { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true,
+              pattern: '^\\+\\d+$',
+        patternMessage: 'El teléfono debe comenzar con el signo + seguido de números.'
+     },
     { label: 'Dirección', field: 'address', type: 'input', span: 12, required: true },
     { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12, required: true },
     { label: 'Provincia', field: 'province', type: 'input', span: 12, required: true },
-    { label: 'País', field: 'country', type: 'input', span: 12 },
+    { label: 'País', field: 'country_fk', type: 'api-select', span: 12,
+        endpoint: 'catalog-countries/', // <- el endpoint real que usás
+        valueField: 'id',       // <- nombre del campo que se usará como `value`
+        nameField: 'name',      // <- nombre del campo que se usará como `label`
+     },
     { label: 'Blacklist', field: 'is_blacklisted', type: 'switch', span: 12 },
     { label: 'Razones de Blacklist', field: 'blacklist_reason', type: 'textarea', span: 24 },
     { label: 'Habilitado para aplicar', field: 'available_to_apply', type: 'switch', span: 12 },
     { label: 'Días habilitado', field: 'availability_days', type: 'input', span: 12 },
     { label: 'Salario Actual', field: 'current_salary', type: 'input', span: 12 },
     { label: 'Salario Esperado', field: 'expected_salary', type: 'input', span: 12 },
+    { label: 'Disponibilidad de Ingreso (días)', field: 'availability_days', type: 'input', span: 12 },
     { label: 'Obra social', field: 'social_insurance', type: 'input', span: 12 },
     { label: 'Bonos', field: 'bonuses', type: 'input', span: 12 },
     { label: 'Capacitaciones', field: 'trainings', type: 'input', span: 12 },

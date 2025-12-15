@@ -17,21 +17,6 @@
                 <candidateProfile :candidate-id="candidateId" />
             </div>
             <div class="card">
-                <candidateLanguages :candidate-id="candidateId" />
-            </div>
-            <div class="card">
-                <candidateEducations :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
-            </div>
-            <div class="card">
-                <candidateWorkExperiences :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
-            </div>
-            <div class="card">
-                <candidateCertifications :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
-            </div>
-            <div class="card">
-                <candidateSummary :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
-            </div>
-            <div class="card">
                 <candidateAptitudes :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
             </div>
             <div class="card">
@@ -45,6 +30,21 @@
             </div>
             <div class="card">
                 <candidateOtrasDestrezas :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateSummary :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateWorkExperiences :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateEducations :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateCertifications :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+            </div>
+            <div class="card">
+                <candidateLanguages :candidate-id="candidateId" />
             </div>
         </div>
         <div v-else class="create-cv">
