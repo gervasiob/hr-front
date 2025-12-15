@@ -14,8 +14,15 @@ export const candidateFormFields = [
     {
         label: 'Nivel',
         field: 'nivel',
-        type: 'input',
         span: 12,
         required: true,
+        type: 'select',
+        default: 'BAJO',
+        options: [
+            // { value: 'MUY_BAJO', label: 'Muy Bajo' },
+            { value: 'BAJO', label: 'Bajo' },
+            { value: 'MEDIO', label: 'Medio' },
+            { value: 'ALTO', label: 'Alto' },
+        ],
     },
 ];

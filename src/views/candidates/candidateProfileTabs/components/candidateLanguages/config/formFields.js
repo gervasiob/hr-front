@@ -13,7 +13,7 @@ export const candidateFormFields = [
     },
     {
         label: 'Nivel Escrito',
-        field: 'written_level',
+        field: 'written_level_obj',
         type: 'api-select',
         mode: 'single',
         span: 12,
@@ -24,7 +24,7 @@ export const candidateFormFields = [
     },
     {
         label: 'Nivel Hablado',
-        field: 'oral_level',
+        field: 'oral_level_obj',
         type: 'api-select',
         mode: 'single',
         span: 12,

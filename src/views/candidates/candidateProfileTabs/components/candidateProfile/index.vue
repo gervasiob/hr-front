@@ -83,19 +83,20 @@ async function fetchQuery() {
       result = data
       totalItems.value = data.length
     }
-
+    console.log('result', result)
     // ⬇️ Casteo de columnas
-    candidates.value = result.map(item => {
-      const newItem = { ...item }
-      columns.forEach(col => {
-        if (col.cast) {
-          const list = JSON.parse(localStorage.getItem(`cast_${col.cast.source}`) || '[]')
-          const found = list.find(el => el[col.cast.valueField] === item[col.field])
-          if (found) newItem[col.field] = found[col.cast.labelField]
-        }
-      })
-      return newItem
-    })
+    // candidates.value = result.map(item => {
+    //   const newItem = { ...item }
+    //   columns.forEach(col => {
+    //     if (col.cast) {
+    //       const list = JSON.parse(localStorage.getItem(`cast_${col.cast.source}`) || '[]')
+    //       const found = list.find(el => el[col.cast.valueField] === item[col.field])
+    //       if (found) newItem[col.field] = found[col.cast.labelField]
+    //     }
+    //   })
+    //   return newItem
+    // })
+    console.log('candidates.value', candidates.value)
   } catch (e) {
     console.error('Error al cargar listado', e)
   } finally {

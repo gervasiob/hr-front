@@ -286,7 +286,10 @@ const loadApiOptions = async (field, rowIndex) => {
         fieldOptions.value[rowIndex][field.field] = Array.isArray(data) ? data : [];
     } catch (error) {
         console.error(`Error loading options for ${field.field}:`, error);
-        fieldOptions.value[field.field] = [];
+        if (!fieldOptions.value[rowIndex]) {
+            fieldOptions.value[rowIndex] = {};
+        }
+        fieldOptions.value[rowIndex][field.field] = [];
     } finally {
         loadingOptions.value[field.field] = false;
     }
@@ -481,12 +484,13 @@ async function fetchQuery() {
             result = data
         }
         formData.items = result
+        console.log('form data fetch', formData.items)
         // ⬇️ Casteo de columnas
         // formData.items = result.map(item => {
         //     const newItem = { ...item }
         //     columns.forEach(col => {
         //         if (col.cast) {
-        //             const list = JSON.parse(localStorage.getItem(`cast_${col.cast.source}`) || '[]')
+        //             const list = JSON.parse(localStorage.getItem(`cast_${source}`) || '[]')
         //             const found = list.find(el => el[col.cast.valueField] === item[col.field])
         //             if (found) newItem[col.field] = found[col.cast.labelField]
         //         }
@@ -579,15 +583,22 @@ props.fields
     .forEach(f => {
         watch(
             () => formData.items.map(item => item?.[f.dependsOn]),
-            () => {
-                // Limpiar y recargar opciones por fila
-                formData.items.forEach((item, idx) => {
-                    item[f.field] = f.mode === 'multiple' ? [] : undefined;
-                    loadApiOptions(f, idx);
+            (newValues, oldValues) => {
+                // Iterar sobre cada item para manejar su dependencia individualmente
+                newValues.forEach((newValue, idx) => {
+                    const oldValue = oldValues?.[idx];
+                    // Solo actuar si hubo un cambio real y no es la carga inicial
+                    if (oldValue !== undefined && newValue !== oldValue) {
+                        // Limpiar el valor del campo dependiente
+                        formData.items[idx][f.field] = f.mode === 'multiple' ? [] : undefined;
+                        // Recargar las opciones para el campo dependiente
+                        loadApiOptions(f, idx);
+                    }
                 });
-            }
+            },
+            { deep: true }
         )
-    })
+    });
 
 // Variable para controlar si estamos inicializando
 const isInitializing = ref(false);

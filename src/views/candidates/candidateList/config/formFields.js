@@ -29,8 +29,18 @@ export const candidateFormFields = [
     { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true },
     // { label: 'Dirección', field: 'address', type: 'input', span: 12, required: true },
     { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12, required: false },
-    { label: 'Provincia', field: 'province', type: 'input', span: 12, required: true },
-    { label: 'País', field: 'country', type: 'input', span: 12, required: true },
+    { label: 'Provincia', field: 'province', type: 'input', span: 12, required: true,
+        endpoint: 'catalog-countries/', // <- el endpoint real que usás
+        valueField: 'id',       // <- nombre del campo que se usará como `value`
+        nameField: 'name',      // <- nombre del campo que se usará como `label`
+     },
+    { label: 'País', field: 'country', type: 'api-select', span: 12, required: true,
+        endpoint: 'catalog-countries/', // <- el endpoint real que usás
+        valueField: 'id',       // <- nombre del campo que se usará como `value`
+        nameField: 'name',      // <- nombre del campo que se usará como `label`
+
+
+     },
     { label: 'Blacklist', field: 'is_blacklisted', type: 'switch', span: 12 },
     { label: 'Razones de Blacklist', field: 'blacklist_reason', type: 'textarea', span: 24 },
     { label: 'Habilitado para aplicar', field: 'available_to_apply', type: 'switch', span: 12 },
