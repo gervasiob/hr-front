@@ -29,7 +29,7 @@ export const candidateFormFields = [
     { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true },
     // { label: 'Dirección', field: 'address', type: 'input', span: 12, required: true },
     { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12, required: false },
-    { label: 'Provincia', field: 'province', type: 'input', span: 12, required: true,
+    { label: 'Provincia', field: 'country_fk', type: 'input', span: 12, required: true,
         endpoint: 'catalog-countries/', // <- el endpoint real que usás
         valueField: 'id',       // <- nombre del campo que se usará como `value`
         nameField: 'name',      // <- nombre del campo que se usará como `label`

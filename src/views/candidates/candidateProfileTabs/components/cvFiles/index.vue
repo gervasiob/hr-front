@@ -293,12 +293,12 @@ async function handleDownloadTemplate() {
 
 // Add these new functions
 function beforeUpload(file) {
-  const isPDF = file.type === 'application/pdf'
-  if (!isPDF) {
-    message.error('Solo se permiten archivos PDF!')
-    return false
+  const isLt20M = file.size / 1024 / 1024 < 20;
+  if (!isLt20M) {
+    message.error('El archivo debe ser menor a 20MB!');
+    return false;
   }
-  return true
+  return true;
 }
 
 async function handleUpload({ file, onSuccess, onError }) {

@@ -83,13 +83,6 @@
                 Agregar elemento
             </a-button>
         </a-form-item>
-
-        <!-- Botones de acción -->
-        <!-- <a-form-item>
-            <a-button style="margin-left: 8px" @click="resetForm">
-                Limpiar
-            </a-button>
-        </a-form-item> -->
     </a-form>
 </template>
 
@@ -141,6 +134,9 @@ const loading = ref(false)
 const formData = reactive({
     items: []
 });
+
+// Variable para controlar si estamos inicializando
+const isInitializing = ref(false);
 
 // Inicializar datos del formulario
 const initializeFormData = () => {
@@ -222,6 +218,13 @@ const getFieldRules = (field) => {
             message: `Máximo ${field.maxLength} caracteres`
         });
     }
+    
+    if (field.pattern) {
+        rules.push({
+            pattern: new RegExp(field.pattern),
+            message: field.patternMessage || 'Formato inválido'
+        });
+    }
 
     return rules;
 };
@@ -297,7 +300,6 @@ const loadApiOptions = async (field, rowIndex) => {
 
 // Estado para el filtrado de opciones
 const searchTerms = ref({});
-const filteredOptions = ref({});
 
 // Manejar búsqueda en select
 const handleSearch = (value, fieldName, rowIndex) => {
@@ -344,9 +346,8 @@ const removeItem = async (index) => {
         }
         const id = formData.items[index].id
         const isValidId = id && Number.isInteger(Number(id)) && Number(id) > 0;
-        const method = isValidId ? 'PUT' : 'POST';
         if (isValidId) {
-            const response = await fetch('DELETE', props.saveEndpoint, {}, id);
+            await fetch('DELETE', props.saveEndpoint, {}, id);
         }
         formData.items.splice(index, 1);
         originalData.value.splice(index, 1);
@@ -362,12 +363,10 @@ const saveItem = async (index) => {
     try {
         submitting.value = true;
 
-        // Hacer petición al endpoint especificado con el item específico
         if (props.candidateId) {
             formData.items[index].candidate = parseInt(props.candidateId);
         }
 
-        // Validación de campos requeridos antes de guardar
         const missingRequired = props.fields
             .filter(f => f.required)
             .some(f => isValueEmpty(formData.items[index][f.field], f));
@@ -377,15 +376,12 @@ const saveItem = async (index) => {
             return;
         }
         
-        // Determinar si usar POST o PUT basado en si el ID es un entero válido
         const itemId = formData.items[index].id;
         const isValidId = itemId && Number.isInteger(Number(itemId)) && Number(itemId) > 0;
-        console.log('isvalidId', isValidId)
         const method = isValidId ? 'PUT' : 'POST';
         
         const response = await fetch(method, props.saveEndpoint, formData.items[index], method === 'PUT' ? itemId : undefined);
         if (response) {
-            // Resetear estado de cambios para este item específico
             formData.items[index].id = response.id
             originalData.value[index] = JSON.parse(JSON.stringify(formData.items[index]));
             hasChanges.value[index] = false;
@@ -395,7 +391,6 @@ const saveItem = async (index) => {
         }
     } catch (error) {
         console.error('Error submitting form:', error);
-        // Aquí podrías agregar una notificación de error
     } finally {
         submitting.value = false;
     }
@@ -406,12 +401,10 @@ const onFinish = async (values) => {
     try {
         submitting.value = true;
 
-        // Hacer petición al endpoint especificado
         if (props.candidateId) {
             values.items.map(i => i.candidate = parseInt(props.candidateId));
         }
 
-        // Validación de requeridos para envío completo
         const hasMissing = values.items.some((item, idx) => {
             return props.fields
                 .filter(f => f.required)
@@ -425,7 +418,6 @@ const onFinish = async (values) => {
         const response = await fetch('POST', props.saveEndpoint, values.items[0]);
 
         if (response) {
-            // Resetear estado de cambios después del envío exitoso
             originalData.value = JSON.parse(JSON.stringify(formData.items));
             hasChanges.value = formData.items.map(() => false);
             emit('submit', values.items);
@@ -434,79 +426,58 @@ const onFinish = async (values) => {
         }
     } catch (error) {
         console.error('Error submitting form:', error);
-        // Aquí podrías agregar una notificación de error
     } finally {
         submitting.value = false;
     }
 };
-async function loadCastingLists() {
 
-    const casts = columns
-        .filter(col => col.cast)
-        .map(col => col.cast.source)
-
-    const uniqueCasts = [...new Set(casts)]
-
-    for (const source of uniqueCasts) {
-        if (localStorage.getItem(`cast_${source}`)) {
-            localStorage.removeItem(`cast_${source}`)
-        }
-        const data = await fetch('list', source, {
-            valueField: 'id',
-            nameField: 'name'
-        })
-        localStorage.setItem(`cast_${source}`, JSON.stringify(data))
-
-    }
-}
 async function fetchQuery() {
     loading.value = true
     try {
-        const baseParams = {}
-
-        // const limit = pageSize.value
-        // const offset = (currentPage.value - 1) * pageSize.value
-        // const orderingParam = ordering.value ? { ordering: ordering.value } : {}
-
-        const params = {
-            ...baseParams,
-        }
+        const params = {}
         if(!props.candidateId) {
          throw console.error('No se ha proporcionado un ID de candidato');
-         
         }
         params.candidate = props.candidateId
         const data = await fetch('get', props.saveEndpoint, params)
-        let result = []
+        
+        let result = [];
         if ('results' in data) {
             result = data.results
         } else {
             result = data
         }
-        formData.items = result
-        console.log('form data fetch', formData.items)
-        // ⬇️ Casteo de columnas
-        // formData.items = result.map(item => {
-        //     const newItem = { ...item }
-        //     columns.forEach(col => {
-        //         if (col.cast) {
-        //             const list = JSON.parse(localStorage.getItem(`cast_${source}`) || '[]')
-        //             const found = list.find(el => el[col.cast.valueField] === item[col.field])
-        //             if (found) newItem[col.field] = found[col.cast.labelField]
-        //         }
-        //     })
-        //     return newItem
-        // })
+
+        // Cast response data types based on field configuration
+        result.forEach(item => {
+            props.fields.forEach(field => {
+                if (field.castResponseTo && item[field.field] !== undefined && item[field.field] !== null) {
+                    switch (field.castResponseTo) {
+                        case 'number':
+                        case 'integer':
+                            const parsed = parseInt(item[field.field], 10);
+                            if (!isNaN(parsed)) {
+                                item[field.field] = parsed;
+                            }
+                            break;
+                        // Add more cases here if needed, e.g., 'float', 'boolean'
+                    }
+                }
+            });
+        });
+
+        formData.items = result;
+
     } catch (e) {
         console.error('Error al cargar listado', e)
     } finally {
         loading.value = false
     }
 }
+
 onMounted(async () => {
-    // await loadCastingLists()
     await fetchQuery()
-})
+});
 
 // Resetear formulario
 const resetForm = () => {
@@ -527,7 +498,6 @@ defineExpose({
 // Lifecycle
 onMounted(() => {
     initializeFormData();
-
     // Cargar opciones de API para campos que lo requieran por fila
     props.fields.forEach(field => {
         if (field.type === 'api-select') {
@@ -559,7 +529,7 @@ const showButtonAdd = computed(() => {
         }
     }
     return true
-})
+});
 
 // Watchers
 watch(() => props.initialData, () => {
@@ -599,9 +569,6 @@ props.fields
             { deep: true }
         )
     });
-
-// Variable para controlar si estamos inicializando
-const isInitializing = ref(false);
 
 // Watcher para detectar cambios en los datos del formulario
 watch(() => formData.items, () => {

@@ -27,14 +27,13 @@ export const candidateFormFields = [
     { label: 'Email', field: 'email', type: 'input', span: 12, required: true },
     { label: 'Email Alternativo', field: 'alt_email', type: 'input', span: 12 },
     { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true,
-        rules: {
-            name: [{ required: true, message: 'Por favor ingrese un valor', trigger: 'change', }]
-        }
+              pattern: '^\\+\\d+$',
+        patternMessage: 'El teléfono debe comenzar con el signo + seguido de números.'
      },
     { label: 'Dirección', field: 'address', type: 'input', span: 12, required: true },
     { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12, required: true },
     { label: 'Provincia', field: 'province', type: 'input', span: 12, required: true },
-    { label: 'País', field: 'country', type: 'api-select', span: 12,
+    { label: 'País', field: 'country_fk', type: 'api-select', span: 12,
         endpoint: 'catalog-countries/', // <- el endpoint real que usás
         valueField: 'id',       // <- nombre del campo que se usará como `value`
         nameField: 'name',      // <- nombre del campo que se usará como `label`

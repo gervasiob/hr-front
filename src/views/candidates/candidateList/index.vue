@@ -17,7 +17,7 @@
 
     </div>
 
-    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
+    <BasicFilter :filter-config="filters" :initial-values="initialFilterValues" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
       @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
@@ -65,8 +65,10 @@ const modelNameSingle = 'candidate'
 const endpoint = modelName + '/'
 
 
-onMounted(fetchQuery)
-
+onMounted(() => {
+  filterParams.value = { ...initialFilterValues.value }
+  fetchQuery()
+})
 
 
 async function fetchQuery() {
@@ -119,6 +121,15 @@ function handlePaginationChange({ page, pageSize: newSize, order }) {
   }
   fetchQuery()
 }
+
+const initialFilterValues = computed(() => {
+  return filters.reduce((acc, f) => {
+    if (f.defaultValue !== undefined) {
+      acc[f.field] = f.defaultValue
+    }
+    return acc
+  }, {})
+})
 
 function applyFilterParams(filters) {
   filterParams.value = filters
