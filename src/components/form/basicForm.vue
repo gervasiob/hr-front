@@ -157,11 +157,17 @@ async function handleSubmit() {
                 processedForm[field.field] = dayjs(processedForm[field.field]).format('YYYY-MM-DD')
             }
         })
-        await props.onSubmit(processedForm)
-        form.value = {}
-        if (props.fetchData) await props.fetchData()
+        const result = await props.onSubmit(processedForm)
+
+        if (result !== false) {
+            form.value = {}
+            if (props.fetchData) await props.fetchData()
+        }
+
+        return result
     } catch (error) {
         console.error('Validación fallida:', error)
+        throw error
     }
 }
 // Cargar datos al cambiar el ID

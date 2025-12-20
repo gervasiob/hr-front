@@ -6,6 +6,7 @@
       </a-col>
     </a-row>
     <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId"
+      :formatted-cv="formattedCvId"
       :unique-row="true" />
   </div>
 </template>
@@ -71,11 +72,12 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      candidate: props.candidateId,
-      formattedCv: props.formattedCvId,
+      // candidate: props.candidateId,
+      id: props.formattedCvId,
       limit,
       offset
     }
+    console.log('params', params)
 
     const data = await fetch('get', endpoint, params)
     let result = []
@@ -164,31 +166,31 @@ function handleEdit(item) {
   openForm(item.id, false)
 }
 
-async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId, formatted_cv: props.formattedCvId, }
-  try {
-    if (processedForm.id) {
-      await fetch('put', endpoint, processedForm, processedForm.id)
-    } else {
-      await fetch('post', endpoint, processedForm)
-    }
-    message.success(itemText + ' guardado correctamente')
-    showForm.value = false
-    fetchQuery()
-  } catch (error) {
-    console.error('Error al guardar item:', error)
+// async function handleProcessedForm(processedForm) {
+//   processedForm = { ...processedForm, candidate: props.candidateId, formatted_cv: props.formattedCvId, }
+//   try {
+//     if (processedForm.id) {
+//       await fetch('put', endpoint, processedForm, processedForm.id)
+//     } else {
+//       await fetch('post', endpoint, processedForm)
+//     }
+//     message.success(itemText + ' guardado correctamente')
+//     showForm.value = false
+//     fetchQuery()
+//   } catch (error) {
+//     console.error('Error al guardar item:', error)
 
-    // Si error es un objeto con detalles de validación
-    if (error?.response?.data) {
-      const messages = Object.values(error.response.data).flat().join(' ')
-      message.error(`Errores: ${messages}`)
-    } else {
-      message.error('Error inesperado al guardar el item')
-    }
+//     // Si error es un objeto con detalles de validación
+//     if (error?.response?.data) {
+//       const messages = Object.values(error.response.data).flat().join(' ')
+//       message.error(`Errores: ${messages}`)
+//     } else {
+//       message.error('Error inesperado al guardar el item')
+//     }
 
-    throw error  // Esto permite que el modal no se cierre si hay error
-  }
-}
+//     throw error  // Esto permite que el modal no se cierre si hay error
+//   }
+// }
 
 const ordering = ref(null)
 

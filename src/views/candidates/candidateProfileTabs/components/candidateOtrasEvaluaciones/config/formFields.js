@@ -19,7 +19,7 @@ export const candidateFormFields = [
         field: 'disponibilidad_in_situ',
         type: 'checkbox',
         span: 6,
-        required: true,
+        required: false,
     },
     {
         label: 'Comentario',

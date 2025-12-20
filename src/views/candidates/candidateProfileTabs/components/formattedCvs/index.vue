@@ -6,8 +6,11 @@
         <div v-if="formattedCvId" class="formatted-cv">
             <div class="header">
                 <h2></h2>
-                <a-button type="primary" @click="showForm = true">
-                    Editar Datos
+                <a-button type="primary" @click="handleDownloadTemplate">
+                    <template #icon>
+                        <DownloadOutlined />
+                    </template>
+                    Descargar CV Formateado
                 </a-button>
             </div>
             <!-- <div>
@@ -65,6 +68,7 @@
 import { ref, onMounted } from 'vue';
 import { fetch } from '@/api/model/model.js';
 import { message } from 'ant-design-vue';
+import { DownloadOutlined } from '@ant-design/icons-vue';
 import BasicForm from '@/components/form/basicForm.vue';
 import candidateProfile from '../candidateProfile/index.vue';
 import candidateLanguages from '../candidateLanguages/index.vue';
@@ -78,7 +82,7 @@ import candidateEvaluacionesActitudinales from '../candiateEvaluacionesActitudin
 import candidateCompetenciasStar from '../candidateCompetenciaStar/index.vue';
 import candidateOtrasEvaluaciones from '../candidateOtrasEvaluaciones/index.vue';
 import candidateOtrasDestrezas from '../candidateOtrasDestrezas/index.vue';
-
+import { exportToWord } from '@/api/model/importExport'
 const props = defineProps({
     candidateId: {
         type: [Number, String],
@@ -156,6 +160,17 @@ async function handleProcessedForm(formData) {
 async function handleSubmit() {
     if (formRef.value) {
         await formRef.value.handleSubmit();
+    }
+}
+
+async function handleDownloadTemplate() {
+    try {
+        const baseParams = {}
+        const endpoint = `formatted-cvs/${props.candidateId}/generate-word`
+        await exportToWord(endpoint, baseParams)
+        message.success('Archivo descargado correctamente')
+    } catch (error) {
+        console.error('Error al descargar listado:', error)
     }
 }
 </script>

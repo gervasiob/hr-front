@@ -35,7 +35,7 @@ export async function exportToExcel(model, params = {}) {
 // Export records to Word
 export async function exportToWord(model, params = {}) {
     try {
-        const response = await apiRequest('get', `${model}/`, params, null, true);
+        const response = await apiRequest('post', `${model}/`, params, null, true);
 
         if (!response || !(response instanceof Blob)) {
             throw new Error('Respuesta inválida al exportar Word');

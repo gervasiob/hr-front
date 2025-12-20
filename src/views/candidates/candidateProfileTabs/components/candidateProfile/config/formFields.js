@@ -1,13 +1,5 @@
 // src/views/candidatelanguage/config/formFields.js
 export const candidateFormFields = [
-    // {
-    //     label: 'Candidato',
-    //     field: 'candidate_id',
-    //     type: 'input',
-    //     mode: 'single',
-    //     span: 12,
-    //     required: true,
-    // },
     {
         label: 'Perfil',
         field: 'primary_profile',

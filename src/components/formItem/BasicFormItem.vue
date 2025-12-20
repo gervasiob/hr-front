@@ -5,7 +5,9 @@
             <a-row :gutter="16"
                 style="margin-bottom: 16px; padding: 16px; border: 1px solid #d9d9d9; border-radius: 6px;">
                 <a-col v-for="field in fields" :key="field.field" :span="field.span || 24">
-<a-form-item :name="['items', index, field.field]" :rules="getFieldRules(field)" :validate-status="getValidateStatus(item[field.field], field)" :help="getHelpMessage(item[field.field], field)">
+                    <a-form-item :name="['items', index, field.field]" :rules="getFieldRules(field)"
+                        :validate-status="getValidateStatus(item[field.field], field)"
+                        :help="getHelpMessage(item[field.field], field)">
                         <!-- Input básico -->
                         <a-input v-if="field.type === 'input'" v-model:value="item[field.field]"
                             :placeholder="field.placeholder || field.label" @change="() => onFieldChange(index)" />
@@ -39,8 +41,7 @@
 
                         <!-- Rich Text (HTML) -->
                         <div v-else-if="field.type === 'richtext'" contenteditable="true" class="rich-editor"
-                            v-html="item[field.field]"
-                            :data-placeholder="field.placeholder || field.label"
+                            v-html="item[field.field]" :data-placeholder="field.placeholder || field.label"
                             @input="(e) => { onRichInput(e, item, field.field); onFieldChange(index); }"
                             @blur="() => onFieldChange(index)"></div>
 
@@ -52,7 +53,7 @@
                         <!-- Date picker -->
                         <a-date-picker v-else-if="field.type === 'date'" v-model:value="item[field.field]"
                             :placeholder="field.placeholder || field.label" style="width: 100%"
-                            @change="() => onFieldChange(index)" />
+                            value-format="YYYY-MM-DD" @change="() => onFieldChange(index)" />
 
                         <!-- Checkbox -->
                         <a-checkbox v-else-if="field.type === 'checkbox'" v-model:checked="item[field.field]"
@@ -117,6 +118,10 @@ const props = defineProps({
     uniqueRow: {
         type: Boolean,
         default: false
+    },
+    formattedCv: {
+        type: Number,
+        default: null
     }
 });
 
@@ -150,7 +155,7 @@ const initializeFormData = () => {
         originalData.value = JSON.parse(JSON.stringify(formData.items));
     }
     hasChanges.value = formData.items.map(() => false);
-    
+
     // Usar nextTick para asegurar que la inicialización termine antes de reactivar la detección
     nextTick(() => {
         isInitializing.value = false;
@@ -218,7 +223,7 @@ const getFieldRules = (field) => {
             message: `Máximo ${field.maxLength} caracteres`
         });
     }
-    
+
     if (field.pattern) {
         rules.push({
             pattern: new RegExp(field.pattern),
@@ -366,6 +371,10 @@ const saveItem = async (index) => {
         if (props.candidateId) {
             formData.items[index].candidate = parseInt(props.candidateId);
         }
+        console.log('props', props)
+        if (props.formattedCv) {
+            formData.items[index].formatted_cv = parseInt(props.formattedCv);
+        }
 
         const missingRequired = props.fields
             .filter(f => f.required)
@@ -375,11 +384,11 @@ const saveItem = async (index) => {
             submitting.value = false;
             return;
         }
-        
+
         const itemId = formData.items[index].id;
         const isValidId = itemId && Number.isInteger(Number(itemId)) && Number(itemId) > 0;
         const method = isValidId ? 'PUT' : 'POST';
-        
+
         const response = await fetch(method, props.saveEndpoint, formData.items[index], method === 'PUT' ? itemId : undefined);
         if (response) {
             formData.items[index].id = response.id
@@ -387,10 +396,27 @@ const saveItem = async (index) => {
             hasChanges.value[index] = false;
             emit('submit', formData.items[index], index);
         } else {
-            throw new Error(response.message || 'Error al guardar los datos');
+            console.log('response', response);
+            throw new Error(response || 'Error al guardar los datos');
         }
     } catch (error) {
         console.error('Error submitting form:', error);
+        if (error.response && error.response.data) {
+            const data = error.response.data;
+            if (Array.isArray(data)) {
+                message.error('No se pudo guardar los datos: ' + data.join(', '));
+            } else if (typeof data === 'object') {
+                const errorMessages = Object.entries(data).map(([key, value]) => {
+                    const valStr = Array.isArray(value) ? value.join(' ') : String(value);
+                    return `${key}: ${valStr}`;
+                }).join('; ');
+                message.error('No se pudo guardar los datos: ' + errorMessages);
+            } else {
+                message.error('No se pudo guardar los datos: ' + (error.message || 'Error al guardar los datos'));
+            }
+        } else {
+            message.error('No se pudo guardar los datos: ' + (error.message || 'Error al guardar los datos'));
+        }
     } finally {
         submitting.value = false;
     }
@@ -426,6 +452,22 @@ const onFinish = async (values) => {
         }
     } catch (error) {
         console.error('Error submitting form:', error);
+        if (error.response && error.response.data) {
+            const data = error.response.data;
+            if (Array.isArray(data)) {
+                message.error('No se pudo guardar los datos: ' + data.join(', '));
+            } else if (typeof data === 'object') {
+                const errorMessages = Object.entries(data).map(([key, value]) => {
+                    const valStr = Array.isArray(value) ? value.join(' ') : String(value);
+                    return `${key}: ${valStr}`;
+                }).join('; ');
+                message.error('No se pudo guardar los datos: ' + errorMessages);
+            } else {
+                message.error('No se pudo guardar los datos: ' + (error.message || 'Error al guardar los datos'));
+            }
+        } else {
+            message.error('No se pudo guardar los datos: ' + (error.message || 'Error al guardar los datos'));
+        }
     } finally {
         submitting.value = false;
     }
@@ -435,12 +477,13 @@ async function fetchQuery() {
     loading.value = true
     try {
         const params = {}
-        if(!props.candidateId) {
-         throw console.error('No se ha proporcionado un ID de candidato');
+        if (!props.candidateId) {
+            throw console.error('No se ha proporcionado un ID de candidato');
         }
         params.candidate = props.candidateId
+        console.log('basic item', params)
         const data = await fetch('get', props.saveEndpoint, params)
-        
+
         let result = [];
         if ('results' in data) {
             result = data.results

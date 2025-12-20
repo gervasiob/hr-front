@@ -24,7 +24,8 @@
       @open-profile="handleOpenProfile" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
-      :confirm-loading="modalLoading" @ok="handleModalOk" :destroyOnClose="true">
+      :confirm-loading="modalLoading" @ok="handleModalOk" :destroyOnClose="true" :maskClosable="false"
+      :keyboard="false">
 
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
         :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
@@ -155,20 +156,23 @@ function handleViewCV(candidate) {
 async function handleProcessedForm(processedForm) {
   if (processedForm.is_blacklisted && !processedForm.blacklist_reason) {
     message.error('Error: El candidato está en blacklist. Debe completar Razones de Blacklist.')
-
     return;
   }
-
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)
     } else {
       const res = await fetch('post', endpoint, processedForm)
       const id = res.id
-      console.log('res', res)
+      const paramsCv = 
+      {
+        ...processedForm,
+        candidate: id,
+      }
+      const resCv = await fetch('post', 'formatted-cvs/', paramsCv)
       if (id) {
-                router.push({ name: 'candidate', params: { candidate: id } })
-            }
+        router.push({ name: 'PerfilCandidato', params: { id: id } });
+      }
     }
     message.success(itemText + ' guardado correctamente')
     showForm.value = false
@@ -177,17 +181,26 @@ async function handleProcessedForm(processedForm) {
     console.error('Error al guardar item:', error)
 
     // Si error es un objeto con detalles de validación
-    if (error?.response?.data) {
-      const messages = Object.values(error.response.data).flat().join(' ')
-      message.error({
-        content: () => `Errores: ${messages}`,
-        class: 'custom-large-message',
-      })
+    if (error.response && error.response.data) {
+      const data = error.response.data;
+      if (Array.isArray(data)) {
+        message.error('No se pudo guardar los datos: ' + data.join(', '));
+      } else if (typeof data === 'object') {
+        const errorMessages = Object.entries(data).map(([key, value]) => {
+          const valStr = Array.isArray(value) ? value.join(' ') : String(value);
+          return `${key}: ${valStr}`;
+        }).join('; ');
+        message.error('No se pudo guardar los datos: ' + errorMessages);
+      } else {
+        message.error('No se pudo guardar los datos: ' + (error.message || 'Error al guardar los datos'));
+      }
     } else {
-      message.error('Error inesperado al guardar el item')
+      message.error('No se pudo guardar los datos: ' + (error.message || 'Error al guardar los datos'));
     }
 
-    throw error  // Esto permite que el modal no se cierre si hay error
+    // throw error  // Esto permite que el modal no se cierre si hay error
+    // No lanzar error para evitar que el componente padre cierre el modal
+    return false;
   }
 }
 
@@ -202,16 +215,24 @@ async function handleModalOk() {
   if (formRef.value?.handleSubmit) {
     modalLoading.value = true
     try {
-      await formRef.value.handleSubmit()
+      const result = await formRef.value.handleSubmit()
+      console.log('result', result)
+      if (result === false) {
+        return false     // Previene cierre
+      }
+
       showForm.value = false
-    } catch (error) {
-      console.warn('Error en el form:', error)
-      // Modal no se cierra si hay error
+    } catch (e) {
+      console.warn('Error en el form:', e)
+      return false       // Previene cierre
     } finally {
+      
       modalLoading.value = false
     }
   }
 }
+
+
 function handleDelete(item) {
   const deleteItem = Object.entries(item)
     .map(([key, value]) => `${key}: ${typeof value === 'string' ? `'${value}'` : value}`)

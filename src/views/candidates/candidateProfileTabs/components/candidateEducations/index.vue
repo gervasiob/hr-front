@@ -5,7 +5,7 @@
         <h3>{{ titleText }}</h3>
       </a-col>
     </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId" />
+    <BasicFormItem ref="formItemRef" :fields="fields" :fomatted-cv="formattedCvId" :save-endpoint="endpoint" :candidate-id="candidateId" />
   </div>
 </template>
 

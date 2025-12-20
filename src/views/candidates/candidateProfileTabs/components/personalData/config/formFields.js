@@ -29,49 +29,36 @@ export const candidateFormFields = [
     { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true,
               pattern: '^\\+\\d+$',
         patternMessage: 'El teléfono debe comenzar con el signo + seguido de números.'
-     },
-    { label: 'Dirección', field: 'address', type: 'input', span: 12, required: true },
-    { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12, required: true },
-    { label: 'Provincia', field: 'province', type: 'input', span: 12, required: true },
-    { label: 'País', field: 'country_fk', type: 'api-select', span: 12,
+    },
+    {
+        label: 'País', field: 'country', type: 'api-select', span: 12, required: true,
         endpoint: 'catalog-countries/', // <- el endpoint real que usás
         valueField: 'id',       // <- nombre del campo que se usará como `value`
         nameField: 'name',      // <- nombre del campo que se usará como `label`
-     },
+
+
+    },
+    {
+        label: 'Provincia', field: 'province', type: 'api-select', span: 12, required: true,
+        endpoint: 'catalog-provinces/', // <- el endpoint real que usás
+        valueField: 'id',       // <- nombre del campo que se usará como `value`
+        nameField: 'name',      // <- nombre del campo que se usará como `label`
+
+        addField: 'country', // Depende del campo 'profile' y envía el parámetro 'primary_profile'
+        dependsOn: 'country',
+        dependsParam: 'country',
+    },
+    { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12, required: false },
+    { label: 'Dirección', field: 'address', type: 'input', span: 12, required: false },
+    { label: 'Habilitado para aplicar', field: 'available_to_apply', type: 'switch', span: 12 },
     { label: 'Blacklist', field: 'is_blacklisted', type: 'switch', span: 12 },
     { label: 'Razones de Blacklist', field: 'blacklist_reason', type: 'textarea', span: 24 },
-    { label: 'Habilitado para aplicar', field: 'available_to_apply', type: 'switch', span: 12 },
-    { label: 'Días habilitado', field: 'availability_days', type: 'input', span: 12 },
     { label: 'Salario Actual', field: 'current_salary', type: 'input', span: 12 },
     { label: 'Salario Esperado', field: 'expected_salary', type: 'input', span: 12 },
-    { label: 'Disponibilidad de Ingreso (días)', field: 'availability_days', type: 'input', span: 12 },
+    { label: 'Disponibilidad de Ingreso (días)', field: 'availability_days', type: 'input', span: 12, required: true },
     { label: 'Obra social', field: 'social_insurance', type: 'input', span: 12 },
     { label: 'Bonos', field: 'bonuses', type: 'input', span: 12 },
     { label: 'Capacitaciones', field: 'trainings', type: 'input', span: 12 },
     { label: 'Observaciones', field: 'notes', type: 'textarea', span: 24 },
 
-
-    // Secciones relacionadas
-    // {
-    //     label: 'Educación', field: 'educations', type: 'table', span: 24, columns: [
-    //         { title: 'Institución', dataIndex: 'institution', key: 'institution' },
-    //         { title: 'Título', dataIndex: 'degree', key: 'degree' },
-    //         { title: 'Año', dataIndex: 'year', key: 'year' }
-    //     ]
-    // },
-    // {
-    //     label: 'Experiencia Laboral', field: 'experiences', type: 'table', span: 24, columns: [
-    //         { title: 'Empresa', dataIndex: 'company', key: 'company' },
-    //         { title: 'Puesto', dataIndex: 'position', key: 'position' },
-    //         { title: 'Desde', dataIndex: 'start_date', key: 'start_date' },
-    //         { title: 'Hasta', dataIndex: 'end_date', key: 'end_date' }
-    //     ]
-    // },
-    // {
-    //     label: 'Certificaciones', field: 'certifications', type: 'table', span: 24, columns: [
-    //         { title: 'Nombre', dataIndex: 'name', key: 'name' },
-    //         { title: 'Entidad', dataIndex: 'entity', key: 'entity' },
-    //         { title: 'Fecha', dataIndex: 'date', key: 'date' }
-    //     ]
-    // }
 ];
