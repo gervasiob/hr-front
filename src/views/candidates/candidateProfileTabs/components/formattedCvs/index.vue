@@ -6,8 +6,11 @@
         <div v-if="formattedCvId" class="formatted-cv">
             <div class="header">
                 <h2></h2>
-                <a-button type="primary" @click="showForm = true">
+                <!-- <a-button type="primary" @click="showForm = true">
                     Editar Datos
+                </a-button> -->
+                <a-button type="primary" @click="handleDownloadTemplate">
+                    Descargar CV Formateado
                 </a-button>
             </div>
             <!-- <div>
@@ -78,7 +81,7 @@ import candidateEvaluacionesActitudinales from '../candiateEvaluacionesActitudin
 import candidateCompetenciasStar from '../candidateCompetenciaStar/index.vue';
 import candidateOtrasEvaluaciones from '../candidateOtrasEvaluaciones/index.vue';
 import candidateOtrasDestrezas from '../candidateOtrasDestrezas/index.vue';
-
+import { exportToWord } from '@/api/model/importExport'
 const props = defineProps({
     candidateId: {
         type: [Number, String],
@@ -156,6 +159,19 @@ async function handleProcessedForm(formData) {
 async function handleSubmit() {
     if (formRef.value) {
         await formRef.value.handleSubmit();
+    }
+}
+
+async function handleDownloadTemplate() {
+    try {
+        const endpointDownload = `formatted-cvs/${props.candidateId}/generate-word`;
+
+        const response = await exportToWord(endpointDownload)
+
+        message.success('Archivo descargado correctamente')
+    } catch (error) {
+        console.error('Error al descargar listado:', error)
+        message.error('Ocurrió un error al descargar el listado')
     }
 }
 </script>
