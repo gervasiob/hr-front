@@ -3,7 +3,7 @@
   <a-layout style="background: #fff">
     <a-layout-content :style="contentStyle">
       <a-layout-content :style="siderStyle">
-        <a-menu v-model:selectedKeys="current" v-if="!hideMenu && items.length > 0" :items="items"
+        <a-menu v-model:selectedKeys="current" v-if="active && items.length > 0" :items="items"
           @click="handleMenuSelect" mode="horizontal" />
       </a-layout-content>
       <RouterView />
@@ -29,8 +29,8 @@ export default {
     const route = useRoute();
     const router = useRouter();
     const loginRoute = ref(false);
-
     const hideMenu = computed(() => route.meta.hide_in_menu || false);
+    const active = computed(() => route.meta.is_active || false);
 
     const handleMenuSelect = ({ key }) => {
       const findItem = (list) =>
@@ -86,6 +86,7 @@ export default {
         marginTop: '50px',
         marginBottom: '50px',
       },
+      active,
     };
   },
 };

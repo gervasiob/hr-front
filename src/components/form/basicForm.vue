@@ -31,6 +31,7 @@ import { ref, computed, watch, onMounted } from 'vue'
 import dayjs from 'dayjs'
 import { fetch } from '@/api/model/model.js'
 import { result } from 'lodash';
+import { message } from 'ant-design-vue';
 
 const props = defineProps({
     id: [Number, String],
@@ -66,13 +67,23 @@ const formRef = ref(null)
 const rules = computed(() => {
     const result = {}
     props.fields.forEach(field => {
+        if (!result[field.field]) {
+            result[field.field] = []
+        }
         if (field.required) {
-            result[field.field] = [
+            result[field.field].push(
                 { required: true, message: `${field.label} es obligatorio`, trigger: 'blur' }
-            ]
+            )
         }
         if (field.inputType === 'email') {
             result[field.field].push({ type: 'email', message: 'Email inválido', trigger: 'blur' })
+        }
+        if (field.pattern) {
+            result[field.field].push({
+                pattern: new RegExp(field.pattern),
+                message: field.patternMessage || `${field.label} tiene un formato inválido`,
+                trigger: 'blur'
+            })
         }
     })
     return result
@@ -167,6 +178,12 @@ async function handleSubmit() {
         return result
     } catch (error) {
         console.error('Validación fallida:', error)
+        if (error.errorFields && Array.isArray(error.errorFields)) {
+            const errorMsgs = error.errorFields.map(field => field.errors.join(', ')).join('; ');
+            message.error('Error de validación: ' + errorMsgs);
+        } else {
+            message.error('Error en la validación del formulario. Por favor, revise los campos.')
+        }
         throw error
     }
 }

@@ -371,7 +371,6 @@ const saveItem = async (index) => {
         if (props.candidateId) {
             formData.items[index].candidate = parseInt(props.candidateId);
         }
-        console.log('props', props)
         if (props.formattedCv) {
             formData.items[index].formatted_cv = parseInt(props.formattedCv);
         }
@@ -396,7 +395,6 @@ const saveItem = async (index) => {
             hasChanges.value[index] = false;
             emit('submit', formData.items[index], index);
         } else {
-            console.log('response', response);
             throw new Error(response || 'Error al guardar los datos');
         }
     } catch (error) {
@@ -481,7 +479,15 @@ async function fetchQuery() {
             throw console.error('No se ha proporcionado un ID de candidato');
         }
         params.candidate = props.candidateId
-        console.log('basic item', params)
+        const listEndpointsFormatted = [
+            'formatted-cv-work-experiences/',
+            'formatted-cv-educations/',
+            'formatted-cv-certifications/'
+        ]
+        if (listEndpointsFormatted.includes(props.saveEndpoint)) {
+            delete params.candidate
+            params.formatted_cv = props.formattedCv
+        }
         const data = await fetch('get', props.saveEndpoint, params)
 
         let result = [];
@@ -518,9 +524,7 @@ async function fetchQuery() {
     }
 }
 
-onMounted(async () => {
-    await fetchQuery()
-});
+
 
 // Resetear formulario
 const resetForm = () => {
@@ -539,8 +543,8 @@ defineExpose({
 });
 
 // Lifecycle
-onMounted(() => {
-    initializeFormData();
+onMounted(async () => {
+    await fetchQuery();
     // Cargar opciones de API para campos que lo requieran por fila
     props.fields.forEach(field => {
         if (field.type === 'api-select') {
@@ -630,5 +634,6 @@ watch(() => formData.items, () => {
     padding: 8px;
     border: 1px solid #d9d9d9;
     border-radius: 6px;
+        text-align: left;
 }
 </style>

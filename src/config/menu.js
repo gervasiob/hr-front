@@ -34,6 +34,7 @@ function buildMenu(items) {
             icon: undefined,
             component: undefined,
             parent: 0,
+            is_active: false,
             meta: {
                 roles: [],
                 hide_in_menu: false,
@@ -54,6 +55,7 @@ function buildMenu(items) {
             icon: iconMap[item.icon] || undefined,
             component: viewModules[path] || undefined,
             parent: item.parent,
+            is_active: item.is_active || false,
             meta: {
                 roles: item.roles || [],
                 hide_in_menu: item.hide_in_menu || false,

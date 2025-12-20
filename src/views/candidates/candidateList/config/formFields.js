@@ -24,8 +24,16 @@ export const candidateFormFields = [
             { label: 'Otro', value: 'O' }
         ]
     },
-    { label: 'Email', field: 'email', type: 'input', span: 12, required: true },
-    { label: 'Email Alternativo', field: 'alt_email', type: 'input', span: 12 },
+    {
+        label: 'Email', field: 'email', type: 'input', span: 12, required: true,
+        pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+        patternMessage: 'El email no es válido.'
+     },
+    {
+        label: 'Email Alternativo', field: 'alt_email', type: 'input', span: 12,
+        pattern: '^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$',
+        patternMessage: 'El email no es válido.'
+     },
     {
         label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true,
         pattern: '^\\+\\d+$',
@@ -33,20 +41,20 @@ export const candidateFormFields = [
      },
     // { label: 'Dirección', field: 'address', type: 'input', span: 12, required: true },
     {
-        label: 'País', field: 'country', type: 'api-select', span: 12, required: true,
+        label: 'País', field: 'country_fk', type: 'api-select', span: 12, required: true,
         endpoint: 'catalog-countries/', // <- el endpoint real que usás
         valueField: 'id',       // <- nombre del campo que se usará como `value`
         nameField: 'name',      // <- nombre del campo que se usará como `label`
 
 
     },
-    { label: 'Provincia', field: 'province', type: 'api-select', span: 12, required: true,
+    { label: 'Provincia', field: 'province_fk', type: 'api-select', span: 12, required: true,
         endpoint: 'catalog-provinces/', // <- el endpoint real que usás
         valueField: 'id',       // <- nombre del campo que se usará como `value`
         nameField: 'name',      // <- nombre del campo que se usará como `label`
 
         addField: 'country', // Depende del campo 'profile' y envía el parámetro 'primary_profile'
-        dependsOn: 'country',
+        dependsOn: 'country_fk',
         dependsParam: 'country',
     },
     { label: 'Zona / Barrio', field: 'zone', type: 'input', span: 12, required: false },
