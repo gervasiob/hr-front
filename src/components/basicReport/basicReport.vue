@@ -37,7 +37,6 @@ const content = ref(props.modelValue);
 watch(() => props.modelValue, (val) => {
   if (val !== content.value) {
     content.value = val;
-    console.log('val', val)
   }
 });
 

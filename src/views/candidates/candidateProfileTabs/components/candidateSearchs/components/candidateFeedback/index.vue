@@ -234,7 +234,6 @@ async function loadCastingLists() {
       }
       
       localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
-      console.log(`Stored ${dataToStore.length} items for cast_${source}`);
       
     } catch (error) {
       console.error(`Error loading casting list for ${source}:`, error);
@@ -335,6 +334,8 @@ async function handleModalOk() {
     }
   }
 }
+const emit = defineEmits(['refresh-pcp'])
+
 function handleDelete(item) {
   const deleteItem = Object.entries(item)
     .map(([key, value]) => `${key}: ${typeof value === 'string' ? `'${value}'` : value}`)
@@ -350,6 +351,7 @@ function handleDelete(item) {
         await fetch('delete', endpoint, null, item.id)
         message.success('Item eliminado correctamente')
         fetchQuery()
+        emit('refresh-pcp') // Emitir evento para refrescar PCP
       } catch (e) {
         console.error('Error al eliminar item', e)
         message.error('Error al eliminar item')

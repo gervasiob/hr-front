@@ -46,7 +46,6 @@ const pageSize = ref(10)
 const selectedId = ref(null)
 
 // config parameters
-// config parameters
 const titleText = 'Experiencia Laboral'
 const itemText = 'Item Laboral'
 const modelName = 'formatted-cv-work-experiences'
@@ -77,7 +76,6 @@ async function fetchQuery() {
       limit,
       offset
     }
-    console.log('params', params)
 
     const data = await fetch('get', endpoint, params)
     let result = []
@@ -266,5 +264,9 @@ async function handleDownloadTemplate() {
 .actions {
   display: flex;
   gap: 10px;
+}
+.ql-editor {
+  direction: ltr;
+  text-align: left;
 }
 </style>

@@ -27,7 +27,6 @@ export default {
     },
     setup(props, { emit }) {
         const formState = reactive({});
-        console.log('formData', props.formData.value)
         const data = ref(props.formData.value);
         const fileList = ref([]);
         if (data.value.image) {
@@ -41,7 +40,6 @@ export default {
         const formRef = ref(null);
         const handleFinish = () => {
             try {
-                console.log('Formulario terminado', formState);
                 // Emite el evento si la validación es exitosa
                 emit('form-finish', formState);
 
@@ -52,13 +50,12 @@ export default {
             }
         };
         const handleFinishFailed = errors => {
-            console.log('errors', errors);
+            console.error('errors', errors);
         };
         const imageUrl = ref(null);
         const handleUpload = async ({ file, onSuccess, onError }) => {
             try {
                 const response = await uploadProductImage(data.value.id, file);
-                console.log("Subida exitosa:", response);
                 imageUrl.value = response.url;
                 onSuccess(response);
             } catch (error) {

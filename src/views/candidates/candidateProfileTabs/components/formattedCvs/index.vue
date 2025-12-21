@@ -133,7 +133,6 @@ async function handleCreate() {
 }
 
 async function handleProcessedForm(formData) {
-    console.log('formData', formData);
 
     try {
         const data = {

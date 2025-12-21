@@ -6,7 +6,6 @@ export async function apiExport(model, params) {
 
     try {
         const response = await apiRequest('get', ENDPOINT, params, null, true);
-        console.log('response', response)
         if (!response) {
             window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error al exportar el archivo. No se recibió un archivo. Modelo: ' + model }));
             throw new Error('No se recibió un archivo');

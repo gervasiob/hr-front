@@ -95,8 +95,6 @@ async function fetchQuery() {
       offset,
     };
 
-    console.log('Ordering:', ordering.value, 'Page:', page, 'Offset:', offset);
-
     const data = await fetch('get', endpoint, params);
     let result = [];
 

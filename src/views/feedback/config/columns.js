@@ -15,6 +15,24 @@ export const columns = [
     }
   },
   {
+    title: 'Descargar CV',
+    field: 'actions',
+    operation: {
+      slots: true,
+      align: 'center',
+      width: 160,
+      actions: [
+        {
+          label: '',
+          type: 'link',
+          event: 'download-cv',
+          danger: false,
+          icon: 'DownloadOutlined'
+        }
+      ]
+    }
+  },
+  {
     title: 'Mail del Candidato', field: 'candidate', sorter: true,
     cast: {
       source: 'candidates/',

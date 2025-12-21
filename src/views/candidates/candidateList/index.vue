@@ -216,7 +216,6 @@ async function handleModalOk() {
     modalLoading.value = true
     try {
       const result = await formRef.value.handleSubmit()
-      console.log('result', result)
       if (result === false) {
         return false     // Previene cierre
       }

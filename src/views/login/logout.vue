@@ -5,7 +5,6 @@ import { useRouter } from 'vue-router';
 const router = useRouter();
 
 onMounted(() => {
-console.log('Logout');
     // Limpiar localStorage
     localStorage.clear();
     // Redirigir al login

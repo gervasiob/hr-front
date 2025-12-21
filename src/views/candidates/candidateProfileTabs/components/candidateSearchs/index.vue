@@ -5,8 +5,8 @@
                 <h3>{{ titleText }}</h3>
             </a-col>
         </a-row>
-        <CandidatePcp :candidate-id="props.candidateId" @refresh-both="refreshBothTables" />
-        <CandidateFeedback ref="feedbackRef" :candidate-id="props.candidateId" />
+        <CandidatePcp ref="pcpRef" :candidate-id="props.candidateId" @refresh-both="refreshBothTables" />
+        <CandidateFeedback ref="feedbackRef" :candidate-id="props.candidateId" @refresh-pcp="refreshPcpTable" />
     </div>
 </template>
 
@@ -40,6 +40,7 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 const selectedId = ref(null)
 const feedbackRef = ref(null)
+const pcpRef = ref(null)
 
 // config parameters
 // config parameters
@@ -51,14 +52,20 @@ const endpoint = modelName + '/'
 
 onMounted(async () => {
     await loadCastingLists()
-    await fetchQuery()
+    // await fetchQuery()
 })
 
 function refreshBothTables() {
-  // Refrescar la tabla de Feedback explícitamente
-  if (feedbackRef.value && typeof feedbackRef.value.reload === 'function') {
-    feedbackRef.value.reload()
-  }
+    // Refrescar la tabla de Feedback explícitamente
+    if (feedbackRef.value && typeof feedbackRef.value.reload === 'function') {
+        feedbackRef.value.reload()
+    }
+}
+
+function refreshPcpTable() {
+    if (pcpRef.value && typeof pcpRef.value.reload === 'function') {
+        pcpRef.value.reload()
+    }
 }
 
 async function fetchQuery() {
@@ -82,6 +89,7 @@ async function fetchQuery() {
 
         const data = await fetch('get', endpoint, params)
         let result = []
+
 
         if ('results' in data && 'count' in data) {
             result = data.results
@@ -269,4 +277,3 @@ async function handleDownloadTemplate() {
     gap: 10px;
 }
 </style>
-  

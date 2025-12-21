@@ -20,13 +20,18 @@
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort"
-      @pagination-change="handlePaginationChange" />
+      @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @download-cv="handleDownloadCV"
+      @sort-change="handleSort" @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
-        :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery">
+
+        <template #custom-field>
+          <a-steps :current="currentFeedbackIndex" :items="feedbackItems" @change="handleStepChange"></a-steps>
+        </template>
+      </BasicForm>
     </a-modal>
   </div>
 </template>
@@ -42,7 +47,7 @@ import { columns } from './config/columns'
 import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
-import { exportToExcel } from '@/api/model/importExport'
+import { exportToExcel, exportToWord } from '@/api/model/importExport'
 
 import { useRoute } from 'vue-router';
 
@@ -65,8 +70,64 @@ const modelName = 'search-trackings'
 const modelNameSingle = 'search-tracking'
 const endpoint = modelName + '/'
 const route = useRoute();
-
+const currentFeedbackIndex = ref(0)
+const feedbackItems = ref([
+  {
+    title: 'Preselección Comercial',
+    description: '',
+    key: 'is_preselected_commercial'
+  },
+  {
+    title: 'Preselección Cliente',
+    description: '',
+    key: 'is_preselected_client'
+  },
+  {
+    title: 'Entrevista Técnica',
+    description: '',
+    key: 'is_technical_interview'
+  },
+  {
+    title: 'Psicotécnico',
+    description: '',
+    key: 'is_psychotechnical'
+  },
+  {
+    title: 'Oferta Enviada',
+    description: '',
+    key: 'is_offer_sent'
+  },
+  {
+    title: 'Contratado',
+    description: '',
+    key: 'is_hired'
+  },
+])
 const searchTitle = ref('');
+
+async function handleStepChange(current) {
+  if (!selectedId.value) return;
+
+  const step = feedbackItems.value[current];
+  if (!step || !step.key) return;
+  console.log('step.key', step.key)
+  try {
+    const payload = { [step.key]: true };
+    console.log('payload', payload)
+    await fetch('put', endpoint, processedForm, processedForm.id)
+    await fetch('update', endpoint, payload, selectedId.value);
+    currentFeedbackIndex.value = current;
+    message.success(`Estado actualizado a: ${step.title}`);
+    // Recargar datos si es necesario
+    if (formRef.value && typeof formRef.value.loadForm === 'function') {
+      await formRef.value.loadForm();
+    }
+    fetchQuery();
+  } catch (error) {
+    console.error('Error updating step:', error);
+    message.error('Error al actualizar el estado');
+  }
+}
 
 onMounted(async () => {
   await loadCastingLists()
@@ -121,7 +182,7 @@ async function fetchQuery() {
 
     const data = await fetch('get', endpoint, params);
     let result = [];
-    
+
     if ('results' in data && 'count' in data) {
       result = data.results;
       totalItems.value = data.count;
@@ -137,7 +198,7 @@ async function fetchQuery() {
         console.warn(`No data found in localStorage for cast_${castConfig.source}`);
         return value; // Retornar el valor original si no hay datos
       }
-      
+
       try {
         const list = JSON.parse(storedData);
         const getLabel = (id) => {
@@ -182,12 +243,12 @@ async function loadCastingLists() {
       if (localStorage.getItem(`cast_${source}`)) {
         localStorage.removeItem(`cast_${source}`);
       }
-      
+
       const data = await fetch('list', source, {
         valueField: 'id',
         nameField: 'name'
       });
-      
+
       // Verificar que data existe y tiene la estructura esperada
       let dataToStore = [];
       if (data && Array.isArray(data)) {
@@ -197,10 +258,9 @@ async function loadCastingLists() {
       } else {
         console.warn(`No valid data received for source: ${source}`, data);
       }
-      
+
       localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
-      console.log(`Stored ${dataToStore.length} items for cast_${source}`);
-      
+
     } catch (error) {
       console.error(`Error loading casting list for ${source}:`, error);
       // Guardar array vacío en caso de error para evitar problemas posteriores
@@ -241,7 +301,21 @@ function openForm(id = null, isNew = true) {
 }
 
 function handleEdit(candidate) {
+  currentFeedbackIndex.value = calculateFeedbackState(candidate)
   openForm(candidate.id, false)
+}
+function calculateFeedbackState(candidate) {
+  if (candidate.preselected_commercial) {
+    return 1
+  } else if (candidate.preselected_client) {
+    return 2
+  } else if (candidate.technical_interview) {
+    return 3
+  } else if (candidate.psychological_test) {
+    return 4
+  } else if (candidate.offer_sent) {
+    return 5
+  }
 }
 
 
@@ -252,10 +326,10 @@ function handleViewCV(candidate) {
 async function handleProcessedForm(processedForm) {
   try {
 
-    if (!id.value) {
+    if (!selectedId.value) {
       return;
     }
-    processedForm.search = id.value
+    processedForm.search = selectedId.value
     if (!newForm.value) {
       await fetch('put', endpoint, processedForm, processedForm.id)
     } else {
@@ -341,6 +415,26 @@ function handleOpenDetail(record) {
   const detail = record.id;
   const url = `/pcp/candidates/reports/${detail}`;
   router.push({ name: 'INFORME', params: { id: detail } });
+}
+async function handleDownloadCV(record) {
+  try {
+
+    const candidate = await fetch('get', 'candidates/', { email: record.candidate });
+    console.log(candidate)
+    const formatted = await fetch('get', 'formatted-cvs/', { candidate: candidate[0].id });
+    if (formatted && formatted.length > 0) {
+      const formattedCvId = formatted[0].id;
+      const baseParams = {}
+      const endpoint = `formatted-cvs/${formattedCvId}/generate-word`
+      await exportToWord(endpoint, baseParams)
+      message.success('Archivo descargado correctamente')
+    } else {
+      message.warning('El candidato no tiene un CV formateado creado.')
+    }
+  } catch (error) {
+    console.error('Error al descargar listado:', error)
+    message.error('Error al descargar el CV')
+  }
 }
 </script>
 

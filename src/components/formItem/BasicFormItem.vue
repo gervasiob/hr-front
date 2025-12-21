@@ -40,11 +40,14 @@
                             @change="() => onFieldChange(index)" />
 
                         <!-- Rich Text (HTML) -->
-                        <div v-else-if="field.type === 'richtext'" contenteditable="true" class="rich-editor"
+                        <!-- <div v-else-if="field.type === 'richtext'" contenteditable="true" class="rich-editor"
                             v-html="item[field.field]" :data-placeholder="field.placeholder || field.label"
                             @input="(e) => { onRichInput(e, item, field.field); onFieldChange(index); }"
-                            @blur="() => onFieldChange(index)"></div>
-
+                            @blur="() => onFieldChange(index)">
+                        </div> -->
+                        <QuillEditor v-else-if="field.type === 'richtext'" v-model:content="item[field.field]"
+                            content-type="html" theme="snow" style="background:white; min-height:150px;"
+                            @update:content="() => onFieldChange(index)" />
                         <!-- Number input -->
                         <a-input-number v-else-if="field.type === 'number'" v-model:value="item[field.field]"
                             :placeholder="field.placeholder || field.label" :min="field.min" :max="field.max"
@@ -92,7 +95,8 @@ import { reactive, ref, onMounted, watch, h, nextTick, computed } from 'vue';
 import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons-vue';
 import { fetch } from '@/api/model/model.js';
 import { message } from 'ant-design-vue';
-
+import { QuillEditor } from '@vueup/vue-quill'
+import '@vueup/vue-quill/dist/vue-quill.snow.css'
 // Props
 const props = defineProps({
     fields: {
@@ -257,9 +261,9 @@ const getHelpMessage = (value, field) => {
 };
 
 // Input handler para richtext
-const onRichInput = (e, item, fieldName) => {
-    item[fieldName] = e.target.innerHTML;
-};
+// const onRichInput = (e, item, fieldName) => {
+//     item[fieldName] = e.target.innerHTML;
+// };
 
 // Cargar opciones de API
 const loadApiOptions = async (field, rowIndex) => {
@@ -635,5 +639,9 @@ watch(() => formData.items, () => {
     border: 1px solid #d9d9d9;
     border-radius: 6px;
         text-align: left;
+}
+.ql-editor {
+    direction: ltr;
+    text-align: left;
 }
 </style>

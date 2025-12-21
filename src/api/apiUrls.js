@@ -12,7 +12,6 @@ export let BASE_URL_LOGIN = 'https://hr.ngovatek.com/api/'
 
 
 // Add this for debugging
-console.log('BASE_URL_LOGIN:', BASE_URL_LOGIN);
 const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
@@ -105,11 +104,9 @@ export const setTokenHeader = () => {
     const token = localStorage.getItem('token');
     if (token) {
         axios.defaults.headers.common['Authorization'] = `Token ${token}`;
-        console.log('reload');
         location.reload();
         return 'setted';
     } else {
-        console.log('no token', token)
         return 'no token';
     }
 }

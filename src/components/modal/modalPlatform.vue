@@ -65,17 +65,15 @@ export default {
             formRef.value.resetFields();  // Limpia los campos del formulario
         };
         const handleFinish = () => {
-            console.log('form termiando', formState)
             return formRef.value.validate().then(() => {
                 emit('form-finish', formState);
                 return Promise.resolve();  // Validación exitosa
             }).catch(error => {
-                console.log('error', error);
+                console.error('error', error);
                 return Promise.reject();  // Validación fallida
             });
         };
         const handleFinishFailed = errors => {
-            console.log('errors', errors);
         };
         const fields = props.modalFields;
         let fieldValues = props.formData;

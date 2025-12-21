@@ -109,7 +109,6 @@ async function fetchQuery() {
       current_state = 1
       filterParams.value.current_state = 1
     }
-    console.log('route path', route.path)
     if (route.path === '/principal') {
       if (localStorage.getItem('user_id')) {
         recruiter = localStorage.getItem('user_id')
@@ -209,7 +208,6 @@ async function loadCastingLists() {
       }
 
       localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
-      console.log(`Stored ${dataToStore.length} items for cast_${source}`);
 
     } catch (error) {
       console.error(`Error loading casting list for ${source}:`, error);

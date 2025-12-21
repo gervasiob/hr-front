@@ -75,7 +75,6 @@ export default {
           password: loginForm.value.password,
         };
         const response = await getToken(params);
-        console.log('response', response);
         setTokenHeader();
       } catch (error) {
         console.error('Error logging in', error);

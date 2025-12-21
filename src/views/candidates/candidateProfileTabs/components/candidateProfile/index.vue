@@ -83,7 +83,6 @@ async function fetchQuery() {
       result = data
       totalItems.value = data.length
     }
-    console.log('result', result)
     // ⬇️ Casteo de columnas
     // candidates.value = result.map(item => {
     //   const newItem = { ...item }
@@ -96,7 +95,7 @@ async function fetchQuery() {
     //   })
     //   return newItem
     // })
-    console.log('candidates.value', candidates.value)
+
   } catch (e) {
     console.error('Error al cargar listado', e)
   } finally {
@@ -135,7 +134,6 @@ async function loadCastingLists() {
       }
 
       localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
-      console.log(`Stored ${dataToStore.length} items for cast_${source}`);
 
     } catch (error) {
       console.error(`Error loading casting list for ${source}:`, error);

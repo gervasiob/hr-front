@@ -208,7 +208,6 @@ async function loadCastingLists() {
       }
 
       localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
-      console.log(`Stored ${dataToStore.length} items for cast_${source}`);
 
     } catch (error) {
       console.error(`Error loading casting list for ${source}:`, error);

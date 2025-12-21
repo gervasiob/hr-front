@@ -38,6 +38,17 @@ export const candidateFormFields = [
         span: 12
     },
     {
+        label: 'Feedback',
+        field: 'feedback',
+        type: 'select',
+        span: 12,
+        options: [
+            { label: 'En Proceso', value: 'EN PROCESO' },
+            { label: 'Stand By', value: 'STAND BY' },
+            { label: 'Descartado', value: 'DESCARTADO' },
+        ],
+    },
+    {
         label: 'Preselección Comercial',
         field: 'preselected_commercial',
         type: 'switch',

@@ -102,7 +102,6 @@ export default {
         const setNextStep = () => {
             const firstWaitIndex = itemsChecklist.value.findIndex((item) => item.status === 'wait');
             if (firstWaitIndex !== -1) {
-                console.log('first', firstWaitIndex)
                 current.value = firstWaitIndex;
                 itemsChecklist.value[current.value].status = 'process'
             } else {
@@ -110,7 +109,6 @@ export default {
             }
         };
         const handleStepClick = (index, item) => {
-            console.log('Step clicked:', item);
             if (item.title === 'Documentación') {
                 const nextRoute = '/upload-documents';
                 navigateTo(props.quoteId, nextRoute, true, {}, true);
@@ -122,7 +120,6 @@ export default {
         watch(
             () => props.pedidoId,
             (newVal, oldVal) => {
-                console.log('new value', newVal)
                 if (newVal !== oldVal) {
                     pedidoIdValue.value = newVal;
                     fetchData();

@@ -119,7 +119,6 @@ async function fetchQuery() {
       }))
     } else {
       result = data
-      console.log('result', result)
       fileList.value = result.map(item => ({
         uid: item.id,
         name: item.s3_url,
@@ -192,8 +191,6 @@ function applyFilterParams(filters) {
 
 function openForm(id = null, isNew = true) {
   selectedId.value = id
-  console.log('selectId', selectedId.value)
-  console.log('fileList', fileList.value)
   newForm.value = isNew
   showForm.value = true
 }

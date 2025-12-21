@@ -118,7 +118,6 @@ export default {
         const columns = tableColumns;
 
         const fetchData = async (params = {}) => {
-            console.log('fectch params', params)
             const fullParams = {
                 ...params,
                 ...filterInputs.value,
@@ -126,8 +125,6 @@ export default {
             try {
                 const response = await apiConfigurations('get', fullParams);
 
-                console.log("response");
-                console.log(response);
                 dataSource.value = response.results.map((item, index) => ({
                     ...item,
                     key: index,
@@ -203,7 +200,6 @@ export default {
             const data = dataSource.value.filter(item => key === item.key)[0];
             Object.assign(data, editableData[key]);
             delete editableData[key];
-            console.log(data)
             const params = {
                 ...data,
             }
@@ -225,7 +221,6 @@ export default {
             }
         };
         const cancel = (key) => {
-            console.log('cancel', key)
             if (key === undefined) {
                 onDelete(key);
                 delete editableData[key];
@@ -295,7 +290,6 @@ export default {
 
         const handleFormFinish = (form) => {
             formState.value = { ...form };
-            console.log('form', form)
 
             apiConfigurations('post', formState.value).then(() => {
                 formState.value = {};

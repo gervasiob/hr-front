@@ -173,17 +173,14 @@ const existingProfileData = reactive([
 
 // Manejadores de eventos
 const handleSubmit = (formDataItems) => {
-  console.log('Datos del formulario de candidato (array de items):', formDataItems);
   message.success(`${formDataItems.length} candidato(s) guardado(s) exitosamente`);
 };
 
 const handleReset = () => {
-  console.log('Formulario reseteado');
   message.info('Formulario reseteado');
 };
 
 const handleProfileUpdate = (formDataItems) => {
-  console.log('Datos del perfil actualizados (array de items):', formDataItems);
   message.success(`${formDataItems.length} perfil(es) actualizado(s) exitosamente`);
 };
 
@@ -203,7 +200,6 @@ const resetCandidateForm = () => {
 
 const getCandidateFormData = () => {
   const data = candidateFormRef.value.getFormData();
-  console.log('Datos actuales del formulario (array):', data);
   message.info('Datos mostrados en consola');
 };
 

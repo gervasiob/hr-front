@@ -79,7 +79,6 @@ async function fetchQuery() {
     const limit = pageSize.value || 10
     const offset = (page - 1) * limit
     const orderingParam = ordering.value ? { ordering: ordering.value } : {}
-    console.log('Ordering:', ordering.value, 'Page:', page, 'Offset:', offset)
     const params = {
       ...baseParams,
       ...orderingParam,

@@ -70,9 +70,6 @@ export const filters = [
             nameField: 'name',      // <- nombre del campo que se usará como `label`
         }
      },
-
-    { label: 'Inglés requerido', field: 'english_required', model: 'english_required', type: 'checkbox', span: 8 },
-    { label: 'Homeworking', field: 'homeworking', model: 'homeworking', type: 'checkbox', span: 8 },
     {
         label: 'Estado',
         field: 'current_state',

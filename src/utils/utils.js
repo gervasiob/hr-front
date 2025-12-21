@@ -15,7 +15,6 @@
 
 export function navigateTo(id = null, baseRoute, requiredId = false, params = {}, newTab = false) {
     let route = {};
-    console.log('baseroute', baseRoute)
     if (requiredId) {
         if (id) {
             route = { path: `${baseRoute}/${id}` };

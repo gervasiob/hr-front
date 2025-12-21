@@ -79,10 +79,10 @@ const route = useRoute();
 function applyQueryParamsToFilters() {
   const queryParams = route.query;
   const initialFilters = {};
-  
+
   // Obtener los campos disponibles en el filtro
   const filterFields = filters.map(filter => filter.field);
-  
+
   // Aplicar solo los query parameters que corresponden a campos de filtro
   Object.keys(queryParams).forEach(key => {
     if (filterFields.includes(key)) {
@@ -99,12 +99,13 @@ onMounted(async () => {
   // Aplicar query parameters a los filtros antes de cargar datos
   applyQueryParamsToFilters();
   await loadCastingLists()
-  await fetchTrackedSearchIds()
+  // await fetchTrackedSearchIds()
   await fetchQuery()
 })
 
 async function fetchQuery() {
   loading.value = true;
+  await fetchTrackedSearchIds()
   try {
     const baseParams = Object.fromEntries(
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
@@ -117,6 +118,7 @@ async function fetchQuery() {
     let current_state = null
     let recruiter = null
     filterParams.value.current_state = 1
+    current_state = filterParams.value.current_state
 
     const params = {
       ...baseParams,
@@ -125,13 +127,11 @@ async function fetchQuery() {
       offset,
       ...route.query,
       current_state: current_state,
-      recruiter: recruiter
+
     };
-    
 
     const data = await fetch('get', endpoint, params);
     let result = [];
-
     if ('results' in data && 'count' in data) {
       result = data.results;
       totalItems.value = data.count;
@@ -139,7 +139,6 @@ async function fetchQuery() {
       result = data;
       totalItems.value = data.length;
     }
-
     // ⬇️ Función auxiliar para casteo robusto
     const castValue = (value, castConfig) => {
       const storedData = localStorage.getItem(`cast_${castConfig.source}`);
@@ -147,7 +146,7 @@ async function fetchQuery() {
         console.warn(`No data found in localStorage for cast_${castConfig.source}`);
         return value; // Retornar el valor original si no hay datos
       }
-      
+
       try {
         const list = JSON.parse(storedData);
         const getLabel = (id) => {
@@ -178,7 +177,6 @@ async function fetchQuery() {
     } else {
       candidates.value = mapped
     }
-
   } catch (e) {
     console.error('Error al cargar listado', e);
   } finally {
@@ -239,7 +237,6 @@ async function loadCastingLists() {
       }
 
       localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
-      console.log(`Stored ${dataToStore.length} items for cast_${source}`);
 
     } catch (error) {
       console.error(`Error loading casting list for ${source}:`, error);
@@ -273,6 +270,13 @@ function applyFilterParams(filters) {
   currentPage.value = 1
   fetchQuery()
 }
+
+function reload() {
+  currentPage.value = 1
+  fetchQuery()
+}
+
+defineExpose({ reload })
 
 function openForm(id = null, isNew = true) {
   selectedId.value = id
