@@ -164,12 +164,19 @@ async function handleSubmit() {
 
 async function handleDownloadTemplate() {
     try {
-        const baseParams = {}
-        const endpoint = `formatted-cvs/${props.candidateId}/generate-word`
-        await exportToWord(endpoint, baseParams)
-        message.success('Archivo descargado correctamente')
+        const formatted = await fetch('get', 'formatted-cvs/', { candidate: props.candidateId });
+        if (formatted && formatted.length > 0) {
+            const formattedCvId = formatted[0].id;
+            const baseParams = {}
+            const endpoint = `formatted-cvs/${formattedCvId}/generate-word`
+            await exportToWord(endpoint, baseParams)
+            message.success('Archivo descargado correctamente')
+        } else {
+            message.warning('El candidato no tiene un CV formateado creado.')
+        }
     } catch (error) {
         console.error('Error al descargar listado:', error)
+        message.error('Error al descargar el CV')
     }
 }
 </script>

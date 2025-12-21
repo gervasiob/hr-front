@@ -49,45 +49,15 @@ export const candidateFormFields = [
         ],
     },
     {
-        label: 'Preselección Comercial',
-        field: 'preselected_commercial',
-        type: 'switch',
-        span: 12
-    },
-    {
-        label: 'Preselección Cliente',
-        field: 'preselected_client',
-        type: 'switch',
-        span: 12
-    },
-    {
-        label: 'Entrevista Técnica',
-        field: 'technical_interview',
-        type: 'switch',
-        span: 12
-    },
-    {
-        label: 'Psicotécnico',
-        field: 'psychotechnical_test',
-        type: 'switch',
-        span: 12
-    },
-    {
-        label: 'Oferta Enviada',
-        field: 'offer_sent',
-        type: 'switch',
-        span: 12
-    },
-    {
-        label: 'Contratado',
-        field: 'hired',
-        type: 'switch',
-        span: 12
-    },
-    {
         label: 'Feedback Enviado',
         field: 'feedback_sent',
         type: 'switch',
         span: 12
-    }
+    },
+    {
+        label: 'Candidato Observaciones',
+        field: 'candidate_reason',
+        type: 'textarea',
+        span: 12
+    },
 ]

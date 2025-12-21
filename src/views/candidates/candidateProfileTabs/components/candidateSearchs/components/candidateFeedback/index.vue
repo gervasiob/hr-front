@@ -20,7 +20,7 @@
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort"
+      @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @download-cv="handleDownloadCV" @sort-change="handleSort"
       @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
@@ -42,7 +42,7 @@ import { columns } from './config/columns'
 import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
-import { exportToExcel } from '@/api/model/importExport'
+import { exportToExcel, exportToWord } from '@/api/model/importExport'
 
 import { useRoute } from 'vue-router';
 
@@ -378,6 +378,24 @@ function handleOpenDetail(record) {
   const detail = record.id;
   const url = `/pcp/candidates/reports/${detail}`;
   router.push({ name: 'INFORME', params: { id: detail } });
+}
+async function handleDownloadCV(record) {
+  try {
+    const candidate = await fetch('get', 'candidates/', { email: record.candidate });
+    const formatted = await fetch('get', 'formatted-cvs/', { candidate: candidate[0].id });
+    if (formatted && formatted.length > 0) {
+      const formattedCvId = formatted[0].id;
+      const baseParams = {}
+      const endpoint = `formatted-cvs/${formattedCvId}/generate-word`
+      await exportToWord(endpoint, baseParams)
+      message.success('Archivo descargado correctamente')
+    } else {
+      message.warning('El candidato no tiene un CV formateado creado.')
+    }
+  } catch (error) {
+    console.error('Error al descargar listado:', error)
+    message.error('Error al descargar el CV')
+  }
 }
 </script>
 

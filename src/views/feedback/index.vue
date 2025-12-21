@@ -21,15 +21,41 @@
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
       @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @download-cv="handleDownloadCV"
-      @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+      @sort-change="handleSort" @pagination-change="handlePaginationChange">
+
+      <template #current_status_label="{ record }">
+        <a-tag :color="getStatusColor(record)">
+          {{ record.current_status_label }}
+        </a-tag>
+      </template>
+
+      <template #feedback="{ record }">
+        <a-tag :color="getFeedbackColor(record.feedback)">
+          {{ record.feedback }}
+        </a-tag>
+      </template>
+
+    </BasicTable>
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
-      :confirm-loading="modalLoading" @ok="handleModalOk">
+      :confirm-loading="modalLoading" @ok="handleModalOk" destroy-on-close="true">
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
         :on-submit="handleProcessedForm" :fetch-data="fetchQuery">
 
-        <template #custom-field>
-          <a-steps :current="currentFeedbackIndex" :items="feedbackItems" @change="handleStepChange"></a-steps>
+        <template #custom-field="{ field, value, index }">
+          <a-steps :current="currentFeedbackIndex" :items="feedbackItems" size="small"></a-steps>
+          <div style="margin-top: 16px;">
+            <a-select v-model:value="currentFeedbackIndex" style="width: 100%" placeholder="Seleccionar estado">
+              <a-select-option v-for="(item, idx) in feedbackItems" :key="idx" :value="idx">
+                {{ item.title }}
+              </a-select-option>
+            </a-select>
+          </div>
+          <div style="margin-top: 16px;">
+            <label>Proceso Observaciones</label>
+            <a-textarea v-model:value="processReason" placeholder="Ingrese observaciones del proceso" :rows="4"
+              style="margin-top: 8px;" />
+          </div>
         </template>
       </BasicForm>
     </a-modal>
@@ -75,58 +101,65 @@ const feedbackItems = ref([
   {
     title: 'Preselección Comercial',
     description: '',
-    key: 'is_preselected_commercial'
+    key: 'is_preselected_commercial',
+    code: 'preselected_commercial',
+    color: 'cyan'
   },
   {
     title: 'Preselección Cliente',
     description: '',
-    key: 'is_preselected_client'
+    key: 'is_preselected_client',
+    code: 'preselected_client',
+    color: 'blue'
   },
   {
     title: 'Entrevista Técnica',
     description: '',
-    key: 'is_technical_interview'
+    key: 'is_technical_interview',
+    code: 'technical_interview',
+    color: 'geekblue'
   },
   {
     title: 'Psicotécnico',
     description: '',
-    key: 'is_psychotechnical'
+    key: 'is_psychotechnical',
+    code: 'psychological_test',
+    color: 'purple'
   },
   {
     title: 'Oferta Enviada',
     description: '',
-    key: 'is_offer_sent'
+    key: 'is_offer_sent',
+    code: 'offer_sent',
+    color: 'orange'
   },
   {
     title: 'Contratado',
     description: '',
-    key: 'is_hired'
+    key: 'is_hired',
+    code: 'hired',
+    color: 'green'
   },
 ])
 const searchTitle = ref('');
+const processReason = ref('');
+
+function getStatusColor(record) {
+  const item = feedbackItems.value.find(i => i.title === record.current_status_label)
+  return item ? item.color : 'default'
+}
+
+function getFeedbackColor(status) {
+  const colors = {
+    'EN PROCESO': 'blue',
+    'STAND BY': 'gold',
+    'DESCARTADO': 'red'
+  }
+  return colors[status] || 'default'
+}
 
 async function handleStepChange(current) {
-  if (!selectedId.value) return;
-
-  const step = feedbackItems.value[current];
-  if (!step || !step.key) return;
-  console.log('step.key', step.key)
-  try {
-    const payload = { [step.key]: true };
-    console.log('payload', payload)
-    await fetch('put', endpoint, processedForm, processedForm.id)
-    await fetch('update', endpoint, payload, selectedId.value);
-    currentFeedbackIndex.value = current;
-    message.success(`Estado actualizado a: ${step.title}`);
-    // Recargar datos si es necesario
-    if (formRef.value && typeof formRef.value.loadForm === 'function') {
-      await formRef.value.loadForm();
-    }
-    fetchQuery();
-  } catch (error) {
-    console.error('Error updating step:', error);
-    message.error('Error al actualizar el estado');
-  }
+  // Logic moved to save
 }
 
 onMounted(async () => {
@@ -220,6 +253,18 @@ async function fetchQuery() {
           newItem[col.field] = castValue(item[col.field], col.cast);
         }
       });
+
+      // Calculate current status label
+      const stateIndex = calculateFeedbackState(item, true) // Pass true to avoid UI mutations if needed
+      if (feedbackItems.value[stateIndex]) {
+        newItem.current_status_label = feedbackItems.value[stateIndex].title
+      } else if (stateIndex >= feedbackItems.value.length && feedbackItems.value.length > 0) {
+        // All completed
+        newItem.current_status_label = feedbackItems.value[feedbackItems.value.length - 1].title
+      } else {
+        newItem.current_status_label = 'Pendiente'
+      }
+
       return newItem;
     });
 
@@ -298,23 +343,49 @@ function openForm(id = null, isNew = true) {
   selectedId.value = id
   newForm.value = isNew
   showForm.value = true
+  if (isNew) {
+    processReason.value = ''
+    currentFeedbackIndex.value = 0
+    feedbackItems.value.forEach(item => item.status = 'wait')
+  }
 }
 
 function handleEdit(candidate) {
-  currentFeedbackIndex.value = calculateFeedbackState(candidate)
+  const stateIndex = calculateFeedbackState(candidate)
+  currentFeedbackIndex.value = stateIndex
+  processReason.value = candidate.process_reason || ''
   openForm(candidate.id, false)
 }
-function calculateFeedbackState(candidate) {
-  if (candidate.preselected_commercial) {
-    return 1
-  } else if (candidate.preselected_client) {
-    return 2
-  } else if (candidate.technical_interview) {
-    return 3
-  } else if (candidate.psychological_test) {
-    return 4
-  } else if (candidate.offer_sent) {
-    return 5
+
+function calculateFeedbackState(candidate, dryRun = false) {
+  // Resetear estados
+  if (!dryRun) {
+    feedbackItems.value.forEach(item => {
+      item.status = 'wait'
+    })
+  }
+
+  let lastTrueIndex = -1
+
+  // Determinar cuáles están completos
+  for (let i = 0; i < feedbackItems.value.length; i++) {
+    const item = feedbackItems.value[i]
+    if (candidate[item.code]) {
+      if (!dryRun) item.status = 'finish'
+      lastTrueIndex = i
+    }
+  }
+
+  // Si encontramos el último completado, el siguiente es el actual (process)
+  // O si todos son falsos, el primero es process
+
+  const nextIndex = lastTrueIndex + 1
+  if (nextIndex < feedbackItems.value.length) {
+    if (!dryRun) feedbackItems.value[nextIndex].status = 'process'
+    return nextIndex
+  } else {
+    // Todos completados
+    return lastTrueIndex
   }
 }
 
@@ -329,7 +400,22 @@ async function handleProcessedForm(processedForm) {
     if (!selectedId.value) {
       return;
     }
-    processedForm.search = selectedId.value
+
+    // Add selected step status
+    if (feedbackItems.value[currentFeedbackIndex.value]) {
+      const step = feedbackItems.value[currentFeedbackIndex.value];
+      // Ensure we set the corresponding field to true
+      // Assuming we want to update the field corresponding to the selected step
+      // We might want to clear others? Or is it cumulative?
+      // Usually steps imply progression, so previous ones remain true.
+      // But here we are just setting one flag based on selection.
+      if (step.code) {
+        processedForm[step.code] = true;
+      }
+    }
+
+    processedForm.process_reason = processReason.value;
+
     if (!newForm.value) {
       await fetch('put', endpoint, processedForm, processedForm.id)
     } else {
@@ -418,9 +504,7 @@ function handleOpenDetail(record) {
 }
 async function handleDownloadCV(record) {
   try {
-
     const candidate = await fetch('get', 'candidates/', { email: record.candidate });
-    console.log(candidate)
     const formatted = await fetch('get', 'formatted-cvs/', { candidate: candidate[0].id });
     if (formatted && formatted.length > 0) {
       const formattedCvId = formatted[0].id;

@@ -57,12 +57,26 @@ export const columns = [
     },
   },
   { title: 'Fecha de Postulación', field: 'applied_date', type: 'datetime', sorter: true },
-  { title: 'Preselección Comercial', field: 'preselected_commercial', type: 'boolean', sorter: true },
-  { title: 'Preselección Cliente', field: 'preselected_client', type: 'boolean', sorter: true },
-  { title: 'Entrevista Técnica', field: 'technical_interview', type: 'boolean', sorter: true },
-  { title: 'Psicotécnico', field: 'psychotechnical_test', type: 'boolean', sorter: true },
-  { title: 'Oferta Enviada', field: 'offer_sent', type: 'boolean', sorter: true },
-  { title: 'Contratado', field: 'hired', type: 'boolean', sorter: true },
+  // { title: 'Preselección Comercial', field: 'preselected_commercial', type: 'boolean', sorter: true },
+  // { title: 'Preselección Cliente', field: 'preselected_client', type: 'boolean', sorter: true },
+  // { title: 'Entrevista Técnica', field: 'technical_interview', type: 'boolean', sorter: true },
+  // { title: 'Psicotécnico', field: 'psychotechnical_test', type: 'boolean', sorter: true },
+  // { title: 'Oferta Enviada', field: 'offer_sent', type: 'boolean', sorter: true },
+  // { title: 'Contratado', field: 'hired', type: 'boolean', sorter: true },
+  {
+    title: 'Estado Actual',
+    field: 'current_status_label',
+    operation: {
+      slots: true
+    }
+  },
+  {
+    title: 'Feedback',
+    field: 'feedback',
+    operation: {
+      slots: true
+    }
+  },
   { title: 'Feedback Enviado', field: 'feedback_sent', type: 'boolean', sorter: true },
   {
     title: 'Acciones',

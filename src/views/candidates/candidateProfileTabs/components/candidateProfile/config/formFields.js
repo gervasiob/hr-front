@@ -27,7 +27,7 @@ export const candidateFormFields = [
     },
     {
         label: 'Seniority',
-        field: 'seniority',
+        field: 'seniority_level',
         type: 'api-select',
         mode: 'single',
         span: 12,
