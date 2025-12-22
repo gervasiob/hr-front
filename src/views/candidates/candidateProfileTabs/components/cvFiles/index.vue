@@ -16,22 +16,18 @@
       :confirm-loading="modalLoading" @ok="handleModalOk">
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
         :on-submit="handleProcessedForm" :fetch-data="fetchQuery" destroy-on-close="true">
-            <template #custom-field>
-                <a-form-item label="Archivo CV" name="file">
-                    <a-upload
-                        v-model:fileList="filteredFileList"
-                        :customRequest="handleUpload"
-                        :beforeUpload="beforeUpload"
-                        :remove="handleRemove"
-                        :maxCount="1">
-                        <a-button>
-                            <upload-outlined></upload-outlined>
-                            Seleccionar archivo
-                        </a-button>
-                    </a-upload>
-                </a-form-item>
-            </template>
-    </BasicForm>
+        <template #custom-field>
+          <a-form-item label="Archivo CV" name="file">
+            <a-upload v-model:fileList="filteredFileList" :customRequest="handleUpload" :beforeUpload="beforeUpload"
+              :remove="handleRemove" :maxCount="1">
+              <a-button>
+                <upload-outlined></upload-outlined>
+                Seleccionar archivo
+              </a-button>
+            </a-upload>
+          </a-form-item>
+        </template>
+      </BasicForm>
     </a-modal>
   </div>
 </template>
@@ -290,15 +286,19 @@ async function handleDownloadTemplate() {
 
 // Add these new functions
 function beforeUpload(file) {
-  const isLt20M = file.size / 1024 / 1024 < 20;
-  if (!isLt20M) {
-    message.error('El archivo debe ser menor a 20MB!');
-    return false;
+  const isLt2M = file.size / 1024 / 1024 < 2;
+  if (!isLt2M) {
+    message.error('El archivo debe ser menor a 2MB! Por favor comprímelo antes de subirlo.');
+    return false; // Retorna false para detener la subida automática de antd
   }
   return true;
 }
 
 async function handleUpload({ file, onSuccess, onError }) {
+  if (!beforeUpload(file)) {
+    onError(new Error('File too large'));
+    return;
+  }
   try {
     const formData = new FormData()
     formData.append('file', file)
@@ -311,6 +311,11 @@ async function handleUpload({ file, onSuccess, onError }) {
     showForm.value = false
   } catch (error) {
     console.error('Error uploading file:', error)
+    if (error.response) {
+      console.error('Response data:', error.response.data);
+      console.error('Response status:', error.response.status);
+      message.error('Error al subir el archivo:', error.response.data)
+    }
     onError(error)
     message.error('Error al subir el archivo')
   }

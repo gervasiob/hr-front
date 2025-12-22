@@ -1,6 +1,5 @@
 <template>
   <a-layout class="app-layout">
-
     <header v-if="active && items.length > 0" class="app-header-fullwidth">
       <a-menu v-model:selectedKeys="current" :items="items" mode="horizontal" class="app-menu-colored"
         @click="handleMenuSelect" />
@@ -70,7 +69,6 @@ export default {
 <style scoped>
 /* Ocupa todo el alto del layout */
 .app-layout {
-  min-height: 100vh;
   background: #f5f6fa;
   display: flex;
   flex-direction: column;
@@ -91,12 +89,12 @@ export default {
 /* MENU ESTILO PROPIO */
 .app-menu-colored {
   width: 100%;
-  max-width: 1600px;
   border-bottom: none !important;
   background-color: transparent !important;
   color: white !important;
   font-size: 15px;
   font-weight: 500;
+  padding: 0 10px;
 }
 
 /* texto blanco */
@@ -121,10 +119,9 @@ export default {
 /* contenido */
 .app-page {
   flex: 1;
-  padding: 5px;
+  padding: 10px;
   width: 100%;
-  max-width: 1600px;
-  margin: 20px auto;
+  margin: 10px auto;
   background: white;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.04);

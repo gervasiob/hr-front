@@ -43,8 +43,8 @@ const selectedId = ref(null)
 
 // config parameters
 // config parameters
-const titleText = 'Perfil Candidatos'
-const itemText = 'Perfil Candidato'
+const titleText = 'Perfil'
+const itemText = 'Perfil'
 const modelName = 'candidate-profiles'
 const modelNameSingle = 'candidate-profile'
 const endpoint = modelName + '/'

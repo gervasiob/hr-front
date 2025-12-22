@@ -58,4 +58,11 @@ export const candidateFormFields = [
         span: 12,
         required: true,
     },
+    {
+        label: 'Seleccionado',
+        field: 'is_selected',
+        type: 'checkbox',
+        span: 12,
+        required: false,
+    },
 ];

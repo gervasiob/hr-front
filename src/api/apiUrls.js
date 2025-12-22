@@ -42,7 +42,8 @@ export async function apiRequest(method, endpoint, params, id = null, isFile = f
 
         // Manejar encabezados para FormData
         if (params instanceof FormData) {
-            config.headers = { 'Content-Type': 'multipart/form-data' };
+            // No establecer Content-Type manualmente para FormData, dejar que el navegador/axios lo maneje
+            // config.headers = { 'Content-Type': 'multipart/form-data' };
         }
 
         const response = await apiClient(config);
