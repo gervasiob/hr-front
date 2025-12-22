@@ -123,7 +123,7 @@ const feedbackItems = ref([
     title: 'Psicotécnico',
     description: '',
     key: 'is_psychotechnical',
-    code: 'psychological_test',
+    code: 'psychotechnical_test',
     color: 'purple'
   },
   {
