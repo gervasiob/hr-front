@@ -30,7 +30,7 @@ export default {
     const items = ref([]);
     const route = useRoute();
     const router = useRouter();
-
+    const comercialRole = ref(false);
     const active = computed(() => route.meta.is_active || false);
 
     const handleMenuSelect = ({ key }) => {
@@ -48,10 +48,13 @@ export default {
     };
 
     onMounted(async () => {
-      const userRoles = JSON.parse(localStorage.getItem('roles')) || [];
+      const userRolesArray = localStorage.getItem('roles') || [];
+      const userRoles = JSON.parse(userRolesArray) || [];
       const roleMap = await fetchRoleMap();
       const rawMenu = await loadMenu();
-
+      if (userRolesArray.includes('Comercial')) {
+        comercialRole.value = true;
+      }
       const menuTree = await buildMenuTreeByRoles(rawMenu, userRoles, roleMap);
       items.value = transformMenuItems(menuTree);
     });

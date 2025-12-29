@@ -6,7 +6,7 @@
         <template v-if="column.operation?.slots">
           <div class="operation-buttons" v-if="column.operation.actions">
             <a-button v-for="(action, index) in column.operation.actions" :key="index" type="link"
-              :danger="action.danger" @click="$emit(action.event, record)">
+              :danger="action.danger" :disabled="action.disabled" @click="$emit(action.event, record)">
               <component v-if="action.icon" :is="Icons[action.icon]" style="margin-right: 4px;" />
               {{ action.label }}
             </a-button>

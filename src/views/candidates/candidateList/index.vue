@@ -6,7 +6,7 @@
           <h2>{{ titleText }}</h2>
         </a-col>
         <a-col :span="4" style="text-align: right">
-          <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+          <a-button type="primary" :disabled="onlyView" @click="openForm(null)">Nuevo</a-button>
         </a-col>
         <a-col :span="4" style="text-align: right">
           <a-button type="default" @click="handleDownloadTemplate">
@@ -45,6 +45,7 @@ import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
+import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter()
 const loading = ref(false)
@@ -64,6 +65,9 @@ const itemText = 'Candidato'
 const modelName = 'candidates'
 const modelNameSingle = 'candidate'
 const endpoint = modelName + '/'
+
+const authStore = useAuthStore();
+const onlyView = computed(() => authStore.comercialRole);
 
 
 onMounted(() => {
