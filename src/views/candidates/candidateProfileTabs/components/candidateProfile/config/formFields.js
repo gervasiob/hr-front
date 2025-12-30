@@ -54,7 +54,8 @@ export const candidateFormFields = [
     {
         label: 'Skills',
         field: 'skills_description',
-        type: 'input',
+        type: 'tag',
+
         span: 12,
         required: true,
     },
