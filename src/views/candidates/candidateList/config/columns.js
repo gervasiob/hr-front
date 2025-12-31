@@ -1,4 +1,7 @@
 // src/views/candidates/config/columns.js
+import { useAuthStore } from '@/stores/auth';
+const authStore = useAuthStore();
+const onlyView = authStore.comercialRole;
 
 export const columns = [
   {
@@ -14,7 +17,8 @@ export const columns = [
           type: 'link',
           event: 'edit',
           danger: false,
-          icon: 'EditOutlined'
+          icon: 'EditOutlined',
+          disabled: onlyView,
         },
         {
           label: '',
@@ -47,7 +51,8 @@ export const columns = [
           type: 'link',
           event: 'delete',
           danger: true,
-          icon: 'DeleteOutlined'
+          icon: 'DeleteOutlined',
+          disabled: onlyView,
         },
       ]
     }

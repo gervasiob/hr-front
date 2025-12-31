@@ -53,7 +53,7 @@ export const candidateFormFields = [
     },
     {
         label: 'Skills',
-        field: 'skills_description',
+        field: 'skills_description_arr',
         type: 'tag',
 
         span: 12,

@@ -49,7 +49,7 @@ export const candidateFormFields = [
         span: 12,
         required: true,
         mode: 'multiple',
-        endpoint: 'roles/', // <- el endpoint real que usás
+        endpoint: 'roles', // <- el endpoint real que usás
         valueField: 'id',       // <- nombre del campo que se usará como `value`
         nameField: 'name', 
     }

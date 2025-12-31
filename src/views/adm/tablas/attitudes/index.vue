@@ -6,7 +6,7 @@
           <h2>{{ titleText }}</h2>
         </a-col>
         <a-col :span="4" style="text-align: right">
-          <a-button type="primary" :disabled="onlyView" @click="openForm(null)">Nuevo</a-button>
+          <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
         </a-col>
         <a-col :span="4" style="text-align: right">
           <a-button type="default" @click="handleDownloadTemplate">
@@ -17,16 +17,13 @@
 
     </div>
 
-    <BasicFilter :filter-config="filters" :initial-values="initialFilterValues" @filter-change="applyFilterParams" />
+    <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
-      @open-profile="handleOpenProfile" />
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
-      :confirm-loading="modalLoading" @ok="handleModalOk" :destroyOnClose="true" :maskClosable="false"
-      :keyboard="false">
-
+      :confirm-loading="modalLoading" @ok="handleModalOk">
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
         :on-submit="handleProcessedForm" :fetch-data="fetchQuery" />
     </a-modal>
@@ -45,7 +42,6 @@ import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
-import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter()
 const loading = ref(false)
@@ -60,54 +56,96 @@ const currentPage = ref(1)
 const pageSize = ref(10)
 
 // config parameters
-const titleText = 'Candidatos'
-const itemText = 'Candidato'
-const modelName = 'candidates'
-const modelNameSingle = 'candidate'
+const titleText = 'ACTITUDES'
+const itemText = 'Actitud'
+const modelName = 'attitudes'
+const modelNameSingle = 'attitude'
 const endpoint = modelName + '/'
 
-const authStore = useAuthStore();
-const onlyView = computed(() => authStore.comercialRole);
 
-
-onMounted(() => {
-  filterParams.value = { ...initialFilterValues.value }
-  fetchQuery()
+onMounted(async () => {
+  await loadCastingLists()
+  await fetchQuery()
 })
 
-
 async function fetchQuery() {
-  loading.value = true
+  loading.value = true;
   try {
     const baseParams = Object.fromEntries(
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
-    )
+    );
 
-    const limit = pageSize.value
-    const offset = (currentPage.value - 1) * pageSize.value
-    const orderingParam = ordering.value ? { ordering: ordering.value } : {}
+    const page = currentPage.value || 1;
+    const limit = pageSize.value || 10;
+    const offset = (page - 1) * limit;
+    const orderingParam = ordering.value ? { ordering: ordering.value } : {};
 
     const params = {
       ...baseParams,
       ...orderingParam,
       limit,
-      offset
+      offset,
+    };
+
+    const data = await fetch('get', endpoint, params);
+    let result = [];
+
+    if ('results' in data && 'count' in data) {
+      result = data.results;
+      totalItems.value = data.count;
+    } else {
+      result = data;
+      totalItems.value = data.length;
     }
 
-    const data = await fetch('get', endpoint, params)
-    if ('results' in data && 'count' in data) {
-      candidates.value = data.results
-      totalItems.value = data.count
-    } else {
-      candidates.value = data
-      totalItems.value = data.length
-    }
+    // ⬇️ Función auxiliar para casteo robusto
+    const castValue = (value, castConfig) => {
+      const list = JSON.parse(localStorage.getItem(`cast_${castConfig.source}`) || '[]');
+      const getLabel = (id) => {
+        const found = list.find(el => el[castConfig.valueField] === id);
+        return found ? found[castConfig.labelField] : id;
+      };
+      return Array.isArray(value) ? value.map(getLabel).join(', ') : getLabel(value);
+    };
+
+    // ⬇️ Mapear resultados con casteo
+    candidates.value = result.map(item => {
+      const newItem = { ...item };
+      columns.forEach(col => {
+        if (col.cast) {
+          newItem[col.field] = castValue(item[col.field], col.cast);
+        }
+      });
+      return newItem;
+    });
+
   } catch (e) {
-    console.error('Error al cargar listado', e)
+    console.error('Error al cargar listado', e);
   } finally {
-    loading.value = false
+    loading.value = false;
   }
 }
+
+async function loadCastingLists() {
+  const casts = columns
+    .filter(col => col.cast)
+    .map(col => col.cast.source)
+
+  const uniqueCasts = [...new Set(casts)]
+
+  for (const source of uniqueCasts) {
+    if (localStorage.getItem(`cast_${source}`)) {
+      localStorage.removeItem(`cast_${source}`)
+    }
+    const data = await fetch('list', source, {
+      valueField: 'id',
+      nameField: 'name'
+    })
+    localStorage.setItem(`cast_${source}`, JSON.stringify(data))
+
+  }
+}
+
 const totalItems = ref(0)
 
 const pagination = computed(() => ({
@@ -126,15 +164,6 @@ function handlePaginationChange({ page, pageSize: newSize, order }) {
   }
   fetchQuery()
 }
-
-const initialFilterValues = computed(() => {
-  return filters.reduce((acc, f) => {
-    if (f.defaultValue !== undefined) {
-      acc[f.field] = f.defaultValue
-    }
-    return acc
-  }, {})
-})
 
 function applyFilterParams(filters) {
   filterParams.value = filters
@@ -158,25 +187,11 @@ function handleViewCV(candidate) {
 }
 
 async function handleProcessedForm(processedForm) {
-  if (processedForm.is_blacklisted && !processedForm.blacklist_reason) {
-    message.error('Error: El candidato está en blacklist. Debe completar Razones de Blacklist.')
-    return;
-  }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)
     } else {
-      const res = await fetch('post', endpoint, processedForm)
-      const id = res.id
-      const paramsCv = 
-      {
-        ...processedForm,
-        candidate: id,
-      }
-      const resCv = await fetch('post', 'formatted-cvs/', paramsCv)
-      if (id) {
-        router.push({ name: 'PerfilCandidato', params: { id: id } });
-      }
+      await fetch('post', endpoint, processedForm)
     }
     message.success(itemText + ' guardado correctamente')
     showForm.value = false
@@ -185,26 +200,14 @@ async function handleProcessedForm(processedForm) {
     console.error('Error al guardar item:', error)
 
     // Si error es un objeto con detalles de validación
-    if (error.response && error.response.data) {
-      const data = error.response.data;
-      if (Array.isArray(data)) {
-        message.error('No se pudo guardar los datos: ' + data.join(', '));
-      } else if (typeof data === 'object') {
-        const errorMessages = Object.entries(data).map(([key, value]) => {
-          const valStr = Array.isArray(value) ? value.join(' ') : String(value);
-          return `${key}: ${valStr}`;
-        }).join('; ');
-        message.error('No se pudo guardar los datos: ' + errorMessages);
-      } else {
-        message.error('No se pudo guardar los datos: ' + (error.message || 'Error al guardar los datos'));
-      }
+    if (error?.response?.data) {
+      const messages = Object.values(error.response.data).flat().join(' ')
+      message.error(`Errores: ${messages}`)
     } else {
-      message.error('No se pudo guardar los datos: ' + (error.message || 'Error al guardar los datos'));
+      message.error('Error inesperado al guardar el item')
     }
 
-    // throw error  // Esto permite que el modal no se cierre si hay error
-    // No lanzar error para evitar que el componente padre cierre el modal
-    return false;
+    throw error  // Esto permite que el modal no se cierre si hay error
   }
 }
 
@@ -219,23 +222,16 @@ async function handleModalOk() {
   if (formRef.value?.handleSubmit) {
     modalLoading.value = true
     try {
-      const result = await formRef.value.handleSubmit()
-      if (result === false) {
-        return false     // Previene cierre
-      }
-
+      await formRef.value.handleSubmit()
       showForm.value = false
-    } catch (e) {
-      console.warn('Error en el form:', e)
-      return false       // Previene cierre
+    } catch (error) {
+      console.warn('Error en el form:', error)
+      // Modal no se cierra si hay error
     } finally {
-      
       modalLoading.value = false
     }
   }
 }
-
-
 function handleDelete(item) {
   const deleteItem = Object.entries(item)
     .map(([key, value]) => `${key}: ${typeof value === 'string' ? `'${value}'` : value}`)
@@ -272,12 +268,7 @@ async function handleDownloadTemplate() {
     message.error('Ocurrió un error al descargar el listado')
   }
 }
-// Funciones a completar
-function handleOpenProfile(record) {
-  const profileId = record.id;
-  const url = `/candidates/candidate-profile/${profileId}`;
-  router.push({ name: 'PerfilCandidato', params: { id: profileId } });
-}
+
 </script>
 
 <style scoped>
