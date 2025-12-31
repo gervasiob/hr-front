@@ -14,6 +14,27 @@ export const candidateFormFields = [
         span: 12,
         required: true,
     },
+    {
+        label: 'Estado',
+        field: 'state',
+        type: 'select',
+            options: [
+                {
+                    label: 'FINALIZADO',
+                    value: 'FINALIZADO',
+                },
+                {
+                    label: 'EN PROCESO',
+                    value: 'EN PROCESO',
+                },
+                {
+                    label: 'ABANDONADO O STAND-BY',
+                    value: 'ABANDONADO O STAND-BY',
+                },
+            ],
+        span: 12,
+        required: true,
+    },
     // {
     //     label: 'Fecha de Inicio',
     //     field: 'start_date',

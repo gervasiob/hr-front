@@ -8,6 +8,13 @@ export const candidateFormFields = [
         required: true,
     },
     {
+        label: 'Rotación',
+        field: 'attrition',
+        type: 'input',
+        span: 12,
+        required: false,
+    },
+    {
         label: 'Zona',
         field: 'zona',
         type: 'input',

@@ -2,8 +2,8 @@
 export const candidateFormFields = [
     {
         label: 'Destreza',
-        field: 'destreza',
-        type: 'input',
+        field: 'destrezas',
+        type: 'tag',
         span: 12,
         required: true,
     },
