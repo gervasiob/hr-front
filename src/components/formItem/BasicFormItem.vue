@@ -33,6 +33,15 @@
                                 {{ option.label }}
                             </a-select-option>
                         </a-select>
+                        <!-- Select tag  -->
+                        <a-select v-else-if="field.type === 'tag'" v-model:value="item[field.field]"
+                            :placeholder="field.placeholder || 'Seleccionar ' + field.label"
+                            :mode="field.mode || 'tags'" @change="() => onFieldChange(index)" show-search
+                            :filter-option="true">
+                            <a-select-option v-for="option in field.options" :key="option.value" :value="option.value">
+                                {{ option.label }}
+                            </a-select-option>
+                        </a-select>
 
                         <!-- Textarea -->
                         <a-textarea v-else-if="field.type === 'textarea'" v-model:value="item[field.field]"
@@ -92,7 +101,7 @@
 
 <script setup>
 import { reactive, ref, onMounted, watch, h, nextTick, computed } from 'vue';
-import { PlusOutlined, MinusCircleOutlined } from '@ant-design/icons-vue';
+import { PlusOutlined, MinusCircleOutlined, CrownOutlined } from '@ant-design/icons-vue';
 import { fetch } from '@/api/model/model.js';
 import { message } from 'ant-design-vue';
 import { QuillEditor } from '@vueup/vue-quill'
@@ -152,7 +161,11 @@ const initializeFormData = () => {
     isInitializing.value = true;
 
     if (props.initialData.length > 0) {
-        formData.items = [...props.initialData];
+        // Clonar y procesar datos iniciales
+        formData.items = props.initialData.map(item => {
+            const processedItem = { ...item };
+            return processedItem;
+        });
         originalData.value = JSON.parse(JSON.stringify(formData.items));
     } else {
         formData.items = [createNewItem()];
@@ -189,6 +202,8 @@ const getDefaultValue = (field) => {
             return field.mode === 'multiple' ? [] : undefined;
         case 'select':
             return field.mode === 'multiple' ? [] : undefined;
+        case 'tag':
+            return (field.mode || 'tags') === 'tags' ? [] : undefined;
         case 'richtext':
             return '';
         default:
@@ -369,6 +384,7 @@ const removeItem = async (index) => {
 
 // Guardar item específico
 const saveItem = async (index) => {
+    console.log('saveItem', index, formData.items[index])
     try {
         submitting.value = true;
 
@@ -638,8 +654,9 @@ watch(() => formData.items, () => {
     padding: 8px;
     border: 1px solid #d9d9d9;
     border-radius: 6px;
-        text-align: left;
+    text-align: left;
 }
+
 .ql-editor {
     direction: ltr;
     text-align: left;

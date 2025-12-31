@@ -15,6 +15,10 @@ export const columns = [
     }
   },
   {
+    title: 'Código de búsqueda', field: 'search_code', sorter: true,
+    width: 260,
+  },
+  {
     title: 'Descargar CV',
     field: 'actions',
     operation: {
@@ -40,6 +44,7 @@ export const columns = [
       labelField: 'email',
     },
   },
+
   {
     title: 'Reclutador', field: 'recruiter', sorter: true,
     cast: {
