@@ -21,7 +21,8 @@
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
       @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
-      @open-detail="handleOpenDetail" @open-candidates="handleOpenCandidates" @add-to-search="handleAddToSearch" />
+      @open-detail="handleOpenDetail" @open-candidates="handleOpenCandidates" @add-to-search="handleAddToSearch"
+      :read-only="readOnly" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -49,6 +50,10 @@ const props = defineProps({
   candidateId: {
     type: [Number, String],
     default: null
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
   }
 });
 

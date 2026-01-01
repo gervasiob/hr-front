@@ -1,8 +1,10 @@
 // src/views/candidates/config/columns.js
-import { useAuthStore } from '@/stores/auth';
-const authStore = useAuthStore();
-const onlyView = authStore.comercialRole;
 
+let onlyView = false;
+const userRolesArray = localStorage.getItem('roles') || [];
+if (userRolesArray.includes('Comercial')) {
+  onlyView = true;
+}
 export const columns = [
   {
     title: 'Acciones',

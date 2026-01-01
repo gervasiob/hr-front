@@ -6,8 +6,7 @@
       </a-col>
     </a-row>
     <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId"
-      :formatted-cv="formattedCvId"
-      :unique-row="true" />
+      :formatted-cv="formattedCvId" :unique-row="true" :read-only="readOnly" />
   </div>
 </template>
 
@@ -31,6 +30,10 @@ const props = defineProps({
     type: [Number, String],
     default: null
   },
+  readOnly: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const router = useRouter()
@@ -265,6 +268,7 @@ async function handleDownloadTemplate() {
   display: flex;
   gap: 10px;
 }
+
 .ql-editor {
   direction: ltr;
   text-align: left;

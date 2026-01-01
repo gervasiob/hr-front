@@ -5,12 +5,13 @@
         <h3>{{ titleText }}</h3>
       </a-col>
       <a-col :span="4" style="text-align: right">
-        <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
+        <a-button v-if="!readOnly" type="primary" @click="openForm(null)">Nuevo</a-button>
       </a-col>
     </a-row>
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange" />
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
+      :read-only="readOnly" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -50,6 +51,10 @@ const props = defineProps({
   candidateId: {
     type: [Number, String],
     default: null
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
   }
 });
 

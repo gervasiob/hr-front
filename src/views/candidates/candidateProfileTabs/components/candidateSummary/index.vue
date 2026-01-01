@@ -6,7 +6,7 @@
       </a-col>
     </a-row>
     <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId"
-      :unique-row="true" />
+      :unique-row="true" :read-only="readOnly" />
   </div>
 </template>
 
@@ -30,6 +30,10 @@ const props = defineProps({
     type: [Number, String],
     default: null
   },
+  readOnly: {
+    type: Boolean,
+    default: false
+  }
 });
 
 const router = useRouter()

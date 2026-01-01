@@ -58,6 +58,10 @@ const props = defineProps({
     isNew: {
         type: Boolean,
         default: false
+    },
+    readOnly: {
+        type: Boolean,
+        default: false
     }
 })
 defineExpose({ handleSubmit })

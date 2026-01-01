@@ -56,7 +56,7 @@
                         </div> -->
                         <QuillEditor v-else-if="field.type === 'richtext'" v-model:content="item[field.field]"
                             content-type="html" theme="snow" style="background:white; min-height:150px;"
-                            @update:content="() => onFieldChange(index)" />
+                            @update:content="() => onFieldChange(index)" toolbar="essential" />
                         <!-- Number input -->
                         <a-input-number v-else-if="field.type === 'number'" v-model:value="item[field.field]"
                             :placeholder="field.placeholder || field.label" :min="field.min" :max="field.max"
@@ -77,13 +77,13 @@
 
                 <!-- Botón eliminar -->
                 <a-col :span="24" style="text-align: right;">
-                    <a-button v-if="formData.items.length > 0" type="text" danger @click="removeItem(index)"
-                        :icon="h(MinusCircleOutlined)">
+                    <a-button v-if="formData.items.length > 0 && !readOnly" type="text" danger
+                        @click="removeItem(index)" :icon="h(MinusCircleOutlined)">
                         Eliminar
                     </a-button>
                 </a-col>
                 <!-- Botón Guardar -->
-                <a-col v-if="hasChanges[index]" :span="24" style="text-align: right;">
+                <a-col v-if="hasChanges[index] && !readOnly" :span="24" style="text-align: right;">
                     <a-button type="primary" @click="saveItem(index)" :loading="submitting">
                         {{ submitText || 'Guardar' }}
                     </a-button>
@@ -91,7 +91,7 @@
             </a-row>
         </template>
         <!-- Botón agregar -->
-        <a-form-item v-if="showButtonAdd">
+        <a-form-item v-if="showButtonAdd && !readOnly">
             <a-button type="dashed" @click="addItem" block :icon="h(PlusOutlined)">
                 Agregar elemento
             </a-button>
@@ -135,6 +135,10 @@ const props = defineProps({
     formattedCv: {
         type: Number,
         default: null
+    },
+    readOnly: {
+        type: Boolean,
+        default: false
     }
 });
 

@@ -148,8 +148,12 @@ function openForm(id = null, isNew = true) {
   showForm.value = true
 }
 
-function handleEdit(candidate) {
-  openForm(candidate.id, false)
+function handleEdit(record) {
+
+  const profileId = record.id;
+  const url = `/candidates/candidate-profile/${profileId}`;
+  router.push({ name: 'PerfilCandidato', params: { id: profileId }, state: { enableEdit: true } });
+  // openForm(candidate.id, false)
 }
 
 
@@ -168,14 +172,21 @@ async function handleProcessedForm(processedForm) {
     } else {
       const res = await fetch('post', endpoint, processedForm)
       const id = res.id
-      const paramsCv = 
+      const paramsCv =
       {
         ...processedForm,
         candidate: id,
       }
+      // Crea el cv en formateo
       const resCv = await fetch('post', 'formatted-cvs/', paramsCv)
+      const attitudeList = await fetch('list', 'attitudes/?active=true', { valueField: 'id', nameField: 'name' })
+      // Añade la lista de atitudes al formulario
+      attitudeList.map(async item => {
+        await fetch('post', 'evaluaciones-actitudinales/', { attitude: item.id, comentario: '', puntaje: 0, candidate: id })
+      })
+      // Abre el perfil del candidato en la tab de perfil
       if (id) {
-        router.push({ name: 'PerfilCandidato', params: { id: id } });
+        router.push({ name: 'PerfilCandidato', params: { id: id }, query: { activeKey: '2' }, state: { enableEdit: true } });
       }
     }
     message.success(itemText + ' guardado correctamente')
@@ -229,7 +240,7 @@ async function handleModalOk() {
       console.warn('Error en el form:', e)
       return false       // Previene cierre
     } finally {
-      
+
       modalLoading.value = false
     }
   }
@@ -276,7 +287,7 @@ async function handleDownloadTemplate() {
 function handleOpenProfile(record) {
   const profileId = record.id;
   const url = `/candidates/candidate-profile/${profileId}`;
-  router.push({ name: 'PerfilCandidato', params: { id: profileId } });
+  router.push({ name: 'PerfilCandidato', params: { id: profileId }, state: { enableEdit: false } });
 }
 </script>
 

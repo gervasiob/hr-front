@@ -20,8 +20,8 @@
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @download-cv="handleDownloadCV" @sort-change="handleSort"
-      @pagination-change="handlePaginationChange" />
+      @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @download-cv="handleDownloadCV"
+      @sort-change="handleSort" @pagination-change="handlePaginationChange" :read-only="readOnly" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
       :confirm-loading="modalLoading" @ok="handleModalOk">
@@ -51,6 +51,10 @@ const props = defineProps({
   candidateId: {
     type: [Number, String],
     default: null
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -144,19 +148,19 @@ async function fetchQuery() {
 
     const page = currentPage.value || 1;
     const limit = pageSize.value || 10;
-  const offset = (page - 1) * limit;
+    const offset = (page - 1) * limit;
     const orderingParam = ordering.value ? { ordering: ordering.value } : {};
 
-  const params = {
-    ...baseParams,
-    ...orderingParam,
-    limit,
-    offset,
-  };
+    const params = {
+      ...baseParams,
+      ...orderingParam,
+      limit,
+      offset,
+    };
 
     const data = await fetch('get', endpoint, params);
     let result = [];
-    
+
     if ('results' in data && 'count' in data) {
       result = data.results;
       totalItems.value = data.count;
@@ -172,7 +176,7 @@ async function fetchQuery() {
         console.warn(`No data found in localStorage for cast_${castConfig.source}`);
         return value; // Retornar el valor original si no hay datos
       }
-      
+
       try {
         const list = JSON.parse(storedData);
         const getLabel = (id) => {
@@ -217,12 +221,12 @@ async function loadCastingLists() {
       if (localStorage.getItem(`cast_${source}`)) {
         localStorage.removeItem(`cast_${source}`);
       }
-      
+
       const data = await fetch('list', source, {
         valueField: 'id',
         nameField: 'name'
       });
-      
+
       // Verificar que data existe y tiene la estructura esperada
       let dataToStore = [];
       if (data && Array.isArray(data)) {
@@ -232,9 +236,9 @@ async function loadCastingLists() {
       } else {
         console.warn(`No valid data received for source: ${source}`, data);
       }
-      
+
       localStorage.setItem(`cast_${source}`, JSON.stringify(dataToStore));
-      
+
     } catch (error) {
       console.error(`Error loading casting list for ${source}:`, error);
       // Guardar array vacío en caso de error para evitar problemas posteriores

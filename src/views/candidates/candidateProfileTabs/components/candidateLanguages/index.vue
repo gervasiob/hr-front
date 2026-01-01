@@ -5,7 +5,8 @@
         <h3>{{ titleText }}</h3>
       </a-col>
     </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId" />
+    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId"
+      :read-only="readOnly" />
   </div>
 </template>
 
@@ -24,6 +25,10 @@ const props = defineProps({
   candidateId: {
     type: [Number, String],
     default: null
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -160,7 +165,7 @@ function handleViewCV(candidate) {
 }
 
 async function handleProcessedForm(processedForm) {
-    processedForm = { ...processedForm, candidate: props.candidateId }
+  processedForm = { ...processedForm, candidate: props.candidateId }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)

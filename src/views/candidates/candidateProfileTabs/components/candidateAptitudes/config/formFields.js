@@ -1,15 +1,12 @@
 // src/views/candidatelanguage/config/formFields.js
 export const candidateFormFields = [
     {
-        label: 'Actitud',
+        label: 'Aptitud',
         field: 'nombre',
-        type: 'api-select',
+        type: 'input',
         mode: 'single',
-        span: 12,
+        span: 8,
         required: true,
-        endpoint: 'attitudes/?active=true', // <- el endpoint real que usás
-        valueField: 'id',
-        nameField: 'name',
     },
     {
         label: 'Dónde la adquirió?',
@@ -22,7 +19,7 @@ export const candidateFormFields = [
         label: 'Años de Experiencia',
         field: 'exp_years',
         type: 'number',
-        span: 12,
+        span: 4,
         required: false,
     },
     // {

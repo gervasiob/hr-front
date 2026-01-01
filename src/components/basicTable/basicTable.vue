@@ -30,14 +30,11 @@
         </template>
         <template v-else-if="column.type === 'button'">
           <div class="button-cell">
-            <a-button 
-              type="primary" 
-              v-if="column.buttonConfig"
+            <a-button type="primary" v-if="column.buttonConfig"
               :href="column.buttonConfig.getUrl?.(record[column.dataIndex], record)"
               :target="column.buttonConfig.target || '_self'"
-              @click="column.buttonConfig.onClick?.(record[column.dataIndex], record)"
-            >
-            {{ record[column.dataIndex] }}
+              @click="column.buttonConfig.onClick?.(record[column.dataIndex], record)">
+              {{ record[column.dataIndex] }}
             </a-button>
           </div>
         </template>
@@ -69,6 +66,10 @@ const props = defineProps({
       pageSizeOptions: ['10', '20', '50', '100'],
       showTotal: total => `Total ${total} registros`
     })
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -82,16 +83,18 @@ const emit = defineEmits([
 ])
 
 const transformedColumns = computed(() =>
-  props.columns.map(column => ({
-    title: column.title,
-    dataIndex: column.field,
-    key: column.field,
-    width: column.width,
-    sorter: column.sorter ? true : false,
-    align: column.operation?.align || 'left',
-    operation: column.operation,
-    ...column
-  }))
+  props.columns
+    .filter(column => !props.readOnly || !column.operation)
+    .map(column => ({
+      title: column.title,
+      dataIndex: column.field,
+      key: column.field,
+      width: column.width,
+      sorter: column.sorter ? true : false,
+      align: column.operation?.align || 'left',
+      operation: column.operation,
+      ...column
+    }))
 )
 
 function handleRowClick(record) {
@@ -118,15 +121,18 @@ function handleTableChange(pagination, filters, sorter) {
 .basic-table {
   width: 100%;
 }
+
 .operation-buttons {
   display: flex;
   gap: 8px;
 }
+
 .button-cell {
   display: flex;
   align-items: center;
   gap: 8px;
 }
+
 .button-cell {
   display: flex;
   align-items: center;

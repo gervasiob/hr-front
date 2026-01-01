@@ -5,8 +5,10 @@
                 <h3>{{ titleText }}</h3>
             </a-col>
         </a-row>
-        <CandidatePcp ref="pcpRef" :candidate-id="props.candidateId" @refresh-both="refreshBothTables" />
-        <CandidateFeedback ref="feedbackRef" :candidate-id="props.candidateId" @refresh-pcp="refreshPcpTable" />
+        <CandidatePcp ref="pcpRef" :candidate-id="props.candidateId" @refresh-both="refreshBothTables"
+            :read-only="readOnly" />
+        <CandidateFeedback ref="feedbackRef" :candidate-id="props.candidateId" @refresh-pcp="refreshPcpTable"
+            :read-only="readOnly" />
     </div>
 </template>
 
@@ -26,6 +28,10 @@ const props = defineProps({
     candidateId: {
         type: [Number, String],
         default: null
+    },
+    readOnly: {
+        type: Boolean,
+        default: false
     }
 });
 const router = useRouter()

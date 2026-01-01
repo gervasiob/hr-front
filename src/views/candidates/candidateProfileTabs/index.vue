@@ -5,7 +5,8 @@
   </div>
   <a-tabs class="tabs" v-model:activeKey="activeKey">
     <a-tab-pane v-for="tab in tabs" :key="tab.key" :tab="tab.title">
-      <component :is="tab.component" :selected-id="id" :candidate-id="id" @refresh-data="fetchCandidateData" />
+      <component :is="tab.component" :selected-id="id" :candidate-id="id" :read-only="readOnly"
+        @refresh-data="fetchCandidateData" />
     </a-tab-pane>
   </a-tabs>
 </template>
@@ -24,8 +25,8 @@ import CandidateSearchs from './components/candidateSearchs/index.vue';
 const route = useRoute();
 const id = ref(route.params.id);
 const candidateData = ref(null);
-const activeKey = ref('1');
-
+const activeKey = ref(route.query.activeKey || route.params.activeKey || '1');
+const readOnly = ref(history.state?.enableEdit !== true && history.state?.enableEdit !== 'true')
 const tabs = [
   {
     key: '1',
@@ -46,7 +47,7 @@ const tabs = [
     key: '4',
     title: 'Archivos CVs',
     component: Files
-  },  
+  },
   {
     key: '5',
     title: 'CVs en Formato',
@@ -75,9 +76,10 @@ onMounted(() => {
 
 <style scoped>
 .header {
- text-align: left;
-    }
-    .tabs {
-color: black;
-  }
+  text-align: left;
+}
+
+.tabs {
+  color: black;
+}
 </style>

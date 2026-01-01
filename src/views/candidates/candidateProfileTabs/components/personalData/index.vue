@@ -1,9 +1,9 @@
 <template>
     <div class="header-actions">
-        <a-button type="primary" @click="handleSave">Guardar</a-button>
+        <a-button v-if="!readOnly" type="primary" @click="handleSave">Guardar</a-button>
     </div>
-    <BasicForm ref="formRef" :id="currentId" :fields="fields" :model="modelName"
-        :on-submit="handleProcessedForm" />
+    <BasicForm ref="formRef" :id="currentId" :fields="fields" :model="modelName" :on-submit="handleProcessedForm"
+        :read-only="readOnly" />
 </template>
 
 <script setup>
@@ -17,6 +17,10 @@ const props = defineProps({
     selectedId: {
         type: [Number, String],
         default: null
+    },
+    readOnly: {
+        type: Boolean,
+        default: false
     }
 });
 

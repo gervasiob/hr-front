@@ -5,7 +5,8 @@
         <h3>{{ titleText }}</h3>
       </a-col>
     </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId" />
+    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId"
+      :read-only="readOnly" />
   </div>
 </template>
 
@@ -26,6 +27,10 @@ const props = defineProps({
   candidateId: {
     type: [Number, String],
     default: null
+  },
+  readOnly: {
+    type: Boolean,
+    default: false
   }
 });
 
@@ -77,7 +82,7 @@ async function fetchQuery() {
     let result = []
 
     if ('results' in data && 'count' in data) {
-    
+
       result = data.results
       console.log('result', result)
       if (result.length > 0) {

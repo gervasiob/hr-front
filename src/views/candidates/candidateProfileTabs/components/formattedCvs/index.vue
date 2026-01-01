@@ -3,7 +3,7 @@
         <a-spin />
     </div>
     <div v-else>
-        <div v-if="formattedCvId" class="formatted-cv">
+        <div v-if="formattedCvId" :class="['formatted-cv', { 'formatted-cv-readonly': readOnly }]">
             <div class="header">
                 <h2></h2>
                 <a-button type="primary" @click="handleDownloadTemplate">
@@ -17,37 +17,45 @@
                 <h2>{{ titleText }}</h2>
             </div> -->
             <div class="card">
-                <candidateProfile :candidate-id="candidateId" />
+                <candidateProfile :candidate-id="candidateId" :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateAptitudes :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateAptitudes :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
+                    :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateEvaluacionesActitudinales :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateEvaluacionesActitudinales :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
+                    :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateCompetenciasStar :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateCompetenciasStar :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
+                    :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateOtrasEvaluaciones :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateOtrasEvaluaciones :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
+                    :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateOtrasDestrezas :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateOtrasDestrezas :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
+                    :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateSummary :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateSummary :candidate-id="candidateId" :formatted-cv-id="formattedCvId" :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateWorkExperiences :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateWorkExperiences :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
+                    :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateEducations :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateEducations :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
+                    :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateCertifications :candidate-id="candidateId" :formatted-cv-id="formattedCvId" />
+                <candidateCertifications :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
+                    :read-only="readOnly" />
             </div>
             <div class="card">
-                <candidateLanguages :candidate-id="candidateId" />
+                <candidateLanguages :candidate-id="candidateId" :read-only="readOnly" />
             </div>
         </div>
         <div v-else class="create-cv">
@@ -60,6 +68,13 @@
             @ok="handleSubmit" :destroyOnClose="true">
             <BasicForm ref="formRef" :id="formattedCvId" :fields="formFields" :model="'formatted-cvs'"
                 :on-submit="handleProcessedForm" />
+        </a-modal>
+
+        <a-modal v-model:open="showDownloadModal" title="Seleccionar Modelo de CV" @ok="confirmDownload">
+            <a-radio-group v-model:value="downloadOption">
+                <a-radio value="ketos" style="display: block; margin-bottom: 10px;">Modelo Word-Ketos</a-radio>
+                <a-radio value="accenture" style="display: block;">Modelo Accenture</a-radio>
+            </a-radio-group>
         </a-modal>
     </div>
 </template>
@@ -87,11 +102,17 @@ const props = defineProps({
     candidateId: {
         type: [Number, String],
         required: true
+    },
+    readOnly: {
+        type: Boolean,
+        default: false
     }
 });
 
 const loading = ref(true);
 const formattedCvId = ref(null);
+const showDownloadModal = ref(false);
+const downloadOption = ref('ketos');
 
 async function fetchFormattedCV() {
     try {
@@ -166,17 +187,33 @@ async function handleDownloadTemplate() {
     try {
         const formatted = await fetch('get', 'formatted-cvs/', { candidate: props.candidateId });
         if (formatted && formatted.length > 0) {
-            const formattedCvId = formatted[0].id;
-            const baseParams = {}
-            const endpoint = `formatted-cvs/${formattedCvId}/generate-word`
-            await exportToWord(endpoint, baseParams)
-            message.success('Archivo descargado correctamente')
+            formattedCvId.value = formatted[0].id;
+            showDownloadModal.value = true;
         } else {
             message.warning('El candidato no tiene un CV formateado creado.')
         }
     } catch (error) {
         console.error('Error al descargar listado:', error)
         message.error('Error al descargar el CV')
+    }
+}
+
+async function confirmDownload() {
+    try {
+        const id = formattedCvId.value;
+        let endpoint = '';
+        if (downloadOption.value === 'ketos') {
+            endpoint = `formatted-cv/${id}/word-ketos`;
+        } else {
+            endpoint = `formatted-cv/${id}/accenture`;
+        }
+
+        showDownloadModal.value = false;
+        await exportToWord(endpoint, {});
+        message.success('Archivo descargado correctamente');
+    } catch (error) {
+        console.error('Error al descargar:', error);
+        message.error('Error al descargar el archivo');
     }
 }
 </script>
@@ -208,5 +245,9 @@ async function handleDownloadTemplate() {
 .card {
     background-color: rgb(186, 198, 213);
     margin: 2%;
+}
+
+.formatted-cv-readonly {
+    background-color: rgb(222, 222, 222);
 }
 </style>
