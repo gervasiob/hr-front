@@ -60,12 +60,28 @@
       </BasicForm>
     </a-modal>
 
+    <a-modal v-model:open="showDownloadModal" title="Seleccionar Modelo de CV" @ok="confirmDownload"
+      @cancel="cancelDownload">
+      <a-radio-group v-model:value="downloadOption">
+        <a-radio value="ketos" style="display:block; margin-bottom:10px;">
+          Modelo Word-Ketos
+        </a-radio>
+        <a-radio value="accenture" style="display:block; margin-bottom:10px;">
+          Modelo Accenture
+        </a-radio>
+        <a-radio value="original" style="display:block;">
+          CV original
+        </a-radio>
+      </a-radio-group>
+    </a-modal>
+
     <a-modal v-model:open="showFormFeedback" title="Feedback Estado" :footer="null" width="900px" destroyOnClose
       @cancel="closeFeedbackModal">
 
-      <FormFeedback v-if="selectedFeedbackRecord" :record="selectedFeedbackRecord" :totalSteps="feedbackItems.length"
-        :initialStep="currentFeedbackIndex + 1" v-model="feedbackDraft" :loading="savingStep" @step-change="onFeedbackStepChange"
-        @finish="saveFeedbackWizard" @next-request="handleNextRequest" @prev-request="handlePrevRequest">
+      <FormFeedback ref="feedbackWizardRef" v-if="selectedFeedbackRecord" :record="selectedFeedbackRecord"
+        :totalSteps="feedbackItems.length" :initialStep="currentFeedbackIndex + 1" v-model="feedbackDraft"
+        :loading="savingStep" @step-change="onFeedbackStepChange" @finish="saveFeedbackWizard"
+        @next-request="handleNextRequest" @prev-request="handlePrevRequest">
         <template v-for="(step, idx) in feedbackItems" :key="step.code"
           v-slot:['step-'+(idx+1)]="{ record, feedback, setFeedbackField }">
           <div style="display:flex; flex-direction:column; gap:12px;">
@@ -614,6 +630,9 @@ function closeFeedbackModal() {
   showFormFeedback.value = false
   selectedFeedbackRecord.value = null
   feedbackDraft.value = {}
+
+  // 🔄 refrescar tabla (re-ejecuta el search actual con filtros/paginación)
+  fetchQuery()
 }
 
 function onFeedbackStepChange(stepNumber) {
@@ -651,15 +670,12 @@ async function saveFeedbackWizard({ record, feedback }) {
     message.error('Error al guardar feedback')
   }
 }
-async function persistFeedbackStep(record, feedback) {
-  if (!record?.search) {
-    message.error('El registro no tiene "search". No se puede guardar.')
-    throw new Error('Missing required field: search')
-  }
 
+
+async function persistFeedbackStep(record, feedback) {
   const payload = {
     id: record.id,
-    search: record.search,                 // 👈 REQUIRED
+    search: record._raw?.search ?? record.search, // required
     process_reason: feedback.process_reason || '',
   }
 
@@ -670,6 +686,7 @@ async function persistFeedbackStep(record, feedback) {
   await fetch('put', endpoint, payload, record.id)
 }
 
+
 async function handleNextRequest(currentStep1Based) {
   if (savingStep.value) return
   savingStep.value = true
@@ -679,26 +696,28 @@ async function handleNextRequest(currentStep1Based) {
     const step = feedbackItems.value[idx]
     if (!step) return
 
-    // 1) marcar step actual como true en el draft
+    // 1) marcar el step actual como completado
     feedbackDraft.value = {
       ...feedbackDraft.value,
       [step.code]: true,
     }
 
-    // 2) persistir
+    // 2) persistir (incluyendo search requerido)
     await persistFeedbackStep(selectedFeedbackRecord.value, feedbackDraft.value)
 
-    message.success(`Guardado: ${step.title}`)
-
-    // 3) avanzar (solo si guardó bien)
+    // 3) si guardó OK, avanzar
     feedbackWizardRef.value?.goNext()
+
+    message.success(`Guardado: ${step.title}`)
   } catch (e) {
     console.error('Error guardando step (next)', e)
-    message.error('No se pudo guardar el paso. No se avanzó.')
+    message.error('No se pudo guardar. No se avanzó.')
   } finally {
     savingStep.value = false
   }
 }
+
+
 async function handlePrevRequest(currentStep1Based) {
   if (savingStep.value) return
   savingStep.value = true
