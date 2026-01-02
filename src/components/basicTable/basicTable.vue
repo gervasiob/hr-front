@@ -39,7 +39,7 @@
           </div>
         </template>
         <template v-else>
-          {{ record[column.dataIndex] }}
+          <slot :name="column.key" :record="record">{{ record[column.dataIndex] }}</slot>
         </template>
       </template>
       <template #row="{ record }">
@@ -79,7 +79,11 @@ const emit = defineEmits([
   'cv',
   'sort-change',
   'pagination-change',
-  'open-profile'
+  'open-profile',
+  'open-detail',
+  'open-feedback',
+  'download-cv',
+  'row-click'
 ])
 
 const transformedColumns = computed(() =>
@@ -124,12 +128,6 @@ function handleTableChange(pagination, filters, sorter) {
 
 .operation-buttons {
   display: flex;
-  gap: 8px;
-}
-
-.button-cell {
-  display: flex;
-  align-items: center;
   gap: 8px;
 }
 

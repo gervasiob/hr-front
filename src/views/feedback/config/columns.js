@@ -53,14 +53,14 @@ export const columns = [
       labelField: 'username',
     },
   },
-  {
-    title: 'Seniority', field: 'seniority', sorter: true,
-    cast: {
-      source: 'seniority-levels/',
-      valueField: 'id',
-      labelField: 'name',
-    },
-  },
+  // {
+  //   title: 'Seniority', field: 'seniority', sorter: true,
+  //   cast: {
+  //     source: 'seniority-levels/',
+  //     valueField: 'id',
+  //     labelField: 'name',
+  //   },
+  // },
   { title: 'Fecha de Postulación', field: 'applied_date', type: 'datetime', sorter: true },
   // { title: 'Preselección Comercial', field: 'preselected_commercial', type: 'boolean', sorter: true },
   // { title: 'Preselección Cliente', field: 'preselected_client', type: 'boolean', sorter: true },
@@ -92,6 +92,7 @@ export const columns = [
       width: 160,
       actions: [
         { label: 'Editar', type: 'link', event: 'edit', danger: false },
+        { label: 'Feedback', type: 'link', event: 'open-feedback', danger: false },
         { label: 'Ver Informe', type: 'link', event: 'open-detail', danger: false },
         { label: 'Eliminar', type: 'link', event: 'delete', danger: true }
       ]
