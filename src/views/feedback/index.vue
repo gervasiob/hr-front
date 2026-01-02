@@ -20,8 +20,8 @@
     <BasicFilter :filter-config="filters" @filter-change="applyFilterParams" />
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @open-detail="handleOpenDetail" @delete="handleDelete" @cv="handleViewCV" @download-cv="handleDownloadCV"
-      @sort-change="handleSort" @pagination-change="handlePaginationChange">
+      @open-detail="handleOpenDetail" @open-feedback="handleOpenFeedback" @delete="handleDelete" @cv="handleViewCV"
+      @download-cv="handleDownloadCV" @sort-change="handleSort" @pagination-change="handlePaginationChange">
 
       <template #current_status_label="{ record }">
         <a-tag :color="getStatusColor(record)">
@@ -42,7 +42,7 @@
       <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
         :on-submit="handleProcessedForm" :fetch-data="fetchQuery">
 
-        <template #custom-field="{ field, value, index }">
+        <!-- <template #custom-field="{ field, value, index }">
           <a-steps :current="currentFeedbackIndex" :items="feedbackItems" size="small"></a-steps>
           <div style="margin-top: 16px;">
             <a-select v-model:value="currentFeedbackIndex" style="width: 100%" placeholder="Seleccionar estado">
@@ -56,18 +56,44 @@
             <a-textarea v-model:value="processReason" placeholder="Ingrese observaciones del proceso" :rows="4"
               style="margin-top: 8px;" />
           </div>
-        </template>
+        </template> -->
       </BasicForm>
     </a-modal>
 
-    <a-modal v-model:open="showDownloadModal" title="Seleccionar Modelo de CV" @ok="confirmDownload"
-    @cancel="cancelDownload">
-      <a-radio-group v-model:value="downloadOption">
-        <a-radio value="ketos" style="display: block; margin-bottom: 10px;">Modelo Word-Ketos</a-radio>
-        <a-radio value="accenture" style="display: block;">Modelo Accenture</a-radio>
-        <a-radio value="original" style="display: block;">CV original</a-radio>
-      </a-radio-group>
+    <a-modal v-model:open="showFormFeedback" title="Feedback Estado" :footer="null" width="900px" destroyOnClose
+      @cancel="closeFeedbackModal">
+
+      <FormFeedback v-if="selectedFeedbackRecord" :record="selectedFeedbackRecord" :totalSteps="feedbackItems.length"
+        :initialStep="currentFeedbackIndex + 1" v-model="feedbackDraft" :loading="savingStep" @step-change="onFeedbackStepChange"
+        @finish="saveFeedbackWizard" @next-request="handleNextRequest" @prev-request="handlePrevRequest">
+        <template v-for="(step, idx) in feedbackItems" :key="step.code"
+          v-slot:['step-'+(idx+1)]="{ record, feedback, setFeedbackField }">
+          <div style="display:flex; flex-direction:column; gap:12px;">
+            <a-alert :message="`Paso ${idx + 1}: ${step.title}`" type="info" show-icon />
+
+            <div>
+              <label style="font-weight:600;">Observaciones del proceso</label>
+              <a-textarea :rows="4" :value="feedback.process_reason" placeholder="Ingrese observaciones del proceso"
+                @change="e => setFeedbackField('process_reason', e.target.value)" />
+            </div>
+
+            <div>
+              <label style="font-weight:600;">Marcar este paso como completado</label>
+              <a-switch :checked="!!feedback[step.code]" @change="checked => setFeedbackField(step.code, checked)" />
+              <div style="color:#777; margin-top:6px;">
+                Esto actualiza el flag: <b>{{ step.code }}</b>
+              </div>
+            </div>
+
+            <div style="display:flex; gap:8px; justify-content:flex-end;">
+              <a-button @click="closeFeedbackModal">Cerrar</a-button>
+            </div>
+          </div>
+        </template>
+      </FormFeedback>
+
     </a-modal>
+
   </div>
 </template>
 
@@ -83,6 +109,7 @@ import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel, exportToWord } from '@/api/model/importExport'
+import FormFeedback from './components/form.vue'
 
 import { useRoute } from 'vue-router';
 
@@ -91,8 +118,10 @@ const loading = ref(false)
 const candidates = ref([])
 const filterParams = ref({})
 const showForm = ref(false)
+const showFormFeedback = ref(false)
 const selectedId = ref(null)
 const newForm = ref(false)
+const newFormFeedback = ref(false)
 const formRef = ref(null)
 const modalLoading = ref(false)
 const currentPage = ref(1)
@@ -108,6 +137,12 @@ const route = useRoute();
 const currentFeedbackIndex = ref(0)
 const showDownloadModal = ref(false)
 const downloadOption = ref('ketos')
+
+// ---- Feedback modal state ----
+const selectedFeedbackRecord = ref(null)
+const feedbackDraft = ref({})  // lo que edita el wizard
+const feedbackWizardRef = ref(null)
+const savingStep = ref(false)
 
 // candidato seleccionado para descargar
 const downloadCandidateId = ref(null)
@@ -364,11 +399,33 @@ function openForm(id = null, isNew = true) {
   }
 }
 
+function openFormFeedback(record, isNew = true) {
+  selectedFeedbackRecord.value = record
+  newFormFeedback.value = isNew
+  showFormFeedback.value = true
+
+  // si querés hidratar desde el record, acá:
+  feedbackDraft.value = {
+    process_reason: record?.process_reason || '',
+    // podés guardar también decisión/score/etc si ya existen
+    decision: record?.feedback || null,
+  }
+
+  // setear el step actual según tus flags
+  const stateIndex = calculateFeedbackState(record, true)
+  currentFeedbackIndex.value = stateIndex
+}
+
+
 function handleEdit(candidate) {
   const stateIndex = calculateFeedbackState(candidate)
   currentFeedbackIndex.value = stateIndex
   processReason.value = candidate.process_reason || ''
   openForm(candidate.id, false)
+}
+
+function handleOpenFeedback(record) {
+  openFormFeedback(record, false)
 }
 
 function calculateFeedbackState(candidate, dryRun = false) {
@@ -553,6 +610,125 @@ function downloadFromUrl(url, filename = 'cv-original') {
   a.click();
   a.remove();
 }
+function closeFeedbackModal() {
+  showFormFeedback.value = false
+  selectedFeedbackRecord.value = null
+  feedbackDraft.value = {}
+}
+
+function onFeedbackStepChange(stepNumber) {
+  // stepNumber arranca en 1
+  currentFeedbackIndex.value = stepNumber - 1
+}
+
+// Este es el "guardar" real cuando el wizard termina
+async function saveFeedbackWizard({ record, feedback }) {
+  try {
+    // Armamos payload a guardar en search-trackings
+    // Importante: tu backend espera campos tipo:
+    // preselected_commercial, preselected_client, technical_interview, etc (según step.code)
+    const payload = {
+      id: record.id,
+      process_reason: feedback.process_reason || '',
+    }
+
+    // Copiamos flags de steps (uno por code)
+    feedbackItems.value.forEach(s => {
+      if (feedback[s.code] !== undefined) payload[s.code] = !!feedback[s.code]
+    })
+
+    // Si querés: también podrías setear feedback/feedback_sent, etc
+    // payload.feedback = ...
+    // payload.feedback_sent = true
+
+    await fetch('put', endpoint, payload, record.id)
+
+    message.success('Feedback guardado correctamente')
+    closeFeedbackModal()
+    fetchQuery()
+  } catch (e) {
+    console.error('Error guardando feedback wizard', e)
+    message.error('Error al guardar feedback')
+  }
+}
+async function persistFeedbackStep(record, feedback) {
+  if (!record?.search) {
+    message.error('El registro no tiene "search". No se puede guardar.')
+    throw new Error('Missing required field: search')
+  }
+
+  const payload = {
+    id: record.id,
+    search: record.search,                 // 👈 REQUIRED
+    process_reason: feedback.process_reason || '',
+  }
+
+  feedbackItems.value.forEach(s => {
+    if (feedback[s.code] !== undefined) payload[s.code] = !!feedback[s.code]
+  })
+
+  await fetch('put', endpoint, payload, record.id)
+}
+
+async function handleNextRequest(currentStep1Based) {
+  if (savingStep.value) return
+  savingStep.value = true
+
+  try {
+    const idx = currentStep1Based - 1
+    const step = feedbackItems.value[idx]
+    if (!step) return
+
+    // 1) marcar step actual como true en el draft
+    feedbackDraft.value = {
+      ...feedbackDraft.value,
+      [step.code]: true,
+    }
+
+    // 2) persistir
+    await persistFeedbackStep(selectedFeedbackRecord.value, feedbackDraft.value)
+
+    message.success(`Guardado: ${step.title}`)
+
+    // 3) avanzar (solo si guardó bien)
+    feedbackWizardRef.value?.goNext()
+  } catch (e) {
+    console.error('Error guardando step (next)', e)
+    message.error('No se pudo guardar el paso. No se avanzó.')
+  } finally {
+    savingStep.value = false
+  }
+}
+async function handlePrevRequest(currentStep1Based) {
+  if (savingStep.value) return
+  savingStep.value = true
+
+  try {
+    const idx = currentStep1Based - 1
+    const step = feedbackItems.value[idx]
+    if (!step) return
+
+    // 1) marcar step actual como false
+    feedbackDraft.value = {
+      ...feedbackDraft.value,
+      [step.code]: false,
+    }
+
+    // 2) persistir
+    await persistFeedbackStep(selectedFeedbackRecord.value, feedbackDraft.value)
+
+    message.success(`Revertido: ${step.title}`)
+
+    // 3) retroceder
+    feedbackWizardRef.value?.goPrev()
+  } catch (e) {
+    console.error('Error guardando step (prev)', e)
+    message.error('No se pudo revertir el paso. No se retrocedió.')
+  } finally {
+    savingStep.value = false
+  }
+}
+
 
 async function confirmDownload() {
   try {

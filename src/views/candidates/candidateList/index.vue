@@ -67,8 +67,11 @@ const modelNameSingle = 'candidate'
 const endpoint = modelName + '/'
 
 const authStore = useAuthStore();
-const onlyView = computed(() => authStore.comercialRole);
-
+const onlyView = ref(false);
+const userRolesArray = localStorage.getItem('roles') || [];
+if (userRolesArray.includes('Comercial')) {
+  onlyView.value = true;
+}
 
 onMounted(() => {
   filterParams.value = { ...initialFilterValues.value }
