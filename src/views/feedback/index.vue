@@ -59,6 +59,15 @@
         </template>
       </BasicForm>
     </a-modal>
+
+    <a-modal v-model:open="showDownloadModal" title="Seleccionar Modelo de CV" @ok="confirmDownload"
+    @cancel="cancelDownload">
+      <a-radio-group v-model:value="downloadOption">
+        <a-radio value="ketos" style="display: block; margin-bottom: 10px;">Modelo Word-Ketos</a-radio>
+        <a-radio value="accenture" style="display: block;">Modelo Accenture</a-radio>
+        <a-radio value="original" style="display: block;">CV original</a-radio>
+      </a-radio-group>
+    </a-modal>
   </div>
 </template>
 
@@ -97,6 +106,11 @@ const modelNameSingle = 'search-tracking'
 const endpoint = modelName + '/'
 const route = useRoute();
 const currentFeedbackIndex = ref(0)
+const showDownloadModal = ref(false)
+const downloadOption = ref('ketos')
+
+// candidato seleccionado para descargar
+const downloadCandidateId = ref(null)
 const feedbackItems = ref([
   {
     title: 'Preselección Comercial',
@@ -504,21 +518,115 @@ function handleOpenDetail(record) {
 }
 async function handleDownloadCV(record) {
   try {
-    const candidate = await fetch('get', 'candidates/', { email: record.candidate });
-    const formatted = await fetch('get', 'formatted-cvs/', { candidate: candidate[0].id });
-    if (formatted && formatted.length > 0) {
-      const formattedCvId = formatted[0].id;
-      const baseParams = {}
-      const endpoint = `formatted-cvs/${formattedCvId}/generate-word`
-      await exportToWord(endpoint, baseParams)
-      message.success('Archivo descargado correctamente')
-    } else {
-      message.warning('El candidato no tiene un CV formateado creado.')
+    // 1) Resolver candidateId desde el record
+    // OJO: vos estás haciendo fetch por email: { email: record.candidate }
+    // Eso sugiere que record.candidate contiene un email.
+    const candidateResp = await fetch('get', 'candidates/', { email: record.candidate });
+
+    if (!candidateResp || candidateResp.length === 0) {
+      message.warning('No se encontró el candidato.');
+      return;
     }
+
+    // 2) Guardar el candidateId y abrir modal
+    downloadCandidateId.value = candidateResp[0].id;
+    downloadOption.value = 'ketos';
+    showDownloadModal.value = true;
+
   } catch (error) {
-    console.error('Error al descargar listado:', error)
-    message.error('Error al descargar el CV')
+    console.error('Error preparando descarga CV:', error);
+    message.error('Error al preparar la descarga del CV');
   }
+}
+
+
+function downloadFromUrl(url, filename = 'cv-original') {
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank'; // por si S3 fuerza abrir en nueva pestaña
+  a.rel = 'noopener';
+
+  // Si el bucket/headers permiten download, esto sugiere nombre:
+  a.download = filename;
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+}
+
+async function confirmDownload() {
+  try {
+    const candidateId = downloadCandidateId.value;
+
+    if (!candidateId) {
+      showDownloadModal.value = false;
+      message.warning('No hay candidato seleccionado para descargar.');
+      return;
+    }
+
+    // ✅ 1) CV original (desde S3)
+    if (downloadOption.value === 'original') {
+      const cvFiles = await fetch('get', 'cv-files/', {
+        candidate: candidateId,
+        is_active: true,
+        // si tu API soporta ordering:
+        // ordering: '-uploaded_at',
+      });
+
+      if (!cvFiles || cvFiles.length === 0) {
+        showDownloadModal.value = false;
+        message.warning('El candidato no tiene un CV original activo.');
+        return;
+      }
+
+      const file = cvFiles[0];
+
+      if (!file?.s3_url) {
+        showDownloadModal.value = false;
+        message.warning('El CV original activo no tiene URL de descarga (s3_url).');
+        return;
+      }
+
+      showDownloadModal.value = false;
+
+      const nameFromKey =
+        file.s3_key?.split('/').pop()?.split('?')[0] || `cv-original-${candidateId}`;
+
+      downloadFromUrl(file.s3_url, nameFromKey);
+      message.success('Descarga iniciada');
+      return;
+    }
+
+    // ✅ 2) CV formateado (Ketos / Accenture)
+    const formatted = await fetch('get', 'formatted-cvs/', { candidate: candidateId });
+
+    if (!formatted || formatted.length === 0) {
+      showDownloadModal.value = false;
+      message.warning('El candidato no tiene un CV formateado creado.');
+      return;
+    }
+
+    const formattedCvId = formatted[0].id;
+
+    let endpoint = '';
+    if (downloadOption.value === 'ketos') {
+      endpoint = `formatted-cv/${formattedCvId}/word-ketos`;
+    } else {
+      endpoint = `formatted-cv/${formattedCvId}/word/accenture`;
+    }
+
+    showDownloadModal.value = false;
+    await exportToWord(endpoint, {});
+    message.success('Archivo descargado correctamente');
+
+  } catch (error) {
+    console.error('Error al descargar:', error);
+    message.error('Error al descargar el archivo');
+  }
+}
+function cancelDownload() {
+  showDownloadModal.value = false;
+  downloadCandidateId.value = null;
 }
 </script>
 

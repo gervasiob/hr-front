@@ -2,9 +2,9 @@
 export const candidateFormFields = [
     {
         label: 'Actitud',
-        field: 'nombre',
+        field: 'attitudes',
         type: 'api-select',
-        mode: 'single',
+        mode: 'multiple',
         span: 6,
         required: true,
         endpoint: 'attitudes/?active=true', // <- el endpoint real que usás

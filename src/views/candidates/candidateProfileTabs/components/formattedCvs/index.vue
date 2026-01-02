@@ -6,7 +6,7 @@
         <div v-if="formattedCvId" :class="['formatted-cv', { 'formatted-cv-readonly': readOnly }]">
             <div class="header">
                 <h2></h2>
-                <a-button type="primary" @click="handleDownloadTemplate">
+                <a-button type="primary" class="download-button" @click="handleDownloadTemplate">
                     <template #icon>
                         <DownloadOutlined />
                     </template>
@@ -74,6 +74,7 @@
             <a-radio-group v-model:value="downloadOption">
                 <a-radio value="ketos" style="display: block; margin-bottom: 10px;">Modelo Word-Ketos</a-radio>
                 <a-radio value="accenture" style="display: block;">Modelo Accenture</a-radio>
+                <a-radio value="original" style="display: block;">CV original</a-radio>
             </a-radio-group>
         </a-modal>
     </div>
@@ -198,24 +199,81 @@ async function handleDownloadTemplate() {
     }
 }
 
-async function confirmDownload() {
-    try {
-        const id = formattedCvId.value;
-        let endpoint = '';
-        if (downloadOption.value === 'ketos') {
-            endpoint = `formatted-cv/${id}/word-ketos`;
-        } else {
-            endpoint = `formatted-cv/${id}/accenture`;
-        }
+function downloadFromUrl(url, filename = 'cv-original') {
+  const a = document.createElement('a');
+  a.href = url;
+  a.target = '_blank'; // por si S3 fuerza abrir en nueva pestaña
+  a.rel = 'noopener';
 
-        showDownloadModal.value = false;
-        await exportToWord(endpoint, {});
-        message.success('Archivo descargado correctamente');
-    } catch (error) {
-        console.error('Error al descargar:', error);
-        message.error('Error al descargar el archivo');
-    }
+  // Si el bucket/headers permiten download, esto sugiere nombre:
+  a.download = filename;
+
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
 }
+
+
+async function confirmDownload() {
+  try {
+    // ✅ CV original
+    if (downloadOption.value === 'original') {
+      const cvFiles = await fetch('get', 'cv-files/', {
+        candidate: props.candidateId,
+        is_active: true,
+        // si tu API soporta ordering, mejor:
+        // ordering: '-uploaded_at',
+      });
+
+      if (!cvFiles || cvFiles.length === 0) {
+        showDownloadModal.value = false;
+        message.warning('El candidato no tiene un CV original activo.');
+        return;
+      }
+
+      // “el primero que aparezca”
+      const file = cvFiles[0];
+
+      if (!file?.s3_url) {
+        showDownloadModal.value = false;
+        message.warning('El CV original activo no tiene URL de descarga (s3_url).');
+        return;
+      }
+
+      showDownloadModal.value = false;
+
+      // Nombre sugerido (opcional): basado en s3_key
+      const nameFromKey = file.s3_key?.split('/').pop()?.split('?')[0] || 'cv-original';
+      downloadFromUrl(file.s3_url, nameFromKey);
+
+      message.success('Descarga iniciada');
+      return;
+    }
+
+    // ✅ CV formateado (lo tuyo)
+    const id = formattedCvId.value;
+    if (!id) {
+      showDownloadModal.value = false;
+      message.warning('No hay CV formateado para descargar.');
+      return;
+    }
+
+    let endpoint = '';
+    if (downloadOption.value === 'ketos') {
+      endpoint = `formatted-cv/${id}/word-ketos`;
+    } else {
+      endpoint = `formatted-cv/${id}/word/accenture`;
+    }
+
+    showDownloadModal.value = false;
+    await exportToWord(endpoint, {});
+    message.success('Archivo descargado correctamente');
+  } catch (error) {
+    console.error('Error al descargar:', error);
+    message.error('Error al descargar el archivo');
+  }
+}
+
 </script>
 
 <style scoped>
@@ -249,5 +307,8 @@ async function confirmDownload() {
 
 .formatted-cv-readonly {
     background-color: rgb(222, 222, 222);
+}
+.download-button {
+    margin: 0.5%;
 }
 </style>
