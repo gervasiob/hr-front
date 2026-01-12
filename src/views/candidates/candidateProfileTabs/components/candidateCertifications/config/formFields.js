@@ -20,7 +20,7 @@ export const candidateFormFields = [
         field: 'issue_date',
         type: 'date',
         span: 12,
-        required: true,
+        required: false,
     },
     {
         label: 'Fecha de Vencimiento',

@@ -3,7 +3,7 @@ export const candidateFormFields = [
     {
         label: 'Resumen',
         field: 'resumen',
-        type: 'input',
+        type: 'textarea',
         span: 24,
         required: true,
     },

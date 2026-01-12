@@ -388,7 +388,6 @@ const removeItem = async (index) => {
 
 // Guardar item específico
 const saveItem = async (index) => {
-    console.log('saveItem', index, formData.items[index])
     try {
         submitting.value = true;
 
@@ -407,7 +406,14 @@ const saveItem = async (index) => {
             submitting.value = false;
             return;
         }
-
+      formData.items.map((it) => {
+        if (it?.issue_date === "") {
+            delete it.issue_date
+        }
+        if (it?.expiration_date === "") {
+            delete it.expiration_date
+        }
+      })
         const itemId = formData.items[index].id;
         const isValidId = itemId && Number.isInteger(Number(itemId)) && Number(itemId) > 0;
         const method = isValidId ? 'PUT' : 'POST';

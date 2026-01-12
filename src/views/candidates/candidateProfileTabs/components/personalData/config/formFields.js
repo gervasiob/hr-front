@@ -6,13 +6,13 @@ export const candidateFormFields = [
     { label: 'DNI', field: 'dni', type: 'input', span: 12, required: false },
     { label: 'Fecha de nacimiento', field: 'birth_date', type: 'date', span: 12, required: false },
     {
-        label: 'Edad', field: 'age', type: 'input', span: 12, required: true,
+        label: 'Edad', field: 'age', type: 'input', span: 12, required: false,
         calculateFrom: {
             dependsOn: 'birth_date',
             compute: function (birthDate) {
                 const today = dayjs()
                 const birth = dayjs(birthDate)
-                return birth.isValid() ? today.diff(birth, 'year') : null
+                return birth.isValid() ? today.diff(birth, 'year') : 0
             }
         }
     },
