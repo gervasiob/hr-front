@@ -19,7 +19,7 @@ export const candidateFormFields = [
         type: 'select',
         default: 'BAJO',
         options: [
-            { value: 'MUY_BAJO', label: 'Muy Bajo' },
+            { value: 'MUY BAJO', label: 'Muy Bajo' },
             { value: 'BAJO', label: 'Bajo' },
             { value: 'MEDIO-BAJO', label: 'Medio-Bajo' },
             { value: 'MEDIO', label: 'Medio' },
