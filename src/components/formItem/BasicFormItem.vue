@@ -406,19 +406,20 @@ const saveItem = async (index) => {
             submitting.value = false;
             return;
         }
-      formData.items.map((it) => {
-        if (it?.issue_date === "") {
-            delete it.issue_date
-        }
-        if (it?.expiration_date === "") {
-            delete it.expiration_date
-        }
-      })
+        formData.items.map((it) => {
+            if (it?.issue_date === "") {
+                delete it.issue_date
+            }
+            if (it?.expiration_date === "") {
+                delete it.expiration_date
+            }
+        })
         const itemId = formData.items[index].id;
         const isValidId = itemId && Number.isInteger(Number(itemId)) && Number(itemId) > 0;
         const method = isValidId ? 'PUT' : 'POST';
-
-        const response = await fetch(method, props.saveEndpoint, formData.items[index], method === 'PUT' ? itemId : undefined);
+        // ✅ payload casteado
+        const payload = castPayloadForSave(formData.items[index], props.fields);
+        const response = await fetch(method, props.saveEndpoint, payload, method === 'PUT' ? itemId : undefined);
         if (response) {
             formData.items[index].id = response.id
             originalData.value[index] = JSON.parse(JSON.stringify(formData.items[index]));
@@ -448,6 +449,61 @@ const saveItem = async (index) => {
     } finally {
         submitting.value = false;
     }
+};
+
+const castPayloadForSave = (item, fields) => {
+    // Clonar para no mutar el estado del form
+    const payload = JSON.parse(JSON.stringify(item ?? {}));
+
+    for (const f of fields ?? []) {
+        const key = f.field;
+        const val = payload[key];
+
+        // Si no hay instrucción de casteo, seguir
+        if (!f.castPost) continue;
+
+        switch (f.castPost) {
+            case 'array': {
+                // objetivo: siempre array (ej: 1 -> [1], "1" -> [1], [] -> [], null -> [])
+                if (val === null || val === undefined || val === '') {
+                    payload[key] = [];
+                    break;
+                }
+                if (Array.isArray(val)) {
+                    payload[key] = val
+                        .filter(v => v !== null && v !== undefined && v !== '')
+                        .map(v => Number(v))
+                        .filter(n => Number.isFinite(n));
+                    break;
+                }
+                const n = Number(val);
+                payload[key] = Number.isFinite(n) ? [n] : [];
+                break;
+            }
+
+            case 'int': {
+                // string/number -> integer o null
+                if (val === null || val === undefined || val === '') {
+                    payload[key] = null;
+                    break;
+                }
+                const n = parseInt(val, 10);
+                payload[key] = Number.isFinite(n) ? n : null;
+                break;
+            }
+
+            case 'string': {
+                payload[key] = val === null || val === undefined ? '' : String(val);
+                break;
+            }
+
+            // podés agregar más: 'boolean', 'float', 'date', etc.
+            default:
+                break;
+        }
+    }
+
+    return payload;
 };
 
 // Manejar envío del formulario completo (si se necesita)

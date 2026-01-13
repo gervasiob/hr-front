@@ -10,6 +10,7 @@ export const candidateFormFields = [
         endpoint: 'attitudes/?active=true', // <- el endpoint real que usás
         valueField: 'id',
         nameField: 'name',
+        castPost: 'array', // convierte el valor ingresado en el input a un valor específico en el payload
     },
     {
         label: 'Puntaje',
