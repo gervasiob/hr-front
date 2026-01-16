@@ -66,10 +66,12 @@
         <a-radio value="ketos" style="display:block; margin-bottom:10px;">
           Modelo Word-Ketos
         </a-radio>
+        <a-radio value="ketos-eng" style="display: block; margin-bottom: 10px;">Modelo Word-Ketos versión
+          Inglés</a-radio>
         <a-radio value="accenture" style="display:block; margin-bottom:10px;">
           Modelo Accenture
         </a-radio>
-        <a-radio value="original" style="display:block;">
+        <a-radio value="original" style="display:block; margin-bottom:10px;">
           CV original
         </a-radio>
       </a-radio-group>
@@ -83,7 +85,7 @@
         :loading="savingStep" @step-change="onFeedbackStepChange" @finish="saveFeedbackWizard"
         @next-request="handleNextRequest" @prev-request="handlePrevRequest">
         <template v-for="(step, idx) in feedbackItems" :key="step.code"
-          v-slot:['step-'+(idx+1)]="{ record, feedback, setFeedbackField }">
+          v-slot:['step-' + (idx + 1)]="{ record, feedback, setFeedbackField }">
           <div style="display:flex; flex-direction:column; gap:12px;">
             <a-alert :message="`Paso ${idx + 1}: ${step.title}`" type="info" show-icon />
 
@@ -805,9 +807,12 @@ async function confirmDownload() {
 
     let endpoint = '';
     if (downloadOption.value === 'ketos') {
-      endpoint = `formatted-cv/${formattedCvId}/word-ketos`;
-    } else {
-      endpoint = `formatted-cv/${formattedCvId}/word/accenture`;
+      endpoint = `formatted-cv/${id}/word-ketos`;
+    } else if (downloadOption.value === 'ketos-eng') {
+      endpoint = `formatted-cv/${id}/word-ketos/english`;
+    }
+    else {
+      endpoint = `formatted-cv/${id}/word/accenture`;
     }
 
     showDownloadModal.value = false;

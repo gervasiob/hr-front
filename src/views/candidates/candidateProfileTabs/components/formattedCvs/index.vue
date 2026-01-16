@@ -73,8 +73,9 @@
         <a-modal v-model:open="showDownloadModal" title="Seleccionar Modelo de CV" @ok="confirmDownload">
             <a-radio-group v-model:value="downloadOption">
                 <a-radio value="ketos" style="display: block; margin-bottom: 10px;">Modelo Word-Ketos</a-radio>
-                <a-radio value="accenture" style="display: block;">Modelo Accenture</a-radio>
-                <a-radio value="original" style="display: block;">CV original</a-radio>
+                <a-radio value="ketos-eng" style="display: block; margin-bottom: 10px;">Modelo Word-Ketos versión Inglés</a-radio>
+                <a-radio value="accenture" style="display: block; margin-bottom:10px;">Modelo Accenture</a-radio>
+                <a-radio value="original" style="display: block; margin-bottom:10px;">CV original</a-radio>
             </a-radio-group>
         </a-modal>
     </div>
@@ -261,7 +262,10 @@ async function confirmDownload() {
     let endpoint = '';
     if (downloadOption.value === 'ketos') {
       endpoint = `formatted-cv/${id}/word-ketos`;
-    } else {
+    } else  if (downloadOption.value === 'ketos-eng'){
+        endpoint = `formatted-cv/${id}/word-ketos/english`;
+    }
+    else {
       endpoint = `formatted-cv/${id}/word/accenture`;
     }
 
