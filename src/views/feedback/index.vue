@@ -815,7 +815,7 @@ async function confirmDownload() {
       endpoint = `formatted-cv/${formattedCvId}/word-ketos/english`;
     }
     else if (downloadOption.value === 'accenture-eng') {
-      endpoint = `formatted-cv/${formattedCvId}/accenture/english`;
+      endpoint = `formatted-cv/${formattedCvId}/word/accenture/english`;
     }
     else {
       endpoint = `formatted-cv/${formattedCvId}/word/accenture`;

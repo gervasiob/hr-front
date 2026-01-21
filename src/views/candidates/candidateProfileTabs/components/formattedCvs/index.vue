@@ -269,7 +269,7 @@ async function confirmDownload() {
         endpoint = `formatted-cv/${id}/word-ketos/english`;
     }
     else  if (downloadOption.value === 'accenture-eng'){
-        endpoint = `formatted-cv/${id}/accenture/english`;
+        endpoint = `formatted-cv/${id}/word/accenture/english`;
     }
     else {
       endpoint = `formatted-cv/${id}/word/accenture`;
