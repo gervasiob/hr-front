@@ -85,7 +85,7 @@
         :loading="savingStep" @step-change="onFeedbackStepChange" @finish="saveFeedbackWizard"
         @next-request="handleNextRequest" @prev-request="handlePrevRequest">
         <template v-for="(step, idx) in feedbackItems" :key="step.code"
-          v-slot:['step-' + (idx + 1)]="{ record, feedback, setFeedbackField }">
+          v-slot:['step-'+(idx+1)]="{ record, feedback, setFeedbackField }">
           <div style="display:flex; flex-direction:column; gap:12px;">
             <a-alert :message="`Paso ${idx + 1}: ${step.title}`" type="info" show-icon />
 
