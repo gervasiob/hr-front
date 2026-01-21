@@ -1,5 +1,6 @@
 export const columns = [
   { title: 'Nombre', field: 'name', sorter: true },
+  { title: 'Nombre en Inglés', field: 'name_eng', sorter: true },
   { title: 'Activo', field: 'active', type: 'boolean', sorter: true },
   {
     title: 'Acciones',

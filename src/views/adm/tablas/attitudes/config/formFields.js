@@ -7,6 +7,13 @@ export const candidateFormFields = [
         required: true
     },
     {
+        label: 'Nombre en Inglés',
+        field: 'name_eng',
+        type: 'input',
+        span: 12,
+        required: false
+    },
+    {
         label: 'Activo',
         field: 'active',
         type: 'switch',

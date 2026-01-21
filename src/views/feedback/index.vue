@@ -71,6 +71,9 @@
         <a-radio value="accenture" style="display:block; margin-bottom:10px;">
           Modelo Accenture
         </a-radio>
+        <a-radio value="accenture-eng" style="display:block; margin-bottom:10px;">
+          Modelo Accenture versión Inglés
+        </a-radio>
         <a-radio value="original" style="display:block; margin-bottom:10px;">
           CV original
         </a-radio>
@@ -807,12 +810,15 @@ async function confirmDownload() {
 
     let endpoint = '';
     if (downloadOption.value === 'ketos') {
-      endpoint = `formatted-cv/${id}/word-ketos`;
+      endpoint = `formatted-cv/${formattedCvId}/word-ketos`;
     } else if (downloadOption.value === 'ketos-eng') {
-      endpoint = `formatted-cv/${id}/word-ketos/english`;
+      endpoint = `formatted-cv/${formattedCvId}/word-ketos/english`;
+    }
+    else if (downloadOption.value === 'accenture-eng') {
+      endpoint = `formatted-cv/${formattedCvId}/accenture/english`;
     }
     else {
-      endpoint = `formatted-cv/${id}/word/accenture`;
+      endpoint = `formatted-cv/${formattedCvId}/word/accenture`;
     }
 
     showDownloadModal.value = false;
