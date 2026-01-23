@@ -2,13 +2,13 @@
 export const candidateFormFields = [
     {
         label: 'Competencia',
-        field: 'competencia',
+        field: 'competency_type',
         type: 'api-select',
         mode: 'single',
         span: 12,
         required: true,
         endpoint: 'competency-types/',
-        valueField: 'name',
+        valueField: 'id',
         nameField: 'name',
     },
     {
