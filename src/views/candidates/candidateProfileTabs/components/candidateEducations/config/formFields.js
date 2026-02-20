@@ -1,14 +1,14 @@
 // src/views/candidatelanguage/config/formFields.js
 export const candidateFormFields = [
     {
-        label: 'Insittución',
+        label: 'Institución',
         field: 'institution_name',
         type: 'input',
         span: 12,
         required: true,
     },
     {
-        label: 'Grado Alcanzado',
+        label: 'Nombre de la Formación Realizada',
         field: 'degree',
         type: 'input',
         span: 12,

@@ -1,21 +1,21 @@
 // src/views/candidatelanguage/config/formFields.js
 export const candidateFormFields = [
     {
-        label: 'Motivación',
+        label: 'Motivación por el puesto',
         field: 'motivacion',
         type: 'input',
         span: 12,
         required: true,
     },
     {
-        label: 'Rotación',
+        label: 'Nivel de Rotación',
         field: 'attrition',
         type: 'input',
         span: 12,
         required: false,
     },
     {
-        label: 'Zona',
+        label: 'Disponibilidad de ir a las Oficinas',
         field: 'zona',
         type: 'input',
         span: 6,
@@ -33,6 +33,6 @@ export const candidateFormFields = [
         field: 'comentario',
         type: 'textarea',
         span: 24,
-        required: true,
+        required: false,
     },
 ];

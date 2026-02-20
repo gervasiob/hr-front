@@ -44,13 +44,13 @@ export const candidateFormFields = [
         span: 12,
         required: true,
     },
-    {
-        label: 'Años de experiencia',
-        field: 'experience_years',
-        type: 'input',
-        span: 12,
-        required: true,
-    },
+    // {
+    //     label: 'Años de experiencia',
+    //     field: 'experience_years',
+    //     type: 'input',
+    //     span: 12,
+    //     required: true,
+    // },
     {
         label: 'Skills',
         field: 'skills_description_arr',

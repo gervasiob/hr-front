@@ -156,7 +156,6 @@ const loading = ref(false)
 const formData = reactive({
     items: []
 });
-
 // Variable para controlar si estamos inicializando
 const isInitializing = ref(false);
 
@@ -663,7 +662,29 @@ const showButtonAdd = computed(() => {
     }
     return true
 });
+const toolbarOptions = {
+  container: [
+    ['bold', 'italic', 'underline'],
+    [{ list: 'ordered' }, { list: 'bullet' }],
+    ['link'],
+    ['boldUnderline'], // 👈 nuestro botón mágico
+    ['clean']
+  ],
+  handlers: {
+    boldUnderline: function () {
+      const range = this.quill.getSelection()
+      if (!range) return
 
+      const currentBold = this.quill.getFormat(range).bold
+      const currentUnderline = this.quill.getFormat(range).underline
+
+      const newState = !(currentBold && currentUnderline)
+
+      this.quill.format('bold', newState)
+      this.quill.format('underline', newState)
+    }
+  }
+}
 // Watchers
 watch(() => props.initialData, () => {
     initializeFormData();

@@ -35,7 +35,7 @@ export const candidateFormFields = [
         patternMessage: 'El email no es válido.'
      },
     { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true,
-              pattern: '^\\+\\d+$',
+              pattern: '^\\d+$',
         patternMessage: 'El teléfono debe comenzar con el signo + seguido de números.'
     },
     {

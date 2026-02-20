@@ -35,10 +35,10 @@
                 <candidateOtrasEvaluaciones :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card">
+            <!-- <div class="card">
                 <candidateOtrasDestrezas :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
-            </div>
+            </div> -->
             <div class="card">
                 <candidateSummary :candidate-id="candidateId" :formatted-cv-id="formattedCvId" :read-only="readOnly" />
             </div>

@@ -11,7 +11,7 @@ export const candidateFormFields = [
     {
         label: 'Dónde la adquirió?',
         field: 'acquired',
-        type: 'input',
+        type: 'textarea',
         span: 12,
         required: false,
     },
