@@ -183,7 +183,7 @@ export default {
         };
 
         function handleDrop(e) {
-            console.log(e);
+            console.warn('Handle Drop', e);
         }
 
         const filterTables = (input, option) => {

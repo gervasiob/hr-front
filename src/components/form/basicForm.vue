@@ -96,7 +96,6 @@ async function loadForm(id) {
     if (id) {
         const resp = await fetch('get', `${props.model}/`, { id })
         const data = resp[0]
-        console.log('resp', resp)
         props.fields.forEach(field => {
             if (field.type === 'date') {
                 const rawValue = data[field.field]

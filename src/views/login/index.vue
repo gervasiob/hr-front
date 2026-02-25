@@ -83,7 +83,7 @@ export default {
     };
 
     const handleForgotPassword = () => {
-      console.log('Olvidé mi contraseña');
+      console.warn('Ejecutó: Olvidé mi contraseña');
       // Aquí iría la lógica para manejar el olvidé mi contraseña
     };
 

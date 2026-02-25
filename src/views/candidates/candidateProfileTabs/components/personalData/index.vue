@@ -21,7 +21,8 @@ const props = defineProps({
     readOnly: {
         type: Boolean,
         default: false
-    }
+    },
+    candidateId: { type: [Number, String], default: null },
 });
 
 const emit = defineEmits(['refreshData']);

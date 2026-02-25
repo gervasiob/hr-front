@@ -84,22 +84,14 @@ async function fetchQuery() {
     if ('results' in data && 'count' in data) {
 
       result = data.results
-      console.log('result', result)
       if (result.length > 0) {
         result[0].skills_description = result[0].skills_description.split(',')
       }
       totalItems.value = data.count
     } else {
       result = data
-      console.log('result', result)
-      if (result.length > 0) {
-        result.map((item) => {
-          item.skills_description = item.skills_description.split(',')
-        })
-      }
       totalItems.value = data.length
     }
-    console.log('result 3', result)
     // ⬇️ Casteo de columnas
     // candidates.value = result.map(item => {
     //   const newItem = { ...item }

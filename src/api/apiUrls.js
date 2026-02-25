@@ -16,7 +16,7 @@ const token = localStorage.getItem('token');
 if (token) {
     axios.defaults.headers.common['Authorization'] = `Token ${token}`;
 } else {
-    console.log('no token', token)
+    console.warn('no token', token)
 }
 
 const apiClient = axios.create({

@@ -16,25 +16,25 @@
             <!-- <div>
                 <h2>{{ titleText }}</h2>
             </div> -->
-            <div class="card">
+            <div class="card bg-purple">
                 <candidateProfile :candidate-id="candidateId" :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-magenta">
                 <candidateAccentureDetails :candidate-id="candidateId" :formatted-cv-id="formattedCvId" :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-geekblue">
                 <candidateAptitudes :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-blue">
                 <candidateEvaluacionesActitudinales :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-cyan">
                 <candidateCompetenciasStar :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-gray">
                 <candidateOtrasEvaluaciones :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
@@ -42,22 +42,22 @@
                 <candidateOtrasDestrezas :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div> -->
-            <div class="card">
+            <div class="card bg-cyan">
                 <candidateSummary :candidate-id="candidateId" :formatted-cv-id="formattedCvId" :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-lime">
                 <candidateWorkExperiences :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-green">
                 <candidateEducations :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-yellow">
                 <candidateCertifications :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card">
+            <div class="card bg-orange">
                 <candidateLanguages :candidate-id="candidateId" :read-only="readOnly" />
             </div>
         </div>
@@ -311,11 +311,11 @@ async function confirmDownload() {
 }
 
 .formatted-cv {
-    background-color: rgb(222, 222, 222);
+   background-color: rgb(222, 222, 222);
 }
 
 .card {
-    background-color: rgb(186, 198, 213);
+
     margin: 2%;
 }
 
