@@ -20,6 +20,9 @@
                 <candidateProfile :candidate-id="candidateId" :read-only="readOnly" />
             </div>
             <div class="card">
+                <candidateAccentureDetails :candidate-id="candidateId" :formatted-cv-id="formattedCvId" :read-only="readOnly" />
+            </div>
+            <div class="card">
                 <candidateAptitudes :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
@@ -102,6 +105,7 @@ import candidateEvaluacionesActitudinales from '../candiateEvaluacionesActitudin
 import candidateCompetenciasStar from '../candidateCompetenciaStar/index.vue';
 import candidateOtrasEvaluaciones from '../candidateOtrasEvaluaciones/index.vue';
 import candidateOtrasDestrezas from '../candidateOtrasDestrezas/index.vue';
+import candidateAccentureDetails from '../candidateAccentureDetails/index.vue';
 import { exportToWord } from '@/api/model/importExport'
 const props = defineProps({
     candidateId: {

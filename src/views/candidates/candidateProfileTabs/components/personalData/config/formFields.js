@@ -7,14 +7,14 @@ export const candidateFormFields = [
     { label: 'Fecha de nacimiento', field: 'birth_date', type: 'date', span: 12, required: false },
     {
         label: 'Edad', field: 'age', type: 'input', span: 12, required: false,
-        calculateFrom: {
-            dependsOn: 'birth_date',
-            compute: function (birthDate) {
-                const today = dayjs()
-                const birth = dayjs(birthDate)
-                return birth.isValid() ? today.diff(birth, 'year') : 0
-            }
-        }
+        // calculateFrom: {
+        //     dependsOn: 'birth_date',
+        //     compute: function (birthDate) {
+        //         const today = dayjs()
+        //         const birth = dayjs(birthDate)
+        //         return birth.isValid() ? today.diff(birth, 'year') : 0
+        //     }
+        // }
     },
     { label: 'CUIL', field: 'cuil', type: 'input', span: 12, required: false },
     {
@@ -36,7 +36,7 @@ export const candidateFormFields = [
      },
     { label: 'Teléfono / Celular', field: 'phone', type: 'input', span: 12, required: true,
               pattern: '^\\d+$',
-        patternMessage: 'El teléfono debe comenzar con el signo + seguido de números.'
+        patternMessage: 'El número de teléfono es requerido.'
     },
     {
         label: 'País', field: 'country_fk', type: 'api-select', span: 12, required: true,

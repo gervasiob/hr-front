@@ -51,7 +51,7 @@ async function handleProcessedForm(processedForm) {
         }
         message.success(itemText + ' guardado correctamente')
         currentId.value = processedForm.id
-        emit('refreshData')  // Emit the event after successful save
+        // emit('refreshData')  // Emit the event after successful save
     } catch (error) {
         console.error('Error al guardar item:', error)
 

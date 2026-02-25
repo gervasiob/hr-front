@@ -96,6 +96,7 @@ async function loadForm(id) {
     if (id) {
         const resp = await fetch('get', `${props.model}/`, { id })
         const data = resp[0]
+        console.log('resp', resp)
         props.fields.forEach(field => {
             if (field.type === 'date') {
                 const rawValue = data[field.field]
@@ -174,8 +175,17 @@ async function handleSubmit() {
         })
         const result = await props.onSubmit(processedForm)
 
+        // if (result !== false) {
+        //     form.value = {}
+        //     if (props.fetchData) await props.fetchData()
+        // }
         if (result !== false) {
-            form.value = {}
+            if (props.id) {
+                await loadForm(props.id)
+            } else {
+                form.value = buildDefaultForm()
+            }
+
             if (props.fetchData) await props.fetchData()
         }
 
