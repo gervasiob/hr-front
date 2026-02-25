@@ -16,25 +16,25 @@
             <!-- <div>
                 <h2>{{ titleText }}</h2>
             </div> -->
-            <div class="card bg-purple">
+            <div class="card bg-azul-3">
                 <candidateProfile :candidate-id="candidateId" :read-only="readOnly" />
             </div>
-            <div class="card bg-magenta">
+            <div class="card bg-azul-4">
                 <candidateAccentureDetails :candidate-id="candidateId" :formatted-cv-id="formattedCvId" :read-only="readOnly" />
             </div>
-            <div class="card bg-geekblue">
+            <div class="card bg-azul-5">
                 <candidateAptitudes :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card bg-blue">
+            <div class="card bg-azul-8">
                 <candidateEvaluacionesActitudinales :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card bg-cyan">
+            <div class="card bg-azul-9">
                 <candidateCompetenciasStar :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card bg-gray">
+            <div class="card bg-azul-10">
                 <candidateOtrasEvaluaciones :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
@@ -42,22 +42,22 @@
                 <candidateOtrasDestrezas :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div> -->
-            <div class="card bg-cyan">
+            <div class="card bg-azul-3">
                 <candidateSummary :candidate-id="candidateId" :formatted-cv-id="formattedCvId" :read-only="readOnly" />
             </div>
-            <div class="card bg-lime">
+            <div class="card bg-azul-4">
                 <candidateWorkExperiences :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card bg-green">
+            <div class="card bg-azul-5">
                 <candidateEducations :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card bg-yellow">
+            <div class="card bg-azul-8">
                 <candidateCertifications :candidate-id="candidateId" :formatted-cv-id="formattedCvId"
                     :read-only="readOnly" />
             </div>
-            <div class="card bg-orange">
+            <div class="card bg-azul-9">
                 <candidateLanguages :candidate-id="candidateId" :read-only="readOnly" />
             </div>
         </div>

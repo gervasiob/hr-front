@@ -81,3 +81,26 @@ a,
 .bg-yellow    { background-color: rgba(250, 173, 20, 0.12); }
 .bg-orange    { background-color: rgba(250, 140, 22, 0.12); }
 .bg-red       { background-color: rgba(245, 34, 45, 0.10); }
+/* Azul más oscuro */
+.bg-azul-1 { background-color: #0b3a6f; }
+
+/* Azul intenso */
+.bg-azul-2 { background-color: #166ea9; }
+
+/* Azul medio vibrante */
+.bg-azul-3 { background-color: #2491c6; }
+
+/* Azul claro */
+.bg-azul-4 { background-color: #3aa6cf; }
+
+/* Celeste suave */
+.bg-azul-5 { background-color: #63b6d1; }
+.bg-azul-6 { background-color: #2b56e3; }
+
+.bg-azul-7 { background-color: #4a77d8; }
+
+.bg-azul-8 { background-color: #6491d8; }
+
+.bg-azul-9 { background-color: #7fa9d4; }
+
+.bg-azul-10 { background-color: #92c0d1; }
