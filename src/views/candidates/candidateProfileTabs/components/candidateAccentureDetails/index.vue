@@ -47,7 +47,7 @@ const selectedId = ref(null)
 // config parameters
 const titleText = 'Datos Requeridos por Accenture'
 const itemText = 'Dato'
-const modelName = 'accenture-details'
+const modelName = 'Accenture-details'
 const modelNameSingle = 'accenture-detail'
 const endpoint = modelName + '/'
 
