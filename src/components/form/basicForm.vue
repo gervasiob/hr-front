@@ -95,7 +95,12 @@ const rules = computed(() => {
 async function loadForm(id) {
     if (id) {
         const resp = await fetch('get', `${props.model}/`, { id })
-        const data = resp[0]
+        let data = {};
+        if ('results' in resp && 'count' in resp) {
+            data = resp.results[0]
+            } else {
+                data = resp[0]
+            }
         props.fields.forEach(field => {
             if (field.type === 'date') {
                 const rawValue = data[field.field]
