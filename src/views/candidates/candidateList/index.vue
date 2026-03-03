@@ -86,15 +86,15 @@ async function fetchQuery() {
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
     )
 
-    const limit = pageSize.value
-    const offset = (currentPage.value - 1) * pageSize.value
+    const page_size = pageSize.value
+    const page = (currentPage.value)
     const orderingParam = ordering.value ? { ordering: ordering.value } : {}
 
     const params = {
       ...baseParams,
       ...orderingParam,
-      limit,
-      offset
+      page_size,
+      page
     }
 
     const data = await fetch('get', endpoint, params)
