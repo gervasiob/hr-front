@@ -49,6 +49,9 @@ export default {
 
     onMounted(async () => {
       const userRolesArray = localStorage.getItem('roles') || [];
+      if (userRolesArray.length === 0) {
+        return;
+      }
       const userRoles = JSON.parse(userRolesArray) || [];
       const roleMap = await fetchRoleMap();
       const rawMenu = await loadMenu();

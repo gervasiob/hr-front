@@ -42,7 +42,7 @@ import { onMounted, ref } from 'vue';
 import { UserOutlined, LockOutlined } from '@ant-design/icons-vue';
 import { useRouter } from 'vue-router';
 import { getToken, setTokenHeader } from '@/api/apiUrls';
-
+import { message } from 'ant-design-vue'
 export default {
   name: 'LoginIndex',
   components: {
@@ -78,7 +78,14 @@ export default {
         setTokenHeader();
       } catch (error) {
         console.error('Error logging in', error);
-        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error en el logueo: ' + error }));
+        
+            // Si error es un objeto con detalles de validación
+        if (error?.response?.data) {
+          const messages = Object.values(error.response.data).flat().join(' ')
+          message.error(`Errores: ${messages}`)
+        } else {
+          message.error('Error inesperado al guardar el item')
+        }
       }
     };
 
