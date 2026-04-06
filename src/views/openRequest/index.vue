@@ -3,7 +3,7 @@
     <div class="header">
       <a-row>
         <a-col :span="16" style="text-align: left">
-          <h2>{{ titleText }} ACA</h2>
+          <h2>{{ titleText }}</h2>
         </a-col>
         <a-col :span="4" style="text-align: right">
           <a-button type="primary" @click="openForm(null)">Nuevo</a-button>
@@ -38,26 +38,14 @@
     </BasicTable>
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
-      :confirm-loading="modalLoading" @ok="handleModalOk" destroy-on-close="true">
-      <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
+      :confirm-loading="modalLoading" @ok="handleModalOk" :destroy-on-close="true">
+      <!-- <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
         :on-submit="handleProcessedForm" :fetch-data="fetchQuery">
-
-        <!-- <template #custom-field="{ field, value, index }">
-          <a-steps :current="currentFeedbackIndex" :items="feedbackItems" size="small"></a-steps>
-          <div style="margin-top: 16px;">
-            <a-select v-model:value="currentFeedbackIndex" style="width: 100%" placeholder="Seleccionar estado">
-              <a-select-option v-for="(item, idx) in feedbackItems" :key="idx" :value="idx">
-                {{ item.title }}
-              </a-select-option>
-            </a-select>
-          </div>
-          <div style="margin-top: 16px;">
-            <label>Proceso Observaciones</label>
-            <a-textarea v-model:value="processReason" placeholder="Ingrese observaciones del proceso" :rows="4"
-              style="margin-top: 8px;" />
-          </div>
-        </template> -->
-      </BasicForm>
+      </BasicForm> -->
+      <OpenRequestForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
+        :on-submit="handleProcessedForm" :fetch-data="fetchQuery">
+      </OpenRequestForm>
+      
     </a-modal>
 
     <a-modal v-model:open="showDownloadModal" title="Seleccionar Modelo de CV" @ok="confirmDownload"
@@ -82,7 +70,6 @@
 
     <a-modal v-model:open="showFormFeedback" title="Feedback Estado" :footer="null" width="900px" destroyOnClose
       @cancel="closeFeedbackModal">
-
       <FormFeedback ref="feedbackWizardRef" v-if="selectedFeedbackRecord" :record="selectedFeedbackRecord"
         :totalSteps="feedbackItems.length" :initialStep="currentFeedbackIndex + 1" v-model="feedbackDraft"
         :loading="savingStep" @step-change="onFeedbackStepChange" @finish="saveFeedbackWizard"
@@ -127,10 +114,11 @@ import BasicForm from '@/components/form/basicForm.vue'
 import { fetch } from '@/api/model/model.js'
 import { columns } from './config/columns'
 import { filters } from './config/filters'
-import { candidateFormFields as fields } from './config/formFields.js'
+import { formFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel, exportToWord } from '@/api/model/importExport'
 import FormFeedback from './components/form.vue'
+import OpenRequestForm from './components/form.vue'
 
 import { useRoute } from 'vue-router';
 
