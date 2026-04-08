@@ -1,49 +1,73 @@
 export const columns = [
+  // {
+  //   title: 'Búsqueda',
+  //   field: 'search',
+  //   type: 'button',
+  //   cast: {
+  //     source: 'search-requests/',
+  //     valueField: 'id',
+  //     labelField: 'id',
+  //   },
+  //   buttonConfig: {
+  //     target: '_blank', // Target del enlace (opcional, por defecto: '_self')
+  //     getUrl: (value) => `/pcp/list?id=${value}`, // Función para generar la URL (opcional)
+  //     onClick: (value, record) => { /* función al hacer click */ } // Manejador de click (opcional)
+  //   }
+  // },
+  // {
+  //   title: 'Código de búsqueda', field: 'search_code', sorter: true,
+  //   width: 260,
+  // },
   {
-    title: 'Búsqueda',
-    field: 'search',
-    type: 'button',
+    title: 'Comercial', field: 'comerciales', sorter: true,
     cast: {
-      source: 'search-requests/',
+      source: 'users/',
       valueField: 'id',
-      labelField: 'id',
-    },
-    buttonConfig: {
-      target: '_blank', // Target del enlace (opcional, por defecto: '_self')
-      getUrl: (value) => `/pcp/list?id=${value}`, // Función para generar la URL (opcional)
-      onClick: (value, record) => { /* función al hacer click */ } // Manejador de click (opcional)
-    }
-  },
-  {
-    title: 'Código de búsqueda', field: 'search_code', sorter: true,
-    width: 260,
-  },
-  {
-    title: 'Descargar CV',
-    field: 'actions',
-    operation: {
-      slots: true,
-      align: 'center',
-      width: 160,
-      actions: [
-        {
-          label: '',
-          type: 'link',
-          event: 'download-cv',
-          danger: false,
-          icon: 'DownloadOutlined'
-        }
-      ]
-    }
-  },
-  {
-    title: 'Mail del Candidato', field: 'candidate', sorter: true,
-    cast: {
-      source: 'candidates/',
-      valueField: 'id',
-      labelField: 'email',
+      labelField: 'username',
     },
   },
+  {
+    title: 'Cliente', field: 'client', sorter: true,
+    cast: {
+      source: 'clients/',
+      valueField: 'id',
+      labelField: 'name',
+    },
+  },
+  {
+    title: 'Cliente Secundario', field: 'secondClient', sorter: true,
+    cast: {
+      source: 'clients/',
+      valueField: 'id',
+      labelField: 'name',
+    },
+  },
+  // {
+  //   title: 'Descargar CV',
+  //   field: 'actions',
+  //   operation: {
+  //     slots: true,
+  //     align: 'center',
+  //     width: 160,
+  //     actions: [
+  //       {
+  //         label: '',
+  //         type: 'link',
+  //         event: 'download-cv',
+  //         danger: false,
+  //         icon: 'DownloadOutlined'
+  //       }
+  //     ]
+  //   }
+  // },
+  // {
+  //   title: 'Mail del Candidato', field: 'candidate', sorter: true,
+  //   cast: {
+  //     source: 'candidates/',
+  //     valueField: 'id',
+  //     labelField: 'email',
+  //   },
+  // },
 
   {
     title: 'Reclutador', field: 'recruiter', sorter: true,

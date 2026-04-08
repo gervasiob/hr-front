@@ -1,15 +1,40 @@
 // src/views/sub-profiles/config/formFields.js
 export const candidateFormFields = [
-    { label: 'Sub Perfil', field: 'name', type: 'input', span: 12, required: true },
     {
         label: 'Perfil',
-        field: 'primary_profile',
+        field: 'profile',
         type: 'api-select',
         mode: 'single',
         span: 12,
         required: true,
         endpoint: 'primary-profiles/', // <- el endpoint real que usás
-        valueField: 'id',       // <- nombre del campo que se usará como `value`
-        nameField: 'name',      // <- nombre del campo que se usará como `label`
+        valueField: 'id',
+        nameField: 'name',
+    },
+    {
+        label: 'Sub Perfil',
+        field: 'subprofile',
+        type: 'api-select',
+        mode: 'single',
+        span: 12,
+        required: true,
+        endpoint: 'sub-profiles/', // <- el endpoint real que usás
+        valueField: 'id',
+        nameField: 'name',
+        addField: 'primary_profile', // Depende del campo 'profile' y envía el parámetro 'primary_profile'
+        dependsOn: 'primary_profile',
+        dependsParam: 'primary_profile',
+    },
+    {
+        label: 'Seniority',
+        field: 'seniority',
+        type: 'api-select',
+        mode: 'single',
+        span: 12,
+        required: true,
+        endpoint: 'seniority-levels/', // <- el endpoint real que usás
+        valueField: 'id',
+        nameField: 'name',
+        castResponseTo: 'integer',
     },
 ];

@@ -79,7 +79,7 @@ export const formFields = [
       },
       {
         label: 'Código Accenture',
-        field: 'code',
+        field: 'codigo',
         type: 'input',
         span: 8,
         required: (data) => data.client && data.client.name === 'Accenture',

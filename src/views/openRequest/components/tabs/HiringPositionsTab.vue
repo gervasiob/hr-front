@@ -1,6 +1,6 @@
 <template>
   <div>
-    <HiringPositions :searchRequest="searchRequest" />
+    <HiringPositions :id="id" />
   </div>
 </template>
 
@@ -10,7 +10,7 @@ import HiringPositions from '@/views/adm/hiringPositions/index.vue'
 import { fetch } from '@/api/model/model.js';
 
 const props = defineProps({
-  searchRequest: {
+  id: {
     type: [String, Number],
     default: null,
   },
@@ -21,6 +21,7 @@ defineOptions({
 
 const loading = ref(false);
 const positions = ref([]);
+const searchRequest = ref(props.id);
 
 const columns = [
   {
@@ -36,13 +37,13 @@ const columns = [
 ];
 
 const fetchPositions = async () => {
-  if (!props.searchRequest) {
+  if (!props.id) {
     positions.value = [];
     return;
   }
   loading.value = true;
   try {
-    const params = { search_request: props.searchRequest };
+    const params = { search_request: props.id };
     const data = await fetch('get', 'hiring-positions/', params);
     positions.value = data.results || data;
   } catch (error) {

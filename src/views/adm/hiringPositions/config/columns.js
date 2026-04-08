@@ -1,11 +1,26 @@
 // src/views/candidates/config/columns.js
 
 export const columns = [
-  { title: 'Sub Perfil', field: 'name', sorter: true },
   {
-    title: 'Perfil', field: 'primary_profile',
+    title: 'Perfil', field: 'profile',
     cast: {
       source: 'primary-profiles/',
+      valueField: 'id',
+      labelField: 'name',
+    },
+  },
+  {
+    title: 'Sub Perfil', field: 'subprofile',
+    cast: {
+      source: 'sub-profiles/',
+      valueField: 'id',
+      labelField: 'name',
+    },
+  },
+  {
+    title: 'Seniority', field: 'seniority',
+    cast: {
+      source: 'seniority-levels/',
       valueField: 'id',
       labelField: 'name',
     },

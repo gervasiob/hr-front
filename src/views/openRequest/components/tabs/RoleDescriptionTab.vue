@@ -173,7 +173,7 @@ export default {
 
         let response;
         if (props.id) {
-          response = await fetch('put', `search-requests/${props.id}`, payload);
+          response = await fetch('put', `search-requests/${props.id}/`, payload);
         } else {
           response = await fetch('post', 'search-requests/', payload);
         }

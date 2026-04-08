@@ -8,7 +8,7 @@
         <RoleDescriptionTab :id="searchRequestId" @created="handleCreated" />
       </a-tab-pane>
       <a-tab-pane key="puestos" tab="Posiciones a Cubrir" :disabled="handleDisabled">
-        <HiringPositionsTab />
+        <HiringPositionsTab :id="searchRequestId" />
       </a-tab-pane>
       <a-tab-pane key="propuesta" tab="Propuesta / Condiciones">
         <ProposalTab />
@@ -33,10 +33,17 @@ import RequiredQuestionsTab from './tabs/RequiredQuestionsTab.vue';
 import CandidatesTab from './tabs/CandidatesTab.vue';
 import HiringPositionsTab from './tabs/HiringPositionsTab.vue';
 
+const props = defineProps({
+  id: {
+    type: Number,
+    default: null
+  }
+});
+
 // estado activo del tab
 const activeKey = ref('descripcion');
 
-const searchRequestId = ref(null);
+const searchRequestId = ref(props.id);
 
 function handleCreated(id) {
   searchRequestId.value = id;

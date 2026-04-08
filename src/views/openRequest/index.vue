@@ -37,8 +37,8 @@
 
     </BasicTable>
 
-    <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
-      :confirm-loading="modalLoading" @ok="handleModalOk" :destroy-on-close="true">
+    <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cerrar"
+      :confirm-loading="modalLoading" @ok="handleModalOk" :destroy-on-close="true" :ok-button-props="{ style: { display: 'none' } }">
       <!-- <BasicForm ref="formRef" :id="selectedId" :is-new="newForm" :fields="fields" :model="modelName"
         :on-submit="handleProcessedForm" :fetch-data="fetchQuery">
       </BasicForm> -->

@@ -62,6 +62,13 @@ const modelName = 'hiring-positions'
 const modelNameSingle = 'hiring-position'
 const endpoint = modelName + '/'
 
+// parámetros particulares
+const props = defineProps({
+  id: {
+    type: Number,
+    default: null
+  },
+})
 
 onMounted(async () => {
   await loadCastingLists()
@@ -85,7 +92,7 @@ async function fetchQuery() {
       limit,
       offset
     }
-
+    params.search_request = props.id;
     const data = await fetch('get', endpoint, params)
     let result = []
 
@@ -178,6 +185,7 @@ function handleViewCV(candidate) {
 
 async function handleProcessedForm(processedForm) {
   try {
+    processedForm.search_request = props.id;
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)
     } else {
