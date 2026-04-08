@@ -1,9 +1,11 @@
 <template>
-  <div>Propuesta / Condiciones Content</div>
+  <ProposalForm />
 </template>
 
-<script>
-export default {
-  name: 'ProposalTab',
-};
+<script setup>
+defineOptions({
+  name: 'ProposalTab'
+})
+
+import ProposalForm from '../proposal/index.vue'
 </script>
