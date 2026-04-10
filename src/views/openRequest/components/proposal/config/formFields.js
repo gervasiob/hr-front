@@ -18,7 +18,7 @@ export const candidateFormFields = [
       type: 'api-select',
       required: true,
       span: 6,
-      endpoint: 'search_types/',
+      endpoint: 'search-types/',
       valueField: 'id',
       nameField: 'name',
     },
@@ -39,7 +39,7 @@ export const candidateFormFields = [
     {
       label: 'Tope Salarial Bruto',
       field: 'salary_max',
-      type: 'input-number',
+      type: 'input',
       span: 6,
       required: true,
       disabledField: 'disable_salary_max',
@@ -189,28 +189,52 @@ export const candidateFormFields = [
     },
   
     // Idiomas
+    
     {
       label: 'Idioma',
       field: 'search_requests_languages',
-      type: 'select',
-      span: 6,
-      mode: 'multiple',
-      options: [
-        { label: 'Inglés', value: 'ingles' },
-        { label: 'Chino', value: 'chino' },
-        { label: 'Portugués', value: 'portugues' },
-      ],
-    },
-    {
+      type: 'api-select',
+      mode: 'single',
+      span: 12,
+      required: true,
+      endpoint: 'languages/', // <- el endpoint real que usás
+      valueField: 'id',
+      nameField: 'name',
+  },
+  {
       label: 'Nivel',
       field: 'language_level',
-      type: 'select',
-      span: 6,
-      options: [
-        { label: 'Intermedio', value: 'intermedio' },
-        { label: 'Avanzado', value: 'avanzado' },
-      ],
-    },
+      type: 'api-select',
+      mode: 'single',
+      span: 12,
+      required: true,
+      endpoint: 'written-level/', // <- el endpoint real que usás
+      valueField: 'id',
+      nameField: 'name',
+  },
+ 
+    // {
+    //   label: 'Idioma',
+    //   field: 'search_requests_languages',
+    //   type: 'select',
+    //   span: 6,
+    //   mode: 'multiple',
+    //   options: [
+    //     { label: 'Inglés', value: 'ingles' },
+    //     { label: 'Chino', value: 'chino' },
+    //     { label: 'Portugués', value: 'portugues' },
+    //   ],
+    // },
+    // {
+    //   label: 'Nivel',
+    //   field: 'language_level',
+    //   type: 'select',
+    //   span: 6,
+    //   options: [
+    //     { label: 'Intermedio', value: 'intermedio' },
+    //     { label: 'Avanzado', value: 'avanzado' },
+    //   ],
+    // },
   
     // Beneficios
     {
