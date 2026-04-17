@@ -1,10 +1,17 @@
 <template>
-   <QuestionForm />
+   <QuestionForm :id="id"/>
 </template>
 
-<script>
-import QuestionForm from '../questions/index.vue'
-export default {
-  name: 'RequiredQuestionsTab',
-};
+<script setup>
+import QuestionForm from './questions/index.vue'
+const props = defineProps({
+  id: {
+    type: [String, Number],
+    default: null,
+  },
+});
+defineOptions({
+  name: 'RequiredQuestionsTab'
+})
+
 </script>

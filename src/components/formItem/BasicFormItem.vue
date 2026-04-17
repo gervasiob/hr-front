@@ -128,6 +128,10 @@ const props = defineProps({
         type: [Number, String],
         required: false
     },
+    searchRequest: {
+        type: [Number, String],
+        required: false
+    },
     uniqueRow: {
         type: Boolean,
         default: false
@@ -371,6 +375,9 @@ const removeItem = async (index) => {
         if (props.candidateId) {
             formData.items[index].candidate = parseInt(props.candidateId);
         }
+        if (props.searchRequest) {
+            formData.items[index].search_request = parseInt(props.searchRequest);
+        }
         const id = formData.items[index].id
         const isValidId = id && Number.isInteger(Number(id)) && Number(id) > 0;
         if (isValidId) {
@@ -392,6 +399,9 @@ const saveItem = async (index) => {
 
         if (props.candidateId) {
             formData.items[index].candidate = parseInt(props.candidateId);
+        }
+        if (props.searchRequest) {
+            formData.items[index].search_request = parseInt(props.searchRequest);
         }
         if (props.formattedCv) {
             formData.items[index].formatted_cv = parseInt(props.formattedCv);
@@ -513,6 +523,9 @@ const onFinish = async (values) => {
         if (props.candidateId) {
             values.items.map(i => i.candidate = parseInt(props.candidateId));
         }
+        if (props.searchRequest) {
+            values.items.map(i => i.search_request = parseInt(props.searchRequest));
+        }
 
         const hasMissing = values.items.some((item, idx) => {
             return props.fields
@@ -560,10 +573,16 @@ async function fetchQuery() {
     loading.value = true
     try {
         const params = {}
-        if (!props.candidateId) {
-            throw console.error('No se ha proporcionado un ID de candidato');
+        if (!props.candidateId && !props.searchRequest) {
+            throw console.error('No se ha proporcionado un ID de candidato o search request');
         }
-        params.candidate = props.candidateId
+
+        if(props.candidateId) {
+            params.candidate = props.candidateId
+        }
+        if(props.searchRequest) {
+            params.search_request = props.searchRequest
+        }
         const listEndpointsFormatted = [
             'formatted-cv-work-experiences/',
             'formatted-cv-educations/',
@@ -581,7 +600,6 @@ async function fetchQuery() {
         } else {
             result = data
         }
-
         // Cast response data types based on field configuration
         result.forEach(item => {
             props.fields.forEach(field => {

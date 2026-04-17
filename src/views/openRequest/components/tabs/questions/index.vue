@@ -5,7 +5,7 @@
         <h3>{{ titleText }}</h3>
       </a-col>
     </a-row>
-    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :candidate-id="candidateId"
+    <BasicFormItem ref="formItemRef" :fields="fields" :save-endpoint="endpoint" :search-request="id"
       :read-only="readOnly" :unique-row="false" />
   </div>
 </template>
@@ -21,19 +21,18 @@ import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
 import { exportToExcel } from '@/api/model/importExport'
 
+defineOptions({
+  name: 'QuestionForm'
+})
 const props = defineProps({
-  candidateId: {
-    type: [Number, String],
-    default: null
-  },
-  formattedCvId: {
-    type: [Number, String],
-    default: null
-  },
   readOnly: {
     type: Boolean,
     default: false
-  }
+  },
+  id: {
+    type: [String, Number],
+    default: null,
+  },
 });
 
 const router = useRouter()
@@ -52,7 +51,7 @@ const selectedId = ref(null)
 // config parameters
 const titleText = 'Preguntas Obligatorias'
 const itemText = 'Pregunta'
-const modelName = 'search-requests-questions'
+const modelName = 'search-request-question'
 const modelNameSingle = 'search-request-question'
 const endpoint = modelName + '/'
 
@@ -75,8 +74,7 @@ async function fetchQuery() {
     const params = {
       ...baseParams,
       ...orderingParam,
-      candidate: props.candidateId,
-      formattedCv: props.formattedCvId,
+      search_request: props.id,
       limit,
       offset
     }
@@ -169,7 +167,7 @@ function handleEdit(item) {
 }
 
 async function handleProcessedForm(processedForm) {
-  processedForm = { ...processedForm, candidate: props.candidateId, formatted_cv: props.formattedCvId, }
+  processedForm = { ...processedForm }
   try {
     if (processedForm.id) {
       await fetch('put', endpoint, processedForm, processedForm.id)

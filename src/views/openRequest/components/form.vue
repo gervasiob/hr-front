@@ -11,13 +11,13 @@
         <HiringPositionsTab :id="searchRequestId" />
       </a-tab-pane>
       <a-tab-pane key="propuesta" tab="Propuesta / Condiciones">
-        <ProposalTab />
+        <ProposalTab :id="searchRequestId"/>
       </a-tab-pane>
       <a-tab-pane key="preguntas" tab="Preguntas Obligatorias">
-        <RequiredQuestionsTab />
+        <RequiredQuestionsTab :id="searchRequestId"/>
       </a-tab-pane>
       <a-tab-pane key="candidatos" tab="Candidatos (9)">
-        <CandidatesTab />
+        <CandidatesTab :id="searchRequestId"/>
       </a-tab-pane>
     </a-tabs>
   </div>
@@ -44,6 +44,7 @@ const props = defineProps({
 const activeKey = ref('descripcion');
 
 const searchRequestId = ref(props.id);
+console.log('searchReqeustId', searchRequestId)
 
 function handleCreated(id) {
   searchRequestId.value = id;
