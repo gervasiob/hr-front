@@ -2,13 +2,25 @@ import axios from 'axios';
 // export const BASE_URL = 'http://192.168.0.206:8001/';
 import { useRoute } from 'vue-router';
 
-// const stage = 'PROD'; // Cambiar por PROD
-const stage = 'dev'; // Cambiar por PROD
+// const stage = 'PROD'; // PROD
+const stage = 'dev'; // DEV/UAT
 localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 
+
+export let BASE_URL_DEV = 'https://hr.ngovatek.com/api/';
+export let BASE_URL_LOGIN_DEV = 'https://hr.ngovatek.com/api/'
+export let BASE_URL_PROD = 'http://45.227.161.159/api/';
+export let BASE_URL_LOGIN_PROD = 'http://45.227.161.159/api/'
 export let BASE_URL = 'https://hr.ngovatek.com/api/';
 export let BASE_URL_LOGIN = 'https://hr.ngovatek.com/api/'
+if (stage === 'PROD') {
+    BASE_URL = BASE_URL_PROD
+    BASE_URL_LOGIN = BASE_URL_LOGIN_PROD
+} else {
+    BASE_URL = BASE_URL_DEV
+    BASE_URL_LOGIN = BASE_URL_LOGIN_DEV
+}
 
 
 // Add this for debugging
