@@ -1,32 +1,40 @@
 export const columns = [
   {
-    title: 'Comercial', field: 'comerciales', sorter: true,
+    title: 'Comercial',
+    field: 'comerciales',
+    sorter: true,
     cast: {
       source: 'users/',
       valueField: 'id',
-      labelField: 'username',
-    },
+      labelField: 'username'
+    }
   },
   {
-    title: 'Cliente', field: 'client_id', sorter: true,
+    title: 'Cliente',
+    field: 'client_id',
+    sorter: true,
     cast: {
       source: 'clients/',
       valueField: 'id',
-      labelField: 'name',
-    },
+      labelField: 'name'
+    }
   },
   {
-    title: 'Cliente Secundario', field: 'second_client_id', sorter: true,
+    title: 'Cliente Secundario',
+    field: 'second_client_id',
+    sorter: true,
     width: 80,
     cast: {
       source: 'clients/',
       valueField: 'id',
-      labelField: 'name',
-    },
+      labelField: 'name'
+    }
   },
   {
-    title: 'Codigo Accenture', field: 'codigo', sorter: true,
-    width: 80,
+    title: 'Codigo Accenture',
+    field: 'codigo',
+    sorter: true,
+    width: 80
   },
 
   // {
@@ -75,6 +83,7 @@ export const columns = [
       align: 'center',
       width: 160,
       actions: [
+        { label: 'Ver', type: 'link', event: 'view-open-request', danger: false, icon: 'eye' },
         { label: 'Editar', type: 'link', event: 'edit', danger: false },
         // { label: 'Feedback', type: 'link', event: 'open-feedback', danger: false },
         // { label: 'Ver Informe', type: 'link', event: 'open-detail', danger: false },
@@ -82,4 +91,4 @@ export const columns = [
       ]
     }
   }
-]
+];

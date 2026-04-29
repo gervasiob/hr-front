@@ -1,0 +1,1142 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>PCP Detalle - Rediseno de Referencia</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <header class="topbar">
+        <div>
+          <p class="eyebrow">Sistema PCP</p>
+          <h1>PCP Detalle</h1>
+        </div>
+        <div class="topbar-actions">
+          <button class="button button-secondary">Descargar listado</button>
+          <button class="button button-primary">Nuevo</button>
+        </div>
+      </header>
+
+      <main class="workspace">
+        <section class="hero-card">
+          <div class="hero-copy">
+            <span class="status-pill">Perfil activo</span>
+            <h2>Analista de AI</h2>
+            <p>
+              Propuesta de UI para evolucionar la vista basica hacia una pantalla
+              de detalle mas rica, mas escaneable y alineada tanto al sistema de
+              referencia como a la estructura real del Excel operativo.
+            </p>
+          </div>
+
+          <div class="hero-actions">
+            <button class="button button-ghost">Guardar borrador</button>
+            <button class="button button-primary">Ingreso a candidatos</button>
+          </div>
+        </section>
+
+        <section class="snapshot-card">
+          <div class="snapshot-grid">
+            <div class="snapshot-item">
+              <span>Requeridor</span>
+              <strong>Rosa Felix</strong>
+            </div>
+            <div class="snapshot-item">
+              <span>Cliente final</span>
+              <strong>MOA</strong>
+            </div>
+            <div class="snapshot-item">
+              <span>Perfil primario</span>
+              <strong>Analista de AI</strong>
+            </div>
+            <div class="snapshot-item">
+              <span>Perfil secundario</span>
+              <strong>-</strong>
+            </div>
+            <div class="snapshot-item">
+              <span>Codigo Accenture</span>
+              <strong>ACC-91</strong>
+            </div>
+            <div class="snapshot-item">
+              <span>Posiciones a cubrir</span>
+              <strong>1</strong>
+            </div>
+            <div class="snapshot-item">
+              <span>Seniority</span>
+              <strong>Senior</strong>
+            </div>
+            <div class="snapshot-item">
+              <span>Podemos postular</span>
+              <strong>Si</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="tabs-card">
+          <nav class="tabs" aria-label="Navegacion del detalle">
+            <button class="tab is-active" data-tab-target="resumen">
+              Resumen
+            </button>
+            <button class="tab" data-tab-target="descripcion">
+              Descripcion del Rol
+            </button>
+            <button class="tab" data-tab-target="condiciones">
+              Propuesta del cliente
+            </button>
+            <button class="tab" data-tab-target="candidatas">
+              Candidatas (6)
+            </button>
+          </nav>
+        </section>
+
+        <section class="filters-card">
+          <div class="section-heading">
+            <div>
+              <p class="section-kicker">Busqueda enriquecida</p>
+              <h3>Filtros rapidos</h3>
+            </div>
+            <span class="caption">Conserva la logica del sistema basico, pero la integra al detalle</span>
+          </div>
+
+          <div class="filters-grid">
+            <label class="field">
+              <span>Skills requeridas</span>
+              <input type="text" placeholder="Java, Spring Boot, SQL" />
+            </label>
+            <label class="field">
+              <span>Skills opcionales</span>
+              <input type="text" placeholder="AWS, Kafka, Docker" />
+            </label>
+            <label class="field">
+              <span>Soft skills</span>
+              <input type="text" placeholder="Liderazgo, mentoring" />
+            </label>
+            <div class="filter-actions">
+              <button class="button button-primary">Buscar</button>
+              <button class="button button-secondary">Reset</button>
+            </div>
+          </div>
+        </section>
+
+        <section class="detail-grid">
+          <div class="main-column">
+            <article class="content-card tab-panel is-visible" id="resumen">
+              <div class="card-title-row">
+                <div>
+                  <p class="section-kicker">Vista general</p>
+                  <h3>Descripcion del rol</h3>
+                </div>
+                <span class="mini-chip">Cliente: Accenture</span>
+              </div>
+
+              <div class="stack">
+                <section class="info-block">
+                  <div class="info-heading">
+                    <h4>Descripcion de tareas</h4>
+                    <span class="mini-tag">AI generado</span>
+                  </div>
+                  <p>
+                    Buscamos una persona con foco en backend enterprise, diseno
+                    de APIs, mantenimiento evolutivo y participacion en celulas
+                    de desarrollo con contacto directo con cliente y negocio.
+                  </p>
+                </section>
+
+                <section class="info-block">
+                  <div class="info-heading">
+                    <h4>Requerimientos tecnicos</h4>
+                    <span class="mini-tag">Obligatorios</span>
+                  </div>
+                  <p>
+                    Experiencia comprobable con Java, SQL, Hibernate y
+                    Spring Boot. Se valoran practicas de clean code, testing y
+                    documentacion tecnica.
+                  </p>
+                </section>
+
+                <section class="skills-block">
+                  <div>
+                    <h4>Skills requeridas</h4>
+                    <div class="chip-row">
+                      <span class="skill-chip required">Java</span>
+                      <span class="skill-chip required">SQL</span>
+                      <span class="skill-chip required">Hibernate</span>
+                      <span class="skill-chip required">Spring Boot</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4>Skills opcionales</h4>
+                    <div class="chip-row">
+                      <span class="skill-chip optional">AWS</span>
+                      <span class="skill-chip optional">Kafka</span>
+                      <span class="skill-chip optional">Docker</span>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h4>Soft skills</h4>
+                    <div class="chip-row">
+                      <span class="skill-chip soft">Comunicacion</span>
+                      <span class="skill-chip soft">Autonomia</span>
+                      <span class="skill-chip soft">Trabajo en equipo</span>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="info-block">
+                  <div class="info-heading">
+                    <h4>Requisito soft</h4>
+                    <span class="mini-tag">Evaluable</span>
+                  </div>
+                  <p>
+                    Perfil con buen nivel de interlocucion, orden para trabajar
+                    con prioridades cambiantes y capacidad para destrabar
+                    conversaciones con areas funcionales.
+                  </p>
+                </section>
+              </div>
+            </article>
+
+            <article class="content-card tab-panel" id="descripcion">
+              <div class="card-title-row">
+                <div>
+                  <p class="section-kicker">Profundidad funcional</p>
+                  <h3>Descripcion ampliada</h3>
+                </div>
+              </div>
+
+              <div class="timeline">
+                <div class="timeline-item">
+                  <span class="timeline-dot"></span>
+                  <div>
+                    <h4>Ownership tecnico</h4>
+                    <p>
+                      Participacion en decisiones de arquitectura y soporte a
+                      integraciones con sistemas legados.
+                    </p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <span class="timeline-dot"></span>
+                  <div>
+                    <h4>Colaboracion con cliente</h4>
+                    <p>
+                      Reuniones semanales de seguimiento, refinamiento y ajuste
+                      de prioridades del roadmap.
+                    </p>
+                  </div>
+                </div>
+                <div class="timeline-item">
+                  <span class="timeline-dot"></span>
+                  <div>
+                    <h4>Calidad y documentacion</h4>
+                    <p>
+                      Participacion en code reviews, seguimiento de deuda tecnica
+                      y definicion de criterios de aceptacion.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </article>
+
+            <article class="content-card tab-panel" id="condiciones">
+              <div class="card-title-row">
+                <div>
+                  <p class="section-kicker">Lectura operativa</p>
+                  <h3>Propuesta del cliente</h3>
+                </div>
+              </div>
+
+              <div class="two-col-list proposal-grid">
+                <div class="metric-card">
+                  <span>Forma de contratacion</span>
+                  <strong>Opciones desde backend</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Contrata</span>
+                  <strong>Ketos Delphin</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Tope salarial bruto</span>
+                  <strong>st</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Homeworking</span>
+                  <strong>Opciones desde backend</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Prepaga</span>
+                  <strong>Swiss Medical</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Disposicion de la jornada</span>
+                  <strong>Lunes a Viernes 9 a 18</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Zona de trabajo</span>
+                  <strong>La Victoria, Buenos Aires</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Duracion del proyecto</span>
+                  <strong>Indeterminado</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Guardias</span>
+                  <strong>No</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Ajustes salariales</span>
+                  <strong>A definir</strong>
+                </div>
+                <div class="metric-card">
+                  <span>Requisito de idioma</span>
+                  <strong>A definir</strong>
+                </div>
+                <div class="metric-card metric-card-wide">
+                  <span>Beneficios y otros</span>
+                  <strong>Espacio reservado para contenido extenso o multilinea</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="content-card tab-panel" id="candidatas">
+              <div class="card-title-row">
+                <div>
+                  <p class="section-kicker">Estado del pipeline</p>
+                  <h3>Ingreso a tabla de candidatas</h3>
+                </div>
+              </div>
+
+              <div class="candidate-table">
+                <div class="table-head">
+                  <span>Nombre</span>
+                  <span>Match tecnico</span>
+                  <span>Soft skills</span>
+                  <span>Estado</span>
+                </div>
+                <div class="table-row">
+                  <span>Maria Gomez</span>
+                  <span>92%</span>
+                  <span>Muy alto</span>
+                  <span class="state">Entrevista</span>
+                </div>
+                <div class="table-row">
+                  <span>Lucas Ramirez</span>
+                  <span>88%</span>
+                  <span>Alto</span>
+                  <span class="state state-neutral">Review</span>
+                </div>
+                <div class="table-row">
+                  <span>Julieta Torres</span>
+                  <span>81%</span>
+                  <span>Alto</span>
+                  <span class="state">Shortlist</span>
+                </div>
+              </div>
+            </article>
+          </div>
+
+          <aside class="side-column">
+            <article class="side-card">
+              <div class="card-title-row compact">
+                <div>
+                  <p class="section-kicker">Metadatos</p>
+                  <h3>Informacion de la OP</h3>
+                </div>
+              </div>
+
+              <div class="metadata-grid">
+                <div>
+                  <span>Codigo de OP</span>
+                  <strong>24019</strong>
+                </div>
+                <div>
+                  <span>Codigo opcional</span>
+                  <strong>ACC-91</strong>
+                </div>
+                <div>
+                  <span>Fecha de alta</span>
+                  <strong>22/04/2026</strong>
+                </div>
+                <div>
+                  <span>Nivel</span>
+                  <strong>Senior</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="side-card">
+              <div class="card-title-row compact">
+                <div>
+                  <p class="section-kicker">Cliente</p>
+                  <h3>Propuesta del cliente</h3>
+                </div>
+                <span class="mini-chip">CPQ</span>
+              </div>
+
+              <div class="detail-list">
+                <div class="detail-row">
+                  <span>Forma de contratacion</span>
+                  <strong>Opciones desde backend</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Contrata</span>
+                  <strong>Ketos Delphin</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Tope salarial bruto</span>
+                  <strong>st</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Homeworking</span>
+                  <strong>Opciones desde backend</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Prepaga</span>
+                  <strong>Swiss Medical</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Disposicion de la jornada</span>
+                  <strong>Lunes a Viernes 9 a 18</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Zona de trabajo</span>
+                  <strong>La Victoria, Buenos Aires</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Duracion del proyecto</span>
+                  <strong>Indeterminado</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Guardias</span>
+                  <strong>No</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Ajustes salariales</span>
+                  <strong>A definir</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Requisito de idioma</span>
+                  <strong>A definir</strong>
+                </div>
+                <div class="detail-row">
+                  <span>Beneficios y otros</span>
+                  <strong>Espacio abierto para detalle extendido</strong>
+                </div>
+              </div>
+            </article>
+
+            <article class="side-card">
+              <div class="card-title-row compact">
+                <div>
+                  <p class="section-kicker">Screening</p>
+                  <h3>Preguntas obligatorias</h3>
+                </div>
+              </div>
+
+              <ol class="questions-list side-questions">
+                <li>Trabajaste desarrollando agentes de AI o flujos que integren modelos con APIs o sistemas internos?</li>
+                <li>Que servicios cloud usaste en proyectos de AI o automatizacion?</li>
+                <li>Llegaste a implementar soluciones usando servicios como functions serverless, workflows u orquestacion?</li>
+                <li>Con que lenguajes trabajas habitualmente y en que tipo de soluciones los usaste recientemente?</li>
+                <li>Hay experiencia reciente trabajando con equipos de negocio y discovery tecnico?</li>
+              </ol>
+            </article>
+
+            <article class="side-card emphasis">
+              <div class="card-title-row compact">
+                <div>
+                  <p class="section-kicker">Resumen ejecutivo</p>
+                  <h3>Lo mas importante</h3>
+                </div>
+              </div>
+
+              <ul class="summary-list">
+                <li>La busqueda pasa de tabla vacia a ficha narrativa con contexto.</li>
+                <li>Los skills se vuelven visibles y comparables de un vistazo.</li>
+                <li>La columna lateral concentra datos comerciales y operativos.</li>
+                <li>La navegacion por tabs permite escalar sin saturar la primera vista.</li>
+              </ul>
+            </article>
+          </aside>
+        </section>
+      </main>
+    </div>
+
+    <script src="./app.js"></script>
+  </body>
+</html>
+
+app.js:
+const tabs = document.querySelectorAll("[data-tab-target]");
+const panels = document.querySelectorAll(".tab-panel");
+
+tabs.forEach((tab) => {
+  tab.addEventListener("click", () => {
+    const target = tab.dataset.tabTarget;
+
+    tabs.forEach((item) => item.classList.remove("is-active"));
+    panels.forEach((panel) => panel.classList.remove("is-visible"));
+
+    tab.classList.add("is-active");
+    document.getElementById(target)?.classList.add("is-visible");
+  });
+});
+
+
+style.css
+
+:root {
+  --bg: #f3f6fb;
+  --bg-accent: #e9eef8;
+  --surface: rgba(255, 255, 255, 0.9);
+  --surface-strong: #ffffff;
+  --surface-muted: #f8faff;
+  --border: rgba(30, 53, 92, 0.1);
+  --border-strong: rgba(30, 53, 92, 0.18);
+  --text: #1a2740;
+  --text-soft: #64708a;
+  --primary: #3056d3;
+  --primary-strong: #213d9f;
+  --primary-soft: rgba(48, 86, 211, 0.12);
+  --success-soft: rgba(54, 179, 126, 0.16);
+  --warning-soft: rgba(233, 176, 0, 0.16);
+  --shadow: 0 24px 60px rgba(31, 45, 76, 0.12);
+  --radius-xl: 28px;
+  --radius-lg: 22px;
+  --radius-md: 16px;
+  --radius-sm: 12px;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  margin: 0;
+  min-height: 100%;
+  font-family: "Segoe UI Variable", "Bahnschrift", "Trebuchet MS", sans-serif;
+  color: var(--text);
+  background:
+    radial-gradient(circle at top left, rgba(48, 86, 211, 0.12), transparent 26%),
+    radial-gradient(circle at top right, rgba(39, 72, 163, 0.08), transparent 22%),
+    linear-gradient(180deg, #eef3fb 0%, #f8fbff 100%);
+}
+
+body {
+  padding: 28px;
+}
+
+.shell {
+  max-width: 1480px;
+  margin: 0 auto;
+}
+
+.topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 24px;
+  padding: 28px 30px;
+  border-radius: var(--radius-xl);
+  background: linear-gradient(135deg, #24364f 0%, #344c6c 100%);
+  color: #fff;
+  box-shadow: var(--shadow);
+}
+
+.eyebrow,
+.section-kicker,
+.caption {
+  margin: 0;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.eyebrow,
+.section-kicker {
+  font-size: 0.74rem;
+  font-weight: 700;
+}
+
+.caption {
+  font-size: 0.78rem;
+  color: var(--text-soft);
+}
+
+.topbar h1,
+.hero-copy h2,
+.section-heading h3,
+.card-title-row h3,
+.info-heading h4,
+.skills-block h4,
+.timeline-item h4 {
+  margin: 0;
+}
+
+.topbar h1 {
+  font-size: clamp(1.8rem, 2vw, 2.4rem);
+}
+
+.topbar-actions,
+.hero-actions,
+.filter-actions,
+.card-title-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.button {
+  border: 0;
+  border-radius: 14px;
+  padding: 12px 18px;
+  font: inherit;
+  font-weight: 700;
+  cursor: pointer;
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    background-color 0.2s ease;
+}
+
+.button:hover {
+  transform: translateY(-1px);
+}
+
+.button-primary {
+  background: linear-gradient(135deg, var(--primary) 0%, #3a7cff 100%);
+  color: #fff;
+  box-shadow: 0 14px 28px rgba(48, 86, 211, 0.25);
+}
+
+.button-secondary {
+  background: rgba(255, 255, 255, 0.96);
+  color: #1d2e48;
+}
+
+.button-ghost {
+  background: rgba(255, 255, 255, 0.12);
+  color: #fff;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.workspace {
+  display: grid;
+  gap: 22px;
+  margin-top: 22px;
+}
+
+.hero-card,
+.snapshot-card,
+.tabs-card,
+.filters-card,
+.content-card,
+.side-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow);
+  backdrop-filter: blur(18px);
+}
+
+.hero-card {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 28px 30px;
+  border-radius: var(--radius-xl);
+  position: relative;
+  overflow: hidden;
+}
+
+.hero-card::after {
+  content: "";
+  position: absolute;
+  inset: auto -40px -40px auto;
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(48, 86, 211, 0.15), transparent 65%);
+}
+
+.hero-copy {
+  max-width: 780px;
+  display: grid;
+  gap: 10px;
+}
+
+.hero-copy p {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.65;
+  max-width: 68ch;
+}
+
+.status-pill,
+.mini-chip,
+.mini-tag,
+.skill-chip,
+.state {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  font-weight: 700;
+}
+
+.status-pill {
+  width: fit-content;
+  padding: 7px 12px;
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+  font-size: 0.78rem;
+}
+
+.snapshot-card,
+.tabs-card,
+.filters-card,
+.content-card,
+.side-card {
+  border-radius: var(--radius-lg);
+}
+
+.snapshot-card {
+  padding: 14px;
+  background:
+    linear-gradient(180deg, rgba(176, 157, 212, 0.22), rgba(255, 255, 255, 0.95)),
+    var(--surface);
+}
+
+.snapshot-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.snapshot-item {
+  display: grid;
+  gap: 8px;
+  min-height: 84px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid rgba(88, 68, 130, 0.15);
+  background: rgba(255, 255, 255, 0.8);
+}
+
+.snapshot-item span {
+  color: #695b84;
+  font-size: 0.78rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  font-weight: 700;
+}
+
+.snapshot-item strong {
+  font-size: 1rem;
+}
+
+.tabs-card {
+  padding: 10px;
+}
+
+.tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.tab {
+  border: 0;
+  background: transparent;
+  color: var(--text-soft);
+  font: inherit;
+  font-weight: 700;
+  padding: 14px 18px;
+  border-radius: 14px;
+  cursor: pointer;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.tab:hover,
+.tab.is-active {
+  background: var(--surface-muted);
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+.tab.is-active {
+  box-shadow: inset 0 -3px 0 var(--primary);
+}
+
+.filters-card {
+  padding: 26px 28px;
+}
+
+.section-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: end;
+  margin-bottom: 22px;
+}
+
+.filters-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) auto;
+  gap: 16px;
+  align-items: end;
+}
+
+.field {
+  display: grid;
+  gap: 10px;
+}
+
+.field span {
+  font-size: 0.92rem;
+  font-weight: 700;
+}
+
+.field input {
+  width: 100%;
+  padding: 14px 16px;
+  border-radius: 14px;
+  border: 1px solid var(--border-strong);
+  background: #fff;
+  font: inherit;
+  color: var(--text);
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.field input:focus {
+  border-color: rgba(48, 86, 211, 0.45);
+  box-shadow: 0 0 0 4px rgba(48, 86, 211, 0.1);
+}
+
+.detail-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.7fr) minmax(320px, 0.9fr);
+  gap: 22px;
+}
+
+.main-column,
+.side-column {
+  display: grid;
+  gap: 22px;
+  align-content: start;
+}
+
+.content-card,
+.side-card {
+  padding: 26px 28px;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.is-visible {
+  display: block;
+  animation: fade-up 0.28s ease;
+}
+
+.card-title-row {
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-title-row.compact {
+  align-items: start;
+}
+
+.stack {
+  display: grid;
+  gap: 18px;
+}
+
+.info-block,
+.skills-block,
+.metric-card,
+.candidate-table,
+.side-card.emphasis {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(243, 247, 255, 0.95));
+}
+
+.info-block,
+.skills-block {
+  padding: 18px 20px;
+}
+
+.info-heading {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.info-block p,
+.timeline-item p,
+.questions-list,
+.summary-list {
+  margin: 0;
+  color: var(--text-soft);
+  line-height: 1.65;
+}
+
+.mini-chip,
+.mini-tag {
+  font-size: 0.75rem;
+  padding: 7px 11px;
+}
+
+.mini-chip {
+  background: rgba(27, 42, 76, 0.08);
+  color: var(--text);
+}
+
+.mini-tag {
+  background: var(--primary-soft);
+  color: var(--primary-strong);
+}
+
+.skills-block {
+  display: grid;
+  gap: 18px;
+}
+
+.chip-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.skill-chip {
+  padding: 10px 14px;
+  font-size: 0.84rem;
+}
+
+.skill-chip.required {
+  background: rgba(48, 86, 211, 0.13);
+  color: var(--primary-strong);
+}
+
+.skill-chip.optional {
+  background: var(--warning-soft);
+  color: #8b5f00;
+}
+
+.skill-chip.soft {
+  background: var(--success-soft);
+  color: #176345;
+}
+
+.timeline {
+  display: grid;
+  gap: 18px;
+}
+
+.timeline-item {
+  display: grid;
+  grid-template-columns: 18px 1fr;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: var(--radius-md);
+  background: var(--surface-muted);
+  border: 1px solid var(--border);
+}
+
+.timeline-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: linear-gradient(180deg, #4e7cff, #2748a3);
+  box-shadow: 0 0 0 4px rgba(48, 86, 211, 0.12);
+  margin-top: 6px;
+}
+
+.two-col-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.proposal-grid .metric-card-wide {
+  grid-column: 1 / -1;
+}
+
+.metric-card {
+  display: grid;
+  gap: 8px;
+  padding: 18px 20px;
+}
+
+.metric-card span,
+.metadata-grid span,
+.detail-row span {
+  color: var(--text-soft);
+  font-size: 0.84rem;
+}
+
+.metric-card strong,
+.metadata-grid strong,
+.detail-row strong {
+  font-size: 1rem;
+}
+
+.questions-list,
+.summary-list {
+  padding-left: 20px;
+}
+
+.questions-list li,
+.summary-list li {
+  padding-left: 4px;
+  margin-bottom: 12px;
+}
+
+.side-questions {
+  padding-left: 18px;
+}
+
+.side-questions li {
+  margin-bottom: 14px;
+}
+
+.candidate-table {
+  overflow: hidden;
+}
+
+.table-head,
+.table-row {
+  display: grid;
+  grid-template-columns: 1.4fr 0.8fr 0.9fr 0.8fr;
+  gap: 16px;
+  align-items: center;
+  padding: 16px 18px;
+}
+
+.table-head {
+  background: rgba(48, 86, 211, 0.08);
+  font-weight: 700;
+}
+
+.table-row {
+  border-top: 1px solid var(--border);
+}
+
+.state {
+  width: fit-content;
+  padding: 8px 12px;
+  background: var(--success-soft);
+  color: #176345;
+  font-size: 0.8rem;
+}
+
+.state-neutral {
+  background: rgba(107, 119, 140, 0.14);
+  color: #4c5668;
+}
+
+.metadata-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.metadata-grid div,
+.detail-row {
+  display: grid;
+  gap: 6px;
+}
+
+.detail-list {
+  display: grid;
+  gap: 14px;
+}
+
+.side-card.emphasis {
+  background:
+    radial-gradient(circle at top right, rgba(48, 86, 211, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(242, 247, 255, 0.96));
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 1180px) {
+  .snapshot-grid,
+  .filters-grid,
+  .detail-grid,
+  .two-col-list {
+    grid-template-columns: 1fr;
+  }
+
+  .hero-card,
+  .section-heading {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .filter-actions {
+    justify-content: flex-start;
+  }
+}
+
+@media (max-width: 820px) {
+  body {
+    padding: 16px;
+  }
+
+  .topbar,
+  .hero-card,
+  .snapshot-card,
+  .filters-card,
+  .content-card,
+  .side-card {
+    padding: 20px;
+  }
+
+  .topbar {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .topbar-actions,
+  .hero-actions {
+    width: 100%;
+    flex-direction: column-reverse;
+  }
+
+  .topbar-actions .button,
+  .hero-actions .button,
+  .filter-actions .button {
+    width: 100%;
+  }
+
+  .table-head,
+  .table-row,
+  .metadata-grid {
+    grid-template-columns: 1fr;
+  }
+}
