@@ -331,8 +331,8 @@ async function handleDownloadTemplate() {
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
     )
 
-    const response = await exportToExcel(modelNameSingle, baseParams)
-
+    const response = await exportToExcel(modelNameSingle, {})
+    console.log('response', response)
     message.success('Archivo descargado correctamente')
   } catch (error) {
     console.error('Error al descargar listado:', error)
