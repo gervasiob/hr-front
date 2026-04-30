@@ -11,7 +11,7 @@
         <HiringPositionsTab :id="searchRequestId" />
       </a-tab-pane>
       <a-tab-pane key="propuesta" tab="Propuesta / Condiciones">
-        <ProposalTab :id="searchRequestId"/>
+        <ProposalTab :id="searchRequestId" :candidate-id="searchRequestId"/>
       </a-tab-pane>
       <a-tab-pane key="preguntas" tab="Preguntas Obligatorias">
         <RequiredQuestionsTab :id="searchRequestId"/>
