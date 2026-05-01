@@ -10,8 +10,8 @@ localStorage.setItem('stage', stage)
 
 export let BASE_URL_DEV = 'https://hr.ngovatek.com/api/';
 export let BASE_URL_LOGIN_DEV = 'https://hr.ngovatek.com/api/'
-export let BASE_URL_PROD = 'http://45.227.161.159/api/';
-export let BASE_URL_LOGIN_PROD = 'http://45.227.161.159/api/'
+export let BASE_URL_PROD = 'https://kd-platform.ddns.net:4000/api/';
+export let BASE_URL_LOGIN_PROD = 'https://kd-platform.ddns.net:4000/api/'
 export let BASE_URL = 'https://hr.ngovatek.com/api/';
 export let BASE_URL_LOGIN = 'https://hr.ngovatek.com/api/'
 if (stage === 'PROD') {
