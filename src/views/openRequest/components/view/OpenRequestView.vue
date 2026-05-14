@@ -16,11 +16,6 @@
         <div class="hero-copy">
           <span class="status-pill">Perfil activo</span>
           <h2>{{ formItem.codigo }}</h2>
-          <p>
-            Propuesta de UI para evolucionar la vista basica hacia una pantalla
-            de detalle mas rica, mas escaneable y alineada tanto al sistema de
-            referencia como a la estructura real del Excel operativo.
-          </p>
         </div>
 
         <div class="hero-actions">
@@ -38,6 +33,10 @@
           <div class="snapshot-item">
             <span>Cliente final</span>
             <strong>{{ clientName }}</strong>
+          </div>
+          <div class="snapshot-item">
+            <span>Cliente Secundario</span>
+            <strong>{{ secondClientName }}</strong>
           </div>
           <div class="snapshot-item">
             <span>Perfil primario</span>
@@ -83,7 +82,7 @@
         </nav>
       </section>
 
-      <section class="filters-card">
+      <!-- <section class="filters-card">
         <div class="section-heading">
           <div>
             <p class="section-kicker">Busqueda enriquecida</p>
@@ -110,7 +109,7 @@
             <button class="button button-secondary">Reset</button>
           </div>
         </div>
-      </section>
+      </section> -->
 
       <section class="detail-grid">
         <div class="main-column">
@@ -127,7 +126,7 @@
               <section class="info-block">
                 <div class="info-heading">
                   <h4>Descripcion de tareas</h4>
-                  <span class="mini-tag">AI generado</span>
+                  <!-- <span class="mini-tag">AI generado</span> -->
                 </div>
                 <p>
                   {{ formItem.tasksDescription }}
@@ -149,16 +148,16 @@
                   <h4>Skills requeridas</h4>
                   <div class="chip-row">
                     <span v-for="skill in requiredSkills" :key="skill.id" class="skill-chip required">{{ skill
-                      }}</span>
+                    }}</span>
                   </div>
                 </div>
 
-                <!-- <div>
-                  <h4>Skills opcionales</h4>
+                <div>
+                  <h4>Soft skills</h4>
                   <div class="chip-row">
-                     <span v-for="skill in optionalSkills" :key="skill.id" class="skill-chip optional">{{ skill.name }}</span>
+                     <span v-for="skill in softSkills" :key="skill" class="skill-chip optional">{{ skill }}</span>
                   </div>
-                </div> -->
+                </div>
                 <section class="info-block">
                   <div class="info-heading">
                     <h4>Requisito soft</h4>
@@ -167,20 +166,15 @@
                   <p>
                     {{ formItem.softRequirements }}
                   </p>
-                </section>
-                <div>
-                  <h4>Soft skills</h4>
-                  <div class="chip-row">
-                    <span v-for="skill in softSkills" :key="skill.id" class="skill-chip soft">{{ skill }}</span>
-                  </div>
-                </div>
+                </section>9
               </section>
 
 
             </div>
           </article>
 
-          <article class="content-card tab-panel" :class="{ 'is-visible': activeTab === 'descripcion' }" id="descripcion">
+          <article class="content-card tab-panel" :class="{ 'is-visible': activeTab === 'descripcion' }"
+            id="descripcion">
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">Profundidad funcional</p>
@@ -201,7 +195,8 @@
             </div>
           </article>
 
-          <article class="content-card tab-panel" :class="{ 'is-visible': activeTab === 'condiciones' }" id="condiciones">
+          <article class="content-card tab-panel" :class="{ 'is-visible': activeTab === 'condiciones' }"
+            id="condiciones">
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">Lectura operativa</p>
@@ -426,6 +421,7 @@ const formItem = ref({});
 
 const comercialName = ref('');
 const clientName = ref('');
+const secondClientName = ref('');
 const profileName = ref('');
 const subProfileName = ref('');
 const seniorityName = ref('');
@@ -492,6 +488,7 @@ const fetchAndSetData = async (request) => {
 
     comercialName.value = await getName('users', item.comerciales && item.comerciales[0], 'username');
     clientName.value = await getName('clients', item.clientId);
+    secondClientName.value = await getName('clients', item.secondClientId);
     profileName.value = await getName('primary-profiles', item.profile);
     subProfileName.value = await getName('sub-profiles', item.subprofile);
     seniorityName.value = await getName('seniority-levels', item.seniorityId);
@@ -502,8 +499,9 @@ const fetchAndSetData = async (request) => {
 
     requiredSkills.value = await getSkills(item.requiredSkills);
     optionalSkills.value = await getSkills(item.optionalSkills);
-    softSkills.value = await getSkills(item.softSkills);
-
+    softSkills.value = item.softSkills;
+    console.log('soft skills', softSkills.value)
+    console.log('item', item)
   } catch (e) {
     console.error('Error fetching search request details:', e);
   }
@@ -664,8 +662,8 @@ watch(() => props.openRequest, (newRequest) => {
 }
 
 .button-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, #3a7cff 100%);
-  color: #1a202c;
+  background: linear-gradient(135deg,  #3a7cff  0%, #3a7cff 100%);
+  color: white;
   box-shadow: 0 14px 28px rgba(48, 86, 211, 0.25);
 }
 
@@ -676,8 +674,8 @@ watch(() => props.openRequest, (newRequest) => {
 
 .button-ghost {
   background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #494747;
+  border: 1px solid rgba(75, 9, 9, 0.2);
 }
 
 .workspace {
@@ -742,7 +740,18 @@ watch(() => props.openRequest, (newRequest) => {
   border-radius: 999px;
   font-weight: 700;
 }
-
+.mini-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: #dff4ff;
+  color: #1d6fa5;
+  border: 1px solid #b9e7ff;
+}
 .status-pill {
   width: fit-content;
   padding: 7px 12px;
@@ -960,12 +969,6 @@ watch(() => props.openRequest, (newRequest) => {
   background: rgba(27, 42, 76, 0.08);
   color: var(--text);
 }
-
-.mini-tag {
-  background: var(--primary-soft);
-  color: var(--primary-strong);
-}
-
 .skills-block {
   display: grid;
   gap: 18px;
@@ -989,8 +992,8 @@ watch(() => props.openRequest, (newRequest) => {
 }
 
 .skill-chip.optional {
-  background: var(--warning-soft);
-  color: #8b5f00;
+  background: rgb(62, 228, 137);
+  color: #006b26;
 }
 
 .skill-chip.soft {
