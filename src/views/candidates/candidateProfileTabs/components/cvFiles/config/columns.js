@@ -4,7 +4,7 @@ export const columns = [
   { title: 'Fecha Actualizado', field: 'uploaded_at', sorter: true },
   { title: 'Activo', field: 'is_active', type: 'boolean', sorter: true },
   {
-    title: 'Archivo CV', field: 's3_url',
+    title: 'Archivo CV', field: 's3_key',
   },
   // {
   //   title: 'CV con Formato', field: 'candidate',
