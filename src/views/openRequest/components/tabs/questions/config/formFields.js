@@ -5,7 +5,7 @@ export const candidateFormFields = [
       field: 'question',
       type: 'input',
       required: true,
-      span: 12,
+      span: 24,
     },
   
   ];
