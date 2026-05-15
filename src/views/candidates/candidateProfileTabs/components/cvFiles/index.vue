@@ -114,7 +114,7 @@ async function fetchQuery() {
       totalItems.value = data.count
       fileList.value = result.map(item => ({
         uid: item.id,
-        name: item.s3_url,
+        name: item.s3_key,
         status: 'done',
         url: item.s3_url,
       }))
@@ -122,7 +122,7 @@ async function fetchQuery() {
       result = data
       fileList.value = result.map(item => ({
         uid: item.id,
-        name: item.s3_url,
+        name: item.s3_key,
         status: 'done',
         url: item.s3_url,
       }))
