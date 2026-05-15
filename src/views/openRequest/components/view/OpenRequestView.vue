@@ -77,7 +77,7 @@
             Propuesta del cliente
           </button>
           <button class="tab" :class="{ 'is-active': activeTab === 'candidatas' }" @click="activeTab = 'candidatas'">
-            Candidatas ({{ candidates.length }})
+            Candidatos ({{ candidates.length }})
           </button>
         </nav>
       </section>
@@ -293,11 +293,11 @@
             <div class="metadata-grid">
               <div>
                 <span>Codigo de OP</span>
-                <strong>{{ formItem.codigo }}</strong>
+                <strong>{{ formItem.id }}</strong>
               </div>
               <div>
                 <span>Codigo opcional</span>
-                <strong>{{ formItem.optionalCode }}</strong>
+                <strong>{{ formItem.codigo }}</strong>
               </div>
               <div>
                 <span>Fecha de alta</span>

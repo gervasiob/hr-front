@@ -31,6 +31,37 @@ export async function exportToExcel(model, params = {}) {
         window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error al exportar archivo.' }));
     }
 }
+// Export records to CSV
+export async function exportToCsv(model, params = {}) {
+    try {
+        const response = await apiRequest('get', `reports/${model}/`, params, null, true);
+
+        if (!response || !(response instanceof Blob)) {
+            throw new Error('Respuesta inválida al exportar CSV');
+        }
+
+        // Verificamos tipo MIME (opcional)
+        if (response.type !== 'application/csv') {
+            console.warn('Tipo de archivo inesperado:', response.type);
+        }
+
+        const blob = new Blob([response], { type: response.type });
+        const url = window.URL.createObjectURL(blob);
+
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${model}_export.csv`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+
+        window.dispatchEvent(new CustomEvent('message-success', { detail: 'Archivo exportado correctamente.' }));
+    } catch (error) {
+        console.error('Error al exportar archivo:', error);
+        window.dispatchEvent(new CustomEvent('message-error', { detail: 'Error al exportar archivo.' }));
+    }
+}
 // Export records to Word
 export async function exportToWord(model, params = {}) {
     try {

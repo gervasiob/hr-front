@@ -44,7 +44,7 @@ import { columns } from './config/columns'
 import { filters } from './config/filters'
 import { candidateFormFields as fields } from './config/formFields.js'
 import { Modal, message } from 'ant-design-vue'
-import { exportToExcel } from '@/api/model/importExport'
+import { exportToExcel, exportToCsv } from '@/api/model/importExport'
 import { useAuthStore } from '@/stores/auth';
 
 const router = useRouter()
@@ -278,7 +278,8 @@ async function handleDownloadTemplate() {
       Object.entries(filterParams.value).filter(([_, v]) => v !== null && v !== '')
     )
 
-    const response = await exportToExcel(modelNameSingle, {})
+    // const response = await exportToExcel(modelNameSingle, {})
+    const response = await exportToCsv('candidates-csv', {file_format:'xlsx'})
 
     message.success('Archivo descargado correctamente')
   } catch (error) {
