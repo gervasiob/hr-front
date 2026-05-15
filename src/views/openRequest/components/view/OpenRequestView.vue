@@ -5,10 +5,10 @@
         <p class="eyebrow">Sistema PCP</p>
         <h1>PCP Detalle</h1>
       </div>
-      <div class="topbar-actions">
+      <!-- <div class="topbar-actions">
         <button class="button button-secondary">Descargar listado</button>
         <button class="button button-primary">Nuevo</button>
-      </div>
+      </div> -->
     </header>
 
     <main class="workspace">
@@ -16,17 +16,12 @@
         <div class="hero-copy">
           <span class="status-pill">Perfil activo</span>
           <h2>{{ formItem.codigo }}</h2>
-          <p>
-            Propuesta de UI para evolucionar la vista basica hacia una pantalla
-            de detalle mas rica, mas escaneable y alineada tanto al sistema de
-            referencia como a la estructura real del Excel operativo.
-          </p>
         </div>
 
-        <div class="hero-actions">
+        <!-- <div class="hero-actions">
           <button class="button button-ghost">Guardar borrador</button>
           <button class="button button-primary">Ingreso a candidatos</button>
-        </div>
+        </div> -->
       </section>
 
       <section class="snapshot-card">
@@ -38,6 +33,10 @@
           <div class="snapshot-item">
             <span>Cliente final</span>
             <strong>{{ clientName }}</strong>
+          </div>
+          <div class="snapshot-item">
+            <span>Cliente Secundario</span>
+            <strong>{{ secondClientName }}</strong>
           </div>
           <div class="snapshot-item">
             <span>Perfil primario</span>
@@ -59,10 +58,10 @@
             <span>Seniority</span>
             <strong>{{ seniorityName }}</strong>
           </div>
-          <div class="snapshot-item">
+          <!-- <div class="snapshot-item">
             <span>Podemos postular</span>
             <strong>{{ formItem.weCanPostulate ? 'Si' : 'No' }}</strong>
-          </div>
+          </div> -->
         </div>
       </section>
 
@@ -78,12 +77,12 @@
             Propuesta del cliente
           </button>
           <button class="tab" :class="{ 'is-active': activeTab === 'candidatas' }" @click="activeTab = 'candidatas'">
-            Candidatas ({{ candidates.length }})
+            Candidatos ({{ candidates.length }})
           </button>
         </nav>
       </section>
 
-      <section class="filters-card">
+      <!-- <section class="filters-card">
         <div class="section-heading">
           <div>
             <p class="section-kicker">Busqueda enriquecida</p>
@@ -110,7 +109,7 @@
             <button class="button button-secondary">Reset</button>
           </div>
         </div>
-      </section>
+      </section> -->
 
       <section class="detail-grid">
         <div class="main-column">
@@ -127,7 +126,7 @@
               <section class="info-block">
                 <div class="info-heading">
                   <h4>Descripcion de tareas</h4>
-                  <span class="mini-tag">AI generado</span>
+                  <!-- <span class="mini-tag">AI generado</span> -->
                 </div>
                 <p>
                   {{ formItem.tasksDescription }}
@@ -149,16 +148,16 @@
                   <h4>Skills requeridas</h4>
                   <div class="chip-row">
                     <span v-for="skill in requiredSkills" :key="skill.id" class="skill-chip required">{{ skill
-                      }}</span>
+                    }}</span>
                   </div>
                 </div>
 
-                <!-- <div>
-                  <h4>Skills opcionales</h4>
+                <div>
+                  <h4>Soft skills</h4>
                   <div class="chip-row">
-                     <span v-for="skill in optionalSkills" :key="skill.id" class="skill-chip optional">{{ skill.name }}</span>
+                     <span v-for="skill in softSkills" :key="skill" class="skill-chip optional">{{ skill }}</span>
                   </div>
-                </div> -->
+                </div>
                 <section class="info-block">
                   <div class="info-heading">
                     <h4>Requisito soft</h4>
@@ -168,19 +167,14 @@
                     {{ formItem.softRequirements }}
                   </p>
                 </section>
-                <div>
-                  <h4>Soft skills</h4>
-                  <div class="chip-row">
-                    <span v-for="skill in softSkills" :key="skill.id" class="skill-chip soft">{{ skill }}</span>
-                  </div>
-                </div>
               </section>
 
 
             </div>
           </article>
 
-          <article class="content-card tab-panel" :class="{ 'is-visible': activeTab === 'descripcion' }" id="descripcion">
+          <article class="content-card tab-panel" :class="{ 'is-visible': activeTab === 'descripcion' }"
+            id="descripcion">
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">Profundidad funcional</p>
@@ -201,7 +195,8 @@
             </div>
           </article>
 
-          <article class="content-card tab-panel" :class="{ 'is-visible': activeTab === 'condiciones' }" id="condiciones">
+          <article class="content-card tab-panel" :class="{ 'is-visible': activeTab === 'condiciones' }"
+            id="condiciones">
             <div class="card-title-row">
               <div>
                 <p class="section-kicker">Lectura operativa</p>
@@ -216,27 +211,27 @@
               </div>
               <div class="metric-card">
                 <span>Contrata</span>
-                <strong>{{ formItem.contractor }}</strong>
+                <strong>{{ hireClientName }}</strong>
               </div>
               <div class="metric-card">
                 <span>Tope salarial bruto</span>
-                <strong>{{ formItem.grossSalaryCap }}</strong>
+                <strong>{{ currencyName }} {{formItem.salaryMax }}</strong>
               </div>
               <div class="metric-card">
                 <span>Homeworking</span>
-                <strong>{{ modalityName }}</strong>
+                <strong>{{ modalityName }}- {{ formItem.hybrid_type }}</strong>
               </div>
               <div class="metric-card">
                 <span>Prepaga</span>
-                <strong>{{ medicalInsuranceName }}</strong>
+                <strong>{{ formItem.healthCompany }}</strong>
               </div>
               <div class="metric-card">
                 <span>Disposicion de la jornada</span>
-                <strong>{{ formItem.workdayDisposition }}</strong>
+                <strong>{{ formItem.workingHours }}</strong>
               </div>
               <div class="metric-card">
                 <span>Zona de trabajo</span>
-                <strong>{{ provinceName }}</strong>
+                <strong>{{ formItem.workZone }}</strong>
               </div>
               <div class="metric-card">
                 <span>Duracion del proyecto</span>
@@ -244,7 +239,7 @@
               </div>
               <div class="metric-card">
                 <span>Guardias</span>
-                <strong>{{ formItem.onCallDuty }}</strong>
+                <strong>{{ formItem.guards }} {{ formItem.hrs }} {{ formItem.shift }}</strong>
               </div>
               <div class="metric-card">
                 <span>Ajustes salariales</span>
@@ -298,11 +293,11 @@
             <div class="metadata-grid">
               <div>
                 <span>Codigo de OP</span>
-                <strong>{{ formItem.codigo }}</strong>
+                <strong>{{ formItem.id }}</strong>
               </div>
               <div>
                 <span>Codigo opcional</span>
-                <strong>{{ formItem.optionalCode }}</strong>
+                <strong>{{ formItem.codigo }}</strong>
               </div>
               <div>
                 <span>Fecha de alta</span>
@@ -330,28 +325,32 @@
                 <strong>{{ hiringTypeName }}</strong>
               </div>
               <div class="detail-row">
+                <span>Tipo de Búsqueda</span>
+                <strong>{{ searchTypeName }}</strong>
+              </div>
+              <div class="detail-row">
                 <span>Contrata</span>
-                <strong>{{ formItem.contractor }}</strong>
+                <strong>{{ hireClientName }}</strong>
               </div>
               <div class="detail-row">
                 <span>Tope salarial bruto</span>
-                <strong>{{ formItem.grossSalaryCap }}</strong>
+                <strong>{{ currencyName }} {{ formItem.salaryMax }}</strong>
               </div>
               <div class="detail-row">
                 <span>Homeworking</span>
-                <strong>{{ modalityName }}</strong>
+                <strong>{{ modalityName }}- {{ formItem.hybrid_type }}</strong>
               </div>
               <div class="detail-row">
                 <span>Prepaga</span>
-                <strong>{{ medicalInsuranceName }}</strong>
+                <strong>{{ formItem.healthCompany }}</strong>
               </div>
               <div class="detail-row">
                 <span>Disposicion de la jornada</span>
-                <strong>{{ formItem.workdayDisposition }}</strong>
+                <strong>{{ formItem.workingHours }}</strong>
               </div>
               <div class="detail-row">
                 <span>Zona de trabajo</span>
-                <strong>{{ provinceName }}</strong>
+                <strong>{{ formItem.workZone }}</strong>
               </div>
               <div class="detail-row">
                 <span>Duracion del proyecto</span>
@@ -359,7 +358,7 @@
               </div>
               <div class="detail-row">
                 <span>Guardias</span>
-                <strong>{{ formItem.onCallDuty }}</strong>
+                <strong>{{ formItem.guards }} - horas: {{ formItem.hrs }} - turno: {{ formItem.shift }}</strong>
               </div>
               <div class="detail-row">
                 <span>Ajustes salariales</span>
@@ -385,11 +384,11 @@
             </div>
 
             <ol class="questions-list side-questions">
-              <li v-for="question in mandatoryQuestions" :key="question.id">{{ question.text }}</li>
+              <li v-for="question in mandatoryQuestions" :key="question.id">{{ question.question }}</li>
             </ol>
           </article>
 
-          <article class="side-card emphasis">
+          <!-- <article class="side-card emphasis">
             <div class="card-title-row compact">
               <div>
                 <p class="section-kicker">Resumen ejecutivo</p>
@@ -403,7 +402,7 @@
               <li>La columna lateral concentra datos comerciales y operativos.</li>
               <li>La navegacion por tabs permite escalar sin saturar la primera vista.</li>
             </ul>
-          </article>
+          </article> -->
         </aside>
       </section>
     </main>
@@ -413,6 +412,7 @@
 <script setup>
 import { ref, watch } from 'vue';
 import { fetch } from '@/api/model/model.js';
+import { parse } from 'date-fns';
 
 const props = defineProps({
   openRequest: {
@@ -426,6 +426,7 @@ const formItem = ref({});
 
 const comercialName = ref('');
 const clientName = ref('');
+const secondClientName = ref('');
 const profileName = ref('');
 const subProfileName = ref('');
 const seniorityName = ref('');
@@ -433,6 +434,9 @@ const hiringTypeName = ref('');
 const modalityName = ref('');
 const medicalInsuranceName = ref('');
 const provinceName = ref('');
+const hireClientName = ref('');
+const currencyName = ref('');
+const searchTypeName = ref('');
 
 const requiredSkills = ref([]);
 const optionalSkills = ref([]);
@@ -489,25 +493,34 @@ const fetchAndSetData = async (request) => {
 
     // Now use the camelCased formItem for all subsequent fetches
     const item = formItem.value;
-
+    console.log('item', item)
     comercialName.value = await getName('users', item.comerciales && item.comerciales[0], 'username');
     clientName.value = await getName('clients', item.clientId);
+    secondClientName.value = await getName('clients', item.secondClientId);
+    hireClientName.value = await getName('clients', item.hireClient);
     profileName.value = await getName('primary-profiles', item.profile);
     subProfileName.value = await getName('sub-profiles', item.subprofile);
     seniorityName.value = await getName('seniority-levels', item.seniorityId);
-    hiringTypeName.value = await getName('hiring-types', item.hiringTypeId);
-    modalityName.value = await getName('modalities', item.modalityId);
+    hiringTypeName.value = await getName('catalog-hiring-types', item.catalogHiringTypes);
+    modalityName.value = await getName('catalog-modalities', item.catalogModalities);
     medicalInsuranceName.value = await getName('medical-insurances', item.medicalInsuranceId);
     provinceName.value = await getName('provinces', item.provinceId);
-
+    searchTypeName.value = await getName('search-types', item.searchTypes);
     requiredSkills.value = await getSkills(item.requiredSkills);
     optionalSkills.value = await getSkills(item.optionalSkills);
-    softSkills.value = await getSkills(item.softSkills);
+    softSkills.value = item.softSkills;
 
   } catch (e) {
     console.error('Error fetching search request details:', e);
   }
-
+  // Fetch Questions
+  try {
+    const questions = await fetch('get', `search-request-question/?search-request=${request.id}`);
+    console.log('questions', questions)
+    mandatoryQuestions.value = questions;
+  } catch (e) {
+    console.error('Error fetching questions:', e);
+  }
   // Fetch candidates
   try {
     const trackingData = await fetch('get', 'search-requests', { id: request.id });
@@ -544,13 +557,13 @@ const fetchAndSetData = async (request) => {
     { id: 2, title: 'Colaboracion con cliente', description: 'Reuniones semanales de seguimiento, refinamiento y ajuste de prioridades del roadmap.' },
     { id: 3, title: 'Calidad y documentacion', description: 'Participacion en code reviews, seguimiento de deuda tecnica y definicion de criterios de aceptacion.' },
   ];
-  mandatoryQuestions.value = [
-    { id: 1, text: 'Trabajaste desarrollando agentes de AI o flujos que integren modelos con APIs o sistemas internos?' },
-    { id: 2, text: 'Que servicios cloud usaste en proyectos de AI o automatizacion?' },
-    { id: 3, text: 'Llegaste a implementar soluciones usando servicios como functions serverless, workflows u orquestacion?' },
-    { id: 4, text: 'Con que lenguajes trabajas habitualmente y en que tipo de soluciones los usaste recientemente?' },
-    { id: 5, text: 'Hay experiencia reciente trabajando con equipos de negocio y discovery tecnico?' },
-  ];
+  // mandatoryQuestions.value = [
+  //   { id: 1, text: 'Trabajaste desarrollando agentes de AI o flujos que integren modelos con APIs o sistemas internos?' },
+  //   { id: 2, text: 'Que servicios cloud usaste en proyectos de AI o automatizacion?' },
+  //   { id: 3, text: 'Llegaste a implementar soluciones usando servicios como functions serverless, workflows u orquestacion?' },
+  //   { id: 4, text: 'Con que lenguajes trabajas habitualmente y en que tipo de soluciones los usaste recientemente?' },
+  //   { id: 5, text: 'Hay experiencia reciente trabajando con equipos de negocio y discovery tecnico?' },
+  // ];
 };
 
 watch(() => props.openRequest, (newRequest) => {
@@ -664,8 +677,8 @@ watch(() => props.openRequest, (newRequest) => {
 }
 
 .button-primary {
-  background: linear-gradient(135deg, var(--primary) 0%, #3a7cff 100%);
-  color: #1a202c;
+  background: linear-gradient(135deg,  #3a7cff  0%, #3a7cff 100%);
+  color: white;
   box-shadow: 0 14px 28px rgba(48, 86, 211, 0.25);
 }
 
@@ -676,8 +689,8 @@ watch(() => props.openRequest, (newRequest) => {
 
 .button-ghost {
   background: rgba(255, 255, 255, 0.12);
-  color: #fff;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  color: #494747;
+  border: 1px solid rgba(75, 9, 9, 0.2);
 }
 
 .workspace {
@@ -742,7 +755,18 @@ watch(() => props.openRequest, (newRequest) => {
   border-radius: 999px;
   font-weight: 700;
 }
-
+.mini-tag {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 700;
+  background: #dff4ff;
+  color: #1d6fa5;
+  border: 1px solid #b9e7ff;
+}
 .status-pill {
   width: fit-content;
   padding: 7px 12px;
@@ -960,12 +984,6 @@ watch(() => props.openRequest, (newRequest) => {
   background: rgba(27, 42, 76, 0.08);
   color: var(--text);
 }
-
-.mini-tag {
-  background: var(--primary-soft);
-  color: var(--primary-strong);
-}
-
 .skills-block {
   display: grid;
   gap: 18px;
@@ -989,8 +1007,8 @@ watch(() => props.openRequest, (newRequest) => {
 }
 
 .skill-chip.optional {
-  background: var(--warning-soft);
-  color: #8b5f00;
+  background: rgb(62, 228, 137);
+  color: #006b26;
 }
 
 .skill-chip.soft {

@@ -2,8 +2,8 @@ import axios from 'axios';
 // export const BASE_URL = 'http://192.168.0.206:8001/';
 import { useRoute } from 'vue-router';
 
-const stage = 'PROD'; // PROD
-// const stage = 'dev'; // DEV/UAT
+// const stage = 'PROD'; // PROD
+const stage = 'dev'; // DEV/UAT
 localStorage.setItem('origin', window.location.origin)
 localStorage.setItem('stage', stage)
 
