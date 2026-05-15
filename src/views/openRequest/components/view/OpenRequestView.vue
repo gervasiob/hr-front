@@ -219,7 +219,7 @@
               </div>
               <div class="metric-card">
                 <span>Homeworking</span>
-                <strong>{{ formItem.homeworking ? 'Si' : 'No' }}</strong>
+                <strong>{{ modalityName }}- {{ formItem.hybrid_type }}</strong>
               </div>
               <div class="metric-card">
                 <span>Prepaga</span>
@@ -227,7 +227,7 @@
               </div>
               <div class="metric-card">
                 <span>Disposicion de la jornada</span>
-                <strong>{{ modalityName }} - {{ formItem.workingHours }}</strong>
+                <strong>{{ formItem.workingHours }}</strong>
               </div>
               <div class="metric-card">
                 <span>Zona de trabajo</span>
@@ -338,7 +338,7 @@
               </div>
               <div class="detail-row">
                 <span>Homeworking</span>
-                <strong>{{ homeworking ? 'Si' : 'No' }}</strong>
+                <strong>{{ modalityName }}- {{ formItem.hybrid_type }}</strong>
               </div>
               <div class="detail-row">
                 <span>Prepaga</span>
@@ -346,7 +346,7 @@
               </div>
               <div class="detail-row">
                 <span>Disposicion de la jornada</span>
-                <strong>{{ modalityName }} - {{ formItem.workingHours }}</strong>
+                <strong>{{ formItem.workingHours }}</strong>
               </div>
               <div class="detail-row">
                 <span>Zona de trabajo</span>
