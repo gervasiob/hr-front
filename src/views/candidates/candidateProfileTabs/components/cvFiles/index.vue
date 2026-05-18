@@ -10,7 +10,7 @@
     </a-row>
 
     <BasicTable :columns="columns" :items="candidates" :loading="loading" :pagination="pagination" @edit="handleEdit"
-      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @pagination-change="handlePaginationChange"
+      @delete="handleDelete" @cv="handleViewCV" @sort-change="handleSort" @download="handleDownload" @pagination-change="handlePaginationChange"
       :read-only="readOnly" />
 
     <a-modal v-model:open="showForm" title="Formulario" width="1000px" ok-text="Guardar" cancel-text="Cancelar"
@@ -198,6 +198,13 @@ function openForm(id = null, isNew = true) {
 
 function handleEdit(candidate) {
   openForm(candidate.id, false)
+}
+function handleDownload(candidate) {
+  if (!candidate?.s3_url) {
+    message.error('No hay archivo disponible para descargar')
+    return
+  }
+  window.open(candidate.s3_url, '_blank')
 }
 
 

@@ -15,6 +15,23 @@ export const columns = [
   //   },
   // },
   {
+    title: 'Descarga',
+    field: 'download',
+    download: {
+      slots: true,
+      align: 'center',
+      width: 160,
+      actions: [
+        {
+          label: 'Descargar',
+          type: 'link',
+          event: 'download',
+          danger: false
+        },
+      ]
+    }
+  },
+  {
     title: 'Acciones',
     field: 'actions',
     operation: {

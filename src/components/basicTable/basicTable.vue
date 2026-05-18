@@ -97,6 +97,7 @@ const transformedColumns = computed(() =>
       sorter: column.sorter ? true : false,
       align: column.operation?.align || 'left',
       operation: column.operation,
+      operation: column.download,
       ...column
     }))
 )
